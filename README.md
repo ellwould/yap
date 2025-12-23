@@ -97,3 +97,6 @@ sudo -u pbx asterisk -rvvvvv
 3) alembic -c /root/asterisk/contrib/ast-db-manage/config.ini upgrade head<br>
 
 ---
+
+>[!NOTE]
+>For a list of abbreviations and there meanings used throughout this repository please refer to this [README](https://github.com/Ellwould/information_technology_and_telecommunication_abbreviations)
