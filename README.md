@@ -1,8 +1,6 @@
 ![image](https://github.com/ellwould/yap/blob/main/yap_logo.jpeg)
 
-<br>
-
-![image](https://github.com/ellwould/yap/blob/main/yap.jpeg)
+![image](https://github.com/ellwould/yap/blob/main/yap_software.jpeg)
 
 # YAP
 YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses the Asterisk framework.
