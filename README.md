@@ -1,3 +1,7 @@
+![image](https://github.com/ellwould/yap/blob/main/yap_logo.jpeg)
+
+<br>
+
 ![image](https://github.com/ellwould/yap/blob/main/yap.jpeg)
 
 # YAP
