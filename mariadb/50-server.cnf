@@ -2,8 +2,8 @@
 bind-address            = 0.0.0.0
 
 # TLS Options
-ssl-ca = /etc/mysql/my-own-ca.crt
-ssl-cert = /etc/mysql/server.crt
-ssl-key = /etc/mysql/server.key
+ssl-ca = /etc/mysql/yap-ca.crt
+ssl-cert = /etc/mysql/mariadb.crt
+ssl-key = /etc/mysql/mariadb.key
 tls_version = TLSv1.3
 require-secure-transport = on
