@@ -123,6 +123,22 @@ openssl req -x509 -new -SHA384 -nodes -key yap-ca.key -days 7300 -out yap-ca.crt
 openssl ecparam -genkey -name secp384r1 -out mariadb.key;
 ```
 
+<br>
+
+**4) Generate a CSR (Certificate Signing Request):**
+```
+openssl req -new -SHA384 -key mariadb.key -nodes -out mariadb.csr;
+```
+
+<br>
+
+**5) Generate an extensions file:**
+```
+touch extensions.ext
+```
+
+<br>
+
 ---
 
 >[!NOTE]
