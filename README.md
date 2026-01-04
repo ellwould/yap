@@ -139,6 +139,24 @@ touch extensions.ext
 
 <br>
 
+**6) The contents of the extensions.ext file:**
+```
+authorityKeyIdentifier = keyid, issuer
+basicConstraints = critical, CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = (FQDN)
+```
+
+<br>
+
+**7) Generate and sign the mariadb.crt. It is vaild for 1825 days (5 years):**
+```
+openssl x509 -req -SHA384 -extfile extensions.ext -days 1825 -in mariadb.csr -CA yap-ca.crt -CAkey yap-ca.key -CAcreateserial -out mariadb.crt;
+```
+
 ---
 
 >[!NOTE]
