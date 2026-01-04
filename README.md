@@ -11,7 +11,7 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, YAP i
 
 ### Underscores are used for contexts names because MariaDB does not like hyphens in table names.
 
-### Transport naming format:
+**Transport naming format:**
 - IPv4-UDP
 - IPv4-TCP
 - IPv4-TLS
@@ -19,7 +19,7 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, YAP i
 - IPv6-TCP
 - IPv6-TLS
 
-### SIP Trunks naming format:
+**SIP Trunks naming format:**
 - PBX-330-ST-1 (Endpoint)
 - PBX-330-ST-1 (AOR)
 - PBX-330-ST-1 (AUTH)
@@ -31,7 +31,7 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, YAP i
 - PBX-330-ST-2 (AUTH)
 - PBX_330_IN (Context)
 
-### Extensions naming format:
+**Extensions naming format:**
 - PBX-330-EXT-200 (Endpoint)
 - PBX-330-EXT-200 (AOR)
 - PBX-330-EXT-200 (AUTH)
@@ -97,6 +97,31 @@ sudo -u pbx asterisk -rvvvvv
 1) apt install python3-mysqldb alembic<br>
 2) cp /root/asterisk/contrib/ast-db-manage/config.ini /root/asterisk/contrib/ast-db-manage/config.ini.sample<br>
 3) alembic -c /root/asterisk/contrib/ast-db-manage/config.ini upgrade head<br>
+
+---
+
+## Generate a ECDSA Certificate Authority (CA) key and self-signed certificate and generate a ECDSA server key and certificate for MariaDB using the OpenSSL cryptographic library:
+
+<br>
+
+**1) Generate the Certificate Authority (CA) key:**
+```
+openssl ecparam -genkey -name secp384r1 -out yap-ca.key;
+```
+
+<br>
+
+**2) Generate a certificate Authority Certificate (CA) with expiry of 7300 days (20 years):**
+```
+openssl req -x509 -new -SHA384 -nodes -key yap-ca.key -days 7300 -out yap-ca.crt;
+```
+
+<br>
+
+**3) Generate a key for the MariaDB server:**
+```
+openssl ecparam -genkey -name secp384r1 -out mariadb.key;
+```
 
 ---
 
