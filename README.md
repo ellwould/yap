@@ -9,9 +9,9 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## User Account :bust_in_silhouette: Privileges Reference Table
+## The user_account_type_reference Table
 
-| user_account_code | description |
+| user_account_type | description |
 |-------------------|-------------|
 | 100 | A YAP admin account can create, read, update and delete all user accounts, groups and PBXs |
 | 101 | A YAP regular account can read all user accounts, groups and PBXs |
@@ -22,13 +22,68 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## Example User Account Table
+## An Example of the user_account Table :bust_in_silhouette:
 
-| id | email | f_name | l_name | user_account_code | group_code | date_added | last_updated | account_active |
-|----|-------|--------|--------|-------------------|------------|------------|--------------|----------------|
-| 1  | yap@ell.today | Elliot | Keavney | 100 | 1 | 20/10/2025 | 20/10/2025 | yes |
-| 2  | john@example.com | John | not_provided | 200 | 294583 | 04/11/2025 | 25/11/2025 | yes |
-| 3  | jane@example.com | Jane | not_provided | 301 | 294583 | 03/01/2026 | 05/01/2026 | no  |
+| user_id | email             | first_name | last_name    | user_account_type | group_id | pbx_id | date_added | account_active |
+|---------|-------------------|------------|--------------|-------------------|----------|--------|------------|----------------|
+| 1       | yap@ell.today     | Elliot     | Keavney      | 100               | 1        | 1      | 20/10/2025 | yes            |
+| 2       | john@example.com  | John       | not_provided | 200               | 294583   | 1      | 04/11/2025 | yes            |
+| 3       | jane@example.net  | Jane       | not_provided | 301               | 294583   | 100    | 03/01/2026 | no             |
+| 4       | frank@example.com | Frank      | not_provided | 201               | 294583   | 1      | 02/01/2026 | yes            |
+
+<br>
+
+## An Example of the group Table
+
+| group_id | group_name                    | group_site_address_id | group_invoice_address_id | date_added | group_active | note |
+|----------|-------------------------------|-----------------------|--------------------------|------------|--------------|------|
+| 1        | system                        | 1                     | 1                        | 20/10/2025 | yes          | created during YAP install |
+| 294583   | (typically a company name of a VoIP reseller) | 2                     | 2                        | 04/11/2025 | yes          | no notes |
+
+<br>
+
+## An Example of the group_site_address Table
+
+| group_site_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+|-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
+| 1                     | system      | system            | system            | system  | system        | system         |
+| 2                     | (typically the VoIP resellers street/road) | (typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers country) | support@example.com | +441614960000
+
+<br>
+
+## An Example of the group_invoice_address Table
+
+| group_invoice_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+|-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
+| 1                     | system      | system            | system            | system  | system        | system         |
+| 2                     | (typically the VoIP resellers street/road) | (typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers country) | accounts@example.com | +441514960000
+
+<br>
+
+## An Example of the pbx Table
+
+| pbx_id | pbx_name                                | pbx_site_address_id | pbx_invoice_address_id | group_id | date_added | pbx_active |
+|--------|-----------------------------------------------|---------------------|------------------------|----------|------------|------------|
+| 1      | system                                        | 1                   | 1                      | 1        | 20/10/2025 | yes        |
+| 100    | (typically a company that is a customer of a VoIP reseller) | 2                   | 2                      | 294583   | 02/01/2026 |  yes        |
+
+<br>
+
+## An Example of the pbx_site_address Table
+
+| pbx_site_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+|-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
+| 1                     | system      | system            | system            | system  | system        | system         |
+| 2                     | (customers street/road) | (customers city/town/village) | (customers postcode/zip code) | (customers country) | sales@example.net | +441414960000
+
+<br>
+
+## An Example of the pbx_invoice_address Table
+
+| pbx_invoice_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+|-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
+| 1                     | system      | system            | system            | system  | system        | system         |
+| 2                     | (customers street/road) | (customers city/town/village) | (customers postcode/zip code) | (customers country) | accounts@example.net | +441414960000
 
 <br>
 
