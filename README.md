@@ -32,6 +32,8 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 | 2  | john@example.com | John | not_provided | 200 | 294583 | 04/11/2025 | 25/11/2025 | yes |
 | 3  | jane@example.com | Jane | not_provided | 301 | 294583 | 03/01/2026 | 05/01/2026 | no  |
 
+<br>
+
 ---
 
 <br>
