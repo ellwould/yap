@@ -4,7 +4,7 @@
 
 <br>
 
-# YAP (Yet Another PBX)
+# YAP (Yet Another PBX) :telephone_receiver:
 A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses the Asterisk framework.
 
 <br>
@@ -13,11 +13,11 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-# Asterisk
+# Asterisk :telephone:
 
 <br>
 
-## Naming Format:
+## Naming Format :label:
 
 <br>
 
@@ -26,7 +26,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-**Transport naming format:**
+**Transport :taxi: naming format:**
 - IPv4-UDP
 - IPv4-TCP
 - IPv4-TLS
@@ -36,7 +36,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-**SIP Trunks naming format:**
+**SIP Trunks :left_right_arrow: naming format:**
 - PBX-330-ST-1 (Endpoint)
 - PBX-330-ST-1 (AOR)
 - PBX-330-ST-1 (AUTH)
@@ -51,7 +51,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-**Extensions naming format:**
+**Extensions :calling: naming format:**
 - PBX-330-EXT-200 (Endpoint)
 - PBX-330-EXT-200 (AOR)
 - PBX-330-EXT-200 (AUTH)
@@ -66,7 +66,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## Compile & Install Asterisk:
+## Compile and Install :computer: Asterisk:
 
 <br>
 
@@ -100,7 +100,7 @@ make samples
 
 <br>
 
-## Post Asterisk Install:
+## Post :arrow_right: Asterisk Install:
 
 <br>
 
@@ -141,28 +141,30 @@ systemctl daemon-reload
 <br>
 <br>
 
-**If Firewall Enabled:**
-```
-systemctl enable asterisk
-```
-```
-systemctl disable asterisk
-```
-
-<br>
-
 >[!TIP]
->**To find faults with Asterisk:**
+>**If a firewall :fire::bricks: is enabled, set Asterisk to automatically start :green_circle: at boot:**
 >```
->/usr/sbin/asterisk -mqfv -C /etc/asterisk/asterisk.conf
+>systemctl enable asterisk
+>```
+>**To stop :red_circle: Asterisk starting at boot:**
+>```
+>systemctl disable asterisk
 >```
 
 <br>
 
 >[!TIP]
->**To enter Asterisk:**
+>**To enter :door: Asterisk:**
 >```
 >sudo -u pbx asterisk -rvvvvv
+>```
+
+<br>
+
+>[!TIP]
+>**To find :mag: and fix :screwdriver: faults :warning: with Asterisk:**
+>```
+>/usr/sbin/asterisk -mqfv -C /etc/asterisk/asterisk.conf
 >```
 
 <br>
@@ -171,11 +173,11 @@ systemctl disable asterisk
 
 <br>
 
-# MariaDB
+# MariaDB :file_cabinet:
 
 <br>
 
-## alembic:
+## alembic :card_index_dividers:
 
 ```
 apt install python3-mysqldb alembic
@@ -189,7 +191,7 @@ alembic -c /root/asterisk/contrib/ast-db-manage/config.ini upgrade head
 
 <br>
 
-## Generate a ECDSA Certificate Authority (CA) key and self-signed certificate and generate a ECDSA server key and certificate for MariaDB using the OpenSSL cryptographic library:
+## Generate a self-signed ECDSA key :key: and certificate :scroll: for MariaDB using the OpenSSL cryptographic library :books:
 
 <br>
 
@@ -250,6 +252,7 @@ openssl x509 -req -SHA384 -extfile extensions.ext -days 1825 -in mariadb.csr -CA
 
 ---
 
+<br>
 <br>
 
 >[!NOTE]
