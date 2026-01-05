@@ -22,7 +22,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 <br>
 
 >[!TIP]
->Underscores are used for contexts names because MariaDB does not like hyphens in table names.
+>**Underscores are used for contexts names because MariaDB does not like hyphens in table names.**
 
 <br>
 
