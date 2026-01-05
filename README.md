@@ -9,7 +9,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## The user_account_type_reference Table
+## The user_account_type_reference :ledger: Table
 
 | user_account_type | description |
 |-------------------|-------------|
@@ -22,7 +22,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## An Example of the user_account Table :bust_in_silhouette:
+## An Example of the user_account :bust_in_silhouette: Table
 
 | user_id | email             | first_name | last_name    | user_account_type | group_id | pbx_id | date_added | account_active |
 |---------|-------------------|------------|--------------|-------------------|----------|--------|------------|----------------|
@@ -33,7 +33,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## An Example of the group Table
+## An Example of the group :busts_in_silhouette: Table
 
 | group_id | group_name                    | group_site_address_id | group_invoice_address_id | date_added | group_active | note |
 |----------|-------------------------------|-----------------------|--------------------------|------------|--------------|------|
@@ -42,7 +42,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## An Example of the group_site_address Table
+## An Example of the group_site_address :closed_book: Table
 
 | group_site_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
@@ -51,7 +51,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## An Example of the group_invoice_address Table
+## An Example of the group_invoice_address :green_book: Table
 
 | group_invoice_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
@@ -60,7 +60,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## An Example of the pbx Table
+## An Example of the pbx :desktop_computer: Table
 
 | pbx_id | pbx_name                                | pbx_site_address_id | pbx_invoice_address_id | group_id | date_added | pbx_active |
 |--------|-----------------------------------------------|---------------------|------------------------|----------|------------|------------|
@@ -69,7 +69,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## An Example of the pbx_site_address Table
+## An Example of the pbx_site_address :blue_book: Table
 
 | pbx_site_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
@@ -78,7 +78,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## An Example of the pbx_invoice_address Table
+## An Example of the pbx_invoice_address :orange_book: Table
 
 | pbx_invoice_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
