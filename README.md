@@ -11,8 +11,6 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## User Account :bust_in_silhouette: Privileges Reference Table
 
-<br>
-
 | user_account_code | description |
 |-------------------|-------------|
 | 100 | A YAP admin account can create, read, update and delete all user accounts, groups and PBXs |
@@ -24,7 +22,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## Example User Account Table:
+## Example User Account Table
 
 | id | email | f_name | l_name | user_account_code | group_code | date_added | last_updated | account_active |
 |----|-------|--------|--------|-------------------|------------|------------|--------------|----------------|
@@ -91,7 +89,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## Compile and Install :computer: Asterisk:
+## Compile and Install :computer: Asterisk
 
 <br>
 
@@ -125,7 +123,7 @@ make samples
 
 <br>
 
-## Post :arrow_right: Asterisk Install:
+## Post :arrow_right: Asterisk Install
 
 <br>
 
