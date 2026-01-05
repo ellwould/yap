@@ -24,6 +24,14 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
+## Example User Account Table:
+
+| id | email | f_name | l_name | user_account_code | group_code | date_added | last_updated | account_active |
+|----|-------|--------|--------|-------------------|------------|------------|--------------|----------------|
+| 1  | yap@ell.today | Elliot | Keavney | 100 | 1 | 20/10/2025 | 20/10/2025 | yes |
+| 2  | john@example.com | John | not_provided | 200 | 294583 | 04/11/2025 | 25/11/2025 | yes |
+| 3  | jane@example.com | Jane | not_provided | 301 | 294583 | 03/01/2026 | 05/01/2026 | no  |
+
 ---
 
 <br>
