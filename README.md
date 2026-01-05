@@ -9,6 +9,21 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
+## User Account :bust_in_silhouette: Privileges Reference Table
+
+<br>
+
+| user_account_code | description |
+|-------------------|-------------|
+| 100 | A YAP admin account can create, read, update and delete all user accounts, groups and PBXs |
+| 101 | A YAP regular account can read all user accounts, groups and PBXs |
+| 200 | A group admin can read and update thier own PBX(s) and group |
+| 201 | A group regular account can read thier own PBX(s) and group |
+| 300 | A PBX admin account can read and update thier own PBX |
+| 301 | A PBX regular account can read thier own PBX |
+
+<br>
+
 ---
 
 <br>
@@ -173,11 +188,11 @@ systemctl daemon-reload
 
 <br>
 
-# MariaDB :file_cabinet:
+# MariaDB :file_cabinet: Setup
 
 <br>
 
-## alembic :card_index_dividers:
+## Python :snake: Alembic :card_index_dividers:
 
 ```
 apt install python3-mysqldb alembic
@@ -191,7 +206,7 @@ alembic -c /root/asterisk/contrib/ast-db-manage/config.ini upgrade head
 
 <br>
 
-## Generate a self-signed ECDSA key :key: and certificate :scroll: for MariaDB using the OpenSSL cryptographic library :books:
+## Generate a Self-Signed ECDSA Key :key: and Certificate :scroll: for MariaDB Using the OpenSSL Cryptographic Library :books:
 
 <br>
 
