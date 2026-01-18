@@ -149,7 +149,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 <br>
 
 ```
-apt install unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses5-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev
+apt install unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite3 libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev
 ```
 ```
 tar -xvzf asterisk.tar.gz
