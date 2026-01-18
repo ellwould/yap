@@ -273,42 +273,49 @@ alembic -c /root/asterisk/contrib/ast-db-manage/config.ini upgrade head
 
 <br>
 
-**1) Generate the Certificate Authority (CA) key:**
+**1) Make a directory for the files and change into the directory (must be root):**
 ```
-openssl ecparam -genkey -name secp384r1 -out yap-ca.key;
-```
-
-<br>
-
-**2) Generate a certificate Authority Certificate (CA) with expiry of 7300 days (20 years):**
-```
-openssl req -x509 -new -SHA384 -nodes -key yap-ca.key -days 7300 -out yap-ca.crt;
+mkdir /root/mariadb-openssl && cd /root/mariadb-openssl
 ```
 
 <br>
 
-**3) Generate a key for the MariaDB server:**
+**2) Generate the Certificate Authority (CA) key:**
 ```
-openssl ecparam -genkey -name secp384r1 -out mariadb.key;
-```
-
-<br>
-
-**4) Generate a CSR (Certificate Signing Request):**
-```
-openssl req -new -SHA384 -key mariadb.key -nodes -out mariadb.csr;
+openssl ecparam -genkey -name secp384r1 -out yap-ca.key
 ```
 
 <br>
 
-**5) Generate an extensions file:**
+**3) Generate a certificate Authority Certificate (CA) with expiry of 7300 days (20 years):**
+```
+openssl req -x509 -new -SHA384 -nodes -key yap-ca.key -days 7300 -out yap-ca.crt
+```
+
+<br>
+
+**4) Generate a key for the MariaDB server:**
+```
+openssl ecparam -genkey -name secp384r1 -out mariadb.key
+```
+
+<br>
+
+**5) Generate a CSR (Certificate Signing Request):**
+```
+openssl req -new -SHA384 -key mariadb.key -nodes -out mariadb.csr
+```
+
+<br>
+
+**6) Generate an extensions file:**
 ```
 touch extensions.ext
 ```
 
 <br>
 
-**6) The contents of the extensions.ext file:**
+**7) The contents of the extensions.ext file:**
 ```
 authorityKeyIdentifier = keyid, issuer
 basicConstraints = critical, CA:FALSE
@@ -321,9 +328,23 @@ DNS.1 = (FQDN)
 
 <br>
 
-**7) Generate and sign the mariadb.crt. It is vaild for 1825 days (5 years):**
+**8) Generate and sign the mariadb.crt. It is vaild for 1825 days (5 years):**
 ```
-openssl x509 -req -SHA384 -extfile extensions.ext -days 1825 -in mariadb.csr -CA yap-ca.crt -CAkey yap-ca.key -CAcreateserial -out mariadb.crt;
+openssl x509 -req -SHA384 -extfile extensions.ext -days 1825 -in mariadb.csr -CA yap-ca.crt -CAkey yap-ca.key -CAcreateserial -out mariadb.crt
+```
+
+<br>
+
+**9) Copy mariadb.crt, mariadb.key and yap-ca.crt to the /etc/mysql directory:**
+```
+cp /root/mariadb-openssl/{mariadb.crt,mariadb.key,yap-ca.crt} /etc/mysql/
+```
+
+<br>
+
+**10) Change the mariadb.key permissions and group:**
+```
+chmod 440 /etc/mysql/mariadb.key && chgrp mysql /etc/mysql/mariadb.key
 ```
 
 <br>
