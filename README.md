@@ -400,7 +400,7 @@ systemctl daemon-reload
 apt install python3-mysqldb alembic
 ```
 ```
-cp /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini.sample
+cp /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini.sample /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini
 ```
 ```
 alembic -c /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini upgrade head
