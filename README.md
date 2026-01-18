@@ -328,6 +328,22 @@ openssl x509 -req -SHA384 -extfile extensions.ext -days 1825 -in mariadb.csr -CA
 
 <br>
 
+>[!TIP]
+>**To view the CA certificate in the CLI:**
+>```
+>openssl x509 -noout -text -in yap-ca.crt
+>```
+>**To view the MariaDB server certificate in the CLI:**
+>```
+>openssl x509 -noout -text -in mariadb.crt
+>```
+>**To view the MariaDB server certificate signing request in the CLI:**
+>```
+>openssl req -text -noout -verify -in mariadb.csr
+>```
+
+<br>
+
 ---
 
 <br>
