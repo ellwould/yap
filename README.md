@@ -273,6 +273,12 @@ alembic -c /root/asterisk/contrib/ast-db-manage/config.ini upgrade head
 
 <br>
 
+>[!CAUTION]
+>**A more secure method than the steps listed below is to generate all the files on a seprate computer that is isolated away from the YAP server and then transfer the mariadb.crt, mariadb.key and yap-ca.crt to the YAP server using the SCP (Secure Copy Protocol). For better security the yap-ca.key should not be on the YAP server because it can be used to sign certificate signing requests.**
+>
+
+<br>
+
 **1) Make a directory for the files and change into the directory (must be root):**
 ```
 mkdir /root/mariadb-openssl && cd /root/mariadb-openssl
