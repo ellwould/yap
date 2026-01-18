@@ -218,12 +218,21 @@ tar -xvzf asterisk-certified-20.7-cert8.tar.gz
 
 <br>
 
+**8) Change the working directory to the asterisk-certified-20.7-cert8 directory:**
 ```
-cd asterisk
+cd /root/asterisk-certified-20.7-cert8
 ```
+
+<br>
+
+**9) Run the configure script:**
 ```
 ./configure
 ```
+
+<br>
+
+**10) Run the menu selection system to decide which modules should be compiled:**
 ```
 make menuselect
 ```
@@ -283,17 +292,23 @@ make menuselect
 
 <br>
 
+**11) Run the configure script again:**
 ```
 ./configure
 ```
+
+<br>
+
+**12) Compile the source code:**
 ```
 make
 ```
+
+<br>
+
+**13) Install Asterisk:**
 ```
 make install
-```
-```
-make samples
 ```
 
 <br>
