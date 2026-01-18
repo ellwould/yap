@@ -148,16 +148,76 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## Compile and Install :computer: Asterisk
+## Download, Compile and Install :computer: Asterisk
 
 <br>
 
+**1) Install Asterisk dependencies:**
 ```
 apt install unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite3 libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev
 ```
+
+<br>
+
+**2) Change to the /root directory (must be root):**
 ```
-tar -xvzf asterisk.tar.gz
+cd /root
 ```
+
+<br>
+
+**3) Download Asterisk source code:**
+```
+wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/asterisk-certified-20.7-cert8.tar.gz
+```
+
+<br>
+
+**4) Download the Asterisk teams PGP signature:**
+```
+wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/asterisk-certified-20.7-cert8.tar.gz.asc
+```
+
+<br>
+
+**5) Import the Asterisk teams public key from the Ubuntu key server:**
+```
+gpg --keyserver keyserver.ubuntu.com --recv 0xF2FC93DB7587BD1FB49E045A5D984BE337191CE7
+```
+
+<br>
+
+**6) Verify the compressed tar file against the Asterisk teams PGP signature using GPG:**
+```
+gpg --verify asterisk-certified-20.7-cert8.tar.gz.asc asterisk-certified-20.7-cert8.tar.gz
+```
+**Output should show a good signature from the Asterisk team:**
+```
+gpg: Signature made Mon Jan 12 16:33:21 2026 UTC
+gpg:                using RSA key F2FC93DB7587BD1FB49E045A5D984BE337191CE7
+gpg: Good signature from "Asterisk Development Team <asteriskteam@digium.com>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: F2FC 93DB 7587 BD1F B49E  045A 5D98 4BE3 3719 1CE7
+```
+>[!WARNING]
+>**IF THE OUTPUT SHOWS A BAD SIGNATURE LIKE THIS:**
+>```
+>gpg: Signature made Mon Jan 12 16:33:21 2026 UTC
+>gpg:                using RSA key F2FC93DB7587BD1FB49E045A5D984BE337191CE7
+>gpg: BAD signature from "Asterisk Development Team <asteriskteam@digium.com>" [unknown]
+>```
+>**DELETE THE asterisk-certified-20.7-cert8.tar.gz FILE!!!**
+
+<br>
+
+**7) If the signature was good decompress and untar the Asterisk source code**
+```
+tar -xvzf asterisk-certified-20.7-cert8.tar.gz
+```
+
+<br>
+
 ```
 cd asterisk
 ```
@@ -170,26 +230,26 @@ make menuselect
 
 ### In menuselect enable the following options:
 
-<b>Applications:</b>
+**Applications:**
 - app_voicemail_odbc
 - app_attended_transfer
 - app_blind_transfer
 - app_statsd
 
-<b>Call Detail Recording:</b>
+**Call Detail Recording:**
 - cdr_csv
 - cdr_odbc
 
-<b>PBX Modules:</b>
+**PBX Modules:**
 - pbx_realtime
 
-<b>Resource Modules:</b>
+**Resource Modules:**
 - res_stasis_mailbox
 - res_endpoint_stats
 - res_pjsip_history
 - res_prometheus
 
-<b>Core Sound Packages:</b>
+**Core Sound Packages:**
 - CORE-SOUNDS-EN_GB-WAV
 - CORE-SOUNDS-EN_GB-ULAW
 - CORE-SOUNDS-EN_GB-ALAW
@@ -200,7 +260,7 @@ make menuselect
 - CORE-SOUNDS-EN_GB-SIREN7
 - CORE-SOUNDS-EN_GB-SIREN14
 
-<b>Music On Hold File Packages:</b>
+**Music On Hold File Packages:**
 - MOH-OPSOUND-ULAW
 - MOH-OPSOUND-ALAW
 - MOH-OPSOUND-GSM
@@ -210,7 +270,7 @@ make menuselect
 - MOH-OPSOUND-SIREN7
 - MOH-OPSOUND-SIREN14
 
-<b>Extras Sound Packages:</b>
+**Extras Sound Packages:**
 - EXTRA-SOUNDS-EN_GB-WAV
 - EXTRA-SOUNDS-EN_GB-ULAW
 - EXTRA-SOUNDS-EN_GB-ALAW
