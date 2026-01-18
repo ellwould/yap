@@ -9,6 +9,10 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
+(Tested with Ubuntu version 24.04.3 and Asterisk certified version 20.7-cert8)
+
+<br>
+
 ## The user_account_type_reference :ledger: Table
 
 | user_account_type | description |
@@ -163,6 +167,62 @@ cd asterisk
 ```
 make menuselect
 ```
+
+### In menuselect enable the following options:
+
+<b>Applications:</b>
+- app_voicemail_odbc
+- app_attended_transfer
+- app_blind_transfer
+- app_statsd
+
+<b>Call Detail Recording:</b>
+- cdr_csv
+- cdr_odbc
+
+<b>PBX Modules:</b>
+- pbx_realtime
+
+<b>Resource Modules:</b>
+- res_stasis_mailbox
+- res_endpoint_stats
+- res_pjsip_history
+- res_prometheus
+
+<b>Core Sound Packages:</b>
+- CORE-SOUNDS-EN_GB-WAV
+- CORE-SOUNDS-EN_GB-ULAW
+- CORE-SOUNDS-EN_GB-ALAW
+- CORE-SOUNDS-EN_GB-GSM
+- CORE-SOUNDS-EN_GB-G729
+- CORE-SOUNDS-EN_GB-G722
+- CORE-SOUNDS-EN_GB-SLN16
+- CORE-SOUNDS-EN_GB-SIREN7
+- CORE-SOUNDS-EN_GB-SIREN14
+
+<b>Music On Hold File Packages:</b>
+- MOH-OPSOUND-ULAW
+- MOH-OPSOUND-ALAW
+- MOH-OPSOUND-GSM
+- MOH-OPSOUND-G729
+- MOH-OPSOUND-G722
+- MOH-OPSOUND-SLN16
+- MOH-OPSOUND-SIREN7
+- MOH-OPSOUND-SIREN14
+
+<b>Extras Sound Packages:</b>
+- EXTRA-SOUNDS-EN_GB-WAV
+- EXTRA-SOUNDS-EN_GB-ULAW
+- EXTRA-SOUNDS-EN_GB-ALAW
+- EXTRA-SOUNDS-EN_GB-GSM
+- EXTRA-SOUNDS-EN_GB-G729
+- EXTRA-SOUNDS-EN_GB-G722
+- EXTRA-SOUNDS-EN_GB-SLN16
+- EXTRA-SOUNDS-EN_GB-SIREN7
+- EXTRA-SOUNDS-EN_GB-SIREN14
+
+<br>
+
 ```
 ./configure
 ```
