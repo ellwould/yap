@@ -152,6 +152,11 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
+>[!NOTE]
+>For more detailed instructions on compiling and installing Asterisk please see my guide: [Compiling a Phone System (Asterisk 20.7-cert8) on Ubuntu 24.04.3](https://ellwould.medium.com/compiling-a-phone-system-asterisk-20-5-2-on-ubuntu-22-04-2-bf746b4d862c)
+
+<br>
+
 **1) Install Asterisk dependencies:**
 ```
 apt install unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite3 libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev
@@ -240,55 +245,55 @@ make menuselect
 ### In menuselect enable the following options:
 
 **Applications:**
-- app_voicemail_odbc
-- app_attended_transfer
-- app_blind_transfer
-- app_statsd
+- [x] app_voicemail_odbc
+- [x] app_attended_transfer
+- [x] app_blind_transfer
+- [x] app_statsd
 
 **Call Detail Recording:**
-- cdr_csv
-- cdr_odbc
+- [x] cdr_csv
+- [x] cdr_odbc
 
 **PBX Modules:**
-- pbx_realtime
+- [x] pbx_realtime
 
 **Resource Modules:**
-- res_stasis_mailbox
-- res_endpoint_stats
-- res_pjsip_history
-- res_prometheus
+- [x] res_stasis_mailbox
+- [x] res_endpoint_stats
+- [x] res_pjsip_history
+- [x] res_prometheus
 
 **Core Sound Packages:**
-- CORE-SOUNDS-EN_GB-WAV
-- CORE-SOUNDS-EN_GB-ULAW
-- CORE-SOUNDS-EN_GB-ALAW
-- CORE-SOUNDS-EN_GB-GSM
-- CORE-SOUNDS-EN_GB-G729
-- CORE-SOUNDS-EN_GB-G722
-- CORE-SOUNDS-EN_GB-SLN16
-- CORE-SOUNDS-EN_GB-SIREN7
-- CORE-SOUNDS-EN_GB-SIREN14
+- [x] CORE-SOUNDS-EN_GB-WAV
+- [x] CORE-SOUNDS-EN_GB-ULAW
+- [x] CORE-SOUNDS-EN_GB-ALAW
+- [x] CORE-SOUNDS-EN_GB-GSM
+- [x] CORE-SOUNDS-EN_GB-G729
+- [x] CORE-SOUNDS-EN_GB-G722
+- [x] CORE-SOUNDS-EN_GB-SLN16
+- [x] CORE-SOUNDS-EN_GB-SIREN7
+- [x] CORE-SOUNDS-EN_GB-SIREN14
 
 **Music On Hold File Packages:**
-- MOH-OPSOUND-ULAW
-- MOH-OPSOUND-ALAW
-- MOH-OPSOUND-GSM
-- MOH-OPSOUND-G729
-- MOH-OPSOUND-G722
-- MOH-OPSOUND-SLN16
-- MOH-OPSOUND-SIREN7
-- MOH-OPSOUND-SIREN14
+- [x] MOH-OPSOUND-ULAW
+- [x] MOH-OPSOUND-ALAW
+- [x] MOH-OPSOUND-GSM
+- [x] MOH-OPSOUND-G729
+- [x] MOH-OPSOUND-G722
+- [x] MOH-OPSOUND-SLN16
+- [x] MOH-OPSOUND-SIREN7
+- [x] MOH-OPSOUND-SIREN14
 
 **Extras Sound Packages:**
-- EXTRA-SOUNDS-EN_GB-WAV
-- EXTRA-SOUNDS-EN_GB-ULAW
-- EXTRA-SOUNDS-EN_GB-ALAW
-- EXTRA-SOUNDS-EN_GB-GSM
-- EXTRA-SOUNDS-EN_GB-G729
-- EXTRA-SOUNDS-EN_GB-G722
-- EXTRA-SOUNDS-EN_GB-SLN16
-- EXTRA-SOUNDS-EN_GB-SIREN7
-- EXTRA-SOUNDS-EN_GB-SIREN14
+- [x] EXTRA-SOUNDS-EN_GB-WAV
+- [x] EXTRA-SOUNDS-EN_GB-ULAW
+- [x] EXTRA-SOUNDS-EN_GB-ALAW
+- [x] EXTRA-SOUNDS-EN_GB-GSM
+- [x] EXTRA-SOUNDS-EN_GB-G729
+- [x] EXTRA-SOUNDS-EN_GB-G722
+- [x] EXTRA-SOUNDS-EN_GB-SLN16
+- [x] EXTRA-SOUNDS-EN_GB-SIREN7
+- [x] EXTRA-SOUNDS-EN_GB-SIREN14
 
 <br>
 
@@ -317,41 +322,40 @@ make install
 
 <br>
 
-```
-cd /etc/asterisk
-```
-```
-mkdir SAMPLES
-```
-```
-mv * ./SAMPLES/
-```
+**1) Create a system user named pbx with no shell for the Asterisk daemon:**
 ```
 useradd -r -s /bin/false pbx
 ```
+
+<br>
+
+**2) Lock the pbx user**
 ```
 usermod -L pbx
 ```
+
+<br>
+
+**3) Edit /etc/asterisk/asterisk.conf so Asterisk runs as the user pbx:**
 ```
-useradd -r -s /bin/false pbx-dummy
-```
-```
-useradd -L pbx-dummy
+runuser = pbx    ; The user to run as.
+rungroup = pbx   ; The group to run as.
 ```
 
-**In /etc/asterisk/asterisk.conf:**
+<br>
+
+**4) Copy the Asterisk systemd service file:**
 ```
-    runuser = pbx    ; The user to run as.
-    rungroup = pbx   ; The group to run as.
+cp /root/yap/systemd/asterisk.service /usr/lib/systemd/system/
 ```
-```
-cp /root/multi-tenant-asterisk/systemd/asterisk.service /usr/lib/systemd/system/
-```
+
+<br>
+
+**5) Reload the systemd manager configuration:**
 ```
 systemctl daemon-reload
 ```
 
-<br>
 <br>
 
 >[!TIP]
