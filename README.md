@@ -344,14 +344,35 @@ rungroup = pbx   ; The group to run as.
 
 <br>
 
-**4) Copy the Asterisk systemd service file:**
+**4) Recursively change the group and permissions for Asterisk configuration files:**
+```
+chown -R root:pbx /etc/asterisk && chmod 550 /etc/asterisk && chmod 440 /etc/asterisk/*
+```
+
+<br>
+
+**5) Recursively change the group and permissions for the Asterisk voicemail and call recording files:**
+```
+chown -R pbx:pbx /var/spool/asterisk && chmod -R 770 /var/spool/asterisk
+```
+
+<br>
+
+**6) Recursively change the group and permissions for Asterisk log files**
+```
+chown -R pbx:pbx /var/log/asterisk && chmod -R 770 /var/log/asterisk
+```
+
+<br>
+
+**7) Copy the Asterisk systemd service file:**
 ```
 cp /root/yap/systemd/asterisk.service /usr/lib/systemd/system/
 ```
 
 <br>
 
-**5) Reload the systemd manager configuration:**
+**8) Reload the systemd manager configuration:**
 ```
 systemctl daemon-reload
 ```
