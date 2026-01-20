@@ -424,18 +424,31 @@ systemctl daemon-reload
 apt install python3-mysqldb alembic
 ```
 
-**2) Copy the sample configuration file and rename it**
-```
-cp /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini.sample /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini
-```
+<br>
 
-**3) Change the working directory**
-
+**2) Change the working directory**
 ```
 cd /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage
 ```
 
-**4) Run Alembic**
+<br>
+
+**3) Copy the sample configuration file and rename it (must add username, password and other details inside the config.ini)**
+
+```
+cp config.ini.sample config.ini
+```
+
+<br>
+
+**4) Create a database name asterisk in MariaDB**
+```
+create database asterisk;
+```
+
+<br>
+
+**5) Run Alembic**
 
 ```
 alembic -c config.ini upgrade head
