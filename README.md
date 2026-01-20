@@ -417,14 +417,28 @@ systemctl daemon-reload
 
 ## Python :snake: Alembic :card_index_dividers:
 
+<br>
+
+**1) Install the Python interface for MySQL and Alembic**
 ```
 apt install python3-mysqldb alembic
 ```
+
+**2) Copy the sample configuration file and rename it**
 ```
 cp /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini.sample /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini
 ```
+
+**3) Change the working directory**
+
 ```
-alembic -c /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage/config.ini upgrade head
+cd /root/asterisk-certified-20.7-cert8/contrib/ast-db-manage
+```
+
+**4) Run Alembic**
+
+```
+alembic -c config.ini upgrade head
 ```
 
 <br>
