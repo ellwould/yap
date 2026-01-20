@@ -28,7 +28,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the user_account :bust_in_silhouette: Table
 
-| user_id | email             | first_name | last_name    | user_account_type | group_id | pbx_id | date_added | account_active |
+| id | email             | first_name | last_name    | user_account_type | group_id | pbx_id | date_added | account_active |
 |---------|-------------------|------------|--------------|-------------------|----------|--------|------------|----------------|
 | 1       | yap@ell.today     | Elliot     | Keavney      | 100               | 1        | 1      | 20/10/2025 | yes            |
 | 2       | john@example.com  | John       | not_provided | 200               | 294583   | 1      | 04/11/2025 | yes            |
@@ -39,7 +39,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the group :busts_in_silhouette: Table
 
-| group_id | group_name                    | group_site_address_id | group_invoice_address_id | date_added | group_active | note |
+| id | group_name                    | group_site_address_id | group_invoice_address_id | date_added | group_active | note |
 |----------|-------------------------------|-----------------------|--------------------------|------------|--------------|------|
 | 1        | system                        | 1                     | 1                        | 20/10/2025 | yes          | created during YAP install |
 | 294583   | (typically a company name of a VoIP reseller) | 2                     | 2                        | 04/11/2025 | yes          | no notes |
@@ -48,7 +48,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the group_site_address :closed_book: Table
 
-| group_site_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+| id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
 | 1                     | system      | system            | system            | system  | system        | system         |
 | 2                     | (typically the VoIP resellers street/road) | (typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers country) | support@example.com | +441614960000
@@ -57,7 +57,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the group_invoice_address :green_book: Table
 
-| group_invoice_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+| id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
 | 1                     | system      | system            | system            | system  | system        | system         |
 | 2                     | (typically the VoIP resellers street/road) | (typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers country) | accounts@example.com | +441514960000
@@ -66,7 +66,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the pbx :desktop_computer: Table
 
-| pbx_id | pbx_name                                | pbx_site_address_id | pbx_invoice_address_id | group_id | date_added | pbx_active |
+| id | pbx_name                                | pbx_site_address_id | pbx_invoice_address_id | group_id | date_added | pbx_active |
 |--------|-----------------------------------------------|---------------------|------------------------|----------|------------|------------|
 | 1      | system                                        | 1                   | 1                      | 1        | 20/10/2025 | yes        |
 | 100    | (typically a company that is a customer of a VoIP reseller) | 2                   | 2                      | 294583   | 02/01/2026 |  yes        |
@@ -75,7 +75,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the pbx_site_address :blue_book: Table
 
-| pbx_site_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+| id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
 | 1                     | system      | system            | system            | system  | system        | system         |
 | 2                     | (customers street/road) | (customers city/town/village) | (customers postcode/zip code) | (customers country) | sales@example.net | +441414960000
@@ -84,7 +84,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the pbx_invoice_address :orange_book: Table
 
-| pbx_invoice_address_id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
+| id | street_road | city_town_village | postcode_zip_code | country | contact_email | contact_number |
 |-----------------------|-------------|-------------------------------|-------------------|---------|---------------|----------------|
 | 1                     | system      | system            | system            | system  | system        | system         |
 | 2                     | (customers street/road) | (customers city/town/village) | (customers postcode/zip code) | (customers country) | accounts@example.net | +441414960000
