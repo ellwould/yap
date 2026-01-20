@@ -441,7 +441,7 @@ cp config.ini.sample config.ini
 
 <br>
 
-**4) Create a database name asterisk in MariaDB**
+**4) Create a database named asterisk in MariaDB**
 ```
 create database asterisk;
 ```
