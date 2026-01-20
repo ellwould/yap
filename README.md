@@ -13,9 +13,9 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## The user_account_type_reference :ledger: Table
+## The user_account_type :ledger: Table
 
-| user_account_type | description |
+| id | description |
 |-------------------|-------------|
 | 100 | A YAP admin account can create, read, update and delete all user accounts, groups and PBXs |
 | 101 | A YAP regular account can read all user accounts, groups and PBXs |
@@ -28,7 +28,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the user_account :bust_in_silhouette: Table
 
-| id | email             | first_name | last_name    | user_account_type | group_id | pbx_id | date_added | account_active |
+| id | email             | first_name | last_name    | user_account_type_id | group_id | pbx_id | date_added | account_active |
 |---------|-------------------|------------|--------------|-------------------|----------|--------|------------|----------------|
 | 1       | yap@ell.today     | Elliot     | Keavney      | 100               | 1        | 1      | 20/10/2025 | yes            |
 | 2       | john@example.com  | John       | not_provided | 200               | 294583   | 1      | 04/11/2025 | yes            |
