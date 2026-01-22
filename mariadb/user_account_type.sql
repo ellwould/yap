@@ -1,6 +1,6 @@
 CREATE TABLE `user_account_type`
 (
-  `id` INT NOT NULL,
+  `id` SMALLINT UNSIGNED NOT NULL,
   `description` VARCHAR(100) NOT NULL,
 PRIMARY KEY(`id`)
 )
