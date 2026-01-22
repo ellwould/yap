@@ -1,6 +1,6 @@
 CREATE TABLE `group_invoice_address.sql`
 (
-  `id` INT NOT NULL,
+  `id` BIGINT UNSIGNED NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
   `address_line_2` VARCHAR(75),
   `city_town_village` VARCHAR(75) NOT NULL,
