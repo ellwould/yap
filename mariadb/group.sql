@@ -1,4 +1,4 @@
-CREATE TABLE `group.sql`
+CREATE TABLE `group`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `group_name` VARCHAR(100) NOT NULL,
