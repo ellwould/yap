@@ -7,6 +7,7 @@ CREATE TABLE `pbx.sql`
   `group_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME NOT NULL,
   `pbx_active` BOOLEAN NOT NULL,
+  `note` VARCHAR(255),
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
