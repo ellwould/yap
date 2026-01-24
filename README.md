@@ -15,10 +15,10 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the group :busts_in_silhouette: Table
 
-| id | group_name                    | group_invoice_address_id | group_site_address_id | date_added | group_active | note |
-|----|-------------------------------|--------------------------|-----------------------|------------|--------------|------|
-| 1  | system                        | 1                        | 1                     | 20/10/2025 | yes          | created during YAP install |
-| 13986442703273989 | (typically a company name of a VoIP reseller) | 13986442703273989 | 13986442703273989 | 04/11/2025 | yes | not_provided |
+| id                | group_name                                    | date_added   | group_active | note                       |
+|-------------------|-----------------------------------------------|--------------|--------------|----------------------------|
+| 1                 | system                                        | 20/10/2025   | yes          | created during YAP install |
+| 13986442703273989 | (typically a company name of a VoIP reseller) | 04/11/2025   | yes          | not_provided               |
 
 <br>
 
@@ -42,10 +42,10 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the pbx :desktop_computer: Table
 
-| id  | pbx_name | pbx_invoice_address_id | pbx_site_address_id | group_id   | date_added | pbx_active | note |
-|-----|----------|------------------------|---------------------|------------|------------|------------|------|
-| 1   | system   | 1                      | 1                   | 1          | 20/10/2025 | yes        | created during YAP install |
-| 13995787344150533 | (typically a company that is a customer of a VoIP reseller) | 13995787344150533 | 13995787344150533 | 13986442703273989 | 02/01/2026 | yes | not_provided |
+| id  | pbx_name | group_id   | date_added | pbx_active | note                       |
+|-----|----------|------------|------------|------------|----------------------------|
+| 1   | system   | 1          | 20/10/2025 | yes        | created during YAP install |
+| 13995787344150533 | (typically a company that is a customer of a VoIP reseller) | 13986442703273989 | 02/01/2026 | yes | not_provided |
 
 <br>
 
