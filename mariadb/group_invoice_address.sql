@@ -1,4 +1,4 @@
-CREATE TABLE `group_invoice_address.sql`
+CREATE TABLE `group_invoice_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
