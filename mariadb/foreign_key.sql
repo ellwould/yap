@@ -36,3 +36,72 @@ ALTER TABLE `user_account`
 ADD CONSTRAINT fk___user_account___pbx
 FOREIGN KEY (`pbx_id`)
 REFERENCES `pbx` (`id`);
+
+ALTER TABLE `ps_endpoints`
+ADD COLUMN `pbx_id` BIGINT UNSIGNED NOT NULL;
+
+ALTER TABLE `ps_endpoints`
+ADD INDEX `index___ps_endpoints__pbx_id` (`pbx_id`);
+
+ALTER TABLE `ps_aors`
+ADD COLUMN `pbx_id` BIGINT UNSIGNED NOT NULL;
+
+ALTER TABLE `ps_aors`
+ADD INDEX `index___ps_aors__pbx_id` (`pbx_id`);
+
+ALTER TABLE `ps_auths`
+ADD COLUMN `pbx_id` BIGINT UNSIGNED NOT NULL;
+
+ALTER TABLE `ps_auths`
+ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
+
+ALTER TABLE `ps_endpoints`
+ADD CONSTRAINT fk___ps_endpoints___pbx
+FOREIGN KEY (`pbx_id`)
+REFERENCES `pbx` (`id`)
+ON DELETE CASCADE;
+
+ALTER TABLE `ps_aors`
+ADD CONSTRAINT fk___ps_aors___pbx
+FOREIGN KEY (`pbx_id`)
+REFERENCES `pbx` (`id`)
+ON DELETE CASCADE;
+
+ALTER TABLE `ps_auths`
+ADD CONSTRAINT fk___ps_auths___pbx
+FOREIGN KEY (`pbx_id`)
+REFERENCES `pbx` (`id`)
+ON DELETE CASCADE;
+
+ALTER TABLE `ps_endpoints`
+MODIFY COLUMN `aors` varchar(255) NOT NULL;
+
+ALTER TABLE `ps_aors`
+ADD INDEX `pbx_id` (`pbx_id`);
+
+ALTER TABLE `ps_endpoints`
+MODIFY COLUMN `auth` varchar(255) NOT NULL;
+
+ALTER TABLE ps_aors
+MODIFY COLUMN `id` varchar(255) NOT NULL;
+
+ALTER TABLE `ps_aors`
+ADD INDEX `index___ps_endpoints__aors` (`aors`);
+
+ALTER TABLE `ps_auths`
+MODIFY COLUMN `id` varchar(255) NOT NULL;
+
+ALTER TABLE `ps_auths`
+ADD INDEX `index___ps_endpoints__auth` (`auth`);
+
+ALTER TABLE `ps_aors`
+ADD CONSTRAINT fk___ps_aors___ps_endpoints
+FOREIGN KEY (`aors`)
+REFERENCES `ps_endpoints` (`id`)
+ON DELETE CASCADE;
+
+ALTER TABLE `ps_auths`
+ADD CONSTRAINT fk___ps_auths___ps_endpoints
+FOREIGN KEY (`auth`)
+REFERENCES `ps_endpoints` (`id`)
+ON DELETE CASCADE;
