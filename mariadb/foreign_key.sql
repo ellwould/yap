@@ -24,5 +24,15 @@ ON DELETE CASCADE;
 
 ALTER TABLE `user_account`
 ADD CONSTRAINT fk___user_account___user_account_type
-FOREIGN KEY (`id`)
-REFERENCES `user_account_type` (`id`)
+FOREIGN KEY (`user_account_type_id`)
+REFERENCES `user_account_type` (`id`);
+
+ALTER TABLE `user_account`
+ADD CONSTRAINT fk___user_account___group
+FOREIGN KEY (`group_id`)
+REFERENCES `group` (`id`);
+
+ALTER TABLE `user_account`
+ADD CONSTRAINT fk___user_account___pbx
+FOREIGN KEY (`pbx_id`)
+REFERENCES `pbx` (`id`);
