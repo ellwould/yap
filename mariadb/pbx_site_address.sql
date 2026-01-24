@@ -1,4 +1,4 @@
-CREATE TABLE `pbx_site_address.sql`
+CREATE TABLE `pbx_site_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
