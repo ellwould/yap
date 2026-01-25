@@ -76,9 +76,6 @@ ON DELETE CASCADE;
 ALTER TABLE `ps_endpoints`
 MODIFY COLUMN `aors` varchar(255) NOT NULL;
 
-ALTER TABLE `ps_aors`
-ADD INDEX `pbx_id` (`pbx_id`);
-
 ALTER TABLE `ps_endpoints`
 MODIFY COLUMN `auth` varchar(255) NOT NULL;
 
