@@ -14,6 +14,9 @@ PRIMARY KEY(`id`)
 ENGINE = InnoDB;
 
 ALTER TABLE `user_account`
+ADD INDEX `index___user_account__user_account_type_id` (`user_account_type_id`);
+
+ALTER TABLE `user_account`
 ADD INDEX `index___user_account__group_id` (`group_id`);
 
 ALTER TABLE `user_account`
