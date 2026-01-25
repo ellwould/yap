@@ -82,13 +82,13 @@ MODIFY COLUMN `auth` varchar(255) NOT NULL;
 ALTER TABLE ps_aors
 MODIFY COLUMN `id` varchar(255) NOT NULL;
 
-ALTER TABLE `ps_aors`
+ALTER TABLE `ps_endpoints`
 ADD INDEX `index___ps_endpoints__aors` (`aors`);
 
 ALTER TABLE `ps_auths`
 MODIFY COLUMN `id` varchar(255) NOT NULL;
 
-ALTER TABLE `ps_auths`
+ALTER TABLE `ps_endpoints`
 ADD INDEX `index___ps_endpoints__auth` (`auth`);
 
 ALTER TABLE `ps_aors`
