@@ -93,12 +93,12 @@ ADD INDEX `index___ps_endpoints__auth` (`auth`);
 
 ALTER TABLE `ps_aors`
 ADD CONSTRAINT fk___ps_aors___ps_endpoints
-FOREIGN KEY (`aors`)
+FOREIGN KEY (`id`)
 REFERENCES `ps_endpoints` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `ps_auths`
 ADD CONSTRAINT fk___ps_auths___ps_endpoints
-FOREIGN KEY (`auth`)
+FOREIGN KEY (`id`)
 REFERENCES `ps_endpoints` (`id`)
 ON DELETE CASCADE;
