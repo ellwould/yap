@@ -9,3 +9,6 @@ CREATE TABLE `pbx`
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
+
+ALTER TABLE `pbx`
+ADD INDEX `index___pbx__group_id` (`group_id`);
