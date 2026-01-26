@@ -240,7 +240,7 @@ ON DELETE CASCADE;
 
 -- Insert data to YAP tables
 
-INSERT INTO `group` (`id`, `group_name`, `date_added`, `group_active`, `note`) VALUES (1, 'system', NOW(), 1, 'created during YAP install');
+INSERT INTO `group` (`id`, `group_name`, `group_active`, `note`) VALUES (1, 'system', 1, 'created during YAP install');
 
 INSERT INTO `user_account_type` (`id`, `description`)
 VALUES
