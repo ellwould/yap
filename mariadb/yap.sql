@@ -4,7 +4,7 @@ CREATE TABLE `group`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `group_name` VARCHAR(100) NOT NULL,
-  `date_added` DATETIME NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `group_active` BOOLEAN NOT NULL,
   `note` VARCHAR(255),
 PRIMARY KEY(`id`)
@@ -46,7 +46,7 @@ CREATE TABLE `pbx`
   `id` BIGINT UNSIGNED NOT NULL,
   `pbx_name` VARCHAR(75) NOT NULL,
   `group_id` BIGINT UNSIGNED NOT NULL,
-  `date_added` DATETIME NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `pbx_active` BOOLEAN NOT NULL,
   `note` VARCHAR(255),
 PRIMARY KEY(`id`)
@@ -92,7 +92,7 @@ CREATE TABLE `user_account`
   `user_account_type_id` SMALLINT UNSIGNED NOT NULL,
   `group_id` BIGINT UNSIGNED NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
-  `date_added` DATETIME NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `account_active` BOOLEAN NOT NULL,
 PRIMARY KEY(`id`)
 )
