@@ -240,7 +240,23 @@ ON DELETE CASCADE;
 
 -- Insert data to YAP tables
 
-INSERT INTO `group` (`id`, `group_name`, `group_active`, `note`) VALUES (1, 'system', 1, 'created during YAP install');
+INSERT INTO `group` (`id`, `group_name`, `group_active`, `note`)
+VALUES (1, 'system', 1, 'created during YAP install');
+
+INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
+
+INSERT INTO `group_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
+
+INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, pbx_active `note`)
+VALUES (1, 'system', 1, 1, 'created during YAP install');
+
+INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
+
+INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
 INSERT INTO `user_account_type` (`id`, `description`)
 VALUES
