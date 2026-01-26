@@ -379,6 +379,20 @@ systemctl daemon-reload
 
 <br>
 
+**9) Make a directory for the SQLite database**
+```
+mkdir /var/lib/asterisk/database
+```
+
+<br>
+
+**10) Change the SQLite database directory permissions and group:**
+```
+chmod 570 /var/lib/asterisk/database && chgrp pbx /var/lib/asterisk/database
+```
+
+<br>
+
 >[!TIP]
 >**If a firewall :fire::bricks: is enabled, set Asterisk to automatically start :green_circle: at boot:**
 >```
