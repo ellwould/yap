@@ -15,10 +15,10 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## An Example of the group :busts_in_silhouette: Table
 
-| id                | group_name                                    | date_added   | group_active | note                       |
-|-------------------|-----------------------------------------------|--------------|--------------|----------------------------|
-| 1                 | system                                        | 20/10/2025   | yes          | created during YAP install |
-| 13986442703273989 | (typically a company name of a VoIP reseller) | 04/11/2025   | yes          | not_provided               |
+| id                | group_name                                    | date_added          | group_active | note                       |
+|-------------------|-----------------------------------------------|---------------------|--------------|----------------------------|
+| 1                 | system                                        | 20/10/2025 11:45:34 | 1          | created during YAP install |
+| 13986442703273989 | (typically a company name of a VoIP reseller) | 04/11/2025 05:51:21 | 1          | not_provided               |
 
 <br>
 
@@ -44,8 +44,8 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 | id  | pbx_name | group_id   | date_added | pbx_active | note                       |
 |-----|----------|------------|------------|------------|----------------------------|
-| 1   | system   | 1          | 20/10/2025 | yes        | created during YAP install |
-| 13995787344150533 | (typically a company that is a customer of a VoIP reseller) | 13986442703273989 | 02/01/2026 | yes | not_provided |
+| 1   | system   | 1          | 20/10/2025 03:08:23 | 1          | created during YAP install |
+| 13995787344150533 | (typically a company that is a customer of a VoIP reseller) | 13986442703273989 | 02/01/2026 09:02:13 | 1 | not_provided |
 
 <br>
 
@@ -71,10 +71,10 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 | id | email             | first_name | last_name    | user_account_type_id | group_id | pbx_id | date_added | account_active |
 |----|-------------------|------------|--------------|----------------------|----------|--------|------------|----------------|
-| 1  | yap@ell.today     | Elliot     | Keavney      | 100                  | 1        | 1      | 20/10/2025 | yes            |
-| 2  | john@example.com  | John       | not_provided | 200                  | 13986442703273989 | 1      | 04/11/2025 | yes   |
-| 3  | jane@example.net  | Jane       | not_provided | 301                  | 13986442703273989 | 13995787344150533 | 03/01/2026 | no |
-| 4  | frank@example.com | Frank      | not_provided | 201                  | 13986442703273989 | 1      | 02/01/2026 | yes   |
+| 1  | yap@ell.today     | Elliot     | Keavney      | 100                  | 1        | 1      | 20/10/2025 09:53:55 | 1            |
+| 2  | john@example.com  | John       | not_provided | 200                  | 13986442703273989 | 1      | 04/11/2025 10:23:19 | 1   |
+| 3  | jane@example.net  | Jane       | not_provided | 301                  | 13986442703273989 | 13995787344150533 | 03/01/2026 07:49:12 | 0 |
+| 4  | frank@example.com | Frank      | not_provided | 201                  | 13986442703273989 | 1      | 02/01/2026 04:42:10 | 1   |
 
 <br>
 
