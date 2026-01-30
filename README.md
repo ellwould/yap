@@ -571,6 +571,25 @@ chmod 440 /etc/mysql/mariadb.key && chgrp mysql /etc/mysql/mariadb.key
 >```
 
 <br>
+<br>
+
+## Adding the YAP self-signed CA certificate to the certificate store:
+
+<br>
+
+**1) Copy the YAP self-signed CA certificate to the certificate store:**
+```
+cp /etc/mysql/yap-ca.crt /usr/local/share/ca-certificates
+```
+
+<br>
+
+**2) Update the CA certificates**
+```
+update-ca-certificates
+```
+
+<br>
 
 ---
 
