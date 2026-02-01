@@ -10,12 +10,12 @@
     
 .wallpaper {
   animation:slide 15s ease-in-out infinite alternate;
-  background-image: linear-gradient(-45deg, #B5010F 50%, #D2666F 25%);
+  background-image: linear-gradient(-45deg, #B5010F 50vh, #D2666F 25vh);
   bottom:0;
-  left:-50%;
+  left:-50vh;
   opacity:.5;
   position:fixed;
-  right:-50%;
+  right:-50vh;
   top:0;
   z-index:-1;
 }
@@ -30,11 +30,11 @@
 }
 
 @keyframes slide {
-  0% {
-    transform:translateX(-25%);
+  from {
+    transform:translateX(-50vh);
   }
-  100% {
-    transform:translateX(25%);
+  to {
+    transform:translateX(50vh);
   }
 }
 
