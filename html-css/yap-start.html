@@ -87,43 +87,6 @@ body {
        0 0 50px #B5010F;
        }
   }
-	  
-/* Flip Title CSS Start */
-    
-  .flip-card {
-    background-color: transparent;
-    width: 500px;
-    height: 150px;
-    perspective: 1000px;
-  }
-
-  .flip-card-inner {
-    position: relative;
-    width: auto;
-    height: auto;
-    transition: transform 1s;
-    transform-style: preserve-3d;
-  }
-
-  .flip-card:hover .flip-card-inner {
-    transform: rotateY(180deg);
-  }
-
-  .flip-card-front, .flip-card-back {
-    position: absolute;
-    width: 500px;
-    height: 150px;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-  }
-
-  .flip-card-front {}
-
-  .flip-card-back {
-    transform: rotateY(180deg);
-  }
-
-/* Flip Title CSS End */
     
 table, th, td {
   font-size: 20px;
@@ -249,21 +212,7 @@ select {
 
 <br>
 <div class="container">
-  <div class="flip-card">
-    <div class="flip-card-inner">
-      <div class="flip-card-front">
-        <h2>YAP (Yet Another PBX)<br></h2>
-      </div>
-      <div class="flip-card-back">
-        <table>
-	      <tr>
-		    <th><a href="https://ell.today" class="tableButton">Written by Elliot Keavney (Website)</a></th>
-		  </tr>
-		  <tr>
-			<th><a href="https://github.com/ellwould/yap" class="tableButton">YAP Source Code (GitHub)</a></th>
-		  </tr>
-        </table>
-      </div>
-    </div>
-  </div>
+  <h2>YAP (Yet Another PBX)<br></h2>
+  <a href="https://ell.today" class="tableButton">Written by Elliot Keavney (Website)</a>
+  <a href="https://github.com/ellwould/yap" class="tableButton">YAP Source Code (GitHub)</a>
 </div>
