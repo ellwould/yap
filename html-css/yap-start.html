@@ -6,6 +6,40 @@
   <title>YAP (Yet Another PBX)</title>
   <style>
 
+/* CSS Wallpaper Start */
+    
+.wallpaper {
+  animation:slide 15s ease-in-out infinite alternate;
+  background-image: linear-gradient(-45deg, #B5010F 50%, #D2666F 25%);
+  bottom:0;
+  left:-50%;
+  opacity:.5;
+  position:fixed;
+  right:-50%;
+  top:0;
+  z-index:-1;
+}
+
+.wallpaper2 {
+  animation-direction:alternate-reverse;
+  animation-duration:20s;
+}
+
+.wallpaper3 {
+  animation-duration:25s;
+}
+
+@keyframes slide {
+  0% {
+    transform:translateX(-25%);
+  }
+  100% {
+    transform:translateX(25%);
+  }
+}
+
+/* CSS Wallpaper End */
+
 body {
   background-color: #D2666F;
   width: auto;
@@ -137,3 +171,7 @@ select {
   </style>
 </head>
 <body>
+
+<div class="wallpaper"></div>
+<div class="wallpaper wallpaper2"></div>
+<div class="wallpaper wallpaper3"></div>
