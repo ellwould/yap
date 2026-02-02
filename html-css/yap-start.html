@@ -41,51 +41,72 @@
 /* CSS Wallpaper End */
 
 body {
-    width: auto;
-    height: auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: auto;
-    margin-bottom: auto;
-    text-align: center;
-    -ms-overflow-style: none;
-    overflow-y: none;
-    overflow-w: none;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  }
+  width: auto;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: center;
+  -ms-overflow-style: none;
+  overflow-y: none;
+  overflow-w: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 
-.container{
-    width: 100vw;
-    height: 100vh;
-    text-align:center;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    position: absolute;
-    top: 50vh;
-    left: 50vh;
-    transform: translate(-50vh, -50vh);
-  }
+.header{
+  top: 0;
+  left: 20vw;
+  right: 20vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+}
 
-  h1, h2{
-    font-size: 2em;
-    font-family: sans-serif;
-    color: #f0f0f0;
-    background-color: #B5010F;
-    text-shadow: -1px 0 #B5010F, 0 1px #B5010F, 1px 0 #B5010F, 0 -1px #B5010F;
-    border-radius: 5px;
-    border: 7.5px outset #f0f0f0;
-    padding: 20px;
-    opacity: .7;
-    /* Title Light Shadow */
-    animation: TitleLightMove 5s infinite;
-  }
+.headerButton {
+  width: 100px;
+}
+  
+.footer {
+  bottom: 0;
+  left: 20vw;
+  right: 20vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+}
+
+.footerButton {
+  width: 170px;
+}
+  
+h1, h2{
+  font-size: 2em;
+  font-family: sans-serif;
+  color: #F0F0F0;
+  background-color: #B5010F;
+  text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;
+  border-radius: 5px;
+  border: 7.5px outset #f0f0f0;
+  padding-top: 15px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+  padding-left: 15px;
+  opacity: .7;
+  /* Title Light Shadow */
+  animation: TitleLightMove 5s infinite;
+}
   @keyframes TitleLightMove {
     50% {box-shadow:
        0 0 50px #B5010F;
-       }
+    }
   }
     
 table, th, td {
@@ -171,34 +192,67 @@ select {
   text-align: center;
 }
 
-.tableButton {
+.generalButton {
   font: bold 20px sans-serif;
   text-decoration: none;
   background-color: #B5010F;
-  color: #FFFFFF;
-  padding: 2px 6px 2px 6px;
+  color: #F0F0F0;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;  
+  padding: 10px 10px 10px 10px;
   border: 5px outset #B5010F;
   border-radius: 5px;
   display: inline-block;
 }
 
-.tableButton:hover {
+.generalButton:hover {
   background-color: #B5010F;
-  color: #FFFFFF;
+  color: #F0F0F0;
   border: 5px inset #B5010F;
 }
 
-.externalButton {
-  width: 410px;
+.logoutButton {
+  background-color: #D2666F;
+  border: 5px outset #D2666F;
+}
+
+.logoutButton:hover {
+  background-color: #D2666F;
+  color: #F0F0F0;
+  border: 5px inset #D2666F;
+}
+
+.homeButton {
+  background-color: #32CD32;
+  border: 5px outset #32CD32;
+}
+
+.homeButton:hover {
+  background-color: #32CD32;
+  color: #F0F0F0;
+  border: 5px inset #32CD32;
+}
+
+.LicenseButton {
+  background-color: #4169E1;
+  border: 5px outset #4169E1;
+}
+
+.LicenseButton:hover {
+  background-color: #4169E1;
+  color: #F0F0F0;
+  border: 5px inset #4169E1;
 }
 
 .line {
   height: 10px;
   background-color: #B5010F;
-  border-top: solid #FFFFFF;
-  border-bottom: solid #FFFFFF;
-  border-left: solid #FFFFFF;
-  border-right: solid #FFFFFF;
+  border-top: solid #F0F0F0;
+  border-bottom: solid #F0F0F0;
+  border-left: solid #F0F0F0;
+  border-right: solid #F0F0F0;
   border-radius: 2px;
 }
 
@@ -211,8 +265,12 @@ select {
 <div class="wallpaper wallpaper3"></div>
 
 <br>
-<div class="container">
-  <h2>YAP (Yet Another PBX)<br></h2>
-  <a href="https://ell.today" class="tableButton">Written by Elliot Keavney (Website)</a>
-  <a href="https://github.com/ellwould/yap" class="tableButton">YAP Source Code (GitHub)</a>
+<div class="header">
+  <h1>
+  <a href="/oauth2/sign_out?rd=https://github.com/logout" class="generalButton headerButton logoutButton">Logout</a>
+  <a href="/" class="generalButton headerButton homeButton">Home</a>
+  <a href="https://github.com/ellwould/yap/blob/main/LICENSE" class="generalButton headerButton LicenseButton">License</a>
+  <br>
+  ✱ YAP (Yet Another PBX) ✱
+  </h1>
 </div>
