@@ -101,6 +101,7 @@ ENGINE = InnoDB;
 CREATE TABLE `user_account_type`
 (
   `id` SMALLINT UNSIGNED NOT NULL,
+  `type` VARCHAR(20) NOT NULL,
   `description` VARCHAR(100) NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -258,11 +259,11 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `user_account_type` (`id`, `description`)
+INSERT INTO `user_account_type` (`id`, `type`, `description`)
 VALUES
-(100, 'A YAP admin account can create, read, update and delete all user accounts, groups and PBXs'),
-(101, 'A YAP regular account can read all user accounts, groups and PBXs'),
-(200, 'A group admin can read and update thier own PBX(s) and group'),
-(201, 'A group regular account can read thier own PBX(s) and group'),
-(300, 'A PBX admin account can read and update thier own PBX'),
-(301, 'A PBX regular account can read thier own PBX');
+(100, 'YAP Admin (100)', 'A YAP admin account can create, read, update and delete all user accounts, groups and PBXs'),
+(101, 'YAP Regular (101)', 'A YAP regular account can read all user accounts, groups and PBXs'),
+(200, 'Group Admin (200)', 'A group admin can read and update thier own PBX(s) and group'),
+(201, 'Group Regular (201)', 'A group regular account can read thier own PBX(s) and group'),
+(300, 'PBX Admin (300)', 'A PBX admin account can read and update thier own PBX'),
+(301, 'PBX Regular (301)', 'A PBX regular account can read thier own PBX');
