@@ -239,6 +239,71 @@ ON DELETE CASCADE;
 
 ----------------------------------------------------------------------------------------------------
 
+-- Create View(s)
+
+CREATE VIEW `view___account_detail` AS
+SELECT
+  `user_account`.`user_account_type_id`,
+  `user_account`.`first_name` AS 'user_account_first_name',
+  `user_account`.`last_name` AS 'user_account_last_name',
+  `user_account`.`email` AS 'user_account_email',
+  `user_account_type`.`type` AS 'user_account_type',
+  `user_account`.`date_added` AS 'user_account_date_added',
+  `group`.`group_name`,
+  `user_account`.`group_id`,
+  `pbx`.`pbx_name`,
+  `user_account`.`pbx_id`,
+  `user_account_type`.`description` AS 'user_account_type_description',
+  `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
+  `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
+  `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
+  `group_site_address`.`postcode_zip_code` AS 'group_site_postcode_zip_code',
+  `group_site_address`.`county_state_region` AS 'group_site_county_state_region',
+  `group_site_address`.`country` AS 'group_site_country',
+  `group_site_address`.`contact_email` AS 'group_site_contact_email',
+  `group_site_address`.`contact_number` AS 'group_site_contact_number',
+  `group_invoice_address`.`address_line_1` AS 'group_invoice_address_line_1',
+  `group_invoice_address`.`address_line_2` AS 'group_invoice_address_line_2',
+  `group_invoice_address`.`city_town_village` AS 'group_invoice_city_town_village',
+  `group_invoice_address`.`postcode_zip_code` AS 'group_invoice_postcode_zip_code',
+  `group_invoice_address`.`county_state_region` AS 'group_invoice_county_state_region',
+  `group_invoice_address`.`country` AS 'group_invoice_country',
+  `group_invoice_address`.`contact_email` AS 'group_invoice_contact_email',
+  `group_invoice_address`.`contact_number` AS 'group_invoice_contact_number',
+  `pbx_site_address`.`address_line_1` AS 'pbx_site_address_line_1',
+  `pbx_site_address`.`address_line_2` AS 'pbx_site_address_line_2',
+  `pbx_site_address`.`city_town_village` AS 'pbx_site_city_town_village',
+  `pbx_site_address`.`postcode_zip_code` AS 'pbx_site_postcode_zip_code',
+  `pbx_site_address`.`county_state_region` AS 'pbx_site_county_state_region',
+  `pbx_site_address`.`country` AS 'pbx_site_country',
+  `pbx_site_address`.`contact_email` AS 'pbx_site_contact_email',
+  `pbx_site_address`.`contact_number` AS 'pbx_site_contact_number',
+  `pbx_invoice_address`.`address_line_1` AS 'pbx_invoice_address_line_1',
+  `pbx_invoice_address`.`address_line_2` AS 'pbx_invoice_address_line_2',
+  `pbx_invoice_address`.`city_town_village` AS 'pbx_invoice_city_town_village',
+  `pbx_invoice_address`.`postcode_zip_code` AS 'pbx_invoice_postcode_zip_code',
+  `pbx_invoice_address`.`county_state_region` AS 'pbx_invoice_county_state_region',
+  `pbx_invoice_address`.`country` AS 'pbx_invoice_country',
+  `pbx_invoice_address`.`contact_email` AS 'pbx_invoice_contact_email',
+  `pbx_invoice_address`.`contact_number` AS 'pbx_invoice_contact_number'
+FROM `user_account`
+INNER JOIN `user_account_type`
+ON `user_account`.`user_account_type_id` = `user_account_type`.`id`
+INNER JOIN `group`
+ON `user_account`.`group_id` = `group`.`id`
+INNER JOIN `pbx`
+ON `user_account`.`pbx_id` = `pbx`.`id`
+INNER JOIN `group_site_address`
+ON `user_account`.`group_id` = `group_site_address`.`id`
+INNER JOIN `group_invoice_address`
+ON `user_account`.`group_id` = `group_invoice_address`.`id`
+INNER JOIN `pbx_site_address`
+ON `user_account`.`pbx_id` = `pbx_site_address`.`id`
+INNER JOIN `pbx_invoice_address`
+ON `user_account`.`pbx_id` = `pbx_invoice_address`.`id`;
+
+----------------------------------------------------------------------------------------------------
+
 -- Insert data to YAP tables
 
 INSERT INTO `group` (`id`, `group_name`, `group_active`, `note`)
