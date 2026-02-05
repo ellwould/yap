@@ -262,8 +262,8 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 INSERT INTO `user_account_type` (`id`, `type`, `description`)
 VALUES
 (100, 'YAP Admin (100)', 'A YAP admin account can create, read, update and delete all user accounts, groups and PBXs'),
-(101, 'YAP Regular (101)', 'A YAP regular account can read all user accounts, groups and PBXs'),
+(101, 'YAP Read Only (101)', 'A YAP regular account can read all user accounts, groups and PBXs'),
 (200, 'Group Admin (200)', 'A group admin can read and update thier own PBX(s) and group'),
-(201, 'Group Regular (201)', 'A group regular account can read thier own PBX(s) and group'),
+(201, 'Group Read Only (201)', 'A group regular account can read thier own PBX(s) and group'),
 (300, 'PBX Admin (300)', 'A PBX admin account can read and update thier own PBX'),
-(301, 'PBX Regular (301)', 'A PBX regular account can read thier own PBX');
+(301, 'PBX Read Only (301)', 'A PBX regular account can read thier own PBX');
