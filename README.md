@@ -80,14 +80,14 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 ## The user_account_type :ledger: Table
 
-| id  | description                                                                                |
-|-----|--------------------------------------------------------------------------------------------|
-| 100 | A YAP admin account can create, read, update and delete all user accounts, groups and PBXs |
-| 101 | A YAP regular account can read all user accounts, groups and PBXs                          |
-| 200 | A group admin can read and update thier own PBX(s) and group                               |
-| 201 | A group regular account can read thier own PBX(s) and group                                |
-| 300 | A PBX admin account can read and update thier own PBX                                      |
-| 301 | A PBX regular account can read thier own PBX                                               |
+| id  | type                | description |
+|-----|---------------------|----------------------------------------------------------------------|
+| 100 | YAP Admin (100)     | A YAP admin account can create, read, update and delete all user accounts, groups and PBXs |
+| 101 | YAP Regular (101)   | A YAP regular account can read all user accounts, groups and PBXs    |
+| 200 | Group Admin (200)   | A group admin can read and update thier own PBX(s) and group         |
+| 201 | Group Regular (201) | A group regular account can read thier own PBX(s) and group          |
+| 300 | PBX Admin (300)     | A PBX admin account can read and update thier own PBX                |
+| 301 | PBX Regular (301)   | A PBX regular account can read thier own PBX                         |
 
 <br>
 
