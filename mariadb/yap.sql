@@ -181,15 +181,15 @@ REFERENCES `group` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `pbx_invoice_address`
-ADD CONSTRAINT fk___pbx_invoice_address___group
+ADD CONSTRAINT fk___pbx_invoice_address___pbx
 FOREIGN KEY (`id`)
-REFERENCES `group` (`id`)
+REFERENCES `pbx` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `pbx_site_address`
-ADD CONSTRAINT fk___pbx_site_address___group
+ADD CONSTRAINT fk___pbx_site_address___pbx
 FOREIGN KEY (`id`)
-REFERENCES `group` (`id`)
+REFERENCES `pbx` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `user_account`
