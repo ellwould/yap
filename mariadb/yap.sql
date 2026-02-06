@@ -6,7 +6,7 @@ CREATE TABLE `group`
   `group_name` VARCHAR(100) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `group_active` BOOLEAN NOT NULL,
-  `note` VARCHAR(255),
+  `note` VARCHAR(255) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -15,13 +15,13 @@ CREATE TABLE `group_invoice_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75),
+  `address_line_2` VARCHAR(75) NOT NULL,
   `city_town_village` VARCHAR(75) NOT NULL,
-  `postcode_zip_code` VARCHAR(7),
-  `county_state_region` VARCHAR(75),
+  `county_state_region` VARCHAR(75) NOT NULL,
+  `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(75) NOT NULL,
-  `contact_email` VARCHAR(255),
-  `contact_number` VARCHAR(16),
+  `contact_email` VARCHAR(255) NOT NULL,
+  `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -30,13 +30,13 @@ CREATE TABLE `group_site_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75),
+  `address_line_2` VARCHAR(75) NOT NULL,
   `city_town_village` VARCHAR(75) NOT NULL,
-  `postcode_zip_code` VARCHAR(7),
-  `county_state_region` VARCHAR(75),
+  `county_state_region` VARCHAR(75) NOT NULL,
+  `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(75) NOT NULL,
-  `contact_email` VARCHAR(255),
-  `contact_number` VARCHAR(16),
+  `contact_email` VARCHAR(255) NOT NULL,
+  `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -48,7 +48,7 @@ CREATE TABLE `pbx`
   `group_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `pbx_active` BOOLEAN NOT NULL,
-  `note` VARCHAR(255),
+  `note` VARCHAR(255) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -57,13 +57,13 @@ CREATE TABLE `pbx_invoice_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75),
+  `address_line_2` VARCHAR(75) NOT NULL,
   `city_town_village` VARCHAR(75) NOT NULL,
-  `postcode_zip_code` VARCHAR(7),
-  `county_state_region` VARCHAR(75),
+  `county_state_region` VARCHAR(75) NOT NULL,
+  `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(75) NOT NULL,
-  `contact_email` VARCHAR(255),
-  `contact_number` VARCHAR(16),
+  `contact_email` VARCHAR(255) NOT NULL,
+  `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -72,13 +72,13 @@ CREATE TABLE `pbx_site_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75),
+  `address_line_2` VARCHAR(75) NOT NULL,
   `city_town_village` VARCHAR(75) NOT NULL,
-  `postcode_zip_code` VARCHAR(7),
-  `county_state_region` VARCHAR(75),
+  `county_state_region` VARCHAR(75) NOT NULL,
+  `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(75) NOT NULL,
-  `contact_email` VARCHAR(255),
-  `contact_number` VARCHAR(16),
+  `contact_email` VARCHAR(255) NOT NULL,
+  `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -257,32 +257,32 @@ SELECT
   `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
   `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
   `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
-  `group_site_address`.`postcode_zip_code` AS 'group_site_postcode_zip_code',
   `group_site_address`.`county_state_region` AS 'group_site_county_state_region',
+  `group_site_address`.`postcode_zip_code` AS 'group_site_postcode_zip_code',
   `group_site_address`.`country` AS 'group_site_country',
   `group_site_address`.`contact_email` AS 'group_site_contact_email',
   `group_site_address`.`contact_number` AS 'group_site_contact_number',
   `group_invoice_address`.`address_line_1` AS 'group_invoice_address_line_1',
   `group_invoice_address`.`address_line_2` AS 'group_invoice_address_line_2',
   `group_invoice_address`.`city_town_village` AS 'group_invoice_city_town_village',
-  `group_invoice_address`.`postcode_zip_code` AS 'group_invoice_postcode_zip_code',
   `group_invoice_address`.`county_state_region` AS 'group_invoice_county_state_region',
+  `group_invoice_address`.`postcode_zip_code` AS 'group_invoice_postcode_zip_code',
   `group_invoice_address`.`country` AS 'group_invoice_country',
   `group_invoice_address`.`contact_email` AS 'group_invoice_contact_email',
   `group_invoice_address`.`contact_number` AS 'group_invoice_contact_number',
   `pbx_site_address`.`address_line_1` AS 'pbx_site_address_line_1',
   `pbx_site_address`.`address_line_2` AS 'pbx_site_address_line_2',
   `pbx_site_address`.`city_town_village` AS 'pbx_site_city_town_village',
-  `pbx_site_address`.`postcode_zip_code` AS 'pbx_site_postcode_zip_code',
   `pbx_site_address`.`county_state_region` AS 'pbx_site_county_state_region',
+  `pbx_site_address`.`postcode_zip_code` AS 'pbx_site_postcode_zip_code',
   `pbx_site_address`.`country` AS 'pbx_site_country',
   `pbx_site_address`.`contact_email` AS 'pbx_site_contact_email',
   `pbx_site_address`.`contact_number` AS 'pbx_site_contact_number',
   `pbx_invoice_address`.`address_line_1` AS 'pbx_invoice_address_line_1',
   `pbx_invoice_address`.`address_line_2` AS 'pbx_invoice_address_line_2',
   `pbx_invoice_address`.`city_town_village` AS 'pbx_invoice_city_town_village',
-  `pbx_invoice_address`.`postcode_zip_code` AS 'pbx_invoice_postcode_zip_code',
   `pbx_invoice_address`.`county_state_region` AS 'pbx_invoice_county_state_region',
+  `pbx_invoice_address`.`postcode_zip_code` AS 'pbx_invoice_postcode_zip_code',
   `pbx_invoice_address`.`country` AS 'pbx_invoice_country',
   `pbx_invoice_address`.`contact_email` AS 'pbx_invoice_contact_email',
   `pbx_invoice_address`.`contact_number` AS 'pbx_invoice_contact_number'
