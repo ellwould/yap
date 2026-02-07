@@ -530,7 +530,9 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = (FQDN)
+DNS.1 = localhost
+DNS.2 = 127.0.0.1
+DNS.3 = (FQDN)
 ```
 
 <br>
