@@ -61,7 +61,7 @@ body {
   position: relative;
 }
 
-.headerButton {
+.header-button {
   width: 100px;
 }
   
@@ -73,8 +73,20 @@ body {
   position: relative;
 }
 
-.footerButton {
+.footer-button {
   width: 170px;
+}
+
+.main-menu{
+  display: grid;
+  gap: 1rem;
+  grid-auto-flow: column;
+  justify-content: center;
+}
+
+.main-menu-button {
+  width: 120px;
+  height: 120px;
 }
   
 h1, h2, h3 {
@@ -123,8 +135,12 @@ div {
   margin-bottom: auto;
   width: auto;
   height: auto;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
-    
+
 input[type=text], select {
   padding: 8px;
   width: 300px;
@@ -177,7 +193,7 @@ select {
   text-align: center;
 }
 
-.generalButton {
+.general-button {
   font: bold 20px sans-serif;
   text-decoration: none;
   background-color: #B5010F;
@@ -193,40 +209,40 @@ select {
   display: inline-block;
 }
 
-.generalButton:hover {
+.general-button:hover {
   background-color: #B5010F;
   color: #F0F0F0;
   border: 5px inset #B5010F;
 }
 
-.logoutButton {
+.logout-button {
   background-color: #D2666F;
   border: 5px outset #D2666F;
 }
 
-.logoutButton:hover {
+.logout-button:hover {
   background-color: #D2666F;
   color: #F0F0F0;
   border: 5px inset #D2666F;
 }
 
-.homeButton {
+.home-button {
   background-color: #32CD32;
   border: 5px outset #32CD32;
 }
 
-.homeButton:hover {
+.home-button:hover {
   background-color: #32CD32;
   color: #F0F0F0;
   border: 5px inset #32CD32;
 }
 
-.LicenseButton {
+.license-button {
   background-color: #4169E1;
   border: 5px outset #4169E1;
 }
 
-.LicenseButton:hover {
+.license-button:hover {
   background-color: #4169E1;
   color: #F0F0F0;
   border: 5px inset #4169E1;
@@ -242,7 +258,17 @@ select {
   border-radius: 2px;
 }
 
-  </style>
+.error-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;  
+  top: 35vh;
+  bottom: 35vh;
+}
+
+</style>
 </head>
 <body>
 <div class="wallpaper"></div>
