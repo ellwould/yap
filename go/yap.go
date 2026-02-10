@@ -47,13 +47,24 @@ func emailHeaderHTTP(r *http.Request) (email string) {
 	return email
 }
 
+// Function for error message
+func errorBox(w http.ResponseWriter) {
+	fmt.Fprintf(w, "<div class=\"error-box\">")
+	fmt.Fprintf(w, "  <h1>")
+	fmt.Fprintf(w, "    User Account Not Found")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"general-button header-button logout-button\">Logout</a>")
+	fmt.Fprintf(w, "  </h1>")
+	fmt.Fprintf(w, "</div>")
+}
+
 // Function for the header
 func header(w http.ResponseWriter) {
 	fmt.Fprintf(w, "<div class=\"header\">")
 	fmt.Fprintf(w, "  <h1>")
-	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"generalButton headerButton logoutButton\">Logout</a>")
-	fmt.Fprintf(w, "    <a href=\"/\" class=\"generalButton headerButton homeButton\">Home</a>")
-	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap/blob/main/LICENSE\" class=\"generalButton headerButton LicenseButton\">License</a>")
+	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"general-button header-button logout-button\">Logout</a>")
+	fmt.Fprintf(w, "    <a href=\"/\" class=\"general-button header-button home-button\">Home</a>")
+	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap/blob/main/LICENSE\" target=\"_blank\" class=\"general-button header-button license-button\">License</a>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    ✱ YAP (Yet Another PBX) ✱")
 	fmt.Fprintf(w, "  </h1>")
@@ -64,13 +75,13 @@ func header(w http.ResponseWriter) {
 func footer(w http.ResponseWriter) {
 	fmt.Fprintf(w, "<div class=\"footer\">")
 	fmt.Fprintf(w, "  <h2>")
-	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap\" class=\"generalButton footerButton\">YAP Source Code</a>")
-	fmt.Fprintf(w, "    <a href=\"https://ell.today\" class=\"generalButton footerButton\">Other Software</a>")
+	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap\" target=\"_blank\" class=\"general-button footer-button\">YAP Source Code</a>")
+	fmt.Fprintf(w, "    <a href=\"https://ell.today\" target=\"_blank\" class=\"general-button footer-button\">Other Software</a>")
 	fmt.Fprintf(w, "  </h2>")
 	fmt.Fprintf(w, "</div>")
 }
 
-func selectWhere(dbConnection *sql.DB, w http.ResponseWriter, dbName string, tableName string, column string, columnWhere string, value string) string {
+func selectWhere(dbConnection *sql.DB, dbName string, tableName string, column string, columnWhere string, value string) string {
 	var selectWhere string
 	selectWhereQuery, err := dbConnection.Query("SELECT "+column+" FROM "+dbName+"."+tableName+" WHERE "+columnWhere+" = ?;", value)
 	if err != nil {
@@ -132,6 +143,11 @@ func totalTableCountWhere(dbConnection *sql.DB, w http.ResponseWriter, dbName st
 		}
 	}
 	return count
+}
+
+func userAccountTypeId(dbConnection *sql.DB, dbName string, email string) string {
+
+	return selectWhere(dbConnection, dbName, "view___account_detail", "user_account_type_id", "user_account_email", email)
 }
 
 func yapAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, email string) {
@@ -411,7 +427,7 @@ func pbxAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 
 func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, email string) {
 
-	userAccountTypeId := selectWhere(dbConnection, w, dbName, "view___account_detail", "user_account_type_id", "user_account_email", email)
+	userTypeId := userAccountTypeId(dbConnection, dbName, email)
 	result, err := dbConnection.Query(`SELECT
 					     user_account_type_id,
 					     user_account_first_name,
@@ -475,7 +491,7 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th><button onclick=\"toggleAccountDetail() \"class=\"generalButton\">Show / Hide More Account Details</button></th>")
+		fmt.Fprintf(w, "    <th><button onclick=\"toggleAccountDetail() \"class=\"general-button\">&nbsp Show / Hide More Account Details &nbsp</button></th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		//Account detail tables
@@ -492,11 +508,11 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 		fmt.Fprintf(w, "</table>")
 	}
 	fmt.Fprintf(w, "<br>")
-	if userAccountTypeId == "100" || userAccountTypeId == "101" {
+	if userTypeId == "100" || userTypeId == "101" {
 		yapAccount(dbConnection, w, dbName, email)
-	} else if userAccountTypeId == "200" || userAccountTypeId == "201" {
+	} else if userTypeId == "200" || userTypeId == "201" {
 		groupAccount(dbConnection, w, dbName, email)
-	} else if userAccountTypeId == "300" || userAccountTypeId == "301" {
+	} else if userTypeId == "300" || userTypeId == "301" {
 		pbxAccount(dbConnection, w, dbName, email)
 	} else {
 	}
@@ -512,6 +528,14 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 	fmt.Fprintf(w, "  }")
 	fmt.Fprintf(w, "}")
 	fmt.Fprintf(w, "</script>")
+}
+
+func mainMenuButton(w http.ResponseWriter, buttonName string, hyperlink string) {
+	fmt.Fprintf(w, "&nbsp")
+	fmt.Fprintf(w, "<h2>")
+	fmt.Fprintf(w, "  <a href=\""+hyperlink+"\" class=\"general-button main-menu-button\"><p>"+buttonName+"</p></a>")
+	fmt.Fprintf(w, "</h2>")
+	fmt.Fprintf(w, "&nbsp")
 }
 
 func main() {
@@ -571,6 +595,7 @@ func main() {
 	startHTML := csvcell.FileData(dirHTML, fileStartHTML)
 	endHTML := csvcell.FileData(dirHTML, fileEndHTML)
 
+	// Home Page
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
@@ -583,13 +608,52 @@ func main() {
 		}
 
 		fmt.Fprintf(w, startHTML)
-		header(w)
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
-		userInfomation(dbConnection, w, dbName, email)
-		footer(w)
+		userTypeId := userAccountTypeId(dbConnection, dbName, email)
+		if userTypeId == "100" || userTypeId == "101" {
+			header(w)
+			userInfomation(dbConnection, w, dbName, email)
+			fmt.Fprintf(w, "<br>")
+			fmt.Fprintf(w, "<div class=\"main-menu\">")
+			mainMenuButton(w, "All User<br>Accounts<br>&#128100", "/all-user-accounts")
+			mainMenuButton(w, "All<br>Groups<br>&#128101", "/all-groups")
+			mainMenuButton(w, "All Phone<br>PBXs<br>&#128222", "/all-pbxs")
+			fmt.Fprintf(w, "</div>")
+			footer(w)
+		} else if userTypeId == "200" || userTypeId == "201" {
+			header(w)
+			userInfomation(dbConnection, w, dbName, email)
+			fmt.Fprintf(w, "<div class=\"main-menu\">")
+			mainMenuButton(w, "Edit<br>Group", "/group")
+			mainMenuButton(w, "All<br>PBXs", "/all-pbxs")
+			mainMenuButton(w, "", "")
+			fmt.Fprintf(w, "</div>")
+			footer(w)
+		} else if userTypeId == "300" || userTypeId == "301" {
+			header(w)
+			userInfomation(dbConnection, w, dbName, email)
+			fmt.Fprintf(w, "<br>")
+			fmt.Fprintf(w, "<div class=\"main-menu\">")
+			mainMenuButton(w, "", "")
+			mainMenuButton(w, "", "")
+			mainMenuButton(w, "", "")
+			fmt.Fprintf(w, "</div>")
+			footer(w)
+		} else {
+			errorBox(w)
+		}
 		fmt.Fprintf(w, endHTML)
 
+	})
+
+	// User Accounts Page
+	http.HandleFunc("/user-accounts", func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Fprintf(w, startHTML)
+		header(w)
+		footer(w)
+		fmt.Fprintf(w, endHTML)
 	})
 
 	yapPort := os.Getenv("yapPort")
