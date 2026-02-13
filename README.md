@@ -1,6 +1,6 @@
-![image](https://github.com/ellwould/yap/blob/main/yap_logo.jpeg)
+![image](https://github.com/ellwould/yap/blob/main/image/yap_logo.jpeg)
 
-![image](https://github.com/ellwould/yap/blob/main/yap_software.jpeg)
+![image](https://github.com/ellwould/yap/blob/main/image/yap_software.jpeg)
 
 <br>
 
