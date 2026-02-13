@@ -13,6 +13,20 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
+## Main Menu (logged in as a YAP Admin):
+
+<br>
+
+![image](https://github.com/ellwould/yap/blob/main/image/main_menu_yap_admin_1.jpeg)
+
+<br>
+
+**Show/hide more account details button pressed:**
+
+![image](https://github.com/ellwould/yap/blob/main/image/main_menu_yap_admin_2.jpeg)
+
+<br>
+
 ## An Example of the group :busts_in_silhouette: Table
 
 | id                | group_name                                    | date_added          | group_active | note                       |
