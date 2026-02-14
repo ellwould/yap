@@ -102,7 +102,7 @@ CREATE TABLE `user_account_type`
 (
   `id` SMALLINT UNSIGNED NOT NULL,
   `type` VARCHAR(20) NOT NULL,
-  `permission` VARCHAR(100) NOT NULL,
+  `permission` VARCHAR(4100) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -326,9 +326,863 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 
 INSERT INTO `user_account_type` (`id`, `type`, `permission`)
 VALUES
-(100, 'YAP Admin (100)', 'A YAP admin account can create, read, update and delete all user accounts, groups and PBXs'),
-(101, 'YAP Read Only (101)', 'A YAP read only account can read all user accounts, groups and PBXs'),
-(200, 'Group Admin (200)', 'A group admin can read and update thier own PBX(s) and group'),
-(201, 'Group Read Only (201)', 'A group read only account can read thier own PBX(s) and group'),
-(300, 'PBX Admin (300)', 'A PBX admin account can read and update thier own PBX'),
-(301, 'PBX Read Only (301)', 'A PBX read only account can read thier own PBX');
+(100, 'YAP Admin (100)',
+'<table>
+  <tr>
+    <td>
+      <b>Key:</b><br>
+      &#9989 = Allowed<br>
+      &#10060 = Prohibited<br>
+      &#9940 = Not Applicable<br>
+    </td>
+    <td>
+      &#9989 View Own User Account<br>
+      &#9989 Update Own User Account<br>
+      &#9989 Delete Own User Account<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a YAP Admin (100) User Account<br>
+      &#9989 View a YAP Admin (100) User Account<br>
+      &#9989 Update a YAP Admin (100) User Account<br>
+      &#10060 Delete a YAP Admin (100) User Account<br>
+    </td>
+    <td>
+      &#9989 Create a Group Admin (200) User Account<br>
+      &#9989 View a Group Admin (200) User Account<br>
+      &#9989 Update a Group Admin (200) User Account<br>
+      &#9989 Delete a Group Admin (200) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a Group Regular (201) User Account<br>
+      &#9989 View a Group Regular (201) User Account<br>
+      &#9989 Update a Group Regular (201) User Account<br>
+      &#9989 Delete a Group Regular (201) User Account<br>
+    </td>
+    <td>
+      &#9989 Create a PBX Admin (300) User Account<br>
+      &#9989 View a PBX Admin (300) User Account<br>
+      &#9989 Update a PBX Admin (300) User Account<br>
+      &#9989 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a PBX Regular (301) User Account<br>
+      &#9989 View a PBX Regular (301) User Account<br>
+      &#9989 Update a PBX Regular (301) User Account<br>
+      &#9989 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td>
+      &#9989 Create a PBX Read Only (302) User Account<br>
+      &#9989 View a PBX Read Only (302) User Account<br>
+      &#9989 Update a PBX Read Only (302) User Account<br>
+      &#9989 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9940 View Own Group<br>
+      &#9940 Update Own Group<br>
+      &#9940 Delete Own Group<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 Create a Group<br>
+      &#9989 View a Group<br>
+      &#9989 Update a Group<br>
+      &#9989 Delete a Group<br>
+    </td>
+  <tr>
+    <td>
+      &#9940 View Own PBX<br>
+      &#9940 Update Own PBX<br>
+      &#9940 Delete Own PBX<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 Create a PBX<br>
+      &#9989 View a PBX<br>
+      &#9989 Update a PBX<br>
+      &#9989 Delete a PBX<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a SIP Endpoint<br>
+      &#9989 View a SIP Endpoint<br>
+      &#9989 Update a SIP Endpoint<br>
+      &#9989 Delete a SIP Endpoint<br>
+    </td>
+    <td>
+      &#9989 Add a SIP Trunk<br>
+      &#9989 View a SIP Trunk<br>
+      &#9989 Update a SIP Trunk<br>
+      &#9989 Delete a SIP Trunk<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Add a Phone Number<br>
+      &#9989 View a Phone Number<br>
+      &#9989 Update a Phone Number<br>
+      &#9989 Delete a Phone Number<br>
+    </td>
+    <td>
+      &#9989 View CDRs<br>
+      &#9989 Download CDRs<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Voicemails<br>
+      &#10060 Download Voicemails<br>
+      &#9989 Delete Voicemails<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 View Call Recordings<br>
+      &#10060 Download Call Recordings<br>
+      &#9989 Delete Call Recordings<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View YAP User Account Logs<br>
+      &#9989 View Group Logs<br>
+      &#9989 View PBX Logs<br>
+      &#9989 Download Logs<br>
+    </td>
+    <td>
+      &#9989 View Server Information<br>
+      &#9989 Download Server Information<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+</table>'
+),
+(200, 'Group Admin (200)',
+'<table>
+  <tr>
+    <td>
+      <b>Key:</b><br>
+      &#9989 = Allowed<br>
+      &#10060 = Prohibited<br>
+      &#9940 = Not Applicable<br>
+    </td>
+    <td>
+      &#9989 View Own User Account<br>
+      &#9989 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a YAP Admin (100) User Account<br>
+      &#10060 View a YAP Admin (100) User Account<br>
+      &#10060 Update a YAP Admin (100) User Account<br>
+      &#10060 Delete a YAP Admin (100) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a Group Admin (200) User Account<br>
+      &#9989 View a Group Admin (200) User Account<br>
+      &#10060 Update a Group Admin (200) User Account<br>
+      &#10060 Delete a Group Admin (200) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Regular (201) User Account<br>
+      &#9989 View a Group Regular (201) User Account<br>
+      &#9989 Update a Group Regular (201) User Account<br>
+      &#10060 Delete a Group Regular (201) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#9989 View a PBX Admin (300) User Account<br>
+      &#9989 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#9989 View a PBX Regular (301) User Account<br>
+      &#9989 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Read Only (302) User Account<br>
+      &#9989 View a PBX Read Only (302) User Account<br>
+      &#9989 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Own Group<br>
+      &#9989 Update Own Group<br>
+      &#10060 Delete Own Group<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a Group<br>
+      &#10060 View a Group<br>
+      &#10060 Update a Group<br>
+      &#10060 Delete a Group<br>
+    </td>
+  <tr>
+    <td>
+      &#9940 View Own PBX<br>
+      &#9940 Update Own PBX<br>
+      &#9940 Delete Own PBX<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 Create a PBX<br>
+      &#9989 View a PBX<br>
+      &#9989 Update a PBX<br>
+      &#9989 Delete a PBX<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a SIP Endpoint<br>
+      &#9989 View a SIP Endpoint<br>
+      &#9989 Update a SIP Endpoint<br>
+      &#9989 Delete a SIP Endpoint<br>
+    </td>
+    <td>
+      &#9989 Add a SIP Trunk<br>
+      &#9989 View a SIP Trunk<br>
+      &#9989 Update a SIP Trunk<br>
+      &#9989 Delete a SIP Trunk<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Add a Phone Number<br>
+      &#9989 View a Phone Number<br>
+      &#9989 Update a Phone Number<br>
+      &#9989 Delete a Phone Number<br>
+    </td>
+    <td>
+      &#9989 View CDRs<br>
+      &#9989 Download CDRs<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Voicemails<br>
+      &#10060 Download Voicemails<br>
+      &#9989 Delete Voicemails<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 View Call Recordings<br>
+      &#10060 Download Call Recordings<br>
+      &#9989 Delete Call Recordings<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 View YAP User Account Logs<br>
+      &#9989 View Group Logs<br>
+      &#9989 View PBX Logs<br>
+      &#9989 Download Logs<br>
+    </td>
+    <td>
+      &#10060 View Server Information<br>
+      &#10060 Download Server Information<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+</table>'
+),
+(201, 'Group Regular (201)',
+'<table>
+  <tr>
+    <td>
+      <b>Key:</b><br>
+      &#9989 = Allowed<br>
+      &#10060 = Prohibited<br>
+      &#9940 = Not Applicable<br>
+    </td>
+    <td>
+      &#9989 View Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a YAP Admin (100) User Account<br>
+      &#10060 View a YAP Admin (100) User Account<br>
+      &#10060 Update a YAP Admin (100) User Account<br>
+      &#10060 Delete a YAP Admin (100) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a Group Admin (200) User Account<br>
+      &#10060 View a Group Admin (200) User Account<br>
+      &#10060 Update a Group Admin (200) User Account<br>
+      &#10060 Delete a Group Admin (200) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Regular (201) User Account<br>
+      &#10060 View a Group Regular (201) User Account<br>
+      &#10060 Update a Group Regular (201) User Account<br>
+      &#10060 Delete a Group Regular (201) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#9989 View a PBX Admin (300) User Account<br>
+      &#9989 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#9989 View a PBX Regular (301) User Account<br>
+      &#9989 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Read Only (302) User Account<br>
+      &#9989 View a PBX Read Only (302) User Account<br>
+      &#9989 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Own Group<br>
+      &#10060 Update Own Group<br>
+      &#10060 Delete Own Group<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a Group<br>
+      &#10060 View a Group<br>
+      &#10060 Update a Group<br>
+      &#10060 Delete a Group<br>
+    </td>
+  <tr>
+    <td>
+      &#9940 View Own PBX<br>
+      &#9940 Update Own PBX<br>
+      &#9940 Delete Own PBX<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 Create a PBX<br>
+      &#9989 View a PBX<br>
+      &#9989 Update a PBX<br>
+      &#9989 Delete a PBX<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a SIP Endpoint<br>
+      &#9989 View a SIP Endpoint<br>
+      &#9989 Update a SIP Endpoint<br>
+      &#9989 Delete a SIP Endpoint<br>
+    </td>
+    <td>
+      &#9989 Add a SIP Trunk<br>
+      &#9989 View a SIP Trunk<br>
+      &#9989 Update a SIP Trunk<br>
+      &#9989 Delete a SIP Trunk<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Add a Phone Number<br>
+      &#9989 View a Phone Number<br>
+      &#9989 Update a Phone Number<br>
+      &#9989 Delete a Phone Number<br>
+    </td>
+    <td>
+      &#9989 View CDRs<br>
+      &#9989 Download CDRs<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Voicemails<br>
+      &#10060 Download Voicemails<br>
+      &#9989 Delete Voicemails<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 View Call Recordings<br>
+      &#10060 Download Call Recordings<br>
+      &#9989 Delete Call Recordings<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 View YAP User Account Logs<br>
+      &#10060 View Group Logs<br>
+      &#9989 View PBX Logs<br>
+      &#9989 Download Logs<br>
+    </td>
+    <td>
+      &#10060 View Server Information<br>
+      &#10060 Download Server Information<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+</table>'
+),
+(300, 'PBX Admin (300)',
+'<table>
+  <tr>
+    <td>
+      <b>Key:</b><br>
+      &#9989 = Allowed<br>
+      &#10060 = Prohibited<br>
+      &#9940 = Not Applicable<br>
+    </td>
+    <td>
+      &#9989 View Own User Account<br>
+      &#9989 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a YAP Admin (100) User Account<br>
+      &#10060 View a YAP Admin (100) User Account<br>
+      &#10060 Update a YAP Admin (100) User Account<br>
+      &#10060 Delete a YAP Admin (100) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a Group Admin (200) User Account<br>
+      &#10060 View a Group Admin (200) User Account<br>
+      &#10060 Update a Group Admin (200) User Account<br>
+      &#10060 Delete a Group Admin (200) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Regular (201) User Account<br>
+      &#10060 View a Group Regular (201) User Account<br>
+      &#10060 Update a Group Regular (201) User Account<br>
+      &#10060 Delete a Group Regular (201) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#9989 View a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#9989 View a PBX Regular (301) User Account<br>
+      &#9989 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Read Only (302) User Account<br>
+      &#9989 View a PBX Read Only (302) User Account<br>
+      &#9989 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9940 View Own Group<br>
+      &#9940 Update Own Group<br>
+      &#9940 Delete Own Group<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a Group<br>
+      &#10060 View a Group<br>
+      &#10060 Update a Group<br>
+      &#10060 Delete a Group<br>
+    </td>
+  <tr>
+    <td>
+      &#9989 View Own PBX<br>
+      &#9989 Update Own PBX<br>
+      &#10060 Delete Own PBX<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a PBX<br>
+      &#10060 View a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a SIP Endpoint<br>
+      &#9989 View a SIP Endpoint<br>
+      &#9989 Update a SIP Endpoint<br>
+      &#9989 Delete a SIP Endpoint<br>
+    </td>
+    <td>
+      &#9989 Add a SIP Trunk<br>
+      &#9989 View a SIP Trunk<br>
+      &#9989 Update a SIP Trunk<br>
+      &#9989 Delete a SIP Trunk<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Add a Phone Number<br>
+      &#9989 View a Phone Number<br>
+      &#9989 Update a Phone Number<br>
+      &#9989 Delete a Phone Number<br>
+    </td>
+    <td>
+      &#9989 View CDRs<br>
+      &#9989 Download CDRs<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Voicemails<br>
+      &#9989 Download Voicemails<br>
+      &#9989 Delete Voicemails<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 View Call Recordings<br>
+      &#9989 Download Call Recordings<br>
+      &#9989 Delete Call Recordings<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 View YAP User Account Logs<br>
+      &#10060 View Group Logs<br>
+      &#9989 View PBX Logs<br>
+      &#9989 Download Logs<br>
+    </td>
+    <td>
+      &#10060 View Server Information<br>
+      &#10060 Download Server Information<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+</table>'
+),
+(301, 'PBX Regular (301)',
+'<table>
+  <tr>
+    <td>
+      <b>Key:</b><br>
+      &#9989 = Allowed<br>
+      &#10060 = Prohibited<br>
+      &#9940 = Not Applicable<br>
+    </td>
+    <td>
+      &#9989 View Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a YAP Admin (100) User Account<br>
+      &#10060 View a YAP Admin (100) User Account<br>
+      &#10060 Update a YAP Admin (100) User Account<br>
+      &#10060 Delete a YAP Admin (100) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a Group Admin (200) User Account<br>
+      &#10060 View a Group Admin (200) User Account<br>
+      &#10060 Update a Group Admin (200) User Account<br>
+      &#10060 Delete a Group Admin (200) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Regular (201) User Account<br>
+      &#10060 View a Group Regular (201) User Account<br>
+      &#10060 Update a Group Regular (201) User Account<br>
+      &#10060 Delete a Group Regular (201) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#10060 View a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#10060 View a PBX Regular (301) User Account<br>
+      &#10060 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Read Only (302) User Account<br>
+      &#9989 View a PBX Read Only (302) User Account<br>
+      &#9989 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9940 View Own Group<br>
+      &#9940 Update Own Group<br>
+      &#9940 Delete Own Group<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a Group<br>
+      &#10060 View a Group<br>
+      &#10060 Update a Group<br>
+      &#10060 Delete a Group<br>
+    </td>
+  <tr>
+    <td>
+      &#9989 View Own PBX<br>
+      &#10060 Update Own PBX<br>
+      &#10060 Delete Own PBX<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a PBX<br>
+      &#10060 View a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Create a SIP Endpoint<br>
+      &#9989 View a SIP Endpoint<br>
+      &#9989 Update a SIP Endpoint<br>
+      &#9989 Delete a SIP Endpoint<br>
+    </td>
+    <td>
+      &#9989 Add a SIP Trunk<br>
+      &#9989 View a SIP Trunk<br>
+      &#9989 Update a SIP Trunk<br>
+      &#9989 Delete a SIP Trunk<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 Add a Phone Number<br>
+      &#9989 View a Phone Number<br>
+      &#9989 Update a Phone Number<br>
+      &#9989 Delete a Phone Number<br>
+    </td>
+    <td>
+      &#9989 View CDRs<br>
+      &#9989 Download CDRs<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Voicemails<br>
+      &#9989 Download Voicemails<br>
+      &#10060 Delete Voicemails<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 View Call Recordings<br>
+      &#9989 Download Call Recordings<br>
+      &#10060 Delete Call Recordings<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 View YAP User Account Logs<br>
+      &#10060 View Group Logs<br>
+      &#10060 View PBX Logs<br>
+      &#10060 Download Logs<br>
+    </td>
+    <td>
+      &#10060 View Server Information<br>
+      &#10060 Download Server Information<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+</table>'
+),
+(302, 'PBX Read Only (302)',
+'<table>
+  <tr>
+    <td>
+      <b>Key:</b><br>
+      &#9989 = Allowed<br>
+      &#10060 = Prohibited<br>
+      &#9940 = Not Applicable<br>
+    </td>
+    <td>
+      &#9989 View Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a YAP Admin (100) User Account<br>
+      &#10060 View a YAP Admin (100) User Account<br>
+      &#10060 Update a YAP Admin (100) User Account<br>
+      &#10060 Delete a YAP Admin (100) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a Group Admin (200) User Account<br>
+      &#10060 View a Group Admin (200) User Account<br>
+      &#10060 Update a Group Admin (200) User Account<br>
+      &#10060 Delete a Group Admin (200) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Regular (201) User Account<br>
+      &#10060 View a Group Regular (201) User Account<br>
+      &#10060 Update a Group Regular (201) User Account<br>
+      &#10060 Delete a Group Regular (201) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#10060 View a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#10060 View a PBX Regular (301) User Account<br>
+      &#10060 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Read Only (302) User Account<br>
+      &#10060 View a PBX Read Only (302) User Account<br>
+      &#10060 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9940 View Own Group<br>
+      &#9940 Update Own Group<br>
+      &#9940 Delete Own Group<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a Group<br>
+      &#10060 View a Group<br>
+      &#10060 Update a Group<br>
+      &#10060 Delete a Group<br>
+    </td>
+  <tr>
+    <td>
+      &#9989 View Own PBX<br>
+      &#10060 Update Own PBX<br>
+      &#10060 Delete Own PBX<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a PBX<br>
+      &#10060 View a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a SIP Endpoint<br>
+      &#9989 View a SIP Endpoint<br>
+      &#10060 Update a SIP Endpoint<br>
+      &#10060 Delete a SIP Endpoint<br>
+    </td>
+    <td>
+      &#10060 Add a SIP Trunk<br>
+      &#9989 View a SIP Trunk<br>
+      &#10060 Update a SIP Trunk<br>
+      &#10060 Delete a SIP Trunk<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Add a Phone Number<br>
+      &#9989 View a Phone Number<br>
+      &#10060 Update a Phone Number<br>
+      &#10060 Delete a Phone Number<br>
+    </td>
+    <td>
+      &#9989 View CDRs<br>
+      &#9989 Download CDRs<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Voicemails<br>
+      &#10060 Download Voicemails<br>
+      &#10060 Delete Voicemails<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#9989 View Call Recordings<br>
+      &#10060 Download Call Recordings<br>
+      &#10060 Delete Call Recordings<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 View YAP User Account Logs<br>
+      &#10060 View Group Logs<br>
+      &#10060 View PBX Logs<br>
+      &#10060 Download Logs<br>
+    </td>
+    <td>
+      &#10060 View Server Information<br>
+      &#10060 Download Server Information<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+</table>'
+);
