@@ -102,7 +102,7 @@ CREATE TABLE `user_account_type`
 (
   `id` SMALLINT UNSIGNED NOT NULL,
   `type` VARCHAR(20) NOT NULL,
-  `description` VARCHAR(100) NOT NULL,
+  `permission` VARCHAR(100) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -253,7 +253,7 @@ SELECT
   `user_account`.`group_id`,
   `pbx`.`pbx_name`,
   `user_account`.`pbx_id`,
-  `user_account_type`.`description` AS 'user_account_type_description',
+  `user_account_type`.`permission` AS 'user_account_type_permission',
   `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
   `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
   `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
@@ -324,7 +324,7 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `user_account_type` (`id`, `type`, `description`)
+INSERT INTO `user_account_type` (`id`, `type`, `permission`)
 VALUES
 (100, 'YAP Admin (100)', 'A YAP admin account can create, read, update and delete all user accounts, groups and PBXs'),
 (101, 'YAP Read Only (101)', 'A YAP read only account can read all user accounts, groups and PBXs'),
