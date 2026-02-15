@@ -48,14 +48,21 @@ func emailHeaderHTTP(r *http.Request) (email string) {
 }
 
 // Function for error message
-func errorBox(w http.ResponseWriter) {
+func errorBox(w http.ResponseWriter, errorType string) {
 	fmt.Fprintf(w, "<div class=\"error-box\">")
 	fmt.Fprintf(w, "  <h1>")
-	fmt.Fprintf(w, "    User Account Not Found")
+	if errorType == "email_error" {
+		fmt.Fprintf(w, "    User Account Not Found")
+	} else if errorType == "account_type_error" {
+		fmt.Fprintf(w, "    Account Type Error")
+	} else {
+		fmt.Fprintf(w, "    Unknown Error")
+	}
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"general-button header-button logout-button\">Logout</a>")
 	fmt.Fprintf(w, "  </h1>")
 	fmt.Fprintf(w, "</div>")
+
 }
 
 // Function for the header
@@ -157,7 +164,7 @@ func yapAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>&nbsp Total Groups &nbsp</th>")
 	fmt.Fprintf(w, "    <th>&nbsp Total PBXs &nbsp</th>")
-	fmt.Fprintf(w, "    <th>&nbsp Total SIP Extensions &nbsp</th>")
+	fmt.Fprintf(w, "    <th>&nbsp Total SIP Endpoints &nbsp</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(dbConnection, w, dbName, "group", true)+"&nbsp</td>")
@@ -169,19 +176,19 @@ func yapAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 	fmt.Fprintf(w, "<table id=\"table\">")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>Total YAP<br>Admin<br>Accounts<br>(Type ID: 100)</th>")
-	fmt.Fprintf(w, "    <th>Total YAP<br>Read Only<br>Accounts<br>(Type ID: 101)</th>")
 	fmt.Fprintf(w, "    <th>Total Group<br>Admin<br>Accounts<br>(Type ID: 200)</th>")
-	fmt.Fprintf(w, "    <th>Total Group<br>Read Only<br>Accounts<br>(Type ID: 201)</th>")
+	fmt.Fprintf(w, "    <th>Total Group<br>Regular<br>Accounts<br>(Type ID: 201)</th>")
 	fmt.Fprintf(w, "    <th>Total PBX<br>Admin<br>Accounts<br>(Type ID: 300)</th>")
-	fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 301)</th>")
+	fmt.Fprintf(w, "    <th>Total PBX<br>Regular<br>Accounts<br>(Type ID: 301)</th>")
+	fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "100")+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "101")+"&nbsp</td>")
 	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "200")+"&nbsp</td>")
 	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "201")+"&nbsp</td>")
 	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "300")+"&nbsp</td>")
 	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "301")+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "302")+"&nbsp</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
@@ -435,7 +442,7 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 					     user_account_email,
 					     user_account_type,
 					     user_account_date_added,
-					     user_account_type_description
+					     user_account_type_permission
 					   FROM yap.view___account_detail
 					   WHERE user_account_email = ?;`, email)
 
@@ -452,7 +459,7 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 			userAccountEmail           string
 			userAccountType            string
 			userAccountDateAdded       string
-			userAccountTypeDescription string
+			userAccountTypePermission  string
 		)
 
 		err = result.Scan(
@@ -462,7 +469,7 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 			&userAccountEmail,
 			&userAccountType,
 			&userAccountDateAdded,
-			&userAccountTypeDescription,
+			&userAccountTypePermission,
 		)
 
 		// Error
@@ -500,10 +507,10 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp Account Type Description &nbsp</th>")
+		fmt.Fprintf(w, "    <th>&nbsp Account Type Permissions - "+userAccountType+"&nbsp</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td>&nbsp"+userAccountTypeDescription+"&nbsp</td>")
+		fmt.Fprintf(w, "    <td style=\"text-align: left\">"+userAccountTypePermission+"</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 	}
@@ -611,47 +618,51 @@ func main() {
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
 		userTypeId := userAccountTypeId(dbConnection, dbName, email)
-		if userTypeId == "100" || userTypeId == "101" {
-			header(w)
-			userInfomation(dbConnection, w, dbName, email)
-			fmt.Fprintf(w, "<br>")
-			fmt.Fprintf(w, "<div class=\"main-menu\">")
-			mainMenuButton(w, "All User<br>Accounts<br>&#128100", "/", "user-main-menu-header", "user-main-menu-button")
-			mainMenuButton(w, "All<br>Groups<br>&#128101", "/", "group-main-menu-header", "group-main-menu-button")
-			mainMenuButton(w, "All<br>PBXs<br>&#128222", "/", "pbx-main-menu-header", "pbx-main-menu-button")
-			fmt.Fprintf(w, "</div>")
-			fmt.Fprintf(w, "<div class=\"main-menu\">")
-			mainMenuButton(w, "All SIP<br>Endpoints<br>&#128241", "/", "endpoint-main-menu-header", "endpoint-main-menu-button")
-			mainMenuButton(w, "All SIP<br>Trunks<br>&#8596", "/", "trunk-main-menu-header", "trunk-main-menu-button")
-			mainMenuButton(w, "All Phone<br>Numbers<br>&#128290", "/", "number-main-menu-header", "number-main-menu-button")
-			fmt.Fprintf(w, "</div>")
-			fmt.Fprintf(w, "<div class=\"main-menu\">")
-			mainMenuButton(w, "All <br>CDRs<br>&#128202", "/", "cdr-main-menu-header", "cdr-main-menu-button")
-			mainMenuButton(w, "All Server<br>Logs<br>&#128210", "/", "log-main-menu-header", "log-main-menu-button")
-			mainMenuButton(w, "Server<br>Information<br>&#128421", "/", "information-main-menu-header", "information-main-menu-button")
-			fmt.Fprintf(w, "</div>")
-			footer(w)
-		} else if userTypeId == "200" || userTypeId == "201" {
-			header(w)
-			userInfomation(dbConnection, w, dbName, email)
-			fmt.Fprintf(w, "<div class=\"main-menu\">")
-			mainMenuButton(w, "", "", "", "")
-			mainMenuButton(w, "", "", "", "")
-			mainMenuButton(w, "", "", "", "")
-			fmt.Fprintf(w, "</div>")
-			footer(w)
-		} else if userTypeId == "300" || userTypeId == "301" {
-			header(w)
-			userInfomation(dbConnection, w, dbName, email)
-			fmt.Fprintf(w, "<br>")
-			fmt.Fprintf(w, "<div class=\"main-menu\">")
-			mainMenuButton(w, "", "", "", "")
-			mainMenuButton(w, "", "", "", "")
-			mainMenuButton(w, "", "", "", "")
-			fmt.Fprintf(w, "</div>")
-			footer(w)
+		if userTypeId == "" {
+			errorBox(w, "email_error")
 		} else {
-			errorBox(w)
+			if userTypeId == "100" {
+				header(w)
+				userInfomation(dbConnection, w, dbName, email)
+				fmt.Fprintf(w, "<br>")
+				fmt.Fprintf(w, "<div class=\"main-menu\">")
+				mainMenuButton(w, "All User<br>Accounts<br>&#128100", "/", "user-main-menu-header", "user-main-menu-button")
+				mainMenuButton(w, "All<br>Groups<br>&#128101", "/", "group-main-menu-header", "group-main-menu-button")
+				mainMenuButton(w, "All<br>PBXs<br>&#128222", "/", "pbx-main-menu-header", "pbx-main-menu-button")
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"main-menu\">")
+				mainMenuButton(w, "All SIP<br>Endpoints<br>&#128241", "/", "endpoint-main-menu-header", "endpoint-main-menu-button")
+				mainMenuButton(w, "All SIP<br>Trunks<br>&#8596", "/", "trunk-main-menu-header", "trunk-main-menu-button")
+				mainMenuButton(w, "All Phone<br>Numbers<br>&#128290", "/", "number-main-menu-header", "number-main-menu-button")
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"main-menu\">")
+				mainMenuButton(w, "All <br>CDRs<br>&#128202", "/", "cdr-main-menu-header", "cdr-main-menu-button")
+				mainMenuButton(w, "All Server<br>Logs<br>&#128210", "/", "log-main-menu-header", "log-main-menu-button")
+				mainMenuButton(w, "Server<br>Information<br>&#128421", "/", "information-main-menu-header", "information-main-menu-button")
+				fmt.Fprintf(w, "</div>")
+				footer(w)
+			} else if userTypeId == "200" || userTypeId == "201" {
+				header(w)
+				userInfomation(dbConnection, w, dbName, email)
+				fmt.Fprintf(w, "<div class=\"main-menu\">")
+				mainMenuButton(w, "Edit User<br>Account<br>&#128100", "/", "user-main-menu-header", "user-main-menu-button")
+				mainMenuButton(w, "Edit<br>Group<br>&#128101", "/", "group-main-menu-header", "group-main-menu-button")
+				mainMenuButton(w, "", "", "", "")
+				fmt.Fprintf(w, "</div>")
+			footer(w)
+			} else if userTypeId == "300" || userTypeId == "301" || userTypeId == "302" {
+				header(w)
+				userInfomation(dbConnection, w, dbName, email)
+				fmt.Fprintf(w, "<br>")
+				fmt.Fprintf(w, "<div class=\"main-menu\">")
+				mainMenuButton(w, "", "", "", "")
+				mainMenuButton(w, "", "", "", "")
+				mainMenuButton(w, "", "", "", "")
+				fmt.Fprintf(w, "</div>")
+				footer(w)
+			} else {
+				errorBox(w, "account_type_error")
+			}
 		}
 		fmt.Fprintf(w, endHTML)
 
