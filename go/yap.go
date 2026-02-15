@@ -47,6 +47,16 @@ func emailHeaderHTTP(r *http.Request) (email string) {
 	return email
 }
 
+type databaseFunctionParameter struct {
+	connection         *sql.DB
+	database           string
+	table              string
+	column             string
+	columnWhere        string
+	columnWhereValue   string
+	countMinusOne      bool
+}
+
 // Function for error message
 func errorBox(w http.ResponseWriter, errorType string) {
 	fmt.Fprintf(w, "<div class=\"error-box\">")
@@ -62,7 +72,6 @@ func errorBox(w http.ResponseWriter, errorType string) {
 	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"general-button header-button logout-button\">Logout</a>")
 	fmt.Fprintf(w, "  </h1>")
 	fmt.Fprintf(w, "</div>")
-
 }
 
 // Function for the header
@@ -88,9 +97,9 @@ func footer(w http.ResponseWriter) {
 	fmt.Fprintf(w, "</div>")
 }
 
-func selectWhere(dbConnection *sql.DB, dbName string, tableName string, column string, columnWhere string, value string) string {
+func selectWhere(dbSelectWhere databaseFunctionParameter) string {
 	var selectWhere string
-	selectWhereQuery, err := dbConnection.Query("SELECT "+column+" FROM "+dbName+"."+tableName+" WHERE "+columnWhere+" = ?;", value)
+	selectWhereQuery, err := dbSelectWhere.connection.Query("SELECT "+dbSelectWhere.column+" FROM "+dbSelectWhere.database+"."+dbSelectWhere.table+" WHERE "+dbSelectWhere.columnWhere+" = ?;", dbSelectWhere.columnWhereValue)
 	if err != nil {
 		panic(err)
 	}
@@ -103,24 +112,24 @@ func selectWhere(dbConnection *sql.DB, dbName string, tableName string, column s
 	return selectWhere
 }
 
-func totalTableCount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, tableName string, minus1 bool) string {
-	if minus1 == true {
-		var countMinus1 string
-		countMinus1Query, err := dbConnection.Query("SELECT COUNT(*) -1 FROM " + dbName + "." + tableName)
+func totalTableCount(w http.ResponseWriter, dbTotalTableCount databaseFunctionParameter) string {
+	if dbTotalTableCount.countMinusOne == true {
+		var countMinusOne string
+		countMinusOneQuery, err := dbTotalTableCount.connection.Query("SELECT COUNT(*) -1 FROM " + dbTotalTableCount.database + "." + dbTotalTableCount.table)
 		if err != nil {
 			panic(err)
 		}
-		for countMinus1Query.Next() {
-			err = countMinus1Query.Scan(&countMinus1)
+		for countMinusOneQuery.Next() {
+			err = countMinusOneQuery.Scan(&countMinusOne)
 			// Error
 			if err != nil {
 				panic(err)
 			}
 		}
-		return countMinus1
+		return countMinusOne
 	} else {
 		var count string
-		countQuery, err := dbConnection.Query("SELECT COUNT(*) FROM " + dbName + "." + tableName)
+		countQuery, err := dbTotalTableCount.connection.Query("SELECT COUNT(*) FROM " + dbTotalTableCount.database + "." + dbTotalTableCount.table)
 		if err != nil {
 			panic(err)
 		}
@@ -135,9 +144,9 @@ func totalTableCount(dbConnection *sql.DB, w http.ResponseWriter, dbName string,
 	}
 }
 
-func totalTableCountWhere(dbConnection *sql.DB, w http.ResponseWriter, dbName string, tableName string, whereColumn string, value string) string {
+func totalTableCountWhere(w http.ResponseWriter, dbTotalTableCountWhere databaseFunctionParameter) string {
 	var count string
-	countQuery, err := dbConnection.Query("SELECT COUNT(*) FROM "+dbName+"."+tableName+" WHERE "+whereColumn+" =?", value)
+	countQuery, err := dbTotalTableCountWhere.connection.Query("SELECT COUNT(*) FROM "+dbTotalTableCountWhere.database+"."+dbTotalTableCountWhere.table+" WHERE "+dbTotalTableCountWhere.columnWhere+" =?", dbTotalTableCountWhere.columnWhereValue)
 	//Error
 	if err != nil {
 		panic(err)
@@ -152,13 +161,31 @@ func totalTableCountWhere(dbConnection *sql.DB, w http.ResponseWriter, dbName st
 	return count
 }
 
-func userAccountTypeId(dbConnection *sql.DB, dbName string, email string) string {
+func userAccountTypeID(dbUserAccountTypeID databaseFunctionParameter) string {
 
-	return selectWhere(dbConnection, dbName, "view___account_detail", "user_account_type_id", "user_account_email", email)
+	var dbSelectWhere databaseFunctionParameter
+	dbSelectWhere.connection = dbUserAccountTypeID.connection
+	dbSelectWhere.database = dbUserAccountTypeID.database
+	dbSelectWhere.table = "view___account_detail"
+	dbSelectWhere.column = "user_account_type_id"
+	dbSelectWhere.columnWhere = "user_account_email"
+	dbSelectWhere.columnWhereValue = dbUserAccountTypeID.columnWhereValue
+        
+        return selectWhere(dbSelectWhere)
 }
 
-func yapAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, email string) {
+func yapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
 
+	var dbTotalTableCount databaseFunctionParameter
+	dbTotalTableCount.connection = dbYapAccount.connection
+	dbTotalTableCount.database = dbYapAccount.database
+	
+	var dbTotalTableCountWhere databaseFunctionParameter
+	dbTotalTableCountWhere.connection =  dbYapAccount.connection
+	dbTotalTableCountWhere.database =    dbYapAccount.database
+	dbTotalTableCountWhere.table =       "user_account"
+	dbTotalTableCountWhere.columnWhere = "user_account_type_id"
+	
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<table id=\"table\">")
 	fmt.Fprintf(w, "  <tr>")
@@ -167,9 +194,15 @@ func yapAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 	fmt.Fprintf(w, "    <th>&nbsp Total SIP Endpoints &nbsp</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(dbConnection, w, dbName, "group", true)+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(dbConnection, w, dbName, "pbx", true)+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(dbConnection, w, dbName, "ps_endpoints", false)+"&nbsp</td>")
+	dbTotalTableCount.table = "group"
+	dbTotalTableCount.countMinusOne = true
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(w, dbTotalTableCount)+"&nbsp</td>")
+	dbTotalTableCount.table = "pbx"
+	dbTotalTableCount.countMinusOne = true
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(w, dbTotalTableCount)+"&nbsp</td>")
+	dbTotalTableCount.table = "ps_endpoints"
+	dbTotalTableCount.countMinusOne = false
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(w, dbTotalTableCount)+"&nbsp</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<br>")
@@ -183,20 +216,26 @@ func yapAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 	fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "100")+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "200")+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "201")+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "300")+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "301")+"&nbsp</td>")
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "user_account", "user_account_type_id", "302")+"&nbsp</td>")
+	dbTotalTableCountWhere.columnWhereValue = "100"
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	dbTotalTableCountWhere.columnWhereValue = "200"
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	dbTotalTableCountWhere.columnWhereValue = "201"
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	dbTotalTableCountWhere.columnWhereValue = "300"
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	dbTotalTableCountWhere.columnWhereValue = "301"
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	dbTotalTableCountWhere.columnWhereValue = "302"
+	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
 }
 
-func groupAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, email string) {
+func groupAccount(w http.ResponseWriter, dbGroupAccount databaseFunctionParameter) {
 
-	result, err := dbConnection.Query(`SELECT
+	result, err := dbGroupAccount.connection.Query(`SELECT
 					     group_name,
 					     group_id,
 					     group_site_address_line_1,
@@ -217,7 +256,7 @@ func groupAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, em
 					     group_invoice_contact_number,
 					     pbx_id
 					   FROM yap.view___account_detail
-					   WHERE user_account_email = ?;`, email)
+					   WHERE user_account_email = ?;`, dbGroupAccount.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -227,7 +266,7 @@ func groupAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, em
 	for result.Next() {
 		var (
 			groupName                     string
-			groupId                       string
+			groupID                       string
 			groupSiteAddressLine1         string
 			groupSiteAddressLine2         string
 			groupSiteCityTownCillage      string
@@ -244,12 +283,12 @@ func groupAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, em
 			groupInvoiceCountry           string
 			groupInvoiceContactEmail      string
 			groupInvoiceContactNumber     string
-			pbxId                         string
+			pbxID                         string
 		)
 
 		err = result.Scan(
 			&groupName,
-			&groupId,
+			&groupID,
 			&groupSiteAddressLine1,
 			&groupSiteAddressLine2,
 			&groupSiteCityTownCillage,
@@ -266,12 +305,12 @@ func groupAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, em
 			&groupInvoiceCountry,
 			&groupInvoiceContactEmail,
 			&groupInvoiceContactNumber,
-			&pbxId,
+			&pbxID,
 		)
 
 		// Error
 		if err != nil {
-			panic("Error in userInfomation function")
+			panic(err)
 		}
 
 		fmt.Fprintf(w, "<table id=\"table\">")
@@ -280,8 +319,14 @@ func groupAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, em
 		fmt.Fprintf(w, "    <th>&nbsp Total PBX(s) in Group &nbsp</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td>&nbsp Group Name: "+groupName+"&nbsp<br><br>Group ID: "+groupId+"</td>")
-		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "pbx", "id", pbxId)+"&nbsp</td>")
+		fmt.Fprintf(w, "    <td>&nbsp Group Name: "+groupName+"&nbsp<br><br>Group ID: "+groupID+"</td>")
+		var dbTotalTableCountWhere databaseFunctionParameter
+		dbTotalTableCountWhere.connection =       dbGroupAccount.connection
+		dbTotalTableCountWhere.database =         dbGroupAccount.database
+		dbTotalTableCountWhere.table =            "pbx"
+		dbTotalTableCountWhere.columnWhere =      "id"
+		dbTotalTableCountWhere.columnWhereValue = pbxID
+		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
@@ -313,9 +358,9 @@ func groupAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, em
 	}
 }
 
-func pbxAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, email string) {
+func pbxAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionParameter) {
 
-	result, err := dbConnection.Query(`SELECT
+	result, err := dbPBXAccount.connection.Query(`SELECT
 					     pbx_name,
 					     pbx_id,
 					     pbx_site_address_line_1,
@@ -335,7 +380,7 @@ func pbxAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 					     pbx_invoice_contact_email,
 					     pbx_invoice_contact_number
 					   FROM yap.view___account_detail
-					   WHERE user_account_email = ?;`, email)
+					   WHERE user_account_email = ?;`, dbPBXAccount.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -346,7 +391,7 @@ func pbxAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 
 		var (
 			pbxName                     string
-			pbxId                       string
+			pbxID                       string
 			pbxSiteAddressLine1         string
 			pbxSiteAddressLine2         string
 			pbxSiteCityTownVillage      string
@@ -367,7 +412,7 @@ func pbxAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 
 		err = result.Scan(
 			&pbxName,
-			&pbxId,
+			&pbxID,
 			&pbxSiteAddressLine1,
 			&pbxSiteAddressLine2,
 			&pbxSiteCityTownVillage,
@@ -397,8 +442,14 @@ func pbxAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 		fmt.Fprintf(w, "    <th>&nbsp Total SIP Extensions in PBX &nbsp</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td>&nbsp PBX Name: "+pbxName+"&nbsp<br><br>PBX ID: "+pbxId+"</td>")
-		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(dbConnection, w, dbName, "ps_endpoints", "pbx_id", pbxId)+"&nbsp</td>")
+		fmt.Fprintf(w, "    <td>&nbsp PBX Name: "+pbxName+"&nbsp<br><br>PBX ID: "+pbxID+"</td>")
+		var dbTotalTableCountWhere databaseFunctionParameter
+		dbTotalTableCountWhere.connection =       dbPBXAccount.connection
+		dbTotalTableCountWhere.database =         dbPBXAccount.database
+		dbTotalTableCountWhere.table =            "ps_endpoints"
+		dbTotalTableCountWhere.columnWhere =      "pbx_id"
+		dbTotalTableCountWhere.columnWhereValue = pbxID
+		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
@@ -432,10 +483,9 @@ func pbxAccount(dbConnection *sql.DB, w http.ResponseWriter, dbName string, emai
 
 }
 
-func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, email string) {
+func userInformation(w http.ResponseWriter, dbUserInformation databaseFunctionParameter, userTypeID string) {
 
-	userTypeId := userAccountTypeId(dbConnection, dbName, email)
-	result, err := dbConnection.Query(`SELECT
+	result, err := dbUserInformation.connection.Query(`SELECT
 					     user_account_type_id,
 					     user_account_first_name,
 					     user_account_last_name,
@@ -444,7 +494,7 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 					     user_account_date_added,
 					     user_account_type_permission
 					   FROM yap.view___account_detail
-					   WHERE user_account_email = ?;`, email)
+					   WHERE user_account_email = ?;`, dbUserInformation.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -474,7 +524,7 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 
 		// Error
 		if err != nil {
-			panic("Error in userInfomation function")
+			panic(err)
 		}
 
 		fmt.Fprintf(w, "<div>")
@@ -515,12 +565,17 @@ func userInfomation(dbConnection *sql.DB, w http.ResponseWriter, dbName string, 
 		fmt.Fprintf(w, "</table>")
 	}
 	fmt.Fprintf(w, "<br>")
-	if userTypeId == "100" || userTypeId == "101" {
-		yapAccount(dbConnection, w, dbName, email)
-	} else if userTypeId == "200" || userTypeId == "201" {
-		groupAccount(dbConnection, w, dbName, email)
-	} else if userTypeId == "300" || userTypeId == "301" {
-		pbxAccount(dbConnection, w, dbName, email)
+	
+	var dbDetail databaseFunctionParameter
+	dbDetail.connection = dbUserInformation.connection
+	dbDetail.database = dbUserInformation.database
+	
+	if userTypeID == "100" || userTypeID == "101" {
+		yapAccount(w, dbDetail)
+	} else if userTypeID == "200" || userTypeID == "201" {
+		groupAccount(w, dbDetail)
+	} else if userTypeID == "300" || userTypeID == "301" {
+		pbxAccount(w, dbDetail)
 	} else {
 	}
 	fmt.Fprintf(w, "</div>")
@@ -617,13 +672,25 @@ func main() {
 		fmt.Fprintf(w, startHTML)
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
-		userTypeId := userAccountTypeId(dbConnection, dbName, email)
-		if userTypeId == "" {
+		
+		var dbUserAccountTypeID databaseFunctionParameter
+		dbUserAccountTypeID.connection =       dbConnection
+		dbUserAccountTypeID.database =         dbName
+		dbUserAccountTypeID.columnWhereValue = email
+		
+		userTypeID := userAccountTypeID(dbUserAccountTypeID)
+		
+		var dbUserInformation databaseFunctionParameter
+		dbUserInformation.connection =       dbConnection
+		dbUserInformation.database =         dbName
+		dbUserInformation.columnWhereValue = email
+		
+		if userTypeID == "" {
 			errorBox(w, "email_error")
 		} else {
-			if userTypeId == "100" {
+			if userTypeID == "100" {
 				header(w)
-				userInfomation(dbConnection, w, dbName, email)
+				userInformation(w, dbUserInformation, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"main-menu\">")
 				mainMenuButton(w, "All User<br>Accounts<br>&#128100", "/", "user-main-menu-header", "user-main-menu-button")
@@ -641,18 +708,18 @@ func main() {
 				mainMenuButton(w, "Server<br>Information<br>&#128421", "/", "information-main-menu-header", "information-main-menu-button")
 				fmt.Fprintf(w, "</div>")
 				footer(w)
-			} else if userTypeId == "200" || userTypeId == "201" {
+			} else if userTypeID == "200" || userTypeID == "201" {
 				header(w)
-				userInfomation(dbConnection, w, dbName, email)
+				userInformation(w, dbUserInformation, userTypeID)
 				fmt.Fprintf(w, "<div class=\"main-menu\">")
 				mainMenuButton(w, "Edit User<br>Account<br>&#128100", "/", "user-main-menu-header", "user-main-menu-button")
 				mainMenuButton(w, "Edit<br>Group<br>&#128101", "/", "group-main-menu-header", "group-main-menu-button")
 				mainMenuButton(w, "", "", "", "")
 				fmt.Fprintf(w, "</div>")
 			footer(w)
-			} else if userTypeId == "300" || userTypeId == "301" || userTypeId == "302" {
+			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 				header(w)
-				userInfomation(dbConnection, w, dbName, email)
+				userInformation(w, dbUserInformation, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"main-menu\">")
 				mainMenuButton(w, "", "", "", "")
