@@ -48,13 +48,13 @@ func emailHeaderHTTP(r *http.Request) (email string) {
 }
 
 type databaseFunctionParameter struct {
-	connection         *sql.DB
-	database           string
-	table              string
-	column             string
-	columnWhere        string
-	columnWhereValue   string
-	countMinusOne      bool
+	connection       *sql.DB
+	database         string
+	table            string
+	column           string
+	columnWhere      string
+	columnWhereValue string
+	countMinusOne    bool
 }
 
 // Function for error message
@@ -170,8 +170,8 @@ func userAccountTypeID(dbUserAccountTypeID databaseFunctionParameter) string {
 	dbSelectWhere.column = "user_account_type_id"
 	dbSelectWhere.columnWhere = "user_account_email"
 	dbSelectWhere.columnWhereValue = dbUserAccountTypeID.columnWhereValue
-        
-        return selectWhere(dbSelectWhere)
+
+	return selectWhere(dbSelectWhere)
 }
 
 func yapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
@@ -179,13 +179,13 @@ func yapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
 	var dbTotalTableCount databaseFunctionParameter
 	dbTotalTableCount.connection = dbYapAccount.connection
 	dbTotalTableCount.database = dbYapAccount.database
-	
+
 	var dbTotalTableCountWhere databaseFunctionParameter
-	dbTotalTableCountWhere.connection =  dbYapAccount.connection
-	dbTotalTableCountWhere.database =    dbYapAccount.database
-	dbTotalTableCountWhere.table =       "user_account"
+	dbTotalTableCountWhere.connection = dbYapAccount.connection
+	dbTotalTableCountWhere.database = dbYapAccount.database
+	dbTotalTableCountWhere.table = "user_account"
 	dbTotalTableCountWhere.columnWhere = "user_account_type_id"
-	
+
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<table id=\"table\">")
 	fmt.Fprintf(w, "  <tr>")
@@ -321,10 +321,10 @@ func groupAccount(w http.ResponseWriter, dbGroupAccount databaseFunctionParamete
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td>&nbsp Group Name: "+groupName+"&nbsp<br><br>Group ID: "+groupID+"</td>")
 		var dbTotalTableCountWhere databaseFunctionParameter
-		dbTotalTableCountWhere.connection =       dbGroupAccount.connection
-		dbTotalTableCountWhere.database =         dbGroupAccount.database
-		dbTotalTableCountWhere.table =            "pbx"
-		dbTotalTableCountWhere.columnWhere =      "id"
+		dbTotalTableCountWhere.connection = dbGroupAccount.connection
+		dbTotalTableCountWhere.database = dbGroupAccount.database
+		dbTotalTableCountWhere.table = "pbx"
+		dbTotalTableCountWhere.columnWhere = "id"
 		dbTotalTableCountWhere.columnWhereValue = pbxID
 		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
 		fmt.Fprintf(w, "  </tr>")
@@ -444,10 +444,10 @@ func pbxAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionParameter) {
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td>&nbsp PBX Name: "+pbxName+"&nbsp<br><br>PBX ID: "+pbxID+"</td>")
 		var dbTotalTableCountWhere databaseFunctionParameter
-		dbTotalTableCountWhere.connection =       dbPBXAccount.connection
-		dbTotalTableCountWhere.database =         dbPBXAccount.database
-		dbTotalTableCountWhere.table =            "ps_endpoints"
-		dbTotalTableCountWhere.columnWhere =      "pbx_id"
+		dbTotalTableCountWhere.connection = dbPBXAccount.connection
+		dbTotalTableCountWhere.database = dbPBXAccount.database
+		dbTotalTableCountWhere.table = "ps_endpoints"
+		dbTotalTableCountWhere.columnWhere = "pbx_id"
 		dbTotalTableCountWhere.columnWhereValue = pbxID
 		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
 		fmt.Fprintf(w, "  </tr>")
@@ -503,13 +503,13 @@ func userInformation(w http.ResponseWriter, dbUserInformation databaseFunctionPa
 
 	for result.Next() {
 		var (
-			userAccountTypeId          string
-			userAccountFirstName       string
-			userAccountLastName        string
-			userAccountEmail           string
-			userAccountType            string
-			userAccountDateAdded       string
-			userAccountTypePermission  string
+			userAccountTypeId         string
+			userAccountFirstName      string
+			userAccountLastName       string
+			userAccountEmail          string
+			userAccountType           string
+			userAccountDateAdded      string
+			userAccountTypePermission string
 		)
 
 		err = result.Scan(
@@ -565,11 +565,11 @@ func userInformation(w http.ResponseWriter, dbUserInformation databaseFunctionPa
 		fmt.Fprintf(w, "</table>")
 	}
 	fmt.Fprintf(w, "<br>")
-	
+
 	var dbDetail databaseFunctionParameter
 	dbDetail.connection = dbUserInformation.connection
 	dbDetail.database = dbUserInformation.database
-	
+
 	if userTypeID == "100" || userTypeID == "101" {
 		yapAccount(w, dbDetail)
 	} else if userTypeID == "200" || userTypeID == "201" {
@@ -672,19 +672,19 @@ func main() {
 		fmt.Fprintf(w, startHTML)
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
-		
+
 		var dbUserAccountTypeID databaseFunctionParameter
-		dbUserAccountTypeID.connection =       dbConnection
-		dbUserAccountTypeID.database =         dbName
+		dbUserAccountTypeID.connection = dbConnection
+		dbUserAccountTypeID.database = dbName
 		dbUserAccountTypeID.columnWhereValue = email
-		
+
 		userTypeID := userAccountTypeID(dbUserAccountTypeID)
-		
+
 		var dbUserInformation databaseFunctionParameter
-		dbUserInformation.connection =       dbConnection
-		dbUserInformation.database =         dbName
+		dbUserInformation.connection = dbConnection
+		dbUserInformation.database = dbName
 		dbUserInformation.columnWhereValue = email
-		
+
 		if userTypeID == "" {
 			errorBox(w, "email_error")
 		} else {
@@ -716,7 +716,7 @@ func main() {
 				mainMenuButton(w, "Edit<br>Group<br>&#128101", "/", "group-main-menu-header", "group-main-menu-button")
 				mainMenuButton(w, "", "", "", "")
 				fmt.Fprintf(w, "</div>")
-			footer(w)
+				footer(w)
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 				header(w)
 				userInformation(w, dbUserInformation, userTypeID)
