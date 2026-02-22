@@ -168,6 +168,12 @@ ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
 
 -- Create foreign key constraints
 
+ALTER TABLE `pbx`
+ADD CONSTRAINT fk___pbx___group
+FOREIGN KEY (`group_id`)
+REFERENCES `group` (`id`)
+ON DELETE CASCADE;
+
 ALTER TABLE `group_invoice_address`
 ADD CONSTRAINT fk___group_invoice_address___group
 FOREIGN KEY (`id`)
