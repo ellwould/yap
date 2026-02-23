@@ -20,6 +20,10 @@
   z-index:-1;
 }
 
+.wallpaper-call-recording {
+  background-image: linear-gradient(-45deg, #DBBA00 50vh, #FFEB79 25vh);
+}
+
 .wallpaper2 {
   animation-direction:alternate-reverse;
   animation-duration:20s;
@@ -53,7 +57,7 @@ body {
   overflow-y: scroll;
 }
 
-.header{
+.div-header {
   display: flex;
   flex-direction: column;  
   justify-content: center;
@@ -61,11 +65,11 @@ body {
   position: relative;
 }
 
-.header-button {
+.button-header {
   width: 100px;
 }
   
-.footer {
+.div-footer {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -73,7 +77,7 @@ body {
   position: relative;
 }
 
-.footer-button {
+.button-footer {
   width: 170px;
 }
 
@@ -103,7 +107,6 @@ table, th, td {
   width: auto;
   height: auto;
   color: #000000;
-  background: #E8B2B7;
 }
 
 th {
@@ -114,6 +117,14 @@ th {
 td {
   font-weight: normal;
   padding: 8px;
+}
+
+.table-main-menu {
+  background: #E8B2B7;
+}
+
+.table-call-recording {
+  background: #FFF4B4;
 }
 
 div {
@@ -181,7 +192,7 @@ select {
   text-align: center;
 }
 
-.general-button {
+.button-general {
   font: bold 20px sans-serif;
   text-decoration: none;
   background-color: #B5010F;
@@ -197,190 +208,240 @@ select {
   display: inline-block;
 }
 
-.general-button:hover {
+.button-general:hover {
   background-color: #B5010F;
   color: #F0F0F0;
   border: 5px inset #B5010F;
 }
 
-.logout-button {
+.button-logout {
   background-color: #D2666F;
   border: 5px outset #D2666F;
 }
 
-.logout-button:hover {
+.button-logout:hover {
   background-color: #D2666F;
   color: #F0F0F0;
   border: 5px inset #D2666F;
 }
 
-.home-button {
+.button-home {
   background-color: #63C900;
   border: 5px outset #63C900;
 }
 
-.home-button:hover {
+.button-home:hover {
   background-color: #6FE200;
   color: #F0F0F0;
   border: 5px inset #6FE200;
 }
 
-.license-button {
+.button-license {
   background-color: #6495ED;
   border: 5px outset #6495ED;
 }
 
-.license-button:hover {
+.button-license:hover {
   background-color: #6495ED;
   color: #F0F0F0;
   border: 5px inset #6495ED;
 }
 
-.main-menu{
+.div-main-menu {
   display: grid;
   gap: 1rem;
   grid-auto-flow: column;
   justify-content: center;
 }
 
-.main-menu-button {
+.main-menu-space {
+  height: 25px;
+  width: 25px;
+}
+
+.button-main-menu {
   width: 120px;
   height: 120px;
 }
 
-.user-main-menu-button {
+.button-user-account {
   background-color: #62748E;
   border: 5px outset #62748E;  
 }
 
-.user-main-menu-button:hover {
+.button-user-account:hover {
   background-color: #62748E;
   color: #F0F0F0;
   border: 5px inset #62748E;
 }
 
-.user-main-menu-header{
+.header-user-account {
   background-color: #62748E;
 }
 
-.group-main-menu-button {
+.button-group {
   background-color: #E61876;
   border: 5px outset #E61876;
 }
 
-.group-main-menu-button:hover {
+.button-group:hover {
   background-color: #E61876;
   color: #F0F0F0;
   border: 5px inset #E61876;
 }
 
-.group-main-menu-header{
+.header-group {
   background-color: #E61876;
 }
 
-.pbx-main-menu-button {
+.button-pbx {
   background-color: #6E11B0;
   border: 5px outset #6E11B0;  
 }
 
-.pbx-main-menu-button:hover {
+.button-pbx:hover {
   background-color: #6E11B0;
   color: #F0F0F0;
   border: 5px inset #6E11B0;
 }
 
-.pbx-main-menu-header{
+.header-pbx {
   background-color: #6E11B0;
 }
 
-.endpoint-main-menu-button {
+.button-sip-endpoint {
   background-color: #432DD7;
   border: 5px outset #432DD7;
 }
 
-.endpoint-main-menu-button:hover {
+.button-sip-endpoint:hover {
   background-color: #432DD7;
   color: #F0F0F0;
   border: 5px inset #432DD7;
 }
 
-.endpoint-main-menu-header{
+.header-sip-endpoint {
   background-color: #432DD7;
 }
 
-.trunk-main-menu-button {
+.button-sip-trunk {
   background-color: #2984D1;
   border: 5px outset #2984D1;  
 }
 
-.trunk-main-menu-button:hover {
+.button-sip-trunk:hover {
   background-color: #2984D1;
   color: #F0F0F0;
   border: 5px inset #2984D1;
 }
 
-.trunk-main-menu-header{
+.header-sip-trunk {
   background-color: #2984D1;
 }
 
-.number-main-menu-button {
+.button-phone-number {
   background-color: #36BBA7;
   border: 5px outset #36BBA7;
 }
 
-.number-main-menu-button:hover {
+.button-phone-number:hover {
   background-color: #36BBA7;
   color: #F0F0F0;
   border: 5px inset #36BBA7;
 }
 
-.number-main-menu-header{
+.header-phone-number {
   background-color: #36BBA7;
 }
 
-.cdr-main-menu-button {
-  background-color: #31C950;
-  border: 5px outset #31C950;  
+.button-cdr {
+  background-color: #008B8B;
+  border: 5px outset #008B8B;  
 }
 
-.cdr-main-menu-button:hover {
+.button-cdr:hover {
+  background-color: #008B8B;
+  color: #F0F0F0;
+  border: 5px inset #008B8B;
+}
+
+.header-cdr {
+  background-color: #008B8B;
+}
+
+.button-voicemail {
+  background-color: #31C950;
+  border: 5px outset #31C950;
+}
+
+.button-voicemail:hover {
   background-color: #31C950;
   color: #F0F0F0;
   border: 5px inset #31C950;
 }
 
-.cdr-main-menu-header{
+.header-voicemail {
   background-color: #31C950;
 }
 
-.log-main-menu-button {
+.button-call-recording {
+  background-color: #DBBA00;
+  border: 5px outset #DBBA00;
+}
+
+.button-call-recording:hover {
+  background-color: #DBBA00;
+  color: #F0F0F0;
+  border: 5px inset #DBBA00;
+}
+
+.header-call-recording {
+  background-color: #DBBA00;
+}
+
+.button-music {
   background-color: #D0872E;
   border: 5px outset #D0872E;
 }
 
-.log-main-menu-button:hover {
+.button-music:hover {
   background-color: #D0872E;
   color: #F0F0F0;
   border: 5px inset #D0872E;
 }
 
-.log-main-menu-header{
+.header-music {
   background-color: #D0872E;
 }
 
-.information-main-menu-button {
+.button-server-log {
   background-color: #BB4D1A;
-  border: 5px outset #BB4D1A;  
+  border: 5px outset #BB4D1A;
 }
 
-.information-main-menu-button:hover {
+.button-server-log:hover {
   background-color: #BB4D1A;
   color: #F0F0F0;
   border: 5px inset #BB4D1A;
 }
 
-.information-main-menu-header{
+.header-server-log {
   background-color: #BB4D1A;
+}
+
+.button-server-information {
+  background-color: #D83A00;
+  border: 5px outset #D83A00;  
+}
+
+.button-server-information:hover {
+  background-color: #D83A00;
+  color: #F0F0F0;
+  border: 5px inset #D83A00;
+}
+
+.header-server-information {
+  background-color: #D83A00;
 }
 
 .line {
@@ -406,6 +467,3 @@ select {
 </style>
 </head>
 <body>
-<div class="wallpaper"></div>
-<div class="wallpaper wallpaper2"></div>
-<div class="wallpaper wallpaper3"></div>
