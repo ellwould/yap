@@ -810,7 +810,13 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "200" || userTypeID == "201" {
+				header(w, "Main Menu", "")
+				userInformation(w, dbDetail, userTypeID)
+				footer(w, "", "")
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+				header(w, "Main Menu", "")
+                                userInformation(w, dbDetail, userTypeID)
+                                footer(w, "", "")
 			} else {
 				errorBox(w, "account_type_error")
 			}
