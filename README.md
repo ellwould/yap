@@ -92,16 +92,47 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-## The user_account_type :ledger: Table
+## User Account Permissions :heavy_check_mark:
 
-| id  | type                | description |
-|-----|---------------------|----------------------------------------------------------------------|
-| 100 | YAP Admin (100)     | A YAP admin account can create, read, update and delete all user accounts, groups and PBXs |
-| 101 | YAP Read Only (101)   | A YAP read only account can read all user accounts, groups and PBXs    |
-| 200 | Group Admin (200)   | A group admin can read and update thier own PBX(s) and group         |
-| 201 | Group Read Only (201) | A group read only account can read thier own PBX(s) and group          |
-| 300 | PBX Admin (300)     | A PBX admin account can read and update thier own PBX                |
-| 301 | PBX Read Only (301)   | A PBX read only account can read thier own PBX                         |
+|  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
+|----------------------------------------|--|--|--|--|--|--|
+| View Own User Account                  |  |  |  |  |  | 
+| Update Own User Account                |  |  |  |  |  |
+| Delete Own User Account                |  |  |  |  |  |
+| <br>                                   |  |  |  |  |  |
+| Create a YAP Admin (100) User Account  |  |  |  |  |  |
+| View a YAP Admin (100) User Account    |
+| Update a YAP Admin (100)
+| Delete a YAP Admin (100)
+| <br>                                   |  |  |  |  |  |
+| Create a Group Admin (200)
+| View a Group Admin (200)
+| Update a Group Admin (200)
+| Delete a Group Admin (200)
+| <br>                                      |  |  |  |  |  |
+| Create a Group Regular (201) User Account
+| View a Group Regular (201) User Account
+| Update a Group Regular (201) User Account
+| Delete a Group Regular (201) User Account
+| <br>                                   |  |  |  |  |  |
+| Create a PBX Admin (300)
+| View a PBX Admin (300) User Account
+| Update a PBX Admin (300) User Account
+| Delete a PBX Admin (300) User Account
+| <br>                                   |  |  |  |  |  |
+| Create a PBX Regular (301) User Account
+| View a PBX Regular (301) User Account
+| Update a PBX Regular (301) User Account
+| Delete a PBX Regular (301) User Account
+| <br>                                   |  |  |  |  |  |
+| Create a PBX Read Only (302) User Account
+| View a PBX Read Only (302) User Account
+| Update a PBX Read Only (302) User Account
+| Delete a PBX Read Only (302) User Account
+| <br>                                   |  |  |  |  |  |
+
+
+| <br>                                   |  |  |  |  |  |
 
 <br>
 
