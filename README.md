@@ -95,46 +95,104 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 ## User Account Permissions :heavy_check_mark:
 
 |  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-|----------------------------------------|--|--|--|--|--|--|
-| View Own User Account                  |  |  |  |  |  | 
-| Update Own User Account                |  |  |  |  |  |
-| Delete Own User Account                |  |  |  |  |  |
-| <br>                                   |  |  |  |  |  |
-| Create a YAP Admin (100) User Account  |  |  |  |  |  |
-| View a YAP Admin (100) User Account    |
-| Update a YAP Admin (100)
-| Delete a YAP Admin (100)
-| <br>                                   |  |  |  |  |  |
-| Create a Group Admin (200)
-| View a Group Admin (200)
-| Update a Group Admin (200)
-| Delete a Group Admin (200)
-| <br>                                      |  |  |  |  |  |
-| Create a Group Regular (201) User Account
-| View a Group Regular (201) User Account
-| Update a Group Regular (201) User Account
-| Delete a Group Regular (201) User Account
-| <br>                                   |  |  |  |  |  |
-| Create a PBX Admin (300)
-| View a PBX Admin (300) User Account
-| Update a PBX Admin (300) User Account
-| Delete a PBX Admin (300) User Account
-| <br>                                   |  |  |  |  |  |
-| Create a PBX Regular (301) User Account
-| View a PBX Regular (301) User Account
-| Update a PBX Regular (301) User Account
-| Delete a PBX Regular (301) User Account
-| <br>                                   |  |  |  |  |  |
-| Create a PBX Read Only (302) User Account
-| View a PBX Read Only (302) User Account
-| Update a PBX Read Only (302) User Account
-| Delete a PBX Read Only (302) User Account
-| <br>                                   |  |  |  |  |  |
-
-
-| <br>                                   |  |  |  |  |  |
-
-<br>
+|-------------------------------------------|--|--|--|--|--|--|
+| View Own User Account                     |  |  |  |  |  |  | 
+| Update Own User Account                   |  |  |  |  |  |  |
+| Delete Own User Account                   |  |  |  |  |  |  |
+| <br>
+| Create a YAP Admin<br>(100) User Account     |  |  |  |  |  |  |
+| View a YAP Admin<br>(100) User Account       |  |  |  |  |  |  |
+| Update a YAP Admin (100)                  |  |  |  |  |  |  |
+| Delete a YAP Admin (100)                  |  |  |  |  |  |  |
+| <br>
+| Create a Group Admin (200)                |  |  |  |  |  |  |
+| View a Group Admin (200)                  |  |  |  |  |  |  |
+| Update a Group Admin (200)                |  |  |  |  |  |  |
+| Delete a Group Admin (200)                |  |  |  |  |  |  |
+| <br>
+| Create a Group Regular<br>(201) User Account |  |  |  |  |  |  |
+| View a Group Regular<br>(201) User Account   |  |  |  |  |  |  |
+| Update a Group Regular<br>(201) User Account |  |  |  |  |  |  |
+| Delete a Group Regular<br>(201) User Account |  |  |  |  |  |  |
+| <br>
+| Create a PBX Admin (300)                  |  |  |  |  |  |  |
+| View a PBX Admin<br>(300) User Account       |  |  |  |  |  |  |
+| Update a PBX Admin<br>(300) User Account     |  |  |  |  |  |  |
+| Delete a PBX Admin<br>(300) User Account     |  |  |  |  |  |  |
+| <br>
+| Create a PBX Regular<br>(301) User Account   |  |  |  |  |  |  |
+| View a PBX Regular<br>(301) User Account     |  |  |  |  |  |  |
+| Update a PBX Regular<br>(301) User Account   |  |  |  |  |  |  |
+| Delete a PBX Regular<br>(301) User Account   |  |  |  |  |  |  |
+| <br>
+| Create a PBX Read Only<br>(302) User Account |  |  |  |  |  |  |
+| View a PBX Read Only<br>(302) User Account   |  |  |  |  |  |  |
+| Update a PBX Read Only<br>(302) User Account |  |  |  |  |  |  |
+| Delete a PBX Read Only<br>(302) User Account |  |  |  |  |  |  |
+| <br>
+| View Own Group                            |  |  |  |  |  |  |
+| Update Own Group                          |  |  |  |  |  |  |
+| Delete Own Group                          |  |  |  |  |  |  |
+| <br>
+| Create a Group                            |  |  |  |  |  |  |
+| View a Group                              |  |  |  |  |  |  |
+| Update a Group                            |  |  |  |  |  |  |
+| Delete a Group                            |  |  |  |  |  |  |
+| <br>
+| View Own PBX                              |  |  |  |  |  |  |
+| Update Own PBX                            |  |  |  |  |  |  |
+| Delete Own PBX                            |  |  |  |  |  |  |
+| <br>
+| Create a PBX                              |  |  |  |  |  |  |
+| View a PBX                                |  |  |  |  |  |  |
+| Update a PBX                              |  |  |  |  |  |  |
+| Delete a PBX                              |  |  |  |  |  |  |
+| <br>
+| Create a SIP Endpoint                     |  |  |  |  |  |  |
+| View a SIP Endpoint                       |  |  |  |  |  |  |
+| Update a SIP Endpoint                     |  |  |  |  |  |  |
+| Delete a SIP Endpoint                     |  |  |  |  |  |  |
+| <br>
+| Add a SIP Trunk                           |  |  |  |  |  |  |
+| View a SIP Trunk                          |  |  |  |  |  |  |
+| Update a SIP Trunk                        |  |  |  |  |  |  |
+| Delete a SIP Trunk                        |  |  |  |  |  |  |
+| <br>
+| Add a Phone Number                        |  |  |  |  |  |  |
+| View a Phone Number                       |  |  |  |  |  |  |
+| Update a Phone Number                     |  |  |  |  |  |  |
+| Delete a Phone Number                     |  |  |  |  |  |  |
+| <br>
+| View CDRs                                 |  |  |  |  |  |  |
+| Download CDRs                             |  |  |  |  |  |  |
+| <br>
+| View Voicemails                           |  |  |  |  |  |  |
+| Listen to Voicemails                      |  |  |  |  |  |  |
+| Download Voicemails                       |  |  |  |  |  |  |
+| Delete Voicemails                         |  |  |  |  |  |  |
+| <br>
+| View Call Recordings                      |  |  |  |  |  |  |
+| Listen to Call Recordings                 |  |  |  |  |  |  |
+| Download Call Recordings                  |  |  |  |  |  |  |
+| Delete Call Recordings                    |  |  |  |  |  |  |
+| <br>
+| Upload a MoH or AA Audio File             |  |  |  |  |  |  |
+| Listen to MoH and AA Audio Files          |  |  |  |  |  |  |
+| Download MoH and AA Audio Files           |  |  |  |  |  |  |
+| Delete MoH and AA Audio Files             |  |  |  |  |  |  |
+| <br>
+| Set Resource Limits                       |  |  |  |  |  |  |
+| View Resource Limits                      |  |  |  |  |  |  |
+| Set Storage Capacity                      |  |  |  |  |  |  |
+| View Storage Capacity                     |  |  |  |  |  |  |
+| <br>
+| View YAP User Account Logs                |  |  |  |  |  |  |
+| View Group Logs                           |  |  |  |  |  |  |
+| View PBX Logs                             |  |  |  |  |  |  |
+| Download Logs                             |  |  |  |  |  |  |
+| <br>
+| View Server Information                   |  |  |  |  |  |  |
+| Download Server Information               |  |  |  |  |  |  |
 
 ---
 
