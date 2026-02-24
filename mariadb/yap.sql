@@ -448,15 +448,15 @@ VALUES
   <tr>
     <td>
       &#9989 View Voicemails<br>
+      &#10060 Listen to Voicemails<br>
       &#10060 Download Voicemails<br>
       &#9989 Delete Voicemails<br>
-      <div class="main-menu-space"></div>
     </td>
     <td>
       &#9989 View Call Recordings<br>
+      &#10060 Listen to Call Recordings<br>
       &#10060 Download Call Recordings<br>
       &#9989 Delete Call Recordings<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -591,15 +591,15 @@ VALUES
   <tr>
     <td>
       &#9989 View Voicemails<br>
+      &#10060 Listen to Voicemails<br>
       &#10060 Download Voicemails<br>
       &#9989 Delete Voicemails<br>
-      <div class="main-menu-space"></div>
     </td>
     <td>
       &#9989 View Call Recordings<br>
+      &#10060 Listen to Call Recordings<br>
       &#10060 Download Call Recordings<br>
       &#9989 Delete Call Recordings<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -734,15 +734,15 @@ VALUES
   <tr>
     <td>
       &#9989 View Voicemails<br>
+      &#10060 Listen to Voicemails<br>
       &#10060 Download Voicemails<br>
       &#9989 Delete Voicemails<br>
-      <div class="main-menu-space"></div>
     </td>
     <td>
       &#9989 View Call Recordings<br>
+      &#10060 Listen to Call Recordings<br>
       &#10060 Download Call Recordings<br>
       &#9989 Delete Call Recordings<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -877,17 +877,15 @@ VALUES
   <tr>
     <td>
       &#9989 View Voicemails<br>
+      &#9989 Listen to Voicemails<br>
       &#9989 Download Voicemails<br>
       &#9989 Delete Voicemails<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
     </td>
     <td>
       &#9989 View Call Recordings<br>
+      &#9989 Listen to Call Recordings<br>
       &#9989 Download Call Recordings<br>
       &#9989 Delete Call Recordings<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -1022,15 +1020,15 @@ VALUES
   <tr>
     <td>
       &#9989 View Voicemails<br>
+      &#9989 Listen to Voicemails<br>
       &#9989 Download Voicemails<br>
       &#10060 Delete Voicemails<br>
-      <div class="main-menu-space"></div>
     </td>
     <td>
       &#9989 View Call Recordings<br>
+      &#9989 Listen to Call Recordings<br>
       &#9989 Download Call Recordings<br>
       &#10060 Delete Call Recordings<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -1165,15 +1163,15 @@ VALUES
   <tr>
     <td>
       &#9989 View Voicemails<br>
-      &#10060 Download Voicemails<br>
+      &#9989 Listen to Voicemails<br>
+      &#9989 Download Voicemails<br>
       &#10060 Delete Voicemails<br>
-      <div class="main-menu-space"></div>
     </td>
     <td>
       &#9989 View Call Recordings<br>
-      &#10060 Download Call Recordings<br>
+      &#9989 Listen to Call Recordings<br>
+      &#9989 Download Call Recordings<br>
       &#10060 Delete Call Recordings<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
