@@ -461,6 +461,20 @@ VALUES
   </tr>
   <tr>
     <td>
+      &#9989 Upload a MoH or AA Audio File<br>
+      &#9989 Listen to MoH and AA Audio Files<br>
+      &#9989 Download MoH and AA Audio Files<br>
+      &#9989 Delete MoH and AA Audio Files<br>
+    </td>
+    <td>
+      &#9989 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
+      &#9989 Set Storage Capacity<br>
+      &#9989 View Storage Capacity<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
       &#9989 View YAP User Account Logs<br>
       &#9989 View Group Logs<br>
       &#9989 View PBX Logs<br>
@@ -600,6 +614,20 @@ VALUES
       &#10060 Listen to Call Recordings<br>
       &#10060 Download Call Recordings<br>
       &#9989 Delete Call Recordings<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Upload a MoH or AA Audio File<br>
+      &#9989 Listen to MoH and AA Audio Files<br>
+      &#9989 Download MoH and AA Audio Files<br>
+      &#10060 Delete MoH and AA Audio Files<br>
+    </td>
+    <td>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
+      &#10060 Set Storage Capacity<br>
+      &#9989 View Storage Capacity<br>
     </td>
   </tr>
   <tr>
@@ -747,6 +775,20 @@ VALUES
   </tr>
   <tr>
     <td>
+      &#10060 Upload a MoH or AA Audio File<br>
+      &#9989 Listen to MoH and AA Audio Files<br>
+      &#9989 Download MoH and AA Audio Files<br>
+      &#10060 Delete MoH and AA Audio Files<br>
+    </td>
+    <td>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
+      &#10060 Set Storage Capacity<br>
+      &#9989 View Storage Capacity<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
       &#10060 View YAP User Account Logs<br>
       &#10060 View Group Logs<br>
       &#9989 View PBX Logs<br>
@@ -886,6 +928,20 @@ VALUES
       &#9989 Listen to Call Recordings<br>
       &#9989 Download Call Recordings<br>
       &#9989 Delete Call Recordings<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Upload a MoH or AA Audio File<br>
+      &#9989 Listen to MoH and AA Audio Files<br>
+      &#9989 Download MoH and AA Audio Files<br>
+      &#10060 Delete MoH and AA Audio Files<br>
+    </td>
+    <td>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
+      &#10060 Set Storage Capacity<br>
+      &#9989 View Storage Capacity<br>
     </td>
   </tr>
   <tr>
@@ -1033,6 +1089,20 @@ VALUES
   </tr>
   <tr>
     <td>
+      &#10060 Upload a MoH or AA Audio File<br>
+      &#9989 Listen to MoH and AA Audio Files<br>
+      &#9989 Download MoH and AA Audio Files<br>
+      &#10060 Delete MoH and AA Audio Files<br>
+    </td>
+    <td>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
+      &#10060 Set Storage Capacity<br>
+      &#9989 View Storage Capacity<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
       &#10060 View YAP User Account Logs<br>
       &#10060 View Group Logs<br>
       &#10060 View PBX Logs<br>
@@ -1172,6 +1242,20 @@ VALUES
       &#9989 Listen to Call Recordings<br>
       &#9989 Download Call Recordings<br>
       &#10060 Delete Call Recordings<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Upload a MoH or AA Audio File<br>
+      &#9989 Listen to MoH and AA Audio Files<br>
+      &#9989 Download MoH and AA Audio Files<br>
+      &#10060 Delete MoH and AA Audio Files<br>
+    </td>
+    <td>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
+      &#10060 Set Storage Capacity<br>
+      &#9989 View Storage Capacity<br>
     </td>
   </tr>
   <tr>
