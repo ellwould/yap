@@ -17,13 +17,35 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-![image](https://github.com/ellwould/yap/blob/main/image/main_menu_yap_admin_1.jpeg)
+![image](https://github.com/ellwould/yap/blob/main/image/main_menu_1.jpeg)
+
+![image](https://github.com/ellwould/yap/blob/main/image/main_menu_2.jpeg)
 
 <br>
 
 **Show/hide more account details button pressed:**
 
-![image](https://github.com/ellwould/yap/blob/main/image/main_menu_yap_admin_2.jpeg)
+![image](https://github.com/ellwould/yap/blob/main/image/permissions_1.jpeg)
+
+![image](https://github.com/ellwould/yap/blob/main/image/permissions_2.jpeg)
+
+<br>
+
+**Call Recording page (still in development):**
+
+![image](https://github.com/ellwould/yap/blob/main/image/call_recordings_incomplete.jpeg)
+
+<br>
+
+**Groups page (still in development):**
+
+![image](https://github.com/ellwould/yap/blob/main/image/groups_incomplete.jpeg)
+
+<br>
+
+**PBX page (still in development):**
+
+![image](https://github.com/ellwould/yap/blob/main/image/pbx_incomplete.jpeg)
 
 <br>
 
