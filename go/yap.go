@@ -393,7 +393,7 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 			panic(err)
 		}
 
-		fmt.Fprintf(w, "<table id=\"table\" class\"table-main-menu\">")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>&nbsp Group Name and ID &nbsp</th>")
 		fmt.Fprintf(w, "    <th>&nbsp Total PBX(s) in Group &nbsp</th>")
@@ -410,7 +410,7 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
-		fmt.Fprintf(w, "<table id=\"table\" class\"table-main-menu\">")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>&nbsp Group Site Address &nbsp</th>")
 		fmt.Fprintf(w, "    <th>&nbsp Group Site Email &nbsp</th>")
@@ -423,7 +423,7 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
-		fmt.Fprintf(w, "<table id=\"table\" class\"table-main-menu\">")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>&nbsp Group Invoice Address &nbsp</th>")
 		fmt.Fprintf(w, "    <th>&nbsp Group Invoice Email &nbsp</th>")
@@ -516,7 +516,7 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 			panic(err)
 		}
 
-		fmt.Fprintf(w, "<table id=\"table\" class\"table-main-menu\">")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>&nbsp PBX Name and ID &nbsp</th>")
 		fmt.Fprintf(w, "    <th>&nbsp Total SIP Extensions in PBX &nbsp</th>")
@@ -533,7 +533,7 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
-		fmt.Fprintf(w, "<table id=\"table\" class\"table-main-menu\">")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>&nbsp PBX Site Address &nbsp</th>")
 		fmt.Fprintf(w, "    <th>&nbsp PBX Site Email &nbsp</th>")
@@ -546,7 +546,7 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
-		fmt.Fprintf(w, "<table id=\"table\" class\"table-main-menu\">")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>&nbsp PBX Invoice Address &nbsp</th>")
 		fmt.Fprintf(w, "    <th>&nbsp PBX Invoice Email &nbsp</th>")
@@ -650,12 +650,13 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 	var dbDetail databaseFunctionParameter
 	dbDetail.connection = dbUserInformation.connection
 	dbDetail.database = dbUserInformation.database
+	dbDetail.columnWhereValue = dbUserInformation.columnWhereValue
 
-	if userTypeID == "100" || userTypeID == "101" {
+	if userTypeID == "100" {
 		mainMenuYapAccount(w, dbDetail)
 	} else if userTypeID == "200" || userTypeID == "201" {
 		mainMenuGroupAccount(w, dbDetail)
-	} else if userTypeID == "300" || userTypeID == "301" {
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		mainMenuPBXAccount(w, dbDetail)
 	} else {
 	}
