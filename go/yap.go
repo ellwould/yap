@@ -61,6 +61,7 @@ func emailHeaderHTTP(r *http.Request) (email string) {
 	return email
 }
 
+// Function to generate a unique ID using Sonyflake
 func genID() (uniqueID string) {
 	// Sonyflake custom setting
 	sonyFlakeSetting := sonyflake.Settings{
@@ -129,18 +130,21 @@ func footer(w http.ResponseWriter, headerCSS string, buttonCSS string) {
 //----------------------------------------------------------------------------------------------------
 
 type databaseFunctionParameter struct {
-	connection       *sql.DB
-	database         string
-	table            string
-	column           string
-	columnWhere      string
-	columnWhereValue string
-	countMinusOne    bool
+	connection          *sql.DB
+	database            string
+	table               string
+	column              string
+	columnWhere         string
+	columnWhereValue    string
+	columnWhereAnd      string
+	columnWhereValueAnd string
+	countMinusOne       bool
 }
 
 func selectWhere(dbSelectWhere databaseFunctionParameter) string {
 	var selectWhere string
 	selectWhereQuery, err := dbSelectWhere.connection.Query("SELECT "+dbSelectWhere.column+" FROM "+dbSelectWhere.database+"."+dbSelectWhere.table+" WHERE "+dbSelectWhere.columnWhere+" = ?;", dbSelectWhere.columnWhereValue)
+
 	if err != nil {
 		panic(err)
 	}
@@ -202,6 +206,23 @@ func totalTableCountWhere(w http.ResponseWriter, dbTotalTableCountWhere database
 	return count
 }
 
+func totalTableCountWhereAnd(w http.ResponseWriter, dbTotalTableCountWhereAnd databaseFunctionParameter) string {
+	var count string
+	countQuery, err := dbTotalTableCountWhereAnd.connection.Query("SELECT COUNT(*) FROM "+dbTotalTableCountWhereAnd.database+"."+dbTotalTableCountWhereAnd.table+" WHERE "+dbTotalTableCountWhereAnd.columnWhere+" =?"+" AND "+dbTotalTableCountWhereAnd.columnWhereAnd+" =?", dbTotalTableCountWhereAnd.columnWhereValue, dbTotalTableCountWhereAnd.columnWhereValueAnd)
+	//Error
+	if err != nil {
+		panic(err)
+	}
+	for countQuery.Next() {
+		err = countQuery.Scan(&count)
+		// Error
+		if err != nil {
+			panic(err)
+		}
+	}
+	return count
+}
+
 func userAccountTypeID(dbUserAccountTypeID databaseFunctionParameter) string {
 
 	var dbSelectWhere databaseFunctionParameter
@@ -215,9 +236,25 @@ func userAccountTypeID(dbUserAccountTypeID databaseFunctionParameter) string {
 	return selectWhere(dbSelectWhere)
 }
 
+// Function to create a HTTP server that serves files with path named download
+func download(id string, file string) {
+	http.HandleFunc("/download/"+id+"/"+file, func(w http.ResponseWriter, r *http.Request) {
+		dirPathB := "/var/lib/yap/call-recording/" + file + ""
+		http.ServeFile(w, r, dirPathB)
+	})
+}
+
+// Function to create a HTTP server with path named play-audio
+func playAudio(id string, file string) {
+	http.HandleFunc("/play-audio", func(w http.ResponseWriter, r *http.Request) {
+	})
+}
+
 //----------------------------------------------------------------------------------------------------
 
-func yapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
+// Main menu page functions
+
+func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
 
 	var dbTotalTableCount databaseFunctionParameter
 	dbTotalTableCount.connection = dbYapAccount.connection
@@ -276,7 +313,7 @@ func yapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
 
 }
 
-func groupAccount(w http.ResponseWriter, dbGroupAccount databaseFunctionParameter) {
+func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunctionParameter) {
 
 	result, err := dbGroupAccount.connection.Query(`SELECT
 					     group_name,
@@ -401,7 +438,7 @@ func groupAccount(w http.ResponseWriter, dbGroupAccount databaseFunctionParamete
 	}
 }
 
-func pbxAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionParameter) {
+func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionParameter) {
 
 	result, err := dbPBXAccount.connection.Query(`SELECT
 					     pbx_name,
@@ -526,7 +563,8 @@ func pbxAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionParameter) {
 
 }
 
-func userInformation(w http.ResponseWriter, dbUserInformation databaseFunctionParameter, userTypeID string) {
+// Function for main menu page user information
+func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFunctionParameter, userTypeID string) {
 
 	result, err := dbUserInformation.connection.Query(`SELECT
 					     user_account_type_id,
@@ -614,11 +652,11 @@ func userInformation(w http.ResponseWriter, dbUserInformation databaseFunctionPa
 	dbDetail.database = dbUserInformation.database
 
 	if userTypeID == "100" || userTypeID == "101" {
-		yapAccount(w, dbDetail)
+		mainMenuYapAccount(w, dbDetail)
 	} else if userTypeID == "200" || userTypeID == "201" {
-		groupAccount(w, dbDetail)
+		mainMenuGroupAccount(w, dbDetail)
 	} else if userTypeID == "300" || userTypeID == "301" {
-		pbxAccount(w, dbDetail)
+		mainMenuPBXAccount(w, dbDetail)
 	} else {
 	}
 	fmt.Fprintf(w, "</div>")
@@ -643,6 +681,7 @@ type mainMenuParameter struct {
 	buttonCSS  string
 }
 
+// Function for main menu page buttons (hyperlinks)
 func mainMenuButton(mainMenu mainMenuParameter) {
 	fmt.Fprintf(mainMenu.writeHTTP, "&nbsp")
 	fmt.Fprintf(mainMenu.writeHTTP, "<h2 class=\""+mainMenu.headerCSS+"\">")
@@ -653,19 +692,243 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 
 //----------------------------------------------------------------------------------------------------
 
-func download(id string, file string) {
-	http.HandleFunc("/download/"+id+"/"+file, func(w http.ResponseWriter, r *http.Request) {
-		dirPathB := "/var/lib/yap/call-recording/" + file + ""
-		http.ServeFile(w, r, dirPathB)
-	})
+// User account page functions
+
+func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string) {
+	ownUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+					     user_account_first_name,
+					     user_account_last_name,
+					     user_account_email,
+					     user_account_type,
+					     user_account_date_added,
+					     group_id,
+					     pbx_id
+					   FROM yap.view___account_detail
+					   WHERE user_account_email = ?;`, dbDetail.columnWhereValue)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for ownUserAccountSQL.Next() {
+		var (
+			userAccountFirstName string
+			userAccountLastName  string
+			userAccountEmail     string
+			userAccountType      string
+			userAccountDateAdded string
+			groupID              string
+			pbxID                string
+		)
+
+		err = ownUserAccountSQL.Scan(
+			&userAccountFirstName,
+			&userAccountLastName,
+			&userAccountEmail,
+			&userAccountType,
+			&userAccountDateAdded,
+			&groupID,
+			&pbxID,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var dbTotalTableCount databaseFunctionParameter
+		dbTotalTableCount.connection = dbDetail.connection
+		dbTotalTableCount.database = dbDetail.database
+
+		var dbTotalTableCountWhere databaseFunctionParameter
+		dbTotalTableCountWhere.connection = dbDetail.connection
+		dbTotalTableCountWhere.database = dbDetail.database
+		dbTotalTableCountWhere.table = "user_account"
+		dbTotalTableCountWhere.columnWhere = "user_account_type_id"
+
+		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
+			fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
+			fmt.Fprintf(w, "  <tr>")
+			if userTypeID == "100" {
+				fmt.Fprintf(w, "    <th>Total YAP<br>Admin<br>Accounts<br>(Type ID: 100)</th>")
+			}
+			if userTypeID == "100" || userTypeID == "200" {
+				fmt.Fprintf(w, "    <th>Total Group<br>Admin<br>Accounts<br>(Type ID: 200)</th>")
+				fmt.Fprintf(w, "    <th>Total Group<br>Regular<br>Accounts<br>(Type ID: 201)</th>")
+			}
+			if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
+				fmt.Fprintf(w, "    <th>Total PBX<br>Admin<br>Accounts<br>(Type ID: 300)</th>")
+				fmt.Fprintf(w, "    <th>Total PBX<br>Regular<br>Accounts<br>(Type ID: 301)</th>")
+				fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
+			}
+			fmt.Fprintf(w, "  </tr>")
+			fmt.Fprintf(w, "  <tr>")
+			if userTypeID == "100" {
+				dbTotalTableCountWhere.columnWhereValue = "100"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "200"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "201"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "300"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "301"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "302"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+			} else if userTypeID == "200" || userTypeID == "201" {
+				dbTotalTableCountWhere.columnWhereAnd = "group_id"
+				dbTotalTableCountWhere.columnWhereValueAnd = groupID
+				if userTypeID == "200" {
+					dbTotalTableCountWhere.columnWhereValue = "200"
+					fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+					dbTotalTableCountWhere.columnWhereValue = "201"
+					fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				}
+				dbTotalTableCountWhere.columnWhereValue = "300"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "301"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "302"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+			} else if userTypeID == "300" {
+				dbTotalTableCountWhere.columnWhereAnd = "pbx_id"
+				dbTotalTableCountWhere.columnWhereValueAnd = pbxID
+				dbTotalTableCountWhere.columnWhereValue = "300"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "301"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				dbTotalTableCountWhere.columnWhereValue = "302"
+				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+			}
+			fmt.Fprintf(w, "  </tr>")
+			fmt.Fprintf(w, "</table>")
+			fmt.Fprintf(w, "<br>")
+
+		}
+
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>Own User Account Details:</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>&nbsp Name &nbsp</th>")
+		fmt.Fprintf(w, "          <th>&nbsp Email &nbsp</th>")
+		fmt.Fprintf(w, "          <th>&nbsp Account Type &nbsp</th>")
+		fmt.Fprintf(w, "          <th>&nbsp Account Created &nbsp</th>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userAccountFirstName+"&nbsp<br>"+userAccountLastName+"</td>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userAccountEmail+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userTypeID+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userAccountDateAdded+"&nbsp</td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
+			fmt.Fprintf(w, "  <tr>")
+			fmt.Fprintf(w, "    <th><button onclick=\"toggleOtherAccount() \"class=\"button-general button-user-account\">&nbsp Show / Hide Other Account(s) &nbsp</button></th>")
+			fmt.Fprintf(w, "  </tr>")
+		}
+		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "<br>")
+	}
+
+	otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+                                                     user_account_type_id,
+                                                     user_account_first_name,
+                                                     user_account_last_name,
+                                                     user_account_email,
+                                                     user_account_type,
+                                                     user_account_date_added,
+                                                     group_id,
+                                                     pbx_id
+                                                   FROM yap.view___account_detail
+                                                   WHERE user_account_email = ?;`, dbDetail.columnWhereValue)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for otherUserAccountSQL.Next() {
+		var (
+			userAccountTypeID    string
+			userAccountFirstName string
+			userAccountLastName  string
+			userAccountEmail     string
+			userAccountType      string
+			userAccountDateAdded string
+			groupID              string
+			pbxID                string
+		)
+
+		err = otherUserAccountSQL.Scan(
+			&userAccountTypeID,
+			&userAccountFirstName,
+			&userAccountLastName,
+			&userAccountEmail,
+			&userAccountType,
+			&userAccountDateAdded,
+			&groupID,
+			&pbxID,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>Own User Account Details:</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>&nbsp Name &nbsp</th>")
+		fmt.Fprintf(w, "          <th>&nbsp Email &nbsp</th>")
+		fmt.Fprintf(w, "          <th>&nbsp Account Type &nbsp</th>")
+		fmt.Fprintf(w, "          <th>&nbsp Account Created &nbsp</th>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userAccountFirstName+"&nbsp<br>"+userAccountLastName+"</td>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userAccountEmail+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userTypeID+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td>&nbsp"+userAccountDateAdded+"&nbsp</td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+	}
 }
 
-func playAudio(id string, file string) {
-	http.HandleFunc("/play-audio", func(w http.ResponseWriter, r *http.Request) {
-	})
+func userAccountAdd() {
+
+}
+
+func userAccountEdit() {
+
+}
+
+func userAccountDelete() {
+
 }
 
 //----------------------------------------------------------------------------------------------------
+
+// Group page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// PBX page functions
 
 // Function to create a PBX dialplan table in MariaDB
 func createDailplanTable(dbDetail databaseFunctionParameter) {
@@ -682,6 +945,42 @@ func dropDailplanTable(dbDetail databaseFunctionParameter) {
 		panic(err)
 	}
 }
+
+//----------------------------------------------------------------------------------------------------
+
+// SIP endpoint page Functions
+
+//----------------------------------------------------------------------------------------------------
+
+// SIP trunk page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// Phone number page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// CDR page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// Voicemail page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// Call recording page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// MoH / AA music page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// Server log page functions
+
+//----------------------------------------------------------------------------------------------------
+
+// Server information functions
 
 //----------------------------------------------------------------------------------------------------
 
@@ -774,7 +1073,7 @@ func main() {
 		} else {
 			if userTypeID == "100" {
 				header(w, "Main Menu", "")
-				userInformation(w, dbDetail, userTypeID)
+				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "All User<br>Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
@@ -811,12 +1110,12 @@ func main() {
 				footer(w, "", "")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				header(w, "Main Menu", "")
-				userInformation(w, dbDetail, userTypeID)
+				mainMenuUserInformation(w, dbDetail, userTypeID)
 				footer(w, "", "")
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 				header(w, "Main Menu", "")
-                                userInformation(w, dbDetail, userTypeID)
-                                footer(w, "", "")
+				mainMenuUserInformation(w, dbDetail, userTypeID)
+				footer(w, "", "")
 			} else {
 				errorBox(w, "account_type_error")
 			}
@@ -828,12 +1127,61 @@ func main() {
 	// User Account Page
 	http.HandleFunc("/user-account", func(w http.ResponseWriter, r *http.Request) {
 
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
 		fmt.Fprintf(w, startHTML)
-		header(w, "User Account", "header-user-account")
+
 		// Wallpaper
 		wallpaper(w, "wallpaper-user-account")
 
-		footer(w, "header-user-account", "button-user-account")
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountTypeID(dbDetail)
+
+		if userTypeID == "" {
+			errorBox(w, "email_error")
+		} else {
+			if userTypeID == "100" {
+				header(w, "All User Accounts<br>on the Server", "header-user-account")
+				userAccountList(w, dbDetail, userTypeID)
+				footer(w, "header-user-account", "button-user-account")
+			} else if userTypeID == "200" {
+				header(w, "All User Accounts<br>Within the Group", "header-user-account")
+				userAccountList(w, dbDetail, userTypeID)
+				footer(w, "header-user-account", "button-user-account")
+			} else if userTypeID == "201" {
+				header(w, "All User Accounts<br>Within the Groups PBX(s)", "header-user-account")
+				userAccountList(w, dbDetail, userTypeID)
+				footer(w, "header-user-account", "button-user-account")
+			} else if userTypeID == "300" {
+				header(w, "All User Accounts<br>Within the PBX", "header-user-account")
+				userAccountList(w, dbDetail, userTypeID)
+				footer(w, "header-user-account", "button-user-account")
+			} else if userTypeID == "301" {
+				header(w, "User Account<br>for the PBX", "header-user-account")
+				userAccountList(w, dbDetail, userTypeID)
+				footer(w, "header-user-account", "button-user-account")
+			} else if userTypeID == "302" {
+				header(w, "User Account<br>for the PBX (Read Only)", "header-user-account")
+				userAccountList(w, dbDetail, userTypeID)
+				footer(w, "header-user-account", "button-user-account")
+			} else {
+				errorBox(w, "account_type_error")
+			}
+		}
 		fmt.Fprintf(w, endHTML)
 	})
 
