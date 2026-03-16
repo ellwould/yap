@@ -575,7 +575,6 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFunctionParameter, userTypeID string) {
 
 	result, err := dbUserInformation.connection.Query(`SELECT
-					     user_account_type_id,
 					     user_account_first_name,
 					     user_account_last_name,
 					     user_account_email,
@@ -592,7 +591,6 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 
 	for result.Next() {
 		var (
-			userAccountTypeId         string
 			userAccountFirstName      string
 			userAccountLastName       string
 			userAccountEmail          string
@@ -602,7 +600,6 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		)
 
 		err = result.Scan(
-			&userAccountTypeId,
 			&userAccountFirstName,
 			&userAccountLastName,
 			&userAccountEmail,
@@ -825,16 +822,16 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <th>&nbsp Name &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Email &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Account Type &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Account Created &nbsp</th>")
+		fmt.Fprintf(w, "          <th>Name</th>")
+		fmt.Fprintf(w, "          <th>Email</th>")
+		fmt.Fprintf(w, "          <th>Account Type</th>")
+		fmt.Fprintf(w, "          <th>Account Created</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountFirstName+"&nbsp<br>"+userAccountLastName+"</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountEmail+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userTypeID+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountDateAdded+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
@@ -848,6 +845,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "<br>")
 	}
 
+	groupID := userAccountData(dbDetail, "group_id")
+
 	otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
                                                      user_account_type_id,
                                                      user_account_first_name,
@@ -855,15 +854,32 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
                                                      user_account_email,
                                                      user_account_type,
                                                      user_account_date_added,
-                                                     group_id,
-                                                     pbx_id
+                                                     group_name,
+                                                     pbx_id,
+                                                     pbx_name
                                                    FROM yap.view___account_detail
-                                                   WHERE user_account_email = ?;`, dbDetail.columnWhereValue)
+                                                   WHERE group_id =?;`, groupID)
 
 	// Error
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>Own User Account Details:</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <th>Name</th>")
+	fmt.Fprintf(w, "          <th>Email</th>")
+	fmt.Fprintf(w, "          <th>Account Type</th>")
+	fmt.Fprintf(w, "          <th>Account Created</th>")
+	fmt.Fprintf(w, "	  <th>Group Name<br>Group ID</th>")
+	fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
+	fmt.Fprintf(w, "        </tr>")
 
 	for otherUserAccountSQL.Next() {
 		var (
@@ -873,8 +889,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			userAccountEmail     string
 			userAccountType      string
 			userAccountDateAdded string
-			groupID              string
+			groupName            string
 			pbxID                string
+			pbxName              string
 		)
 
 		err = otherUserAccountSQL.Scan(
@@ -884,8 +901,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			&userAccountEmail,
 			&userAccountType,
 			&userAccountDateAdded,
-			&groupID,
+			&groupName,
 			&pbxID,
+			&pbxName,
 		)
 
 		// Error
@@ -893,30 +911,27 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			panic(err)
 		}
 
-		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
-		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>Own User Account Details:</th>")
-		fmt.Fprintf(w, "  </tr>")
-		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>")
-		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <th>&nbsp Name &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Email &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Account Type &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Account Created &nbsp</th>")
+		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+		if userAccountTypeID == "100" || userAccountTypeID == "200" || userAccountTypeID == "201" {
+			fmt.Fprintf(w, "          <td>"+groupName+"<br>("+groupID+")</td>")
+		} else {
+			fmt.Fprintf(w, "          <td>-</td>")
+		}
+		if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
+			fmt.Fprintf(w, "          <td>"+pbxName+"<br>("+pbxID+")</td>")
+		} else {
+			fmt.Fprintf(w, "          <td>-</td>")
+		}
 		fmt.Fprintf(w, "        </tr>")
-		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountFirstName+"&nbsp<br>"+userAccountLastName+"</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountEmail+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userTypeID+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountDateAdded+"&nbsp</td>")
-		fmt.Fprintf(w, "        </tr>")
-		fmt.Fprintf(w, "      </table>")
-		fmt.Fprintf(w, "    </th>")
-		fmt.Fprintf(w, "  </tr>")
-		fmt.Fprintf(w, "</table>")
 	}
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
 }
 
 func userAccountAdd() {
