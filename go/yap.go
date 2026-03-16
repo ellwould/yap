@@ -223,15 +223,23 @@ func totalTableCountWhereAnd(w http.ResponseWriter, dbTotalTableCountWhereAnd da
 	return count
 }
 
-func userAccountTypeID(dbUserAccountTypeID databaseFunctionParameter) string {
+func userAccountData(dbUserAccountData databaseFunctionParameter, data string) string {
 
 	var dbSelectWhere databaseFunctionParameter
-	dbSelectWhere.connection = dbUserAccountTypeID.connection
-	dbSelectWhere.database = dbUserAccountTypeID.database
+	dbSelectWhere.connection = dbUserAccountData.connection
+	dbSelectWhere.database = dbUserAccountData.database
 	dbSelectWhere.table = "view___account_detail"
-	dbSelectWhere.column = "user_account_type_id"
+	if data == "type_id" {
+		dbSelectWhere.column = "user_account_type_id"
+	} else if data == "group_id" {
+		dbSelectWhere.column = "group_id"
+	} else if data == "pbx_id" {
+		dbSelectWhere.column = "pbx_id"
+	} else {
+		panic("The function userAccountData can only accept the following arguments: type_id, group_id or pbx_id")
+	}
 	dbSelectWhere.columnWhere = "user_account_email"
-	dbSelectWhere.columnWhereValue = dbUserAccountTypeID.columnWhereValue
+	dbSelectWhere.columnWhereValue = dbUserAccountData.columnWhereValue
 
 	return selectWhere(dbSelectWhere)
 }
@@ -1067,7 +1075,7 @@ func main() {
 		dbDetail.database = dbName
 		dbDetail.columnWhereValue = email
 
-		userTypeID := userAccountTypeID(dbDetail)
+		userTypeID := userAccountData(dbDetail, "type_id")
 
 		if userTypeID == "" {
 			errorBox(w, "email_error")
@@ -1150,7 +1158,7 @@ func main() {
 		dbDetail.database = dbName
 		dbDetail.columnWhereValue = email
 
-		userTypeID := userAccountTypeID(dbDetail)
+		userTypeID := userAccountData(dbDetail, "type_id")
 
 		if userTypeID == "" {
 			errorBox(w, "email_error")
