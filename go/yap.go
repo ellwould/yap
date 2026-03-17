@@ -86,9 +86,9 @@ func genID() (uniqueID string) {
 }
 
 // Function for error message
-func errorBox(w http.ResponseWriter, errorType string) {
+func errorBox(w http.ResponseWriter, errorType string, headerCSS string) {
 	fmt.Fprintf(w, "<div class=\"div-error-box\">")
-	fmt.Fprintf(w, "  <h1>")
+	fmt.Fprintf(w, "  <h1 class=\""+headerCSS+"\">")
 	if errorType == "email_error" {
 		fmt.Fprintf(w, "    User Account Not Found")
 	} else if errorType == "account_type_error" {
@@ -106,13 +106,13 @@ func errorBox(w http.ResponseWriter, errorType string) {
 func header(w http.ResponseWriter, headerTitle string, headerCSS string) {
 	fmt.Fprintf(w, "<div class=\"div-header\">")
 	fmt.Fprintf(w, "  <h1 class=\""+headerCSS+"\">")
+	fmt.Fprintf(w, "    ⊛ YAP [Yet Another PBX] ⊛")
+	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"button-general button-header button-logout\">Logout</a>")
 	fmt.Fprintf(w, "    <a href=\"/\" class=\"button-general button-header button-home\">Home</a>")
 	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap/blob/main/LICENSE\" target=\"_blank\" class=\"button-general button-header button-license\">License</a>")
 	fmt.Fprintf(w, "    <br>")
-	fmt.Fprintf(w, "    ⊛ YAP [Yet Another PBX] ⊛")
-	fmt.Fprintf(w, "    <br>")
-	fmt.Fprintf(w, "    "+headerTitle+"")
+	fmt.Fprintf(w, "    "+headerTitle)
 	fmt.Fprintf(w, "  </h1>")
 	fmt.Fprintf(w, "</div>")
 }
@@ -233,10 +233,14 @@ func userAccountData(dbUserAccountData databaseFunctionParameter, data string) s
 		dbSelectWhere.column = "user_account_type_id"
 	} else if data == "group_id" {
 		dbSelectWhere.column = "group_id"
+	} else if data == "group_name" {
+		dbSelectWhere.column = "group_name"
 	} else if data == "pbx_id" {
 		dbSelectWhere.column = "pbx_id"
+	} else if data == "pbx_name" {
+		dbSelectWhere.column = "pbx_name"
 	} else {
-		panic("The function userAccountData can only accept the following arguments: type_id, group_id or pbx_id")
+		panic("The function userAccountData can only accept the following arguments: type_id, group_id, group_name or pbx_id")
 	}
 	dbSelectWhere.columnWhere = "user_account_email"
 	dbSelectWhere.columnWhereValue = dbUserAccountData.columnWhereValue
@@ -842,96 +846,215 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "  </tr>")
 		}
 		fmt.Fprintf(w, "</table>")
-		fmt.Fprintf(w, "<br>")
 	}
 
-	groupID := userAccountData(dbDetail, "group_id")
+	if userTypeID == "100" {
 
-	otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
-                                                     user_account_type_id,
+		otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+						     user_account_type_id,
                                                      user_account_first_name,
-                                                     user_account_last_name,
-                                                     user_account_email,
-                                                     user_account_type,
-                                                     user_account_date_added,
+                                                     user_account_last_name,  
+                                                     user_account_email,                                                   
+                                                     user_account_type,  
+                                                     user_account_date_added, 
+                                                     group_id,
                                                      group_name,
                                                      pbx_id,
-                                                     pbx_name
-                                                   FROM yap.view___account_detail
-                                                   WHERE group_id =?;`, groupID)
-
-	// Error
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
-	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th>Own User Account Details:</th>")
-	fmt.Fprintf(w, "  </tr>")
-	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
-	fmt.Fprintf(w, "        <tr>")
-	fmt.Fprintf(w, "          <th>Name</th>")
-	fmt.Fprintf(w, "          <th>Email</th>")
-	fmt.Fprintf(w, "          <th>Account Type</th>")
-	fmt.Fprintf(w, "          <th>Account Created</th>")
-	fmt.Fprintf(w, "	  <th>Group Name<br>Group ID</th>")
-	fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
-	fmt.Fprintf(w, "        </tr>")
-
-	for otherUserAccountSQL.Next() {
-		var (
-			userAccountTypeID    string
-			userAccountFirstName string
-			userAccountLastName  string
-			userAccountEmail     string
-			userAccountType      string
-			userAccountDateAdded string
-			groupName            string
-			pbxID                string
-			pbxName              string
-		)
-
-		err = otherUserAccountSQL.Scan(
-			&userAccountTypeID,
-			&userAccountFirstName,
-			&userAccountLastName,
-			&userAccountEmail,
-			&userAccountType,
-			&userAccountDateAdded,
-			&groupName,
-			&pbxID,
-			&pbxName,
-		)
+                                                     pbx_name						     
+						   FROM yap.view___account_detail;`)
 
 		// Error
 		if err != nil {
 			panic(err)
 		}
 
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>All User Account Details on the Server:</th>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
-		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-		fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-		if userAccountTypeID == "100" || userAccountTypeID == "200" || userAccountTypeID == "201" {
-			fmt.Fprintf(w, "          <td>"+groupName+"<br>("+groupID+")</td>")
-		} else {
-			fmt.Fprintf(w, "          <td>-</td>")
-		}
-		if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
-			fmt.Fprintf(w, "          <td>"+pbxName+"<br>("+pbxID+")</td>")
-		} else {
-			fmt.Fprintf(w, "          <td>-</td>")
-		}
+		fmt.Fprintf(w, "          <th>Name</th>")
+		fmt.Fprintf(w, "          <th>Email</th>")
+		fmt.Fprintf(w, "          <th>Account Type</th>")
+		fmt.Fprintf(w, "          <th>Account Created</th>")
+		fmt.Fprintf(w, "          <th>Group Name<br>Group ID</th>")
+		fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
 		fmt.Fprintf(w, "        </tr>")
+
+		for otherUserAccountSQL.Next() {
+			var (
+				userAccountTypeID    string
+				userAccountFirstName string
+				userAccountLastName  string
+				userAccountEmail     string
+				userAccountType      string
+				userAccountDateAdded string
+				groupID              string
+				groupName            string
+				pbxID                string
+				pbxName              string
+			)
+
+			err = otherUserAccountSQL.Scan(
+				&userAccountTypeID,
+				&userAccountFirstName,
+				&userAccountLastName,
+				&userAccountEmail,
+				&userAccountType,
+				&userAccountDateAdded,
+				&groupID,
+				&groupName,
+				&pbxID,
+				&pbxName,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+			if groupID != "1" {
+				fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")</td>")
+			} else {
+				fmt.Fprintf(w, "          <td>-</td>")
+			}
+			if pbxID != "1" {
+				fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+			} else {
+				fmt.Fprintf(w, "          <td>-</td>")
+			}
+			fmt.Fprintf(w, "        </tr>")
+		}
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
 	}
-	fmt.Fprintf(w, "      </table>")
-	fmt.Fprintf(w, "    </th>")
-	fmt.Fprintf(w, "  </tr>")
-	fmt.Fprintf(w, "</table>")
+
+	if userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
+
+		userGroupID := userAccountData(dbDetail, "group_id")
+		userGroupName := userAccountData(dbDetail, "group_name")
+		userPBXID := userAccountData(dbDetail, "pbx_id")
+		userPBXName := userAccountData(dbDetail, "pbx_name")
+
+		otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+                                                     user_account_type_id,
+                                                     user_account_first_name,
+                                                     user_account_last_name,
+                                                     user_account_email,
+                                                     user_account_type,
+                                                     user_account_date_added,
+                                                     pbx_id,
+                                                     pbx_name
+                                                   FROM yap.view___account_detail
+                                                   WHERE group_id =?;`, userGroupID)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "  <tr>")
+		if userTypeID == "200" {
+			fmt.Fprintf(w, "    <th>User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
+		} else if userTypeID == "201" {
+			fmt.Fprintf(w, "    <th>PBX User Account Details Within the Group<br>"+userGroupName+"<br>(pbx ID: "+userGroupID+")</th>")
+		} else if userTypeID == "300" {
+			fmt.Fprintf(w, "    <th>PBX User Account Details Within the PBX<br>"+userPBXName+"<br>(PBX ID: "+userPBXID+")</th>")
+		}
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Name</th>")
+		fmt.Fprintf(w, "          <th>Email</th>")
+		fmt.Fprintf(w, "          <th>Account Type</th>")
+		fmt.Fprintf(w, "          <th>Account Created</th>")
+		fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
+		fmt.Fprintf(w, "        </tr>")
+
+		for otherUserAccountSQL.Next() {
+			var (
+				userAccountTypeID    string
+				userAccountFirstName string
+				userAccountLastName  string
+				userAccountEmail     string
+				userAccountType      string
+				userAccountDateAdded string
+				pbxID                string
+				pbxName              string
+			)
+
+			err = otherUserAccountSQL.Scan(
+				&userAccountTypeID,
+				&userAccountFirstName,
+				&userAccountLastName,
+				&userAccountEmail,
+				&userAccountType,
+				&userAccountDateAdded,
+				&pbxID,
+				&pbxName,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			if userTypeID == "200" {
+				fmt.Fprintf(w, "        <tr>")
+				fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+				if pbxID != "1" {
+					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+				} else {
+					fmt.Fprintf(w, "          <td>-</td>")
+				}
+				fmt.Fprintf(w, "        </tr>")
+			} else if userTypeID == "201" {
+				if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
+					fmt.Fprintf(w, "        <tr>")
+					fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+					fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+					fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+					fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+					fmt.Fprintf(w, "        </tr>")
+				}
+			} else {
+				if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
+					if pbxID == userPBXID {
+						fmt.Fprintf(w, "        <tr>")
+						fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+						fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+						fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+						fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+						fmt.Fprintf(w, "        </tr>")
+					}
+				}
+			}
+		}
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+	}
 }
 
 func userAccountAdd() {
@@ -1093,7 +1216,7 @@ func main() {
 		userTypeID := userAccountData(dbDetail, "type_id")
 
 		if userTypeID == "" {
-			errorBox(w, "email_error")
+			errorBox(w, "email_error", "header-main-menu")
 		} else {
 			if userTypeID == "100" {
 				header(w, "Main Menu", "")
@@ -1141,7 +1264,7 @@ func main() {
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				footer(w, "", "")
 			} else {
-				errorBox(w, "account_type_error")
+				errorBox(w, "account_type_error", "header-main-menu")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -1174,36 +1297,40 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
+		userGroupID := userAccountData(dbDetail, "group_id")
+		userGroupName := userAccountData(dbDetail, "group_name")
+		userPBXID := userAccountData(dbDetail, "pbx_id")
+		userPBXName := userAccountData(dbDetail, "pbx_name")
 
 		if userTypeID == "" {
-			errorBox(w, "email_error")
+			errorBox(w, "email_error", "header-user-account")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All User Accounts<br>on the Server", "header-user-account")
+				header(w, "All User Accounts on the Server", "header-user-account")
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "200" {
-				header(w, "All User Accounts<br>Within the Group", "header-user-account")
+				header(w, "User Accounts Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-user-account")
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "201" {
-				header(w, "All User Accounts<br>Within the Groups PBX(s)", "header-user-account")
+				header(w, "PBX User Accounts Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-user-account")
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "300" {
-				header(w, "All User Accounts<br>Within the PBX", "header-user-account")
+				header(w, "All User Accounts Within the PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-user-account")
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "301" {
-				header(w, "User Account<br>for the PBX", "header-user-account")
+				header(w, "User Account for PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-user-account")
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "302" {
-				header(w, "User Account<br>for the PBX (Read Only)", "header-user-account")
+				header(w, "Read Only User Account for PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-user-account")
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else {
-				errorBox(w, "account_type_error")
+				errorBox(w, "account_type_error", "header-user-account")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
