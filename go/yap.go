@@ -705,6 +705,20 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 // User account page functions
 
 func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string) {
+
+	var (
+		userAccountTypeID    string
+		userAccountFirstName string
+		userAccountLastName  string
+		userAccountEmail     string
+		userAccountType      string
+		userAccountDateAdded string
+		groupID              string
+		groupName            string
+		pbxID                string
+		pbxName              string
+	)                        
+
 	ownUserAccountSQL, err := dbDetail.connection.Query(`SELECT
 					     user_account_first_name,
 					     user_account_last_name,
@@ -722,15 +736,6 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 
 	for ownUserAccountSQL.Next() {
-		var (
-			userAccountFirstName string
-			userAccountLastName  string
-			userAccountEmail     string
-			userAccountType      string
-			userAccountDateAdded string
-			groupID              string
-			pbxID                string
-		)
 
 		err = ownUserAccountSQL.Scan(
 			&userAccountFirstName,
@@ -885,18 +890,6 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "        </tr>")
 
 		for otherUserAccountSQL.Next() {
-			var (
-				userAccountTypeID    string
-				userAccountFirstName string
-				userAccountLastName  string
-				userAccountEmail     string
-				userAccountType      string
-				userAccountDateAdded string
-				groupID              string
-				groupName            string
-				pbxID                string
-				pbxName              string
-			)
 
 			err = otherUserAccountSQL.Scan(
 				&userAccountTypeID,
@@ -987,16 +980,6 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "        </tr>")
 
 		for otherUserAccountSQL.Next() {
-			var (
-				userAccountTypeID    string
-				userAccountFirstName string
-				userAccountLastName  string
-				userAccountEmail     string
-				userAccountType      string
-				userAccountDateAdded string
-				pbxID                string
-				pbxName              string
-			)
 
 			err = otherUserAccountSQL.Scan(
 				&userAccountTypeID,
