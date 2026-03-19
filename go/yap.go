@@ -143,7 +143,12 @@ type databaseFunctionParameter struct {
 
 func selectWhere(dbSelectWhere databaseFunctionParameter) string {
 	var selectWhere string
-	selectWhereQuery, err := dbSelectWhere.connection.Query("SELECT "+dbSelectWhere.column+" FROM "+dbSelectWhere.database+"."+dbSelectWhere.table+" WHERE "+dbSelectWhere.columnWhere+" = ?;", dbSelectWhere.columnWhereValue)
+	selectWhereQuery, err := dbSelectWhere.connection.Query(`SELECT
+								   `+dbSelectWhere.column+`
+								 FROM
+								   `+dbSelectWhere.database+`.`+dbSelectWhere.table+`
+								 WHERE
+								   `+dbSelectWhere.columnWhere+` = ?;`, dbSelectWhere.columnWhereValue)
 
 	if err != nil {
 		panic(err)
@@ -160,7 +165,10 @@ func selectWhere(dbSelectWhere databaseFunctionParameter) string {
 func totalTableCount(w http.ResponseWriter, dbTotalTableCount databaseFunctionParameter) string {
 	if dbTotalTableCount.countMinusOne == true {
 		var countMinusOne string
-		countMinusOneQuery, err := dbTotalTableCount.connection.Query("SELECT COUNT(*) -1 FROM " + dbTotalTableCount.database + "." + dbTotalTableCount.table)
+		countMinusOneQuery, err := dbTotalTableCount.connection.Query(`SELECT
+									       COUNT(*) -1
+									       FROM
+									         ` + dbTotalTableCount.database + `.` + dbTotalTableCount.table)
 		if err != nil {
 			panic(err)
 		}
@@ -174,7 +182,10 @@ func totalTableCount(w http.ResponseWriter, dbTotalTableCount databaseFunctionPa
 		return countMinusOne
 	} else {
 		var count string
-		countQuery, err := dbTotalTableCount.connection.Query("SELECT COUNT(*) FROM " + dbTotalTableCount.database + "." + dbTotalTableCount.table)
+		countQuery, err := dbTotalTableCount.connection.Query(`SELECT
+								       COUNT(*)
+								       FROM
+								         ` + dbTotalTableCount.database + `.` + dbTotalTableCount.table)
 		if err != nil {
 			panic(err)
 		}
@@ -191,7 +202,12 @@ func totalTableCount(w http.ResponseWriter, dbTotalTableCount databaseFunctionPa
 
 func totalTableCountWhere(w http.ResponseWriter, dbTotalTableCountWhere databaseFunctionParameter) string {
 	var count string
-	countQuery, err := dbTotalTableCountWhere.connection.Query("SELECT COUNT(*) FROM "+dbTotalTableCountWhere.database+"."+dbTotalTableCountWhere.table+" WHERE "+dbTotalTableCountWhere.columnWhere+" =?", dbTotalTableCountWhere.columnWhereValue)
+	countQuery, err := dbTotalTableCountWhere.connection.Query(`SELECT
+								    COUNT(*)
+								    FROM
+								      `+dbTotalTableCountWhere.database+`.`+dbTotalTableCountWhere.table+`
+								    WHERE
+								      `+dbTotalTableCountWhere.columnWhere+` =?`, dbTotalTableCountWhere.columnWhereValue)
 	//Error
 	if err != nil {
 		panic(err)
@@ -208,7 +224,14 @@ func totalTableCountWhere(w http.ResponseWriter, dbTotalTableCountWhere database
 
 func totalTableCountWhereAnd(w http.ResponseWriter, dbTotalTableCountWhereAnd databaseFunctionParameter) string {
 	var count string
-	countQuery, err := dbTotalTableCountWhereAnd.connection.Query("SELECT COUNT(*) FROM "+dbTotalTableCountWhereAnd.database+"."+dbTotalTableCountWhereAnd.table+" WHERE "+dbTotalTableCountWhereAnd.columnWhere+" =?"+" AND "+dbTotalTableCountWhereAnd.columnWhereAnd+" =?", dbTotalTableCountWhereAnd.columnWhereValue, dbTotalTableCountWhereAnd.columnWhereValueAnd)
+	countQuery, err := dbTotalTableCountWhereAnd.connection.Query(`SELECT
+								       COUNT(*)
+								       FROM
+								         `+dbTotalTableCountWhereAnd.database+`.`+dbTotalTableCountWhereAnd.table+`
+								       WHERE
+								         `+dbTotalTableCountWhereAnd.columnWhere+` =?`+`
+								       AND
+								         `+dbTotalTableCountWhereAnd.columnWhereAnd+` =?`, dbTotalTableCountWhereAnd.columnWhereValue, dbTotalTableCountWhereAnd.columnWhereValueAnd)
 	//Error
 	if err != nil {
 		panic(err)
@@ -328,27 +351,29 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunctionParameter) {
 
 	result, err := dbGroupAccount.connection.Query(`SELECT
-					     group_name,
-					     group_id,
-					     group_site_address_line_1,
-					     group_site_address_line_2,
-					     group_site_city_town_village,
-					     group_site_county_state_region,
-					     group_site_postcode_zip_code,
-					     group_site_country,
-					     group_site_contact_email,
-					     group_site_contact_number,
-					     group_invoice_address_line_1,
-					     group_invoice_address_line_2,
-					     group_invoice_city_town_village,
-					     group_invoice_county_state_region,
-					     group_invoice_postcode_zip_code,
-					     group_invoice_country,
-					     group_invoice_contact_email,
-					     group_invoice_contact_number,
-					     pbx_id
-					   FROM yap.view___account_detail
-					   WHERE user_account_email = ?;`, dbGroupAccount.columnWhereValue)
+					                  group_name,
+					                  group_id,
+					                  group_site_address_line_1,
+					                  group_site_address_line_2,
+					                  group_site_city_town_village,
+					                  group_site_county_state_region,
+					                  group_site_postcode_zip_code,
+					                  group_site_country,
+					                  group_site_contact_email,
+					                  group_site_contact_number,
+					                  group_invoice_address_line_1,
+					                  group_invoice_address_line_2,
+					                  group_invoice_city_town_village,
+					                  group_invoice_county_state_region,
+					                  group_invoice_postcode_zip_code,
+					                  group_invoice_country,
+					                  group_invoice_contact_email,
+					                  group_invoice_contact_number,
+					                  pbx_id
+					                FROM
+					                  yap.view___account_detail
+					                WHERE
+					                  user_account_email = ?;`, dbGroupAccount.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -453,26 +478,28 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionParameter) {
 
 	result, err := dbPBXAccount.connection.Query(`SELECT
-					     pbx_name,
-					     pbx_id,
-					     pbx_site_address_line_1,
-					     pbx_site_address_line_2,
-					     pbx_site_city_town_village,
-					     pbx_site_county_state_region,
-					     pbx_site_postcode_zip_code,
-					     pbx_site_country,
-					     pbx_site_contact_email,
-					     pbx_site_contact_number,
-					     pbx_invoice_address_line_1,
-					     pbx_invoice_address_line_2,
-					     pbx_invoice_city_town_village,
-					     pbx_invoice_county_state_region,
-					     pbx_invoice_postcode_zip_code,
-					     pbx_invoice_country,
-					     pbx_invoice_contact_email,
-					     pbx_invoice_contact_number
-					   FROM yap.view___account_detail
-					   WHERE user_account_email = ?;`, dbPBXAccount.columnWhereValue)
+					                pbx_name,
+					                pbx_id,
+					                pbx_site_address_line_1,
+					                pbx_site_address_line_2,
+					                pbx_site_city_town_village,
+					                pbx_site_county_state_region,
+					                pbx_site_postcode_zip_code,
+					                pbx_site_country,
+					                pbx_site_contact_email,
+					                pbx_site_contact_number,
+					                pbx_invoice_address_line_1,
+					                pbx_invoice_address_line_2,
+					                pbx_invoice_city_town_village,
+					                pbx_invoice_county_state_region,
+					                pbx_invoice_postcode_zip_code,
+					                pbx_invoice_country,
+					                pbx_invoice_contact_email,
+					                pbx_invoice_contact_number
+						      FROM
+						        yap.view___account_detail
+					  	      WHERE
+					  	        user_account_email = ?;`, dbPBXAccount.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -579,14 +606,16 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFunctionParameter, userTypeID string) {
 
 	result, err := dbUserInformation.connection.Query(`SELECT
-					     user_account_first_name,
-					     user_account_last_name,
-					     user_account_email,
-					     user_account_type,
-					     user_account_date_added,
-					     user_account_type_permission
-					   FROM yap.view___account_detail
-					   WHERE user_account_email = ?;`, dbUserInformation.columnWhereValue)
+					                     user_account_first_name,
+					                     user_account_last_name,
+					                     user_account_email,
+					                     user_account_type,
+					                     user_account_date_added,
+					                     user_account_type_permission
+					                   FROM
+					                     yap.view___account_detail
+					                   WHERE
+					                     user_account_email = ?;`, dbUserInformation.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -717,18 +746,20 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		groupName            string
 		pbxID                string
 		pbxName              string
-	)                        
+	)
 
 	ownUserAccountSQL, err := dbDetail.connection.Query(`SELECT
-					     user_account_first_name,
-					     user_account_last_name,
-					     user_account_email,
-					     user_account_type,
-					     user_account_date_added,
-					     group_id,
-					     pbx_id
-					   FROM yap.view___account_detail
-					   WHERE user_account_email = ?;`, dbDetail.columnWhereValue)
+							       user_account_first_name,
+							       user_account_last_name,
+							       user_account_email,
+							       user_account_type,
+							       user_account_date_added,
+							       group_id,
+							       pbx_id
+							     FROM
+							       yap.view___account_detail
+							     WHERE
+							       user_account_email = ?;`, dbDetail.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -853,121 +884,25 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "</table>")
 	}
 
-	if userTypeID == "100" {
-
-		otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
-						     user_account_type_id,
-                                                     user_account_first_name,
-                                                     user_account_last_name,  
-                                                     user_account_email,                                                   
-                                                     user_account_type,  
-                                                     user_account_date_added, 
-                                                     group_id,
-                                                     group_name,
-                                                     pbx_id,
-                                                     pbx_name						     
-						   FROM yap.view___account_detail;`)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Fprintf(w, "<br>")
-		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
-		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>All User Account Details on the Server:</th>")
-		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>")
-		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
-		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <th>Name</th>")
-		fmt.Fprintf(w, "          <th>Email</th>")
-		fmt.Fprintf(w, "          <th>Account Type</th>")
-		fmt.Fprintf(w, "          <th>Account Created</th>")
-		fmt.Fprintf(w, "          <th>Group Name<br>Group ID</th>")
-		fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
-		fmt.Fprintf(w, "        </tr>")
-
-		for otherUserAccountSQL.Next() {
-
-			err = otherUserAccountSQL.Scan(
-				&userAccountTypeID,
-				&userAccountFirstName,
-				&userAccountLastName,
-				&userAccountEmail,
-				&userAccountType,
-				&userAccountDateAdded,
-				&groupID,
-				&groupName,
-				&pbxID,
-				&pbxName,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-
-			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-			if groupID != "1" {
-				fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")</td>")
-			} else {
-				fmt.Fprintf(w, "          <td>-</td>")
-			}
-			if pbxID != "1" {
-				fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
-			} else {
-				fmt.Fprintf(w, "          <td>-</td>")
-			}
-			fmt.Fprintf(w, "        </tr>")
-		}
-		fmt.Fprintf(w, "      </table>")
-		fmt.Fprintf(w, "    </th>")
-		fmt.Fprintf(w, "  </tr>")
-		fmt.Fprintf(w, "</table>")
-
-	}
-
-	if userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
+	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
 
 		userGroupID := userAccountData(dbDetail, "group_id")
 		userGroupName := userAccountData(dbDetail, "group_name")
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
-		otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
-                                                     user_account_type_id,
-                                                     user_account_first_name,
-                                                     user_account_last_name,
-                                                     user_account_email,
-                                                     user_account_type,
-                                                     user_account_date_added,
-                                                     pbx_id,
-                                                     pbx_name
-                                                   FROM yap.view___account_detail
-                                                   WHERE group_id =?;`, userGroupID)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "  <tr>")
-		if userTypeID == "200" {
+		if userTypeID == "100" {
+			fmt.Fprintf(w, "    <th>All User Account Details on the Server:</th>")
+		} else if userTypeID == "200" {
 			fmt.Fprintf(w, "    <th>User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
 		} else if userTypeID == "201" {
-			fmt.Fprintf(w, "    <th>PBX User Account Details Within the Group<br>"+userGroupName+"<br>(pbx ID: "+userGroupID+")</th>")
+			fmt.Fprintf(w, "    <th>PBX User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
 		} else if userTypeID == "300" {
 			fmt.Fprintf(w, "    <th>PBX User Account Details Within the PBX<br>"+userPBXName+"<br>(PBX ID: "+userPBXID+")</th>")
 		}
-		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
@@ -976,52 +911,124 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "          <th>Email</th>")
 		fmt.Fprintf(w, "          <th>Account Type</th>")
 		fmt.Fprintf(w, "          <th>Account Created</th>")
-		fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
+		if userTypeID == "100" {
+			fmt.Fprintf(w, "          <th>Group Name<br>Group ID</th>")
+		}
+		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+			fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
+		}
 		fmt.Fprintf(w, "        </tr>")
 
-		for otherUserAccountSQL.Next() {
+		if userTypeID == "100" {
 
-			err = otherUserAccountSQL.Scan(
-				&userAccountTypeID,
-				&userAccountFirstName,
-				&userAccountLastName,
-				&userAccountEmail,
-				&userAccountType,
-				&userAccountDateAdded,
-				&pbxID,
-				&pbxName,
-			)
+			otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+						     			 user_account_first_name,
+						     			 user_account_last_name,  
+						     			 user_account_email,                                                   
+						     			 user_account_type,  
+						     			 user_account_date_added, 
+						     			 group_id,
+						     			 group_name,
+						     			 pbx_id,
+						     			 pbx_name						     
+								       FROM
+								         yap.view___account_detail;`)
 
 			// Error
 			if err != nil {
 				panic(err)
 			}
 
-			if userTypeID == "200" {
+			for otherUserAccountSQL.Next() {
+
+				err = otherUserAccountSQL.Scan(
+					&userAccountFirstName,
+					&userAccountLastName,
+					&userAccountEmail,
+					&userAccountType,
+					&userAccountDateAdded,
+					&groupID,
+					&groupName,
+					&pbxID,
+					&pbxName,
+				)
+
+				// Error
+				if err != nil {
+					panic(err)
+				}
+
 				fmt.Fprintf(w, "        <tr>")
 				fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+				if groupID != "1" {
+					fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")</td>")
+				} else {
+					fmt.Fprintf(w, "          <td>-</td>")
+				}
 				if pbxID != "1" {
 					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
 				fmt.Fprintf(w, "        </tr>")
-			} else if userTypeID == "201" {
-				if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
+			}
+
+		} else if userTypeID == "200" || userTypeID == "201" {
+
+			otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+                                                                    	 user_account_type_id,
+                                                                         user_account_first_name,
+                                          				 user_account_last_name,
+                                          				 user_account_email,
+                                          				 user_account_type,
+                                          				 user_account_date_added,
+                                          				 pbx_id,
+                                          				 pbx_name
+								       FROM
+								         yap.view___account_detail
+								       WHERE
+								         group_id =?;`, userGroupID)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			for otherUserAccountSQL.Next() {
+
+				err = otherUserAccountSQL.Scan(
+					&userAccountTypeID,
+					&userAccountFirstName,
+					&userAccountLastName,
+					&userAccountEmail,
+					&userAccountType,
+					&userAccountDateAdded,
+					&pbxID,
+					&pbxName,
+				)
+
+				// Error
+				if err != nil {
+					panic(err)
+				}
+
+				if userTypeID == "200" {
 					fmt.Fprintf(w, "        <tr>")
 					fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+					if pbxID != "1" {
+						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+					} else {
+						fmt.Fprintf(w, "          <td>-</td>")
+					}
 					fmt.Fprintf(w, "        </tr>")
-				}
-			} else {
-				if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
-					if pbxID == userPBXID {
+				} else if userTypeID == "201" {
+					if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
 						fmt.Fprintf(w, "        <tr>")
 						fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
@@ -1031,6 +1038,47 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						fmt.Fprintf(w, "        </tr>")
 					}
 				}
+			}
+
+		} else if userTypeID == "300" {
+
+			otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+                                                     			 user_account_first_name,
+		                                                         user_account_last_name,
+                            			                         user_account_email,
+                                                		         user_account_type,
+                                                		         user_account_date_added
+								       FROM
+								         yap.view___account_detail
+								       WHERE
+								         group_id =? AND pbx_id =?;`, userGroupID, userPBXID)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			for otherUserAccountSQL.Next() {
+
+				err = otherUserAccountSQL.Scan(
+					&userAccountFirstName,
+					&userAccountLastName,
+					&userAccountEmail,
+					&userAccountType,
+					&userAccountDateAdded,
+				)
+
+				// Error
+				if err != nil {
+					panic(err)
+				}
+
+				fmt.Fprintf(w, "        <tr>")
+				fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+				fmt.Fprintf(w, "        </tr>")
 			}
 		}
 		fmt.Fprintf(w, "      </table>")
