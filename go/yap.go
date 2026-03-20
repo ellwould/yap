@@ -129,13 +129,13 @@ func footer(w http.ResponseWriter, headerCSS string, buttonCSS string) {
 
 //----------------------------------------------------------------------------------------------------
 
-// JavaScript Function
+// Embedded JavaScript and associated HTML functions
 
 // JavaScript toggle function
-func toggleJS(w http.ResponseWriter, functionName string, elementID string) {
+func toggleDivJS(w http.ResponseWriter, functionName string, divID string) {
 	fmt.Fprintf(w, "<script>")
 	fmt.Fprintf(w, "  function "+functionName+"() {")
-	fmt.Fprintf(w, "  var x = document.getElementById(\""+elementID+"\");")
+	fmt.Fprintf(w, "  var x = document.getElementById(\""+divID+"\");")
 	fmt.Fprintf(w, "  if (x.style.display === \"none\") {")
 	fmt.Fprintf(w, "    x.style.display = \"table\";")
 	fmt.Fprintf(w, "  } else {")
@@ -144,6 +144,43 @@ func toggleJS(w http.ResponseWriter, functionName string, elementID string) {
 	fmt.Fprintf(w, "}")
 	fmt.Fprintf(w, "</script>")
 }
+
+// Input for filtering a HTML table
+func inputTableHTML(w http.ResponseWriter, functionName string, inputID string, placeholder string) {
+	fmt.Fprintf(w, "<input type=\"text\" id=\""+inputID+"\" onkeyup=\""+functionName+"()\" placeholder=\"Filter Via "+placeholder+"...\" title=\""+placeholder+"\">")
+}
+
+// JavaScript filter HTML table function
+func filterTableJS(w http.ResponseWriter, functionName string, inputID string, tableID string, columnNumber int) {
+	if columnNumber > 5 {
+		panic("Table column number cannot exceade 5")
+	} else if columnNumber < 0 {
+		panic("Table column number cannot be a minus number")
+	} else {
+		fmt.Fprintf(w, "<script>")
+		fmt.Fprintf(w, "function "+functionName+"() {")
+		fmt.Fprintf(w, "  var input, filter, table, tr, td, i, txtValue;")
+		fmt.Fprintf(w, "  input = document.getElementById(\""+inputID+"\");")
+		fmt.Fprintf(w, "  filter = input.value.toUpperCase();")
+		fmt.Fprintf(w, "  table = document.getElementById(\""+tableID+"\");")
+		fmt.Fprintf(w, "  tr = table.getElementsByTagName(\"tr\");")
+		fmt.Fprintf(w, "  for (i = 0; i < tr.length; i++) {")
+		fmt.Fprintf(w, "    td = tr[i].getElementsByTagName(\"td\")["+strconv.Itoa(columnNumber)+"];")
+		fmt.Fprintf(w, "    if (td) {")
+		fmt.Fprintf(w, "      txtValue = td.textContent || td.innerText;")
+		fmt.Fprintf(w, "      if (txtValue.toUpperCase().indexOf(filter) > -1) {")
+		fmt.Fprintf(w, "        tr[i].style.display = \"\";")
+		fmt.Fprintf(w, "      } else {")
+		fmt.Fprintf(w, "        tr[i].style.display = \"none\";")
+		fmt.Fprintf(w, "      }")
+		fmt.Fprintf(w, "    }")
+		fmt.Fprintf(w, "  }")
+		fmt.Fprintf(w, "}")
+		fmt.Fprintf(w, "</script>")
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
 
 type databaseFunctionParameter struct {
 	connection          *sql.DB
@@ -688,7 +725,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		fmt.Fprintf(w, "</table>")
 		//Account detail tables
 		fmt.Fprintf(w, "</div>")
-		fmt.Fprintf(w, "<div id=\"accountDetailDiv\" style=\"display:none\">")
+		fmt.Fprintf(w, "<div id=\"account-detail-div\" style=\"display:none\">")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
@@ -715,7 +752,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 	} else {
 	}
 	fmt.Fprintf(w, "</div>")
-	toggleJS(w, "toggleAccountDetail", "accountDetailDiv")
+	toggleDivJS(w, "toggleAccountDetail", "account-detail-div")
 }
 
 type mainMenuParameter struct {
@@ -897,7 +934,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
-		fmt.Fprintf(w, "<div id=\"otherAccountDiv\" style=\"display:none\">")
+		fmt.Fprintf(w, "<div id=\"other-account-div\" style=\"display:none\">")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "  <tr>")
@@ -910,20 +947,51 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		} else if userTypeID == "300" {
 			fmt.Fprintf(w, "    <th>PBX User Account Details Within the PBX<br>"+userPBXName+"<br>(PBX ID: "+userPBXID+")</th>")
 		}
+		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
-		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
+		fmt.Fprintf(w, "    <br>")
+		inputTableHTML(w, "otherAccountSearchName", "other-account-input-name", "Name")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "otherAccountSearchEmail", "other-account-input-email", "Email")
+		if userTypeID == "300" {
+			fmt.Fprintf(w, "    <br><br>")
+		} else {
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		}
+		inputTableHTML(w, "otherAccountSearchType", "other-account-input-type", "Account Type")
+		if userTypeID == "300" {
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		} else {
+			fmt.Fprintf(w, "    <br><br>")
+		}
+		inputTableHTML(w, "otherAccountSearchDate", "other-account-input-date", "Date Created")
+		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTML(w, "otherAccountSearchPBX", "other-account-input-pbx", "PBX Name/ID")
+		}
+		if userTypeID == "100" {
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTML(w, "otherAccountSearchGroup", "other-account-input-group", "Group Name/ID")
+		}
+		fmt.Fprintf(w, "    <br><br>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"other-account-table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <th>Name</th>")
 		fmt.Fprintf(w, "          <th>Email</th>")
 		fmt.Fprintf(w, "          <th>Account Type</th>")
 		fmt.Fprintf(w, "          <th>Account Created</th>")
+		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+			fmt.Fprintf(w, "<th>PBX Name<br>PBX ID</th>")
+		}
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "          <th>Group Name<br>Group ID</th>")
 		}
-		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "          <th>PBX Name<br>PBX ID</th>")
-		}
+
 		fmt.Fprintf(w, "        </tr>")
 
 		if userTypeID == "100" {
@@ -970,13 +1038,13 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-				if groupID != "1" {
-					fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")</td>")
+				if pbxID != "1" {
+					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
-				if pbxID != "1" {
-					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+				if groupID != "1" {
+					fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
@@ -1089,11 +1157,21 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			}
 		}
 		fmt.Fprintf(w, "      </table>")
+		filterTableJS(w, "otherAccountSearchName", "other-account-input-name", "other-account-table", 0)
+		filterTableJS(w, "otherAccountSearchEmail", "other-account-input-email", "other-account-table", 1)
+		filterTableJS(w, "otherAccountSearchType", "other-account-input-type", "other-account-table", 2)
+		filterTableJS(w, "otherAccountSearchDate", "other-account-input-date", "other-account-table", 3)
+		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+			filterTableJS(w, "otherAccountSearchPBX", "other-account-input-pbx", "other-account-table", 4)
+		}
+		if userTypeID == "100" {
+			filterTableJS(w, "otherAccountSearchGroup", "other-account-input-group", "other-account-table", 5)
+		}
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "</div>")
-		toggleJS(w, "toggleOtherAccount", "otherAccountDiv")
+		toggleDivJS(w, "toggleOtherAccount", "other-account-div")
 	}
 }
 
