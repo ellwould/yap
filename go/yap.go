@@ -153,9 +153,9 @@ func inputTableHTML(w http.ResponseWriter, functionName string, inputID string, 
 // JavaScript filter HTML table function
 func filterTableJS(w http.ResponseWriter, functionName string, inputID string, tableID string, columnNumber int) {
 	if columnNumber > 5 {
-		panic("Table column number cannot exceade 5")
+		panic("Table column number cannot exceed 5")
 	} else if columnNumber < 0 {
-		panic("Table column number cannot be a minus number")
+		panic("Table column number cannot be a negative number")
 	} else {
 		fmt.Fprintf(w, "<script>")
 		fmt.Fprintf(w, "function "+functionName+"() {")
