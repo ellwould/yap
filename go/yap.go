@@ -129,6 +129,22 @@ func footer(w http.ResponseWriter, headerCSS string, buttonCSS string) {
 
 //----------------------------------------------------------------------------------------------------
 
+// JavaScript Function
+
+// JavaScript toggle function
+func toggleJS(w http.ResponseWriter, functionName string, elementID string) {
+	fmt.Fprintf(w, "<script>")
+	fmt.Fprintf(w, "  function "+functionName+"() {")
+	fmt.Fprintf(w, "  var x = document.getElementById(\""+elementID+"\");")
+	fmt.Fprintf(w, "  if (x.style.display === \"none\") {")
+	fmt.Fprintf(w, "    x.style.display = \"table\";")
+	fmt.Fprintf(w, "  } else {")
+	fmt.Fprintf(w, "    x.style.display = \"none\";")
+	fmt.Fprintf(w, "  }")
+	fmt.Fprintf(w, "}")
+	fmt.Fprintf(w, "</script>")
+}
+
 type databaseFunctionParameter struct {
 	connection          *sql.DB
 	database            string
@@ -699,17 +715,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 	} else {
 	}
 	fmt.Fprintf(w, "</div>")
-	//Java Script embedded to toggle account detail div
-	fmt.Fprintf(w, "<script>")
-	fmt.Fprintf(w, "  function toggleAccountDetail() {")
-	fmt.Fprintf(w, "  var x = document.getElementById(\"accountDetailDiv\");")
-	fmt.Fprintf(w, "  if (x.style.display === \"none\") {")
-	fmt.Fprintf(w, "    x.style.display = \"table\";")
-	fmt.Fprintf(w, "  } else {")
-	fmt.Fprintf(w, "    x.style.display = \"none\";")
-	fmt.Fprintf(w, "  }")
-	fmt.Fprintf(w, "}")
-	fmt.Fprintf(w, "</script>")
+	toggleJS(w, "toggleAccountDetail", "accountDetailDiv")
 }
 
 type mainMenuParameter struct {
@@ -891,6 +897,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
+		fmt.Fprintf(w, "<div id=\"otherAccountDiv\" style=\"display:none\">")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "  <tr>")
@@ -1085,6 +1092,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "</div>")
+		toggleJS(w, "toggleOtherAccount", "otherAccountDiv")
 	}
 }
 
