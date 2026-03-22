@@ -180,6 +180,16 @@ func filterTableJS(w http.ResponseWriter, functionName string, inputID string, t
 	}
 }
 
+// JavaScript to copy data to users clipboard
+func copyButtonJS(w http.ResponseWriter, data string) {
+	fmt.Fprintf(w, "<div class=\"button-data-space\"></div><button onclick=cp"+data+"() class=\"button-data\">Copy &#10697</button><br>")
+	fmt.Fprintf(w, "<script>")
+	fmt.Fprintf(w, "  function cp"+data+"() {")
+	fmt.Fprintf(w, "    navigator.clipboard.writeText(\""+data+"\");")
+	fmt.Fprintf(w, "  }")
+	fmt.Fprintf(w, "</script>")
+}
+
 //----------------------------------------------------------------------------------------------------
 
 type databaseFunctionParameter struct {
@@ -1039,12 +1049,16 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
 				if pbxID != "1" {
-					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")")
+					copyButtonJS(w, pbxID)
+					fmt.Fprintf(w, "          </td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
 				if groupID != "1" {
-					fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")</td>")
+					fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")")
+					copyButtonJS(w, groupID)
+					fmt.Fprintf(w, "          </td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
@@ -1097,7 +1111,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
 					if pbxID != "1" {
-						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")")
+						copyButtonJS(w, pbxID)
+						fmt.Fprintf(w, "          </td>")
 					} else {
 						fmt.Fprintf(w, "          <td>-</td>")
 					}
@@ -1109,7 +1125,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")</td>")
+						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")")
+						copyButtonJS(w, pbxID)
+						fmt.Fprintf(w, "          </td>")
 						fmt.Fprintf(w, "        </tr>")
 					}
 				}
