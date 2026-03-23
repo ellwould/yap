@@ -114,6 +114,11 @@ fi;
 
 #----------------------------------------------------------------------
 
+# Create a system user named yap with no shell, no home directory and lock the account
+
+useradd -r -s /bin/false yap;
+usermod -L yap;
+
 # Create Go directories in root home directory for compiling the source code
 
 mkdir -p /root/go/{bin,pkg,src/yap};
@@ -134,8 +139,31 @@ go mod tidy;
 cd /root/go/src/yap;
 go build yap.go;
 
-# Move yap binary
+# Create directores used for configuration and HTML/CSS file
+
+mkdir -p /etc/yap/html-css;
+
+# Copy YAP configuration file
+
+cp /root/yap/env/yap.env /etc/yap/yap.env
+
+# Copy HTML/CSS start and end files
+
+cp /root/yap/html-css/* /etc/yap/html-css/;
+
+# Change executables file permissions, owner, group and move executables
+
+chown root:yap /root/go/src/yap/yap;
+chmod 050 /root/go/src/yap/yap;
 mv /root/go/src/yap/yap /usr/bin/yap;
+
+# Change YAP file permissions, owner and group
+
+chown -R root:yap /etc/yap;
+chmod 050 /etc/yap;
+chmod 050 /etc/yap/html-css;
+chmod 040 /etc/yap/yap.env;
+chmod 040 /etc/yap/html-css/*;
 
 # Change directroy to /root
 cd /root;
