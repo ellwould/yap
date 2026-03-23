@@ -182,10 +182,43 @@ func filterTableJS(w http.ResponseWriter, functionName string, inputID string, t
 
 // JavaScript to copy data to users clipboard
 func copyButtonJS(w http.ResponseWriter, data string) {
-	fmt.Fprintf(w, "<div class=\"button-data-space\"></div><button onclick=cp"+data+"() class=\"button-data\">Copy &#10697</button><br>")
+	fmt.Fprintf(w, "<div class=\"button-data-space\"></div><button class=\"button-data\" onclick=cp"+data+"()>Copy &#10697</button><br>")
 	fmt.Fprintf(w, "<script>")
 	fmt.Fprintf(w, "  function cp"+data+"() {")
-	fmt.Fprintf(w, "    navigator.clipboard.writeText(\""+data+"\");")
+	fmt.Fprintf(w, "    navigator.clipboard.writeText('"+data+"');")
+	fmt.Fprintf(w, "  }")
+	fmt.Fprintf(w, "</script>")
+}
+
+// HTML button to call the JavaScript exportCSVJS function
+func exportCSVButtonHTML(w http.ResponseWriter, buttonCSS string) {
+	fmt.Fprintf(w, "<button class=\"button-general "+buttonCSS+"\" onclick=\"exportCSV()\">Export to CSV</button><br>")
+}
+
+// JavaScript to download or view a HTML table as a CSV file
+func exportCSVJS(w http.ResponseWriter, tableID string, fileName string) {
+	fmt.Fprintf(w, "<script>")
+	fmt.Fprintf(w, "  function exportCSV() {")
+	fmt.Fprintf(w, "    const table = document.getElementById('"+tableID+"');")
+	fmt.Fprintf(w, "    let csvData = '';")
+	fmt.Fprintf(w, "    for (let i = 0; i < table.rows.length; i++) {")
+	fmt.Fprintf(w, "      let row = table.rows[i];")
+	fmt.Fprintf(w, "      let rowData = [];")
+	fmt.Fprintf(w, "      for (let j = 0; j < row.cells.length; j++) {")
+	fmt.Fprintf(w, "        let cell = row.cells[j];")
+	fmt.Fprintf(w, "        rowData.push(cell.textContent.replace(/,/g, ''));")
+	fmt.Fprintf(w, "      }")
+	fmt.Fprintf(w, "      csvData += rowData.join(',') + '\\r\\n';")
+	fmt.Fprintf(w, "    }")
+	fmt.Fprintf(w, "    const blob = new Blob([csvData], { type: 'text/csv' });")
+	fmt.Fprintf(w, "    const url = URL.createObjectURL(blob);")
+	fmt.Fprintf(w, "    const csv = document.createElement('a');")
+	fmt.Fprintf(w, "    csv.href = url;")
+	fmt.Fprintf(w, "    csv.download = '"+fileName+".csv';")
+	fmt.Fprintf(w, "    document.body.append(csv);")
+	fmt.Fprintf(w, "    csv.click();")
+	fmt.Fprintf(w, "    document.body.remove(csv);")
+	fmt.Fprintf(w, "    window.open('/user-account', '_blank');")
 	fmt.Fprintf(w, "  }")
 	fmt.Fprintf(w, "</script>")
 }
@@ -989,6 +1022,11 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
+		exportCSVButtonHTML(w, "button-user-account")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"other-account-table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <th>Name</th>")
@@ -996,10 +1034,12 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "          <th>Account Type</th>")
 		fmt.Fprintf(w, "          <th>Account Created</th>")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "<th>PBX Name<br>PBX ID</th>")
+			fmt.Fprintf(w, "          <th>PBX Name</th>")
+			fmt.Fprintf(w, "          <th>PBX ID</th>")
 		}
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <th>Group Name<br>Group ID</th>")
+			fmt.Fprintf(w, "          <th>Group Name</th>")
+			fmt.Fprintf(w, "          <th>Group ID</th>")
 		}
 
 		fmt.Fprintf(w, "        </tr>")
@@ -1044,21 +1084,31 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				}
 
 				fmt.Fprintf(w, "        <tr>")
-				fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+				if pbxName != "system" {
+					fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+				} else {
+					fmt.Fprintf(w, "          <td>-</td>")
+				}
 				if pbxID != "1" {
-					fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")")
+					fmt.Fprintf(w, "          <td>"+pbxID)
 					copyButtonJS(w, pbxID)
-					fmt.Fprintf(w, "          </td>")
+					fmt.Fprintf(w, "</td>")
+				} else {
+					fmt.Fprintf(w, "          <td>-</td>")
+				}
+				if groupName != "system" {
+					fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
 				if groupID != "1" {
-					fmt.Fprintf(w, "          <td>"+groupName+"<br>(Group ID: "+groupID+")")
+					fmt.Fprintf(w, "          <td>"+groupID)
 					copyButtonJS(w, groupID)
-					fmt.Fprintf(w, "          </td>")
+					fmt.Fprintf(w, "</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
@@ -1106,7 +1156,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 				if userTypeID == "200" {
 					fmt.Fprintf(w, "        <tr>")
-					fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+					fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
@@ -1121,7 +1171,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				} else if userTypeID == "201" {
 					if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
 						fmt.Fprintf(w, "        <tr>")
-						fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+						fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
@@ -1167,7 +1217,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				}
 
 				fmt.Fprintf(w, "        <tr>")
-				fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+				fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
@@ -1185,6 +1235,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		if userTypeID == "100" {
 			filterTableJS(w, "otherAccountSearchGroup", "other-account-input-group", "other-account-table", 5)
 		}
+		exportCSVJS(w, "other-account-table", "YAP_user_account_details")
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
