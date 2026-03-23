@@ -49,11 +49,11 @@ then
   printf $clear_screen;
   printf $bg_red;
   printf $text_bold_white;
-  printf " ╔═══════════════════════════════════════════════════════════════════════════════════╗ \n";
-  printf " ║ Directory yap does not exist in /root.                                            ║ \n";
+  printf " ╔══════════════════════════════════════════════════════════════════════════════╗ \n";
+  printf " ║ Directory yap does not exist in /root.                                       ║ \n";
   printf " ║ Please run commands: \"cd /root && git clone https://github.com/ellwould/yap\" ║ \n";
-  printf " ║ and run the install script again.                                                 ║ \n";
-  printf " ╚═══════════════════════════════════════════════════════════════════════════════════╝ \n";
+  printf " ║ and run the install script again.                                            ║ \n";
+  printf " ╚══════════════════════════════════════════════════════════════════════════════╝ \n";
   printf $reset_colour;
   exit;
 fi;
@@ -172,8 +172,8 @@ cd /root;
 
 printf $bg_green;
 printf $text_bold_white;
-printf " ╔════════════════════════════════╗ \n";
-printf " ║ YAP has been installed in /usr/bin ║ \n";
+printf " ╔═══════════════════════════════════════╗ \n";
+printf " ║ YAP has been installed in /usr/bin    ║ \n";
 printf " ║ To run YAP \"type systemctl start yap\" ║ \n"; 
-printf " ╚════════════════════════════════╝ \n";
+printf " ╚═══════════════════════════════════════╝ \n";
 printf $reset_colour;
