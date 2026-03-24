@@ -206,6 +206,6 @@ printf $bg_green;
 printf $text_bold_white;
 printf " ╔═══════════════════════════════════════╗ \n";
 printf " ║ YAP has been installed in /usr/bin    ║ \n";
-printf " ║ To run YAP \"type systemctl start yap\" ║ \n"; 
+printf " ║ To run YAP type \"systemctl start yap\" ║ \n"; 
 printf " ╚═══════════════════════════════════════╝ \n";
 printf $reset_colour;
