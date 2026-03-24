@@ -1,0 +1,11 @@
+[Unit]
+Description=YAP (Yet Another PBX)
+
+[Service]
+User=yap
+Group=yap
+Type=simple
+ExecStart=/usr/bin/yap
+
+[Install]
+WantedBy=multi-user.target
