@@ -168,6 +168,11 @@ chmod 040 /etc/yap/html-css/*;
 # Change directroy to /root
 cd /root;
 
+# Copy Systemd service file and reload the systemd deamon
+
+cp /root/yap/systemd/yap.service /usr/lib/systemd/system/;
+systemctl daemon-reload;
+
 #----------------------------------------------------------------------
 
 # MariaDB install and setup
