@@ -170,6 +170,33 @@ cd /root;
 
 #----------------------------------------------------------------------
 
+# MariaDB install and setup
+
+apt update;
+apt install mariadb-server -y;
+systemctl daemon-reload;
+
+# Secure MariaDD server
+
+mariadb_root_password=(`openssl rand -base64 40`);
+mysql -u root -D mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$mariadb_root_password')";
+mysql -u root -D mysql -e "DELETE FROM mysql.user WHERE User='';";
+mysql -u root -D mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');";
+mysql -u root -D mysql -e "DROP DATABASE IF EXISTS test";
+mysql -u root -D mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+mysql -u root -D mysql -e "DELETE FROM mysql.user WHERE User='';";
+mysql -u root -D mysql -e "FLUSH PRIVILEGES;";
+
+# Create a .my.cnf file in /root and populate with account details for MariaDB root
+my_cnf=/root/.my.cnf;
+touch $my_cnf;
+echo "[client]"  >> $my_cnf;
+echo "user=root" >> $my_cnf;
+echo "password=$mariadb_root_password" >> $my_cnf;
+echo "socket=/run/mysqld/mysqld.sock"  >> $my_cnf;
+
+#----------------------------------------------------------------------
+
 printf $bg_green;
 printf $text_bold_white;
 printf " ╔═══════════════════════════════════════╗ \n";
