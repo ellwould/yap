@@ -249,6 +249,23 @@ cd /root/$asterisk_version;
 
 ./configure;
 
+make menuselect.makeopts;
+menuselect/menuselect --enable app_voicemail_odbc --enable pbx_realtime menuselect.makeopts;
+menuselect/menuselect --enable-category MENUSELECT_CORE_SOUNDS --enable-category MENUSELECT_MOH --enable-category MENUSELECT_EXTRA_SOUNDS menuselect.makeopts;
+
+./configure;
+
+make;
+make install;
+make samples;
+cd /root;
+
+useradd -r -s /bin/false pbx;
+usermod -L pbx;
+
+
+mkdir /etc/asterisk/SAMPLE;
+
 
 
 #----------------------------------------------------------------------
