@@ -87,11 +87,13 @@ then
   hash_result="$(shasum -a 256 /root/$go_tar | cut -d " " -f 1)"
   if [ $hash_result != $go_tar_hash ]
     then
+      rm /root/$go_tar;
       printf $clear_screen;
       printf $bg_red;
       printf $text_bold_white;
       printf " ╔══════════════════════════════════════════════════════════╗ \n";
       printf " ║ The hash for $go_tar does not match! ║ \n";
+      printf " ║ The Go source code has been removed ║ \n";
       printf " ╚══════════════════════════════════════════════════════════╝ \n";
       printf $reset_colour;
       exit;
@@ -181,7 +183,7 @@ apt update;
 apt install mariadb-server -y;
 systemctl daemon-reload;
 
-# Secure MariaDD server
+# Secure the MariaDB server
 
 mariadb_root_password=(`openssl rand -base64 40`);
 mysql -u root -D mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$mariadb_root_password')";
@@ -199,6 +201,55 @@ echo "[client]"  >> $my_cnf;
 echo "user=root" >> $my_cnf;
 echo "password=$mariadb_root_password" >> $my_cnf;
 echo "socket=/run/mysqld/mysqld.sock"  >> $my_cnf;
+
+# Start MariaDB on boot
+systemctl enable mariadb;
+
+#----------------------------------------------------------------------
+
+# Variable for Asterisk version
+asterisk_version=asterisk-certified-20.7-cert8;
+
+# Variable for Asterisk Public key
+asterisk_key=F2FC93DB7587BD1FB49E045A5D984BE337191CE7;
+
+# Install Astrisk dependencies
+apt install -y unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite3 libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev;
+
+# Download Asterisk source code
+wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz;
+
+# Download the Asterisk teams PGP signature
+wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz.asc;
+
+# Import the Asterisk teams public key from the Ubuntu key server
+gpg --keyserver keyserver.ubuntu.com --recv 0x$asterisk_key;
+
+# Verify the compressed tar file against the Asterisk teams PGP signature using GPG
+gpg --verify $asterisk_version.tar.gz.asc $asterisk_version.tar.gz;
+
+# Conditional statment based on the return code of the GPG command used to verify Asterisk source code
+if [ $? != 0 ]
+then
+  rm /root/asterisk_tar; 
+  printf $clear_screen;
+  printf $bg_red;
+  printf $text_bold_white;
+  printf " ╔═══════════════════════════════════════════════╗ \n";
+  printf " ║ Verification failed for Asterisk source code, ║ \n";
+  printf " ║ the Asterisk source code has been removed     ║ \n";
+  printf " ╚═══════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  exit;
+fi;
+
+# Untar
+tar -xvzf /root/$asterisk_version.tar.gz;
+cd /root/$asterisk_version;
+
+./configure;
+
+
 
 #----------------------------------------------------------------------
 
