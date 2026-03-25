@@ -1,0 +1,14 @@
+[general]
+
+[globals]
+
+[anonymous]
+exten => service,1,Answer()
+exten => service,2,Playback(hello-world)
+exten => service,3,Hangup()
+
+[PBX_330_IN]
+switch => Realtime/@PBX_330_IN
+
+[PBX_330_OUT]
+switch => Realtime/@PBX_330_OUT
