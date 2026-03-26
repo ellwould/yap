@@ -97,7 +97,7 @@ if [ $response == "Yes" ] || [ $response == "yes" ] || [ $response == "YES" ] ||
 then
   printf $reset_colour;
   wget -P /root https://go.dev/dl/$go_tar;
-  hash_result="$(shasum -a 256 /root/$go_tar | cut -d " " -f 1)"
+  hash_result="$(shasum -a 256 /root/$go_tar | cut -d " " -f 1)";
   if [ $hash_result != $go_tar_hash ]
     then
       rm /root/$go_tar;
@@ -187,7 +187,7 @@ apt update;
 apt install mariadb-server -y;
 systemctl daemon-reload;
 
-# Secure the MariaDB server
+# Secure the MariaDB server - equivalent to the mysql_secure_installation shell script 
 mysql -u root -D mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$mariadb_root_password')";
 mysql -u root -D mysql -e "DELETE FROM mysql.user WHERE User='';";
 mysql -u root -D mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');";
@@ -204,8 +204,7 @@ echo "user=root" >> $my_cnf;
 echo "password=$mariadb_root_password" >> $my_cnf;
 echo "socket=/run/mysqld/mysqld.sock"  >> $my_cnf;
 
-# Create databases
-mysql -u root -e "CREATE DATABASE asterisk;";
+# Create database - asterisk and YAP tables will be stored in the same database named yap
 mysql -u root -e "CREATE DATABASE yap;";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
@@ -335,14 +334,14 @@ string_update;
 # Alembic for Asterisk tables
 
 # Install Alembic and python3-mysqldb
-apt install -y python3-mysqldb alembic
+apt install -y python3-mysqldb alembic;
 
 # Create temp MariaDB user for Alembic
 mysql -u root -e "CREATE USER 'temp'@'localhost' IDENTIFIED BY '$mariadb_temp_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Grant permissions for temp MariaDB user
-mysql -u root -e "GRANT SELECT, INSERT, UPDATE, CREATE, ALTER, REFERENCES, INDEX ON asterisk.* TO 'temp'@'localhost';";
+mysql -u root -e "GRANT SELECT, INSERT, UPDATE, CREATE, ALTER, REFERENCES, INDEX ON yap.* TO 'temp'@'localhost';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Copy Alembic configuration script
