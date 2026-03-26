@@ -342,7 +342,7 @@ mysql -u root -e "CREATE USER 'temp'@'localhost' IDENTIFIED BY '$mariadb_temp_pa
 mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Grant permissions for temp MariaDB user
-mysql -u root -e "GRANT INSERT, CREATE, ALTER, REFERENCES, INDEX ON asterisk.* TO 'temp'@'localhost';";
+mysql -u root -e "GRANT SELECT, INSERT, UPDATE, CREATE, ALTER, REFERENCES, INDEX ON asterisk.* TO 'temp'@'localhost';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Copy Alembic configuration script
