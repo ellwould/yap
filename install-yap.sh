@@ -240,6 +240,34 @@ string_update;
 mysql -u root -e "CREATE USER 'pbx'@'localhost' IDENTIFIED BY '$mariadb_pbx_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
+# Grant privileges for PBX MariaDB user
+mysql -u root -e "GRANT SELECT ON yap.iaxfriends TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.meetme TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.musiconhold TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.musiconhold_entry TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_aors TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_asterisk_publications TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_auths TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT, INSERT, UPDATE, DELETE ON yap.ps_contacts TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_domain_aliases TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_endpoint_id_ips TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_endpoints TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_globals TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_inbound_publications TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_outbound_publishes TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_registrations TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_resource_list TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_subscription_persistence TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_systems TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.ps_transports TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.queue_members TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.queue_rules TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.queues TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.sippeers TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.stir_tn TO 'pbx'@'localhost';";
+mysql -u root -e "GRANT SELECT ON yap.voicemail TO 'pbx'@'localhost';";
+mysql -u root -e "FLUSH PRIVILEGES;";
+
 # Start MariaDB on boot
 systemctl enable mariadb;
 
