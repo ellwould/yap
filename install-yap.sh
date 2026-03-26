@@ -212,6 +212,24 @@ mysql -u root -e "FLUSH PRIVILEGES;";
 mysql -u root -e "CREATE USER 'yap'@'localhost' IDENTIFIED BY '$mariadb_yap_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
+# Grant privileges for YAP MariaDB user
+mysql -u root -e "GRANT SELECT ON yap.* TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.group TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.group_invoice_address TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.group_site_address TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx_invoice_address TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx_site_address TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_aors TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_asterisk_publications TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_auths TO 'yap'@'localhost';";
+mysql -u root -e "GRANT DELETE ON yap.ps_contacts TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_domain_aliases TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_endpoint_id_ips TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_endpoints TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.user_account TO 'yap'@'localhost';";
+mysql -u root -e "FLUSH PRIVILEGES;";
+
 # Add the YAP MariaDB user password to the YAP configuration file
 string_update_file="/etc/yap/yap.env";
 search_string="<REPLACE_YAP_PASSWORD>";
@@ -340,7 +358,7 @@ apt install -y python3-mysqldb alembic;
 mysql -u root -e "CREATE USER 'temp'@'localhost' IDENTIFIED BY '$mariadb_temp_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
-# Grant permissions for temp MariaDB user
+# Grant privileges for temp MariaDB user
 mysql -u root -e "GRANT SELECT, INSERT, UPDATE, CREATE, ALTER, REFERENCES, INDEX ON yap.* TO 'temp'@'localhost';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
