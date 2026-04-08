@@ -240,6 +240,9 @@ rm /root/$asterisk_version/contrib/ast-db-manage/config.ini;
 mysql -u root -e "DROP USER 'temp'@'localhost';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
+# Create YAP tables and insert data
+mysql -u root -D yap -e "SOURCE /root/yap/mariadb/yap.sql;";
+
 # Create YAP MaraiDB user
 mysql -u root -e "CREATE USER 'yap'@'localhost' IDENTIFIED BY '$mariadb_yap_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
@@ -314,6 +317,9 @@ usermod -L pbx;
 # Install Astrisk dependencies
 apt install -y unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite3 libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev;
 
+# Change to root directory
+cd /root;
+
 # Download Asterisk source code
 wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz;
 
@@ -329,7 +335,7 @@ gpg --verify $asterisk_version.tar.gz.asc $asterisk_version.tar.gz;
 # Conditional statment based on the return code of the GPG command used to verify Asterisk source code
 if [ $? != 0 ]
 then
-  rm /root/asterisk_tar; 
+  rm /root/$asterisk_tar; 
   printf $clear_screen;
   printf $bg_red;
   printf $text_bold_white;
