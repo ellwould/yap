@@ -208,6 +208,38 @@ echo "socket=/run/mysqld/mysqld.sock"  >> $my_cnf;
 mysql -u root -e "CREATE DATABASE yap;";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
+# Alembic for Asterisk tables
+
+# Install Alembic and python3-mysqldb
+apt install -y python3-mysqldb alembic;
+
+# Create temp MariaDB user for Alembic
+mysql -u root -e "CREATE USER 'temp'@'localhost' IDENTIFIED BY '$mariadb_temp_password';";
+mysql -u root -e "FLUSH PRIVILEGES;";
+
+# Grant privileges for temp MariaDB user
+mysql -u root -e "GRANT SELECT, INSERT, UPDATE, CREATE, ALTER, REFERENCES, INDEX ON yap.* TO 'temp'@'localhost';";
+mysql -u root -e "FLUSH PRIVILEGES;";
+
+# Copy Alembic configuration script
+cp /root/yap/alembic/config.ini /root/$asterisk_version/contrib/ast-db-manage/;
+
+# Add the temp MariaDB user password to the Alembic configuration file
+string_update_file="/root/$asterisk_version/contrib/ast-db-manage/config.ini";
+search_string="<REPLACE_TEMP_PASSWORD>";
+replace_string="$mariadb_temp_password";
+string_update;
+
+cd /root/$asterisk_version/contrib/ast-db-manage;
+alembic -c config.ini upgrade head;
+
+# Remove config.ini file
+rm /root/$asterisk_version/contrib/ast-db-manage/config.ini;
+
+# Remove temp MariaDB user
+mysql -u root -e "DROP USER 'temp'@'localhost';";
+mysql -u root -e "FLUSH PRIVILEGES;";
+
 # Create YAP MaraiDB user
 mysql -u root -e "CREATE USER 'yap'@'localhost' IDENTIFIED BY '$mariadb_yap_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
@@ -374,40 +406,6 @@ string_update_file="/etc/odbc.ini";
 search_string="<REPLACE_PBX_PASSWORD>";
 replace_string="$mariadb_pbx_password";
 string_update;
-
-#----------------------------------------------------------------------
-
-# Alembic for Asterisk tables
-
-# Install Alembic and python3-mysqldb
-apt install -y python3-mysqldb alembic;
-
-# Create temp MariaDB user for Alembic
-mysql -u root -e "CREATE USER 'temp'@'localhost' IDENTIFIED BY '$mariadb_temp_password';";
-mysql -u root -e "FLUSH PRIVILEGES;";
-
-# Grant privileges for temp MariaDB user
-mysql -u root -e "GRANT SELECT, INSERT, UPDATE, CREATE, ALTER, REFERENCES, INDEX ON yap.* TO 'temp'@'localhost';";
-mysql -u root -e "FLUSH PRIVILEGES;";
-
-# Copy Alembic configuration script
-cp /root/yap/alembic/config.ini /root/$asterisk_version/contrib/ast-db-manage/;
-
-# Add the temp MariaDB user password to the Alembic configuration file
-string_update_file="/root/$asterisk_version/contrib/ast-db-manage/config.ini";
-search_string="<REPLACE_TEMP_PASSWORD>";
-replace_string="$mariadb_temp_password";
-string_update;
-
-cd /root/$asterisk_version/contrib/ast-db-manage;
-alembic -c config.ini upgrade head;
-
-# Remove config.ini file
-rm /root/$asterisk_version/contrib/ast-db-manage/config.ini;
-
-# Remove temp MariaDB user
-mysql -u root -e "DROP USER 'temp'@'localhost';";
-mysql -u root -e "FLUSH PRIVILEGES;";
 
 #----------------------------------------------------------------------
 
