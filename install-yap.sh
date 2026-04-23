@@ -182,6 +182,43 @@ systemctl daemon-reload;
 
 #----------------------------------------------------------------------
 
+# Download, verify and untar Asterisk source code
+
+# Change to root directory
+cd /root;
+
+# Download Asterisk source code
+wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz;
+
+# Download the Asterisk teams PGP signature
+wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz.asc;
+
+# Import the Asterisk teams public key from the Ubuntu key server
+gpg --keyserver keyserver.ubuntu.com --recv 0x$asterisk_key;
+
+# Verify the compressed tar file against the Asterisk teams PGP signature using GPG
+gpg --verify $asterisk_version.tar.gz.asc $asterisk_version.tar.gz;
+
+# Conditional statment based on the return code of the GPG command used to verify Asterisk source code
+if [ $? != 0 ]
+then
+  rm /root/$asterisk_tar; 
+  printf $clear_screen;
+  printf $bg_red;
+  printf $text_bold_white;
+  printf " ╔═══════════════════════════════════════════════╗ \n";
+  printf " ║ Verification failed for Asterisk source code, ║ \n";
+  printf " ║ the Asterisk source code has been removed     ║ \n";
+  printf " ╚═══════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  exit;
+fi;
+
+# Untar
+tar -xvzf /root/$asterisk_version.tar.gz;
+
+#----------------------------------------------------------------------
+
 # MariaDB install and setup
 apt update;
 apt install mariadb-server -y;
@@ -317,40 +354,7 @@ usermod -L pbx;
 # Install Astrisk dependencies
 apt install -y unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite3 libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev;
 
-# Change to root directory
-cd /root;
-
-# Download Asterisk source code
-wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz;
-
-# Download the Asterisk teams PGP signature
-wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz.asc;
-
-# Import the Asterisk teams public key from the Ubuntu key server
-gpg --keyserver keyserver.ubuntu.com --recv 0x$asterisk_key;
-
-# Verify the compressed tar file against the Asterisk teams PGP signature using GPG
-gpg --verify $asterisk_version.tar.gz.asc $asterisk_version.tar.gz;
-
-# Conditional statment based on the return code of the GPG command used to verify Asterisk source code
-if [ $? != 0 ]
-then
-  rm /root/$asterisk_tar; 
-  printf $clear_screen;
-  printf $bg_red;
-  printf $text_bold_white;
-  printf " ╔═══════════════════════════════════════════════╗ \n";
-  printf " ║ Verification failed for Asterisk source code, ║ \n";
-  printf " ║ the Asterisk source code has been removed     ║ \n";
-  printf " ╚═══════════════════════════════════════════════╝ \n";
-  printf $reset_colour;
-  exit;
-fi;
-
-# Untar
-tar -xvzf /root/$asterisk_version.tar.gz;
 cd /root/$asterisk_version;
-
 ./configure;
 
 make menuselect.makeopts;
