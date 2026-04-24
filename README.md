@@ -1,6 +1,24 @@
-![image](https://github.com/ellwould/yap/blob/main/image/yap_logo.jpeg)
+<p align="center">
+<img src="https://github.com/ellwould/yap/blob/main/image/yap_logo.jpeg" alt="YAP (Yet Another PBX) Logo">
+</p>
 
-![image](https://github.com/ellwould/yap/blob/main/image/yap_software.jpeg)
+<p align="center">
+<img src="https://github.com/ellwould/yap/blob/main/image/yap_software.jpeg" alt="YAP (Yet Another PBX) Software">
+</p>
+
+<br>
+
+<h3 align="center">All YAP (Yet Another PBX) Go, BASH, SQL, HTML and CSS code, configuration files, guides and instructions are 100% designed, written and devolped by a human programmer - IN THE INTEREST OF SECURITY AND QUALITY AI WILL NEVER BE USED</h3>
+
+<br>
+
+<p align="center">
+<a href="https://no-ai-icon.com/statement/?url=github.com/ellwould/yap">
+<img src="https://github.com/ellwould/yap/blob/main/image/human_created_content.jpeg" alt="No AI used to create YAP (Yet Another PBX)" width="150" height="150"></a>
+&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp;
+<a href="https://no-ai-icon.com/statement/?url=github.com/ellwould/yap">
+<img src="https://github.com/ellwould/yap/blob/main/image/no_ai.jpeg" alt="YAP (Yet Another PBX) is 100% created by a human" width="150" height="150"></a>
+</p>
 
 <br>
 
@@ -17,35 +35,35 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-![image](https://github.com/ellwould/yap/blob/main/image/main_menu_1.jpeg)
+![YAP (Yet Another PBX) Main Menu 1](https://github.com/ellwould/yap/blob/main/image/main_menu_1.jpeg)
 
-![image](https://github.com/ellwould/yap/blob/main/image/main_menu_2.jpeg)
+![YAP (Yet Another PBX) Main Menu 2](https://github.com/ellwould/yap/blob/main/image/main_menu_2.jpeg)
 
 <br>
 
 **Show/hide more account details button pressed:**
 
-![image](https://github.com/ellwould/yap/blob/main/image/permissions_1.jpeg)
+![YAP (Yet Another PBX) Main Menu Permissions_1](https://github.com/ellwould/yap/blob/main/image/permissions_1.jpeg)
 
-![image](https://github.com/ellwould/yap/blob/main/image/permissions_2.jpeg)
+![YAP (Yet Another PBX) Main Menu Permissions_2](https://github.com/ellwould/yap/blob/main/image/permissions_2.jpeg)
 
 <br>
 
 **Call Recording page (still in development):**
 
-![image](https://github.com/ellwould/yap/blob/main/image/call_recordings_incomplete.jpeg)
+![YAP (Yet Another PBX) Call Recording Page](https://github.com/ellwould/yap/blob/main/image/call_recordings_incomplete.jpeg)
 
 <br>
 
 **Groups page (still in development):**
 
-![image](https://github.com/ellwould/yap/blob/main/image/groups_incomplete.jpeg)
+![YAP (Yet Another PBX) Groups Page](https://github.com/ellwould/yap/blob/main/image/groups_incomplete.jpeg)
 
 <br>
 
 **PBX page (still in development):**
 
-![image](https://github.com/ellwould/yap/blob/main/image/pbx_incomplete.jpeg)
+![YAP (Yet Another PBX) PBX Page](https://github.com/ellwould/yap/blob/main/image/pbx_incomplete.jpeg)
 
 <br>
 
