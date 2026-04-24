@@ -1164,7 +1164,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 						fmt.Fprintf(w, "          <td>"+pbxID)
 						copyButtonJS(w, pbxID)
-						fmt.Fprintf(w, "          </td>")                                        
+						fmt.Fprintf(w, "          </td>")
 					} else {
 						fmt.Fprintf(w, "          <td>-</td>")
 						fmt.Fprintf(w, "          <td>-</td>")
@@ -1180,7 +1180,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 						fmt.Fprintf(w, "          <td>"+pbxID)
 						copyButtonJS(w, pbxID)
-						fmt.Fprintf(w, "          </td>")                                                
+						fmt.Fprintf(w, "          </td>")
 						fmt.Fprintf(w, "        </tr>")
 					}
 				}
