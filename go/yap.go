@@ -1161,10 +1161,12 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 					fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
 					if pbxID != "1" {
-						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")")
+						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+						fmt.Fprintf(w, "          <td>"+pbxID)
 						copyButtonJS(w, pbxID)
-						fmt.Fprintf(w, "          </td>")
+						fmt.Fprintf(w, "          </td>")                                        
 					} else {
+						fmt.Fprintf(w, "          <td>-</td>")
 						fmt.Fprintf(w, "          <td>-</td>")
 					}
 					fmt.Fprintf(w, "        </tr>")
@@ -1175,9 +1177,10 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-						fmt.Fprintf(w, "          <td>"+pbxName+"<br>(PBX ID: "+pbxID+")")
+						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+						fmt.Fprintf(w, "          <td>"+pbxID)
 						copyButtonJS(w, pbxID)
-						fmt.Fprintf(w, "          </td>")
+						fmt.Fprintf(w, "          </td>")                                                
 						fmt.Fprintf(w, "        </tr>")
 					}
 				}
