@@ -1,6 +1,6 @@
 -- Create YAP tables
 
-CREATE TABLE `group`
+CREATE TABLE `user_group`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `group_name` VARCHAR(100) NOT NULL,
@@ -255,7 +255,7 @@ SELECT
   `user_account`.`email` AS 'user_account_email',
   `user_account_type`.`type` AS 'user_account_type',
   `user_account`.`date_added` AS 'user_account_date_added',
-  `group`.`group_name`,
+  `user_group`.`group_name`,
   `user_account`.`group_id`,
   `pbx`.`pbx_name`,
   `user_account`.`pbx_id`,
@@ -295,8 +295,8 @@ SELECT
 FROM `user_account`
 INNER JOIN `user_account_type`
 ON `user_account`.`user_account_type_id` = `user_account_type`.`id`
-INNER JOIN `group`
-ON `user_account`.`group_id` = `group`.`id`
+INNER JOIN `user_group`
+ON `user_account`.`group_id` = `user_group`.`id`
 INNER JOIN `pbx`
 ON `user_account`.`pbx_id` = `pbx`.`id`
 INNER JOIN `group_site_address`
@@ -312,7 +312,7 @@ ON `user_account`.`pbx_id` = `pbx_invoice_address`.`id`;
 
 -- Insert data to YAP tables
 
-INSERT INTO `group` (`id`, `group_name`, `group_active`, `note`)
+INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `note`)
 VALUES (1, 'system', 1, 'created during YAP install');
 
 INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
