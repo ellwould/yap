@@ -96,9 +96,9 @@ func errorBox(w http.ResponseWriter, errorType string, headerCSS string) {
 	} else {
 		fmt.Fprintf(w, "    Unknown Error")
 	}
-	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"button-general button-header button-logout\">Logout</a>")
-	fmt.Fprintf(w, "  </h1>")
+	fmt.Fprintf(w, "</h1>")
 	fmt.Fprintf(w, "</div>")
 }
 
@@ -107,13 +107,13 @@ func header(w http.ResponseWriter, headerTitle string, headerCSS string) {
 	fmt.Fprintf(w, "<div class=\"div-header\">")
 	fmt.Fprintf(w, "  <h1 class=\""+headerCSS+"\">")
 	fmt.Fprintf(w, "    ⊛ YAP [Yet Another PBX] ⊛")
-	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"button-general button-header button-logout\">Logout</a>")
 	fmt.Fprintf(w, "    <a href=\"/\" class=\"button-general button-header button-home\">Home</a>")
 	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap/blob/main/LICENSE\" target=\"_blank\" class=\"button-general button-header button-license\">License</a>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    "+headerTitle)
-	fmt.Fprintf(w, "  </h1>")
+	fmt.Fprintf(w, "</h1>")
 	fmt.Fprintf(w, "</div>")
 }
 
@@ -152,8 +152,8 @@ func inputTableHTML(w http.ResponseWriter, functionName string, inputID string, 
 
 // JavaScript filter HTML table function
 func filterTableJS(w http.ResponseWriter, functionName string, inputID string, tableID string, columnNumber int) {
-	if columnNumber > 5 {
-		panic("Table column number cannot exceed 5")
+	if columnNumber > 7 {
+		panic("Table column number cannot exceed 7")
 	} else if columnNumber < 0 {
 		panic("Table column number cannot be a negative number")
 	} else {
@@ -1011,11 +1011,15 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		inputTableHTML(w, "otherAccountSearchDate", "other-account-input-date", "Date Created")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTML(w, "otherAccountSearchPBX", "other-account-input-pbx", "PBX Name/ID")
+			inputTableHTML(w, "otherAccountSearchPBXName", "other-account-input-pbx-name", "PBX Name")
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTML(w, "otherAccountSearchPBXID", "other-account-input-pbx-id", "PBX ID")
 		}
 		if userTypeID == "100" {
+			fmt.Fprintf(w, "    <br><br>")
+			inputTableHTML(w, "otherAccountSearchGroupName", "other-account-input-group-name", "Group Name")
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTML(w, "otherAccountSearchGroup", "other-account-input-group", "Group Name/ID")
+			inputTableHTML(w, "otherAccountSearchGroupID", "other-account-input-group-id", "Group ID")
 		}
 		fmt.Fprintf(w, "    <br><br>")
 		fmt.Fprintf(w, "    </th>")
@@ -1094,9 +1098,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
 				if pbxID != "1" {
-					fmt.Fprintf(w, "          <td>"+pbxID)
-					copyButtonJS(w, pbxID)
-					fmt.Fprintf(w, "</td>")
+					fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
@@ -1106,9 +1108,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
 				if groupID != "1" {
-					fmt.Fprintf(w, "          <td>"+groupID)
-					copyButtonJS(w, groupID)
-					fmt.Fprintf(w, "</td>")
+					fmt.Fprintf(w, "          <td>"+groupID+"</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
@@ -1162,9 +1162,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
 					if pbxID != "1" {
 						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-						fmt.Fprintf(w, "          <td>"+pbxID)
-						copyButtonJS(w, pbxID)
-						fmt.Fprintf(w, "          </td>")
+						fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
 					} else {
 						fmt.Fprintf(w, "          <td>-</td>")
 						fmt.Fprintf(w, "          <td>-</td>")
@@ -1178,9 +1176,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 						fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
 						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-						fmt.Fprintf(w, "          <td>"+pbxID)
-						copyButtonJS(w, pbxID)
-						fmt.Fprintf(w, "          </td>")
+						fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
 						fmt.Fprintf(w, "        </tr>")
 					}
 				}
@@ -1233,10 +1229,12 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		filterTableJS(w, "otherAccountSearchType", "other-account-input-type", "other-account-table", 2)
 		filterTableJS(w, "otherAccountSearchDate", "other-account-input-date", "other-account-table", 3)
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			filterTableJS(w, "otherAccountSearchPBX", "other-account-input-pbx", "other-account-table", 4)
+			filterTableJS(w, "otherAccountSearchPBXName", "other-account-input-pbx-name", "other-account-table", 4)
+			filterTableJS(w, "otherAccountSearchPBXID", "other-account-input-pbx-id", "other-account-table", 5)
 		}
 		if userTypeID == "100" {
-			filterTableJS(w, "otherAccountSearchGroup", "other-account-input-group", "other-account-table", 5)
+			filterTableJS(w, "otherAccountSearchGroupName", "other-account-input-group-name", "other-account-table", 6)
+			filterTableJS(w, "otherAccountSearchGroupID", "other-account-input-group-id", "other-account-table", 7)
 		}
 		exportCSVJS(w, "other-account-table", "YAP_user_account_details")
 		fmt.Fprintf(w, "    </th>")
