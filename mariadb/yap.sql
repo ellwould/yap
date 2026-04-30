@@ -169,21 +169,21 @@ ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
 -- Create foreign key constraints
 
 ALTER TABLE `pbx`
-ADD CONSTRAINT fk___pbx___group
+ADD CONSTRAINT fk___pbx___user_group
 FOREIGN KEY (`group_id`)
-REFERENCES `group` (`id`)
+REFERENCES `user_group` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `group_invoice_address`
-ADD CONSTRAINT fk___group_invoice_address___group
+ADD CONSTRAINT fk___group_invoice_address___user_group
 FOREIGN KEY (`id`)
-REFERENCES `group` (`id`)
+REFERENCES `user_group` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `group_site_address`
-ADD CONSTRAINT fk___group_site_address___group
+ADD CONSTRAINT fk___group_site_address___user_group
 FOREIGN KEY (`id`)
-REFERENCES `group` (`id`)
+REFERENCES `user_group` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `pbx_invoice_address`
@@ -204,9 +204,9 @@ FOREIGN KEY (`user_account_type_id`)
 REFERENCES `user_account_type` (`id`);
 
 ALTER TABLE `user_account`
-ADD CONSTRAINT fk___user_account___group
+ADD CONSTRAINT fk___user_account___user_group
 FOREIGN KEY (`group_id`)
-REFERENCES `group` (`id`);
+REFERENCES `user_group` (`id`);
 
 ALTER TABLE `user_account`
 ADD CONSTRAINT fk___user_account___pbx
