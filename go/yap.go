@@ -405,7 +405,7 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "    <th>&nbsp Total SIP Endpoints &nbsp</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	dbTotalTableCount.table = "group"
+	dbTotalTableCount.table = "user_group"
 	dbTotalTableCount.countMinusOne = true
 	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(w, dbTotalTableCount)+"&nbsp</td>")
 	dbTotalTableCount.table = "pbx"
