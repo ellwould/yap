@@ -748,22 +748,22 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <th>&nbsp Name &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Email &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Account Type &nbsp</th>")
-		fmt.Fprintf(w, "          <th>&nbsp Account Created &nbsp</th>")
+		fmt.Fprintf(w, "          <th>Name</th>")
+		fmt.Fprintf(w, "          <th>Email</th>")
+		fmt.Fprintf(w, "          <th>Account Type</th>")
+		fmt.Fprintf(w, "          <th>Account Created</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountFirstName+"&nbsp<br>"+userAccountLastName+"</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountEmail+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountType+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp"+userAccountDateAdded+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th><button onclick=\"toggleAccountDetail() \"class=\"button-general\">&nbsp Show / Hide More Account Details &nbsp</button></th>")
+		fmt.Fprintf(w, "    <th><button onclick=\"toggleAccountDetail() \"class=\"button-general\">&nbsp Show/Hide More Account Details &nbsp</button></th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		//Account detail tables
@@ -772,7 +772,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp Account Type Permissions - "+userAccountType+"&nbsp</th>")
+		fmt.Fprintf(w, "    <th>Account Type Permissions - "+userAccountType+"</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left\">"+userAccountTypePermission+"</td>")
@@ -810,7 +810,7 @@ type mainMenuParameter struct {
 func mainMenuButton(mainMenu mainMenuParameter) {
 	fmt.Fprintf(mainMenu.writeHTTP, "&nbsp")
 	fmt.Fprintf(mainMenu.writeHTTP, "<h2 class=\""+mainMenu.headerCSS+"\">")
-	fmt.Fprintf(mainMenu.writeHTTP, "  <a href=\""+mainMenu.hyperlink+"\" class=\"button-general button-main-menu "+mainMenu.buttonCSS+"\"><p>"+mainMenu.buttonName+"</p></a>")
+	fmt.Fprintf(mainMenu.writeHTTP, "<a href=\""+mainMenu.hyperlink+"\" class=\"button-general button-main-menu "+mainMenu.buttonCSS+"\"><p>"+mainMenu.buttonName+"</p></a>")
 	fmt.Fprintf(mainMenu.writeHTTP, "</h2>")
 	fmt.Fprintf(mainMenu.writeHTTP, "&nbsp")
 }
@@ -964,7 +964,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "  </tr>")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
 			fmt.Fprintf(w, "  <tr>")
-			fmt.Fprintf(w, "    <th><button onclick=\"toggleOtherAccount() \"class=\"button-general button-user-account\">&nbsp Show / Hide Other Account(s) &nbsp</button></th>")
+			fmt.Fprintf(w, "    <th><button onclick=\"toggleOtherAccount() \"class=\"button-general button-user-account\">&nbsp Show/Hide Other Account(s) &nbsp</button></th>")
 			fmt.Fprintf(w, "  </tr>")
 		}
 		fmt.Fprintf(w, "</table>")
@@ -1411,7 +1411,7 @@ func main() {
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "All User<br>Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "All Group & PBX<br>User Account(s)<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "All<br>Groups<br>&#128101", hyperlink: "/group", headerCSS: "header-group", buttonCSS: "button-group"}
 				mainMenuButton(mainMenuButtonTwo)
@@ -1419,37 +1419,161 @@ func main() {
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All SIP<br>Endpoints<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Endpoints<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All SIP<br>Trunks<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Trunks<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
 				mainMenuButton(mainMenuButtonFive)
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Phone<br>Numbers<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All PBX Phone<br>Numbers<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
 				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "All<br>CDRs<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
+				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "All PBX<br>CDRs<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
 				mainMenuButton(mainMenuButtonSeven)
-				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "All<br>Voicemails<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "All PBX<br>Voicemails<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
 				mainMenuButton(mainMenuButtonEight)
-				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "All Call<br>Recordings<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "All PBX Call<br>Recordings<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
 				mainMenuButton(mainMenuButtonNine)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "All MoH / AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "All PBX MoH &<br>AA Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
 				mainMenuButton(mainMenuButtonTen)
 				mainMenuButtonEleven := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonEleven)
-				mainMenuButtonTweleve := mainMenuParameter{writeHTTP: w, buttonName: "Server<br>Information<br>&#128421", hyperlink: "/server-information", headerCSS: "header-server-information", buttonCSS: "button-server-information"}
+				mainMenuButtonTweleve := mainMenuParameter{writeHTTP: w, buttonName: "YAP Server<br>Information<br>&#128421", hyperlink: "/server-information", headerCSS: "header-server-information", buttonCSS: "button-server-information"}
 				mainMenuButton(mainMenuButtonTweleve)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
-			} else if userTypeID == "200" || userTypeID == "201" {
+			} else if userTypeID == "200" {
 				header(w, "Main Menu", "")
 				mainMenuUserInformation(w, dbDetail, userTypeID)
+				fmt.Fprintf(w, "<br>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>User Account(s)<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButton(mainMenuButtonOne)
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Information<br>&#128101", hyperlink: "/group", headerCSS: "header-group", buttonCSS: "button-group"}
+				mainMenuButton(mainMenuButtonTwo)
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX(s) Within<br>The Group<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
+				mainMenuButton(mainMenuButtonThree)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButton(mainMenuButtonFour)
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButton(mainMenuButtonFive)
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButton(mainMenuButtonSix)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
+				mainMenuButton(mainMenuButtonSeven)
+				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				mainMenuButton(mainMenuButtonEight)
+				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				mainMenuButton(mainMenuButtonNine)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				mainMenuButton(mainMenuButtonTen)
+				mainMenuButtonEleven := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButton(mainMenuButtonEleven)
+				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
-			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+			} else if userTypeID == "201" {
 				header(w, "Main Menu", "")
 				mainMenuUserInformation(w, dbDetail, userTypeID)
+				fmt.Fprintf(w, "<br>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Own & PBX<br>User Account(s)<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButton(mainMenuButtonOne)
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Information<br>&#128101", hyperlink: "/group", headerCSS: "header-group", buttonCSS: "button-group"}
+				mainMenuButton(mainMenuButtonTwo)
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX(s) Within<br>The Group<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
+				mainMenuButton(mainMenuButtonThree)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButton(mainMenuButtonFour)
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButton(mainMenuButtonFive)
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButton(mainMenuButtonSix)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
+				mainMenuButton(mainMenuButtonSeven)
+				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				mainMenuButton(mainMenuButtonEight)
+				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				mainMenuButton(mainMenuButtonNine)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				mainMenuButton(mainMenuButtonTen)
+				mainMenuButtonEleven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButton(mainMenuButtonEleven)
+				fmt.Fprintf(w, "</div>")
+				footer(w, "", "")
+			} else if userTypeID == "300" {
+				header(w, "Main Menu", "")
+				mainMenuUserInformation(w, dbDetail, userTypeID)
+				fmt.Fprintf(w, "<br>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Own & PBX<br>User Account(s)<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButton(mainMenuButtonOne)
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Information<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
+				mainMenuButton(mainMenuButtonTwo)
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButton(mainMenuButtonThree)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButton(mainMenuButtonFour)
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButton(mainMenuButtonFive)
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
+				mainMenuButton(mainMenuButtonSix)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				mainMenuButton(mainMenuButtonSeven)
+				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				mainMenuButton(mainMenuButtonEight)
+				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				mainMenuButton(mainMenuButtonNine)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButton(mainMenuButtonTen)
+				fmt.Fprintf(w, "</div>")
+				footer(w, "", "")
+			} else if userTypeID == "301" || userTypeID == "302" {
+				header(w, "Main Menu", "")
+				mainMenuUserInformation(w, dbDetail, userTypeID)
+				fmt.Fprintf(w, "<br>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Own<br>User Account<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButton(mainMenuButtonOne)
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Information<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
+				mainMenuButton(mainMenuButtonTwo)
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButton(mainMenuButtonThree)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButton(mainMenuButtonFour)
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButton(mainMenuButtonFive)
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
+				mainMenuButton(mainMenuButtonSix)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				mainMenuButton(mainMenuButtonSeven)
+				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				mainMenuButton(mainMenuButtonEight)
+				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				mainMenuButton(mainMenuButtonNine)
+				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else {
 				errorBox(w, "account_type_error", "header-main-menu")
