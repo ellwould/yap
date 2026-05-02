@@ -308,6 +308,34 @@ ON `user_account`.`pbx_id` = `pbx_site_address`.`id`
 INNER JOIN `pbx_invoice_address`
 ON `user_account`.`pbx_id` = `pbx_invoice_address`.`id`;
 
+CREATE VIEW `view___group_detail` AS
+SELECT
+  `user_group`.`id`,
+  `user_group`.`group_name`,
+  `user_group`.`date_added`,
+  `user_group`.`group_active`,
+  `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
+  `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
+  `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
+  `group_site_address`.`county_state_region` AS 'group_site_county_state_region',
+  `group_site_address`.`postcode_zip_code` AS 'group_site_postcode_zip_code',
+  `group_site_address`.`country` AS 'group_site_country',
+  `group_site_address`.`contact_email` AS 'group_site_contact_email',
+  `group_site_address`.`contact_number` AS 'group_site_contact_number',
+  `group_invoice_address`.`address_line_1` AS 'group_invoice_address_line_1',
+  `group_invoice_address`.`address_line_2` AS 'group_invoice_address_line_2',
+  `group_invoice_address`.`city_town_village` AS 'group_invoice_city_town_village',
+  `group_invoice_address`.`county_state_region` AS 'group_invoice_county_state_region',
+  `group_invoice_address`.`postcode_zip_code` AS 'group_invoice_postcode_zip_code',
+  `group_invoice_address`.`country` AS 'group_invoice_country',
+  `group_invoice_address`.`contact_email` AS 'group_invoice_contact_email',
+  `group_invoice_address`.`contact_number` AS 'group_invoice_contact_number'
+FROM `user_group`
+INNER JOIN `group_site_address`
+ON `user_group`.`id` = `group_site_address`.`id`
+INNER JOIN `group_invoice_address`
+ON `user_group`.`id` = `group_invoice_address`.`id`;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
