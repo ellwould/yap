@@ -310,9 +310,9 @@ ON `user_account`.`pbx_id` = `pbx_invoice_address`.`id`;
 
 CREATE VIEW `view___group_detail` AS
 SELECT
-  `user_group`.`id`,
+  `user_group`.`id` AS 'group_id',
   `user_group`.`group_name`,
-  `user_group`.`date_added`,
+  `user_group`.`date_added` AS 'group_date_added',
   `user_group`.`group_active`,
   `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
   `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
