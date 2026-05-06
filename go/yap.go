@@ -121,10 +121,10 @@ func header(w http.ResponseWriter, headerTitle string, headerCSS string) {
 // Function for the footer
 func footer(w http.ResponseWriter, headerCSS string, buttonCSS string) {
 	fmt.Fprintf(w, "<div class=\"div-footer\">")
-	fmt.Fprintf(w, "  <h2 class=\""+headerCSS+"\">")
+	fmt.Fprintf(w, "  <h1 class=\""+headerCSS+"\">")
 	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap\" target=\"_blank\" class=\"button-general button-footer "+buttonCSS+"\">YAP Source Code</a>")
 	fmt.Fprintf(w, "    <a href=\"https://ell.today\" target=\"_blank\" class=\"button-general button-footer "+buttonCSS+"\">Other Software</a>")
-	fmt.Fprintf(w, "  </h2>")
+	fmt.Fprintf(w, "  </h1>")
 	fmt.Fprintf(w, "</div>")
 }
 
@@ -192,14 +192,14 @@ func copyButtonJS(w http.ResponseWriter, data string) {
 }
 
 // HTML button to call the JavaScript exportCSVJS function
-func exportCSVButtonHTML(w http.ResponseWriter, buttonCSS string) {
-	fmt.Fprintf(w, "<button class=\"button-general "+buttonCSS+"\" onclick=\"exportCSV()\">Export to CSV</button><br>")
+func exportCSVButtonHTML(w http.ResponseWriter, jsFuncName string, buttonCSS string) {
+	fmt.Fprintf(w, "<button class=\"button-general "+buttonCSS+"\" onclick=\"exportTable"+jsFuncName+"ToCSV()\">Export to CSV</button><br>")
 }
 
 // JavaScript to download or view a HTML table as a CSV file
-func exportCSVJS(w http.ResponseWriter, tableID string, fileName string, path string) {
+func exportCSVJS(w http.ResponseWriter, jsFuncName string, tableID string, fileName string, path string) {
 	fmt.Fprintf(w, "<script>")
-	fmt.Fprintf(w, "  function exportCSV() {")
+	fmt.Fprintf(w, "  function exportTable"+jsFuncName+"ToCSV() {")
 	fmt.Fprintf(w, "    const table = document.getElementById('"+tableID+"');")
 	fmt.Fprintf(w, "    let csvData = '';")
 	fmt.Fprintf(w, "    for (let i = 0; i < table.rows.length; i++) {")
@@ -1049,7 +1049,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
-		exportCSVButtonHTML(w, "button-user-account")
+		exportCSVButtonHTML(w, "OtherAccount", "button-user-account")
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
@@ -1259,7 +1259,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			filterTableJS(w, "otherAccountSearchGroupName", "other-account-input-group-name", "other-account-table", 6)
 			filterTableJS(w, "otherAccountSearchGroupID", "other-account-input-group-id", "other-account-table", 7)
 		}
-		exportCSVJS(w, "other-account-table", "YAP_user_account_details", "user-account")
+		exportCSVJS(w, "OtherAccount", "other-account-table", "YAP_user_account_details", "user-account")
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
@@ -1287,26 +1287,33 @@ func userAccountDelete() {
 func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string) {
 
 	var (
-		groupName                     string
-		groupID                       string
-		groupDateAdded                string
-		groupActive                   string
-		groupSiteAddressLine1         string
-		groupSiteAddressLine2         string
-		groupSiteCityTownVillage      string
-		groupSiteCountyStateRegion    string
-		groupSitePostcodeZipCode      string
-		groupSiteCountry              string
-		groupSiteContactEmail         string
-		groupSiteContactNumber        string
-		groupInvoiceAddressLine1      string
-		groupInvoiceAddressLine2      string
-		groupInvoiceCityTownVillage   string
-		groupInvoiceCountyStateRegion string
-		groupInvoicePostcodeZipCode   string
-		groupInvoiceCountry           string
-		groupInvoiceContactEmail      string
-		groupInvoiceContactNumber     string
+		groupName                               string
+		groupID                                 string
+		groupDateAdded                          string
+		groupActive                             string
+		pbxLimit                                string
+		newPBXSIPEndpointDefaultLimit           string
+		newPBXSIPTrunkDefaultLimit              string
+		newPBXPhoneNumberDefaultLimit           string
+		newPBXCDRDefaultLimit                   string
+		newPBXVoicemailDefaultMegabyteLimit     string
+		newPBXCallRecordingDefaultMegabyteLimit string
+		groupSiteAddressLine1                   string
+		groupSiteAddressLine2                   string
+		groupSiteCityTownVillage                string
+		groupSiteCountyStateRegion              string
+		groupSitePostcodeZipCode                string
+		groupSiteCountry                        string
+		groupSiteContactEmail                   string
+		groupSiteContactNumber                  string
+		groupInvoiceAddressLine1                string
+		groupInvoiceAddressLine2                string
+		groupInvoiceCityTownVillage             string
+		groupInvoiceCountyStateRegion           string
+		groupInvoicePostcodeZipCode             string
+		groupInvoiceCountry                     string
+		groupInvoiceContactEmail                string
+		groupInvoiceContactNumber               string
 	)
 
 	var dbTableCountUserGroup databaseFunctionParameter
@@ -1352,35 +1359,31 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	fmt.Fprintf(w, "<table id=\"table\" class=\"table-group\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th>All Group Details on the Server:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Group Contact Details on the Server:</th>")
 	} else {
-		fmt.Fprintf(w, "    <th>Group Details</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Group Contact Details</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "groupSearchGroupName", "group-input-group-name", "Group Name")
+		inputTableHTML(w, "groupContactSearchGroupName", "group-contact-input-group-name", "Group Name")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchGroupID", "group-input-group-id", "Group ID")
+		inputTableHTML(w, "groupContactSearchGroupID", "group-contact-input-group-id", "Group ID")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchDate", "group-input-date", "Date Created")
+		inputTableHTML(w, "groupContactSearchSiteAddress", "group-contact-input-site-address", "Group Site Address")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchActive", "group-input-active", "Group Active Status")
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchSiteAddress", "group-input-site-address", "Group Site Address")
+		inputTableHTML(w, "groupContactSearchSiteEmail", "group-contact-input-site-email", "Group Site Email Address")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "groupSearchSiteEmail", "group-input-site-email", "Group Site Email Address")
+		inputTableHTML(w, "groupContactSearchSitePhone", "group-contact-input-site-phone", "Group Site Phone Number")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchSitePhone", "group-input-site-phone", "Group Site Phone Number")
+		inputTableHTML(w, "groupContactSearchInvoiceAddress", "group-contact-input-invoice-address", "Group Invoice Address")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchInvoiceAddress", "group-input-invoice-address", "Group Invoice Address")
+		inputTableHTML(w, "groupContactSearchInvoiceEmail", "group-contact-input-invoice-email", "Group Invoice Email Address")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchInvoiceEmail", "group-input-invoice-email", "Group Invoice Email Address")
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupSearchInvoicePhone", "group-input-invoice-phone", "Group Invoice Phone Number")
+		inputTableHTML(w, "groupContactSearchInvoicePhone", "group-contactinput-invoice-phone", "Group Invoice Phone Number")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    </th>")
@@ -1388,31 +1391,27 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	}
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	exportCSVButtonHTML(w, "button-group")
+	exportCSVButtonHTML(w, "GroupContact", "button-group")
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"group-table\" class=\"table-group\">")
+	fmt.Fprintf(w, "      <table id=\"group-contact-table\" class=\"table-group\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <th>Group Name</th>")
 	fmt.Fprintf(w, "          <th>Group ID</th>")
-	fmt.Fprintf(w, "          <th>Date Added</th>")
-	fmt.Fprintf(w, "          <th>Group Active</th>")
-	fmt.Fprintf(w, "          <th>Group Site Address</th>")
-	fmt.Fprintf(w, "          <th>Group Site Email Address</th>")
-	fmt.Fprintf(w, "          <th>Group Site<br>Phone Number</th>")
-	fmt.Fprintf(w, "          <th>Group Invoice Address</th>")
-	fmt.Fprintf(w, "          <th>Group Invoice Email Address</th>")
-	fmt.Fprintf(w, "          <th>Group Invoice<br>Phone Number</th>")
+	fmt.Fprintf(w, "          <th>Group Site<br> Address</th>")
+	fmt.Fprintf(w, "          <th>Group Site<br> Email Address</th>")
+	fmt.Fprintf(w, "          <th>Group Site<br> Phone Number</th>")
+	fmt.Fprintf(w, "          <th>Group Invoice<br> Address</th>")
+	fmt.Fprintf(w, "          <th>Group Invoice<br> Email Address</th>")
+	fmt.Fprintf(w, "          <th>Group Invoice<br> Phone Number</th>")
 	fmt.Fprintf(w, "        </tr>")
 	if userTypeID == "100" {
 		groupAllSQL, err := dbDetail.connection.Query(`SELECT
-									group_name,
-									group_id,
-									group_date_added,
-									group_active,
-									group_site_address_line_1,
+							group_name,
+							group_id,
+							group_site_address_line_1,
 					                group_site_address_line_2,
 					                group_site_city_town_village,
 					                group_site_county_state_region,
@@ -1429,10 +1428,10 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 					                group_invoice_contact_email,
 					                group_invoice_contact_number
 					              FROM
-                                    yap.view___group_detail
-                                  WHERE
-                                	group_id != 1;`)
-		
+					  	        yap.view___group_detail
+						      WHERE
+						        group_id != 1;`)
+
 		// Error
 		if err != nil {
 			panic(err)
@@ -1444,8 +1443,6 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			err = groupAllSQL.Scan(
 				&groupName,
 				&groupID,
-				&groupDateAdded,
-				&groupActive,
 				&groupSiteAddressLine1,
 				&groupSiteAddressLine2,
 				&groupSiteCityTownVillage,
@@ -1471,12 +1468,6 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			fmt.Fprintf(w, "        <tr>")
 			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
-			fmt.Fprintf(w, "          <td>"+groupDateAdded+"</td>")
-			if groupActive == "1" {
-				fmt.Fprintf(w, "          <td>YES</td>")
-			} else {
-				fmt.Fprintf(w, "          <td>NO</td>")
-			}
 			fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+groupSiteAddressLine1+"&nbsp<br>"+groupSiteAddressLine2+"&nbsp<br>"+groupSiteCityTownVillage+"&nbsp<br>"+groupSiteCountyStateRegion+"&nbsp<br><br>"+groupSitePostcodeZipCode+"&nbsp<br><br>"+groupSiteCountry+"&nbsp</td>")
 			fmt.Fprintf(w, "          <td><a href=\"mailto:"+groupSiteContactEmail+"\">"+groupSiteContactEmail+"</a></td>")
 			fmt.Fprintf(w, "          <td><a href=\"tel:"+groupSiteContactNumber+"\">"+groupSiteContactNumber+"</a></td>")
@@ -1487,30 +1478,216 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		}
 	} else {
 		groupWhereSQL, err := dbDetail.connection.Query(`SELECT
-															group_name,
-															group_id,
-															group_date_added,
-															group_active,
-															group_site_address_line_1,
-					               							group_site_address_line_2,
-					                						group_site_city_town_village,
-					                						group_site_county_state_region,
-					                						group_site_postcode_zip_code,
-					                						group_site_country,
-					                						group_site_contact_email,
-					                						group_site_contact_number,
-					                						group_invoice_address_line_1,
-					                						group_invoice_address_line_2,
-					                						group_invoice_city_town_village,
-					                						group_invoice_county_state_region,
-					                						group_invoice_postcode_zip_code,
-					                						group_invoice_country,
-					                						group_invoice_contact_email,
-					                						group_invoice_contact_number
-					            						FROM
-												  	        yap.view___group_detail
-						    							WHERE
-					  	        							id = ?;`, userGroupID)
+							group_name,
+							group_id,
+							group_site_address_line_1,
+					                group_site_address_line_2,
+					                group_site_city_town_village,
+					                group_site_county_state_region,
+					                group_site_postcode_zip_code,
+					                group_site_country,
+					                group_site_contact_email,
+					                group_site_contact_number,
+					                group_invoice_address_line_1,
+					                group_invoice_address_line_2,
+					                group_invoice_city_town_village,
+					                group_invoice_county_state_region,
+					                group_invoice_postcode_zip_code,
+					                group_invoice_country,
+					                group_invoice_contact_email,
+					                group_invoice_contact_number
+					            FROM
+					  	        yap.view___group_detail
+						    WHERE
+					  	        group_id = ?;`, userGroupID)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for groupWhereSQL.Next() {
+
+			err = groupWhereSQL.Scan(
+				&groupName,
+				&groupID,
+				&groupSiteAddressLine1,
+				&groupSiteAddressLine2,
+				&groupSiteCityTownVillage,
+				&groupSiteCountyStateRegion,
+				&groupSitePostcodeZipCode,
+				&groupSiteCountry,
+				&groupSiteContactEmail,
+				&groupSiteContactNumber,
+				&groupInvoiceAddressLine1,
+				&groupInvoiceAddressLine2,
+				&groupInvoiceCityTownVillage,
+				&groupInvoiceCountyStateRegion,
+				&groupInvoicePostcodeZipCode,
+				&groupInvoiceCountry,
+				&groupInvoiceContactEmail,
+				&groupInvoiceContactNumber,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+groupSiteAddressLine1+"&nbsp<br>"+groupSiteAddressLine2+"<br>"+groupSiteCityTownVillage+"<br>"+groupSiteCountyStateRegion+"<br><br>"+groupSitePostcodeZipCode+"<br><br>"+groupSiteCountry+"</td>")
+			fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+groupSiteContactEmail+"\">"+groupSiteContactEmail+"</a></td>")
+			fmt.Fprintf(w, "          <td>&nbsp<a href=\"tel:"+groupSiteContactNumber+"\">"+groupSiteContactNumber+"</a></td>")
+			fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+groupInvoiceAddressLine1+"&nbsp<br>"+groupInvoiceAddressLine2+"<br>"+groupInvoiceCityTownVillage+"<br>"+groupInvoiceCountyStateRegion+"<br><br>"+groupInvoicePostcodeZipCode+"<br><br>"+groupInvoiceCountry+"</td>")
+			fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+groupInvoiceContactEmail+"\">"+groupInvoiceContactEmail+"</a></td>")
+			fmt.Fprintf(w, "          <td>&nbsp<a href=\"tel:"+groupInvoiceContactNumber+"\">"+groupInvoiceContactNumber+"</a></td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+	}
+	fmt.Fprintf(w, "      </table>")
+	if userTypeID == "100" {
+		filterTableJS(w, "groupContactSearchGroupName", "group-contact-input-group-name", "group-contact-table", 0)
+		filterTableJS(w, "groupContactSearchGroupID", "group-contact-input-group-id", "group-contact-table", 1)
+		filterTableJS(w, "groupContactSearchSiteAddress", "group-contact-input-site-address", "group-contact-table", 2)
+		filterTableJS(w, "groupContactSearchSiteEmail", "group-contact-input-site-email", "group-contact-table", 3)
+		filterTableJS(w, "groupContactSearchSitePhone", "group-contact-input-site-phone", "group-contact-table", 4)
+		filterTableJS(w, "groupContactSearchInvoiceAdddress", "group-contact-input-Invoice-address", "group-contact-table", 5)
+		filterTableJS(w, "groupContactSearchInvoiceEmail", "group-contact-input-invoice-email", "group-contact-table", 6)
+		filterTableJS(w, "groupContactSearchInvoicePhone", "group-contact-input-invoice-phone", "group-contact-table", 7)
+	}
+	exportCSVJS(w, "GroupContact", "group-contact-table", "YAP_group_contact_details", "group")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+
+	// Group resource table
+	fmt.Fprintf(w, "<br>")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-group\">")
+	fmt.Fprintf(w, "  <tr>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX  Default Resource Limits on the Server for Each Group:</th>")
+	} else {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>PBX Default Resource Limits for Group</th>")
+	}
+	fmt.Fprintf(w, "  </tr>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "    <br>")
+		inputTableHTML(w, "groupResourceSearchGroupName", "group-resource-input-group-name", "Group Name")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "groupResourceSearchGroupID", "group-resource-input-group-id", "Group ID")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "groupResourceSearchDate", "group-resource-input-date", "Date Created")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "groupResourceSearchActive", "group-resource-input-active", "Group Active Status")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+	}
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	exportCSVButtonHTML(w, "GroupResource", "button-group")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table id=\"group-resource-table\" class=\"table-group\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <th>Group Name</th>")
+	fmt.Fprintf(w, "          <th>Group ID</th>")
+	fmt.Fprintf(w, "          <th>Group Date</th>")
+	fmt.Fprintf(w, "          <th>Group Active <br>Status</th>")
+	fmt.Fprintf(w, "          <th>PBX Limit</th>")
+	fmt.Fprintf(w, "          <th>SIP Endpoint <br>Limit for <br>a New PBX</th>")
+	fmt.Fprintf(w, "          <th>SIP Trunk <br>Limit for <br>a New PBX</th>")
+	fmt.Fprintf(w, "          <th>Phone Number <br>Limit for <br>a new PBX</th>")
+	fmt.Fprintf(w, "          <th>CDR Limit <br>for a New PBX</th>")
+	fmt.Fprintf(w, "          <th>Voicemail <br>Limit for a New PBX <br>(Megabytes)</th>")
+	fmt.Fprintf(w, "          <th>Call Recording <br>Limit for a New PBX <br>(Megabytes)</th>")
+	fmt.Fprintf(w, "        </tr>")
+	if userTypeID == "100" {
+		groupAllSQL, err := dbDetail.connection.Query(`SELECT
+							group_name,
+							group_id,
+							group_date_added,
+							group_active,
+							pbx_limit,
+							new_pbx_sip_endpoint_default_limit,
+							new_pbx_sip_trunk_default_limit,
+							new_pbx_phone_number_default_limit,
+							new_pbx_cdr_default_limit,
+							new_pbx_voicemail_default_megabyte_limit,
+							new_pbx_call_recording_default_megabyte_limit
+					              FROM
+					  	        yap.view___group_detail
+						      WHERE
+						        group_id != 1;`)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for groupAllSQL.Next() {
+
+			err = groupAllSQL.Scan(
+				&groupName,
+				&groupID,
+				&groupDateAdded,
+				&groupActive,
+				&pbxLimit,
+				&newPBXSIPEndpointDefaultLimit,
+				&newPBXSIPTrunkDefaultLimit,
+				&newPBXPhoneNumberDefaultLimit,
+				&newPBXCDRDefaultLimit,
+				&newPBXVoicemailDefaultMegabyteLimit,
+				&newPBXCallRecordingDefaultMegabyteLimit,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupDateAdded+"</td>")
+			if groupActive == "1" {
+				fmt.Fprintf(w, "          <td>YES</td>")
+			} else {
+				fmt.Fprintf(w, "          <td>NO</td>")
+			}
+			fmt.Fprintf(w, "          <td>"+pbxLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXSIPEndpointDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXSIPTrunkDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXPhoneNumberDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXCDRDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXVoicemailDefaultMegabyteLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXcallRecordingDefaultMegabyteLimit+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+	} else {
+		groupWhereSQL, err := dbDetail.connection.Query(`SELECT
+							group_name,
+                                                        group_id,
+                                                        group_date,
+                                                        group_active,
+                                                        pbx_limit,
+                                                        new_pbx_sip_endpoint_default_limit,
+                                                        new_pbx_sip_trunk_default_limit,
+                                                        new_pbx_phone_number_default_limit,
+                                                        new_pbx_cdr_default_limit,
+                                                        new_pbx_voicemail_default_megabyte_limit,
+                                                        new_pbx_call_recording_default_megabyte_limit,
+					            FROM
+					  	        yap.view___group_detail
+						    WHERE
+					  	        group_id = ?;`, userGroupID)
 
 		// Error
 		if err != nil {
@@ -1525,22 +1702,13 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 				&groupID,
 				&groupDateAdded,
 				&groupActive,
-				&groupSiteAddressLine1,
-				&groupSiteAddressLine2,
-				&groupSiteCityTownVillage,
-				&groupSiteCountyStateRegion,
-				&groupSitePostcodeZipCode,
-				&groupSiteCountry,
-				&groupSiteContactEmail,
-				&groupSiteContactNumber,
-				&groupInvoiceAddressLine1,
-				&groupInvoiceAddressLine2,
-				&groupInvoiceCityTownVillage,
-				&groupInvoiceCountyStateRegion,
-				&groupInvoicePostcodeZipCode,
-				&groupInvoiceCountry,
-				&groupInvoiceContactEmail,
-				&groupInvoiceContactNumber,
+				&pbxLimit,
+				&newPBXSIPEndpointDefaultLimit,
+				&newPBXSIPTrunkDefaultLimit,
+				&newPBXPhoneNumberDefaultLimit,
+				&newPBXCDRDefaultLimit,
+				&newPBXVoicemailDefaultMegabyteLimit,
+				&newPBXCallRecordingDefaultMegabyteLimit,
 			)
 
 			// Error
@@ -1551,34 +1719,25 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupDateAdded+"</td>")
-			if groupActive == "1" {
-				fmt.Fprintf(w, "          <td>YES</td>")
-			} else {
-				fmt.Fprintf(w, "          <td>NO</td>")
-			}
-			fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+groupSiteAddressLine1+"&nbsp<br>"+groupSiteAddressLine2+"<br>"+groupSiteCityTownVillage+"<br>"+groupSiteCountyStateRegion+"<br><br>"+groupSitePostcodeZipCode+"<br><br>"+groupSiteCountry+"</td>")
-			fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+groupSiteContactEmail+"\">"+groupSiteContactEmail+"</a></td>")
-			fmt.Fprintf(w, "          <td>&nbsp<a href=\"tel:"+groupSiteContactNumber+"\">"+groupSiteContactNumber+"</a></td>")
-			fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+groupInvoiceAddressLine1+"&nbsp<br>"+groupInvoiceAddressLine2+"<br>"+groupInvoiceCityTownVillage+"<br>"+groupInvoiceCountyStateRegion+"<br><br>"+groupInvoicePostcodeZipCode+"<br><br>"+groupInvoiceCountry+"</td>")
-			fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+groupInvoiceContactEmail+"\">"+groupInvoiceContactEmail+"</a></td>")
-			fmt.Fprintf(w, "          <td>&nbsp<a href=\"tel:"+groupInvoiceContactNumber+"\">"+groupInvoiceContactNumber+"</a></td>")
+			fmt.Fprintf(w, "          <td>"+groupActive+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXSIPEndpointDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXSIPTrunkDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXPhoneNumberDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXCDRDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXVoicemailDefaultMegabyteLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXcallRecordingDefaultMegabyteLimit+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
 	}
 	fmt.Fprintf(w, "      </table>")
 	if userTypeID == "100" {
-		filterTableJS(w, "groupSearchGroupName", "group-input-group-name", "group-table", 0)
-		filterTableJS(w, "groupSearchGroupID", "group-input-group-id", "group-table", 1)
-		filterTableJS(w, "groupSearchDate", "group-input-date", "group-table", 2)
-		filterTableJS(w, "groupSearchActive", "group-input-active", "group-table", 3)
-		filterTableJS(w, "groupSearchSiteAddress", "group-input-site-address", "group-table", 4)
-		filterTableJS(w, "groupSearchSiteEmail", "group-input-site-email", "group-table", 5)
-		filterTableJS(w, "groupSearchSitePhone", "group-input-site-phone", "group-table", 6)
-		filterTableJS(w, "groupSearchInvoiceAdddress", "group-input-Invoice-address", "group-table", 7)
-		filterTableJS(w, "groupSearchInvoiceEmail", "group-input-invoice-email", "group-table", 8)
-		filterTableJS(w, "groupSearchInvoicePhone", "group-input-invoice-phone", "group-table", 9)
+		filterTableJS(w, "groupResourceSearchGroupName", "group-resource-input-group-name", "group-resource-table", 0)
+		filterTableJS(w, "groupResourceSearchGroupID", "group-resource-input-group-id", "group-resource-table", 1)
+		filterTableJS(w, "groupResourceSearchDate", "group-resource-input-date", "group-resource-table", 2)
+		filterTableJS(w, "groupResourceSearchActive", "group-resource-input-active", "group-resource-table", 3)
 	}
-	exportCSVJS(w, "group-table", "YAP_group_details", "group")
+	exportCSVJS(w, "GroupResource", "group-resource-table", "YAP_group_resource_details", "group")
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
