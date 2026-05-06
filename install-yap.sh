@@ -128,7 +128,10 @@ read -p "   Would you like to continue? [Yes/No]: " response;
 if [ $response == "Yes" ] || [ $response == "yes" ] || [ $response == "YES" ] || [ $response == "Y" ] || [ $response == "y" ]
 then
   printf $reset_colour;
-  wget -P /root https://go.dev/dl/$go_tar;
+  # If the Go source code has not already been download in /root then download it
+  if [ ! -f "/root/$go_tar" ]; then
+    wget -P /root https://go.dev/dl/$go_tar;
+  fi;
   hash_result="$(shasum -a 256 /root/$go_tar | cut -d " " -f 1)";
   if [ $hash_result != $go_tar_hash ]
     then
@@ -214,16 +217,20 @@ systemctl daemon-reload;
 
 #----------------------------------------------------------------------
 
-# Download, verify and untar Asterisk source code
+# Download, verify and untar the Asterisk source code
 
 # Change to root directory
 cd /root;
 
-# Download Asterisk source code
-wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz;
+# If the Asterisk source code has not already been download in /root then download it
+if [ ! -f "/root/$asterisk_version.tar.gz" ]; then
+  wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz;
+fi;
 
-# Download the Asterisk teams PGP signature
-wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz.asc;
+# If the Asterisk teams PGP signature has not already been download in /root then download it
+if [ ! -f "/root/$asterisk_version.tar.gz.asc" ]; then
+  wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz.asc;
+fi;
 
 # Import the Asterisk teams public key from the Ubuntu key server
 gpg --keyserver keyserver.ubuntu.com --recv 0x$asterisk_key;
