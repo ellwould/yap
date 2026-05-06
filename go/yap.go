@@ -423,20 +423,20 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th>&nbsp Total Groups &nbsp</th>")
-	fmt.Fprintf(w, "    <th>&nbsp Total PBXs &nbsp</th>")
-	fmt.Fprintf(w, "    <th>&nbsp Total SIP Endpoints &nbsp</th>")
+	fmt.Fprintf(w, "    <th>Total Groups</th>")
+	fmt.Fprintf(w, "    <th>Total PBXs</th>")
+	fmt.Fprintf(w, "    <th>Total SIP Endpoints</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCount.table = "user_group"
 	dbTotalTableCount.countMinusOne = true
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(w, dbTotalTableCount)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
 	dbTotalTableCount.table = "pbx"
 	dbTotalTableCount.countMinusOne = true
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(w, dbTotalTableCount)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
 	dbTotalTableCount.table = "ps_endpoints"
 	dbTotalTableCount.countMinusOne = false
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCount(w, dbTotalTableCount)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<br>")
@@ -451,17 +451,17 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCountWhere.columnWhereValue = "100"
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "200"
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "201"
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "300"
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "301"
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "302"
-	fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
@@ -551,44 +551,44 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp Group Name and ID &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Total PBX(s) in Group &nbsp</th>")
+		fmt.Fprintf(w, "    <th>Group Name and ID</th>")
+		fmt.Fprintf(w, "    <th>Total PBX(s) in Group</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td>&nbsp Group Name: "+groupName+"&nbsp<br><br>Group ID: "+groupID+"</td>")
+		fmt.Fprintf(w, "    <td>Group Name: "+groupName+"<br><br>Group ID: "+groupID+"</td>")
 		var dbTotalTableCountWhere databaseFunctionParameter
 		dbTotalTableCountWhere.connection = dbGroupAccount.connection
 		dbTotalTableCountWhere.database = dbGroupAccount.database
 		dbTotalTableCountWhere.table = "pbx"
 		dbTotalTableCountWhere.columnWhere = "id"
 		dbTotalTableCountWhere.columnWhereValue = pbxID
-		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp Group Site Address &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Group Site Email &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Group Site Phone Number &nbsp</th>")
+		fmt.Fprintf(w, "    <th>Group Site Address</th>")
+		fmt.Fprintf(w, "    <th>Group Site Email</th>")
+		fmt.Fprintf(w, "    <th>Group Site Phone Number</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+groupSiteAddressLine1+"&nbsp<br>"+groupSiteAddressLine2+"<br>"+groupSiteCityTownVillage+"<br>"+groupSiteCountyStateRegion+"<br><br>"+groupSitePostcodeZipCode+"<br><br>"+groupSiteCountry+"</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"mailto:"+groupSiteContactEmail+"\">"+groupSiteContactEmail+"</a>&nbsp<br><br>(Click to email)</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"tel:"+groupSiteContactNumber+"\">"+groupSiteContactNumber+"</a>&nbsp<br><br>(Click to call)</td>")
+		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+groupSiteAddressLine1+"<br>"+groupSiteAddressLine2+"<br>"+groupSiteCityTownVillage+"<br>"+groupSiteCountyStateRegion+"<br><br>"+groupSitePostcodeZipCode+"<br><br>"+groupSiteCountry+"</td>")
+		fmt.Fprintf(w, "    <td><a href=\"mailto:"+groupSiteContactEmail+"\">"+groupSiteContactEmail+"</a><br><br>(Click to email)</td>")
+		fmt.Fprintf(w, "    <td><a href=\"tel:"+groupSiteContactNumber+"\">"+groupSiteContactNumber+"</a><br><br>(Click to call)</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp Group Invoice Address &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Group Invoice Email &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Group Invoice Phone Number &nbsp</th>")
+		fmt.Fprintf(w, "    <th>Group Invoice Address</th>")
+		fmt.Fprintf(w, "    <th>Group Invoice Email</th>")
+		fmt.Fprintf(w, "    <th>Group Invoice Phone Number</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+groupInvoiceAddressLine1+"&nbsp<br>"+groupInvoiceAddressLine2+"<br>"+groupInvoiceCityTownVillage+"<br>"+groupInvoiceCountyStateRegion+"<br><br>"+groupInvoicePostcodeZipCode+"<br><br>"+groupInvoiceCountry+"</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"mailto:"+groupInvoiceContactEmail+"\">"+groupInvoiceContactEmail+"</a>&nbsp<br><br>(Click to email)</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"tel:"+groupInvoiceContactNumber+"\">"+groupInvoiceContactNumber+"</a>&nbsp<br><br>(Click to call)</td>")
+		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+groupInvoiceAddressLine1+"<br>"+groupInvoiceAddressLine2+"<br>"+groupInvoiceCityTownVillage+"<br>"+groupInvoiceCountyStateRegion+"<br><br>"+groupInvoicePostcodeZipCode+"<br><br>"+groupInvoiceCountry+"</td>")
+		fmt.Fprintf(w, "    <td><a href=\"mailto:"+groupInvoiceContactEmail+"\">"+groupInvoiceContactEmail+"</a><br><br>(Click to email)</td>")
+		fmt.Fprintf(w, "    <td><a href=\"tel:"+groupInvoiceContactNumber+"\">"+groupInvoiceContactNumber+"</a><br><br>(Click to call)</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 	}
@@ -676,44 +676,44 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp PBX Name and ID &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Total SIP Extensions in PBX &nbsp</th>")
+		fmt.Fprintf(w, "    <th>PBX Name and ID</th>")
+		fmt.Fprintf(w, "    <th>Total SIP Extensions in PBX</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td>&nbsp PBX Name: "+pbxName+"&nbsp<br><br>PBX ID: "+pbxID+"</td>")
+		fmt.Fprintf(w, "    <td>PBX Name: "+pbxName+"<br><br>PBX ID: "+pbxID+"</td>")
 		var dbTotalTableCountWhere databaseFunctionParameter
 		dbTotalTableCountWhere.connection = dbPBXAccount.connection
 		dbTotalTableCountWhere.database = dbPBXAccount.database
 		dbTotalTableCountWhere.table = "ps_endpoints"
 		dbTotalTableCountWhere.columnWhere = "pbx_id"
 		dbTotalTableCountWhere.columnWhereValue = pbxID
-		fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp PBX Site Address &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp PBX Site Email &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp PBX Site Phone Number &nbsp</th>")
+		fmt.Fprintf(w, "    <th>PBX Site Address</th>")
+		fmt.Fprintf(w, "    <th>PBX Site Email</th>")
+		fmt.Fprintf(w, "    <th>PBX Site Phone Number</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+pbxSiteAddressLine1+"&nbsp<br>"+pbxSiteAddressLine2+"<br>"+pbxSiteCityTownVillage+"<br>"+pbxSiteCountyStateRegion+"<br><br>"+pbxSitePostcodeZipCode+"<br><br>"+pbxSiteCountry+"</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"mailto:"+pbxSiteContactEmail+"\">"+pbxSiteContactEmail+"</a>&nbsp<br><br>(Click to email)</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"tel:"+pbxSiteContactNumber+"\">"+pbxSiteContactNumber+"</a>&nbsp<br><br>(Click to call)</td>")
+		fmt.Fprintf(w, "    <td><a href=\"mailto:"+pbxSiteContactEmail+"\">"+pbxSiteContactEmail+"</a></td>")
+		fmt.Fprintf(w, "    <td><a href=\"tel:"+pbxSiteContactNumber+"\">"+pbxSiteContactNumber+"</a></td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp PBX Invoice Address &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp PBX Invoice Email &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp PBX Invoice Phone Number &nbsp</th>")
+		fmt.Fprintf(w, "    <th>PBX Invoice Address</th>")
+		fmt.Fprintf(w, "    <th>PBX Invoice Email</th>")
+		fmt.Fprintf(w, "    <th>PBX Invoice Phone Number</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+pbxInvoiceAddressLine1+"&nbsp<br>"+pbxInvoiceAddressLine2+"<br>"+pbxInvoiceCityTownVillage+"<br>"+pbxInvoiceCountyStateRegion+"<br><br>"+pbxInvoicePostcodeZipCode+"<br><br>"+pbxInvoiceCountry+"</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"mailto:"+pbxInvoiceContactEmail+"\">"+pbxInvoiceContactEmail+"</a>&nbsp<br><br>(Click to email)</td>")
-		fmt.Fprintf(w, "    <td>&nbsp<a href=\"tel:"+pbxInvoiceContactNumber+"\">"+pbxInvoiceContactNumber+"</a>&nbsp<br><br>(Click to call)</td>")
+		fmt.Fprintf(w, "    <td><a href=\"mailto:"+pbxInvoiceContactEmail+"\">"+pbxInvoiceContactEmail+"</a></td>")
+		fmt.Fprintf(w, "    <td><a href=\"tel:"+pbxInvoiceContactNumber+"\">"+pbxInvoiceContactNumber+"</a></td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 
@@ -921,41 +921,41 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "  <tr>")
 			if userTypeID == "100" {
 				dbTotalTableCountWhere.columnWhereValue = "100"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "200"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "201"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "300"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "301"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhere(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				dbTotalTableCountWhere.columnWhereAnd = "group_id"
 				dbTotalTableCountWhere.columnWhereValueAnd = groupID
 				if userTypeID == "200" {
 					dbTotalTableCountWhere.columnWhereValue = "200"
-					fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 					dbTotalTableCountWhere.columnWhereValue = "201"
-					fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 				}
 				dbTotalTableCountWhere.columnWhereValue = "300"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "301"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 			} else if userTypeID == "300" {
 				dbTotalTableCountWhere.columnWhereAnd = "pbx_id"
 				dbTotalTableCountWhere.columnWhereValueAnd = pbxID
 				dbTotalTableCountWhere.columnWhereValue = "300"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "301"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
-				fmt.Fprintf(w, "    <td>&nbsp"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"&nbsp</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 			}
 			fmt.Fprintf(w, "  </tr>")
 			fmt.Fprintf(w, "</table>")
@@ -2253,11 +2253,11 @@ func main() {
 		header(w, "Call Recordings", "header-call-recording")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-call-recording\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>&nbsp From (Caller) &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp To (Callie) &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Date (YYYY-MM-DD)&nbsp<br>Time (HH:MM:SS)</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Listen &nbsp</th>")
-		fmt.Fprintf(w, "    <th>&nbsp Download &nbsp</th>")
+		fmt.Fprintf(w, "    <th>From (Caller)</th>")
+		fmt.Fprintf(w, "    <th>To (Callie)</th>")
+		fmt.Fprintf(w, "    <th>Date (YYYY-MM-DD)<br>Time (HH:MM:SS)</th>")
+		fmt.Fprintf(w, "    <th>Listen</th>")
+		fmt.Fprintf(w, "    <th>Download</th>")
 		fmt.Fprintf(w, "  </tr>")
 		randomString := genID()
 		audioList := csvcell.DirList("/var/lib/yap/call-recording")
