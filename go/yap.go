@@ -1408,11 +1408,11 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	fmt.Fprintf(w, "        </tr>")
 	if userTypeID == "100" {
 		groupAllSQL, err := dbDetail.connection.Query(`SELECT
-							group_name,
-							group_id,
-							group_date_added,
-							group_active,
-							group_site_address_line_1,
+									group_name,
+									group_id,
+									group_date_added,
+									group_active,
+									group_site_address_line_1,
 					                group_site_address_line_2,
 					                group_site_city_town_village,
 					                group_site_county_state_region,
@@ -1429,8 +1429,10 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 					                group_invoice_contact_email,
 					                group_invoice_contact_number
 					              FROM
-					  	        yap.view___group_detail;`)
-
+                                    yap.view___group_detail
+                                  WHERE
+                                	group_id != 1;`)
+		
 		// Error
 		if err != nil {
 			panic(err)
@@ -1485,30 +1487,30 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		}
 	} else {
 		groupWhereSQL, err := dbDetail.connection.Query(`SELECT
-							group_name,
-							group_id,
-							group_date_added,
-							group_active,
-							group_site_address_line_1,
-					                group_site_address_line_2,
-					                group_site_city_town_village,
-					                group_site_county_state_region,
-					                group_site_postcode_zip_code,
-					                group_site_country,
-					                group_site_contact_email,
-					                group_site_contact_number,
-					                group_invoice_address_line_1,
-					                group_invoice_address_line_2,
-					                group_invoice_city_town_village,
-					                group_invoice_county_state_region,
-					                group_invoice_postcode_zip_code,
-					                group_invoice_country,
-					                group_invoice_contact_email,
-					                group_invoice_contact_number
-					            FROM
-					  	        yap.view___group_detail
-						    WHERE
-					  	        id = ?;`, userGroupID)
+															group_name,
+															group_id,
+															group_date_added,
+															group_active,
+															group_site_address_line_1,
+					               							group_site_address_line_2,
+					                						group_site_city_town_village,
+					                						group_site_county_state_region,
+					                						group_site_postcode_zip_code,
+					                						group_site_country,
+					                						group_site_contact_email,
+					                						group_site_contact_number,
+					                						group_invoice_address_line_1,
+					                						group_invoice_address_line_2,
+					                						group_invoice_city_town_village,
+					                						group_invoice_county_state_region,
+					                						group_invoice_postcode_zip_code,
+					                						group_invoice_country,
+					                						group_invoice_contact_email,
+					                						group_invoice_contact_number
+					            						FROM
+												  	        yap.view___group_detail
+						    							WHERE
+					  	        							id = ?;`, userGroupID)
 
 		// Error
 		if err != nil {
