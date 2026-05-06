@@ -6,7 +6,13 @@ CREATE TABLE `user_group`
   `group_name` VARCHAR(100) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `group_active` BOOLEAN NOT NULL,
-  `note` VARCHAR(255) NOT NULL,
+  `pbx_limit` SMALLINT UNSIGNED DEFAULT 1 NOT NULL,
+  `new_pbx_sip_endpoint_default_limit` SMALLINT UNSIGNED NOT NULL,
+  `new_pbx_sip_trunk_default_limit` SMALLINT UNSIGNED NOT NULL,
+  `new_pbx_phone_number_default_limit` SMALLINT UNSIGNED NOT NULL,
+  `new_pbx_cdr_default_limit` SMALLINT UNSIGNED NOT NULL,
+  `new_pbx_voicemail_default_megabyte_limit` INT UNSIGNED NOT NULL,
+  `new_pbx_call_recording_default_megabyte_limit` INT UNSIGNED NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -48,7 +54,12 @@ CREATE TABLE `pbx`
   `group_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `pbx_active` BOOLEAN NOT NULL,
-  `note` VARCHAR(255) NOT NULL,
+  `pbx_sip_endpoint_limit` SMALLINT UNSIGNED NOT NULL,
+  `pbx_sip_trunk_limit` SMALLINT UNSIGNED NOT NULL,
+  `pbx_phone_number_limit` SMALLINT UNSIGNED NOT NULL,
+  `pbx_cdr_limit` SMALLINT UNSIGNED NOT NULL,
+  `pbx_voicemail_megabyte_limit` INT UNSIGNED NOT NULL,
+  `pbx_call_recording_megabyte_limit` INT UNSIGNED NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -314,6 +325,13 @@ SELECT
   `user_group`.`group_name`,
   `user_group`.`date_added` AS 'group_date_added',
   `user_group`.`group_active`,
+  `user_group`.`pbx_limit`,
+  `user_group`.`new_pbx_sip_endpoint_default_limit`,
+  `user_group`.`new_pbx_sip_trunk_default_limit`,
+  `user_group`.`new_pbx_phone_number_default_limit`,
+  `user_group`.`new_pbx_cdr_default_limit`,
+  `user_group`.`new_pbx_voicemail_default_megabyte_limit`,
+  `user_group`.`new_pbx_call_recording_default_megabyte_limit`,
   `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
   `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
   `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
@@ -340,18 +358,18 @@ ON `user_group`.`id` = `group_invoice_address`.`id`;
 
 -- Insert data to YAP tables
 
-INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `note`)
-VALUES (1, 'system', 1, 'created during YAP install');
-
+INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `pbx_limit`, `new_pbx_sip_endpoint_default_limit`, `new_pbx_sip_trunk_default_limit`, `new_pbx_phone_number_default_limit`, `new_pbx_cdr_default_limit`, `new_pbx_voicemail_default_megabyte_limit`, `new_pbx_call_recording_default_megabyte_limit`)
+VALUES (1, 'system', 1, 0, 0, 0, 0, 0, 0, 0);
+  
 INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
 INSERT INTO `group_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `note`)
-VALUES (1, 'system', 1, 1, 'created during YAP install');
-
+INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `pbx_sip_endpoint_limit`, `pbx_sip_trunk_limit`, `pbx_phone_number_limit`, `pbx_cdr_limit`, `pbx_voicemail_megabyte_limit`, `pbx_call_recording_megabyte_limit`)
+VALUES (1, 'system', 1, 0, 0, 0, 0, 0, 0, 0);
+  
 INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
