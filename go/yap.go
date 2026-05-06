@@ -965,7 +965,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>Own User Account Details:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Own User Account Details:</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -1005,41 +1005,35 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "  <tr>")
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "    <th>All User Account Details on the Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All User Account Details on the Server:</th>")
 		} else if userTypeID == "200" {
-			fmt.Fprintf(w, "    <th>User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
 		} else if userTypeID == "201" {
-			fmt.Fprintf(w, "    <th>PBX User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
 		} else if userTypeID == "300" {
-			fmt.Fprintf(w, "    <th>PBX User Account Details Within the PBX<br>"+userPBXName+"<br>(PBX ID: "+userPBXID+")</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX User Account Details Within the PBX<br>"+userPBXName+"<br>(PBX ID: "+userPBXID+")</th>")
 		}
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTML(w, "otherAccountSearchName", "other-account-input-name", "Name")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTML(w, "otherAccountSearchEmail", "other-account-input-email", "Email")
-		if userTypeID == "300" {
-			fmt.Fprintf(w, "    <br><br>")
-		} else {
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		}
-		inputTableHTML(w, "otherAccountSearchType", "other-account-input-type", "Account Type")
-		if userTypeID == "300" {
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		} else {
-			fmt.Fprintf(w, "    <br><br>")
-		}
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTML(w, "otherAccountSearchDate", "other-account-input-date", "Date Created")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "otherAccountSearchType", "other-account-input-type", "Account Type")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			fmt.Fprintf(w, "    <br><br>")
 			inputTableHTML(w, "otherAccountSearchPBXName", "other-account-input-pbx-name", "PBX Name")
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTML(w, "otherAccountSearchPBXID", "other-account-input-pbx-id", "PBX ID")
 		}
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "    <br><br>")
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTML(w, "otherAccountSearchGroupName", "other-account-input-group-name", "Group Name")
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTML(w, "otherAccountSearchGroupID", "other-account-input-group-id", "Group ID")
@@ -1352,10 +1346,10 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "<div id=\"group-div\" style=\"display:none\">")
+		fmt.Fprintf(w, "<br>")
 	} else {
 		fmt.Fprintf(w, "<div id=\"group-div\">")
 	}
-	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "<table id=\"table\" class=\"table-group\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
@@ -1675,7 +1669,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		groupWhereSQL, err := dbDetail.connection.Query(`SELECT
 							group_name,
                                                         group_id,
-                                                        group_date,
+                                                        group_date_added,
                                                         group_active,
                                                         pbx_limit,
                                                         new_pbx_sip_endpoint_default_limit,
@@ -1683,7 +1677,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
                                                         new_pbx_phone_number_default_limit,
                                                         new_pbx_cdr_default_limit,
                                                         new_pbx_voicemail_default_megabyte_limit,
-                                                        new_pbx_call_recording_default_megabyte_limit,
+                                                        new_pbx_call_recording_default_megabyte_limit
 					            FROM
 					  	        yap.view___group_detail
 						    WHERE
