@@ -75,9 +75,41 @@ fi;
 
 #----------------------------------------------------------------------
 
-# Install wget
 apt update;
-apt install -y wget;
+apt install wget \
+            python3-mysqldb \
+            alembic \
+            unixodbc \
+            odbc-mariadb \
+            build-essential \
+            libjansson-dev \
+            autoconf \
+            libxml2-dev \
+            libncurses-dev \
+            libedit-dev \
+            uuid-dev \
+            libsqlite3-dev \
+            libnewt-dev \
+            automake \
+            unixodbc-dev \
+            sqlite3 \
+            libsrtp2-dev \
+            libtool \
+            libssl-dev \
+            libcurl4-gnutls-dev \
+            mariadb-server -y;
+if [ $? != 0 ]
+then
+  printf $clear_screen;
+  printf $bg_red;
+  printf $text_bold_white;
+  printf " ╔══════════════════════════════════════════════════╗ \n";
+  printf " ║ Some or all software required failed to install, ║ \n";
+  printf " ║ please re-run the install script again           ║ \n";
+  printf " ╚══════════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  exit;
+fi;
 
 #----------------------------------------------------------------------
 
@@ -220,9 +252,6 @@ tar -xvzf /root/$asterisk_version.tar.gz;
 #----------------------------------------------------------------------
 
 # MariaDB install and setup
-apt update;
-apt install mariadb-server -y;
-systemctl daemon-reload;
 
 # Secure the MariaDB server - equivalent to the mysql_secure_installation shell script 
 mysql -u root -D mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$mariadb_root_password')";
@@ -244,11 +273,6 @@ echo "socket=/run/mysqld/mysqld.sock"  >> $my_cnf;
 # Create database - asterisk and YAP tables will be stored in the same database named yap
 mysql -u root -e "CREATE DATABASE yap;";
 mysql -u root -e "FLUSH PRIVILEGES;";
-
-# Alembic for Asterisk tables
-
-# Install Alembic and python3-mysqldb
-apt install -y python3-mysqldb alembic;
 
 # Create temp MariaDB user for Alembic
 mysql -u root -e "CREATE USER 'temp'@'localhost' IDENTIFIED BY '$mariadb_temp_password';";
@@ -350,9 +374,6 @@ useradd -r -s /bin/false pbx;
 
 # Lock the pbx user
 usermod -L pbx;
-
-# Install Astrisk dependencies
-apt install -y unixodbc odbc-mariadb wget build-essential libjansson-dev autoconf libxml2-dev libncurses-dev libedit-dev uuid-dev libsqlite3-dev libnewt-dev automake unixodbc-dev sqlite3 libsrtp2-dev libtool libssl-dev libcurl4-gnutls-dev;
 
 cd /root/$asterisk_version;
 ./configure;
