@@ -271,6 +271,10 @@ mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Create a .my.cnf file in /root and populate with account details for MariaDB root
 my_cnf=/root/.my.cnf;
+# If any previous .my.cnf file exists remove it from /root
+if [ -f "$my_cnf" ]; then
+  rm -r $my_cnf;
+fi;
 touch $my_cnf;
 echo "[client]"  >> $my_cnf;
 echo "user=root" >> $my_cnf;
@@ -281,7 +285,8 @@ echo "socket=/run/mysqld/mysqld.sock"  >> $my_cnf;
 mysql -u root -e "CREATE DATABASE yap;";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
-# Create temp MariaDB user for Alembic
+# Drop any previous temp user and create a temp MariaDB user for Alembic
+mysql -u root -e "DROP USER IF EXISTS 'temp'@'localhost';";
 mysql -u root -e "CREATE USER 'temp'@'localhost' IDENTIFIED BY '$mariadb_temp_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
@@ -311,7 +316,8 @@ mysql -u root -e "FLUSH PRIVILEGES;";
 # Create YAP tables and insert data
 mysql -u root -D yap -e "SOURCE /root/yap/mariadb/yap.sql;";
 
-# Create YAP MaraiDB user
+# Drop any previous YAP MaraiDB user and create a YAP MaraiDB user for YAP
+mysql -u root -e "DROP USER IF EXISTS 'yap'@'localhost';";
 mysql -u root -e "CREATE USER 'yap'@'localhost' IDENTIFIED BY '$mariadb_yap_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
@@ -339,7 +345,8 @@ search_string="<REPLACE_YAP_PASSWORD>";
 replace_string="$mariadb_yap_password";
 string_update;
 
-# Create PBX MaraiDB user
+# Drop any previous PBX MaraiDB user and create a PBX MaraiDB user for Asterisk
+mysql -u root -e "DROP USER IF EXISTS 'pbx'@'localhost';";
 mysql -u root -e "CREATE USER 'pbx'@'localhost' IDENTIFIED BY '$mariadb_pbx_password';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
