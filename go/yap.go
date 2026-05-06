@@ -1383,7 +1383,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTML(w, "groupContactSearchInvoiceEmail", "group-contact-input-invoice-email", "Group Invoice Email Address")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupContactSearchInvoicePhone", "group-contactinput-invoice-phone", "Group Invoice Phone Number")
+		inputTableHTML(w, "groupContactSearchInvoicePhone", "group-contact-input-invoice-phone", "Group Invoice Phone Number")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    </th>")
@@ -1668,7 +1668,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			fmt.Fprintf(w, "          <td>"+newPBXPhoneNumberDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXCDRDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXVoicemailDefaultMegabyteLimit+"</td>")
-			fmt.Fprintf(w, "          <td>"+newPBXcallRecordingDefaultMegabyteLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXCallRecordingDefaultMegabyteLimit+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
 	} else {
@@ -1726,7 +1726,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			fmt.Fprintf(w, "          <td>"+newPBXPhoneNumberDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXCDRDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXVoicemailDefaultMegabyteLimit+"</td>")
-			fmt.Fprintf(w, "          <td>"+newPBXcallRecordingDefaultMegabyteLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXCallRecordingDefaultMegabyteLimit+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
 	}
