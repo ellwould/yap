@@ -354,6 +354,42 @@ ON `user_group`.`id` = `group_site_address`.`id`
 INNER JOIN `group_invoice_address`
 ON `user_group`.`id` = `group_invoice_address`.`id`;
 
+==================================================================================
+
+CREATE VIEW `view___pbx_detail` AS
+SELECT
+  `pbx`.`id` AS 'pbx_id',
+  `pbx`.`pbx_name`,
+  `pbx`.`date_added` AS 'pbx_date_added',
+  `pbx`.`pbx_active`,
+  `pbx`.`pbx_sip_endpoint_limit`,
+  `pbx`.`pbx_sip_trunk_limit`,
+  `pbx`.`pbx_phone_number_limit`,
+  `pbx`.`pbx_cdr_limit`,
+  `pbx`.`pbx_voicemail_megabyte_limit`,
+  `pbx`.`pbx_call_recording_megabyte_limit`,
+  `pbx_site_address`.`address_line_1` AS 'pbx_site_address_line_1',
+  `pbx_site_address`.`address_line_2` AS 'pbx_site_address_line_2',
+  `pbx_site_address`.`city_town_village` AS 'pbx_site_city_town_village',
+  `pbx_site_address`.`county_state_region` AS 'pbx_site_county_state_region',
+  `pbx_site_address`.`postcode_zip_code` AS 'pbx_site_postcode_zip_code',
+  `pbx_site_address`.`country` AS 'pbx_site_country',
+  `pbx_site_address`.`contact_email` AS 'pbx_site_contact_email',
+  `pbx_site_address`.`contact_number` AS 'pbx_site_contact_number',
+  `pbx_invoice_address`.`address_line_1` AS 'pbx_invoice_address_line_1',
+  `pbx_invoice_address`.`address_line_2` AS 'pbx_invoice_address_line_2',
+  `pbx_invoice_address`.`city_town_village` AS 'pbx_invoice_city_town_village',
+  `pbx_invoice_address`.`county_state_region` AS 'pbx_invoice_county_state_region',
+  `pbx_invoice_address`.`postcode_zip_code` AS 'pbx_invoice_postcode_zip_code',
+  `pbx_invoice_address`.`country` AS 'pbx_invoice_country',
+  `pbx_invoice_address`.`contact_email` AS 'pbx_invoice_contact_email',
+  `pbx_invoice_address`.`contact_number` AS 'pbx_invoice_contact_number'
+FROM `pbx`
+INNER JOIN `pbx_site_address`
+ON `pbx`.`id` = `pbx_site_address`.`id`
+INNER JOIN `pbx_invoice_address`
+ON `pbx`.`id` = `pbx_invoice_address`.`id`;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
