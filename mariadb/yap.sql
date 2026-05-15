@@ -358,6 +358,8 @@ CREATE VIEW `view___pbx_detail` AS
 SELECT
   `pbx`.`id` AS 'pbx_id',
   `pbx`.`pbx_name`,
+  `pbx`.`group_id`,
+  `user_group`.`group_name`,
   `pbx`.`date_added` AS 'pbx_date_added',
   `pbx`.`pbx_active`,
   `pbx`.`pbx_sip_endpoint_limit`,
@@ -383,6 +385,8 @@ SELECT
   `pbx_invoice_address`.`contact_email` AS 'pbx_invoice_contact_email',
   `pbx_invoice_address`.`contact_number` AS 'pbx_invoice_contact_number'
 FROM `pbx`
+INNER JOIN `user_group`
+ON `pbx`.`group_id` = `user_group`.`id`
 INNER JOIN `pbx_site_address`
 ON `pbx`.`id` = `pbx_site_address`.`id`
 INNER JOIN `pbx_invoice_address`
