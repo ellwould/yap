@@ -354,8 +354,6 @@ ON `user_group`.`id` = `group_site_address`.`id`
 INNER JOIN `group_invoice_address`
 ON `user_group`.`id` = `group_invoice_address`.`id`;
 
-==================================================================================
-
 CREATE VIEW `view___pbx_detail` AS
 SELECT
   `pbx`.`id` AS 'pbx_id',
