@@ -392,6 +392,26 @@ ON `pbx`.`id` = `pbx_site_address`.`id`
 INNER JOIN `pbx_invoice_address`
 ON `pbx`.`id` = `pbx_invoice_address`.`id`;
 
+CREATE VIEW `view___sip_endpoint_detail` AS
+SELECT
+  `ps_auths`.`username`,
+  `ps_auths`.`password`,
+  `ps_endpoints`.`allow`,
+  `ps_endpoints`.`dtmf_mode`,
+  `ps_endpoints`.`named_call_group`,
+  `ps_endpoints`.`named_pickup_group`,
+  `pbx`.`pbx_name` AS 'pbx_name',
+  `pbx`.`id` AS 'pbx_id',
+  `user_group`.`group_name` AS 'group_name',
+  `user_group`.`id` AS 'group_id'
+FROM `ps_auths`
+INNER JOIN `ps_endpoints`
+ON `ps_auths`.`id` = `ps_endpoints`.`id`
+INNER JOIN `pbx`
+ON `ps_auths`.`pbx_id` = `pbx`.`id`
+INNER JOIN `user_group`
+ON `pbx`.`group_id` = `user_group`.`id`;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
