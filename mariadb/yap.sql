@@ -394,9 +394,9 @@ ON `pbx`.`id` = `pbx_invoice_address`.`id`;
 
 CREATE VIEW `view___sip_endpoint_detail` AS
 SELECT
-  `ps_auths`.`username`,
-  `ps_auths`.`password`,
-  `ps_endpoints`.`allow`,
+  `ps_auths`.`username` AS 'sip_username',
+  `ps_auths`.`password` AS 'sip_password',
+  `ps_endpoints`.`allow` AS 'codec_allowed',
   `ps_endpoints`.`dtmf_mode`,
   `ps_endpoints`.`named_call_group`,
   `ps_endpoints`.`named_pickup_group`,
