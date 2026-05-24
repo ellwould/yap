@@ -183,9 +183,10 @@ func filterTableJS(w http.ResponseWriter, functionName string, inputID string, t
 
 // JavaScript to copy data to users clipboard
 func copyButtonJS(w http.ResponseWriter, data string) {
-	fmt.Fprintf(w, "<div class=\"button-data-space\"></div><button class=\"button-data\" onclick=cp"+data+"()>Copy &#10697</button><br>")
+	jsFuncName := strings.Replace(data, "-", "", -1)
+	fmt.Fprintf(w, "<div class=\"button-data-space\"></div><button class=\"button-data\" onclick=cp"+jsFuncName+"()>Copy &#10697</button><br>")
 	fmt.Fprintf(w, "<script>")
-	fmt.Fprintf(w, "  function cp"+data+"() {")
+	fmt.Fprintf(w, "  function cp"+jsFuncName+"() {")
 	fmt.Fprintf(w, "    navigator.clipboard.writeText('"+data+"');")
 	fmt.Fprintf(w, "  }")
 	fmt.Fprintf(w, "</script>")
@@ -1749,34 +1750,34 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string, userPBXID string) {
 
 	var (
-		pbxName                               string
-		pbxID                                 string
-		pbxDateAdded                          string
-		pbxActive                             string
-		pbxSIPEndpointLimit                   string
-		pbxSIPTrunkLimit              	      string
-		pbxPhoneNumberLimit                   string
-		pbxCDRLimit                           string
-		pbxVoicemailMegabyteLimit     	      string
-		pbxCallRecordingMegabyteLimit         string
-		pbxSiteAddressLine1                   string
-		pbxSiteAddressLine2                   string
-		pbxSiteCityTownVillage                string
-		pbxSiteCountyStateRegion              string
-		pbxSitePostcodeZipCode                string
-		pbxSiteCountry                        string
-		pbxSiteContactEmail                   string
-		pbxSiteContactNumber                  string
-		pbxInvoiceAddressLine1                string
-		pbxInvoiceAddressLine2                string
-		pbxInvoiceCityTownVillage             string
-		pbxInvoiceCountyStateRegion           string
-		pbxInvoicePostcodeZipCode             string
-		pbxInvoiceCountry                     string
-		pbxInvoiceContactEmail                string
-		pbxInvoiceContactNumber               string
-		groupName			      string
-		groupID				      string
+		pbxName                       string
+		pbxID                         string
+		pbxDateAdded                  string
+		pbxActive                     string
+		pbxSIPEndpointLimit           string
+		pbxSIPTrunkLimit              string
+		pbxPhoneNumberLimit           string
+		pbxCDRLimit                   string
+		pbxVoicemailMegabyteLimit     string
+		pbxCallRecordingMegabyteLimit string
+		pbxSiteAddressLine1           string
+		pbxSiteAddressLine2           string
+		pbxSiteCityTownVillage        string
+		pbxSiteCountyStateRegion      string
+		pbxSitePostcodeZipCode        string
+		pbxSiteCountry                string
+		pbxSiteContactEmail           string
+		pbxSiteContactNumber          string
+		pbxInvoiceAddressLine1        string
+		pbxInvoiceAddressLine2        string
+		pbxInvoiceCityTownVillage     string
+		pbxInvoiceCountyStateRegion   string
+		pbxInvoicePostcodeZipCode     string
+		pbxInvoiceCountry             string
+		pbxInvoiceContactEmail        string
+		pbxInvoiceContactNumber       string
+		groupName                     string
+		groupID                       string
 	)
 
 	var dbTableCountUserPBX databaseFunctionParameter
@@ -1808,16 +1809,16 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			fmt.Fprintf(w, "          <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
 		} else if userTypeID == "200" || userTypeID == "201" {
 			var dbTableCountUserPBXWhere databaseFunctionParameter
-	                dbTableCountUserPBXWhere.connection = dbDetail.connection
-        	        dbTableCountUserPBXWhere.database = dbDetail.database
-        	        dbTableCountUserPBXWhere.table = "pbx"
-        	        dbTableCountUserPBXWhere.columnWhere = "group_id"
+			dbTableCountUserPBXWhere.connection = dbDetail.connection
+			dbTableCountUserPBXWhere.database = dbDetail.database
+			dbTableCountUserPBXWhere.table = "pbx"
+			dbTableCountUserPBXWhere.columnWhere = "group_id"
 			dbTableCountUserPBXWhere.columnWhereValue = userGroupID
-			dbTableCountUserPBXWhere.columnWhereAnd = "pbx_active" 
+			dbTableCountUserPBXWhere.columnWhereAnd = "pbx_active"
 			dbTableCountUserPBXWhere.columnWhereValueAnd = "1"
-                        fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBXWhere)+"</td>")
-                        dbTableCountUserPBXWhere.columnWhereValueAnd = "0"
-                        fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBXWhere)+"</td>")
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBXWhere)+"</td>")
+			dbTableCountUserPBXWhere.columnWhereValueAnd = "0"
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBXWhere)+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -1894,9 +1895,9 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "          <th>PBX Invoice<br> Address</th>")
 	fmt.Fprintf(w, "          <th>PBX Invoice<br> Email Address</th>")
 	fmt.Fprintf(w, "          <th>PBX Invoice<br> Phone Number</th>")
-        if userTypeID == "100" {
-        	fmt.Fprintf(w, "          <th>Group Name</th>")
-        	fmt.Fprintf(w, "          <th>Group ID</th>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "          <th>Group Name</th>")
+		fmt.Fprintf(w, "          <th>Group ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 	if userTypeID == "100" {
@@ -1971,7 +1972,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+pbxInvoiceContactEmail+"\">"+pbxInvoiceContactEmail+"</a></td>")
 			fmt.Fprintf(w, "          <td><a href=\"tel:"+pbxInvoiceContactNumber+"\">"+pbxInvoiceContactNumber+"</a></td>")
 			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-                        fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
 	} else if userTypeID == "200" || userTypeID == "201" {
@@ -2004,7 +2005,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			panic(err)
 
 		}
-		
+
 		for pbxWhereUserGroupSQL.Next() {
 
 			err = pbxWhereUserGroupSQL.Scan(
@@ -2156,7 +2157,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			inputTableHTML(w, "pbxResourceSearchGroupID", "pbx-resource-input-group-id", "Group ID")
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
-                }
+		}
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 	}
@@ -2183,7 +2184,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "          <th>Call Recording <br>Limit for PBX <br>(Megabytes)</th>")
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "          <th>Group Name</th>")
-        	fmt.Fprintf(w, "          <th>Group ID</th>")
+		fmt.Fprintf(w, "          <th>Group ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 	if userTypeID == "100" {
@@ -2248,11 +2249,11 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			fmt.Fprintf(w, "          <td>"+pbxVoicemailMegabyteLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxCallRecordingMegabyteLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-                        fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
-	}  else if userTypeID == "200" || userTypeID == "201" {
-                pbxWhereUserGroupSQL, err := dbDetail.connection.Query(`SELECT
+	} else if userTypeID == "200" || userTypeID == "201" {
+		pbxWhereUserGroupSQL, err := dbDetail.connection.Query(`SELECT
                                                         pbx_name,
                                                         pbx_id,
                                                         pbx_date_added,
@@ -2268,48 +2269,48 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
                                                       WHERE
                                                         group_id = ?;`, userGroupID)
 
-                // Error
-                if err != nil {
-                        panic(err)
+		// Error
+		if err != nil {
+			panic(err)
 
-                }
+		}
 
-                for pbxWhereUserGroupSQL.Next() {
+		for pbxWhereUserGroupSQL.Next() {
 
-                        err = pbxWhereUserGroupSQL.Scan(
-                                &pbxName,
-                                &pbxID,
-                                &pbxDateAdded,
-                                &pbxActive,
-                                &pbxSIPEndpointLimit,
-                                &pbxSIPTrunkLimit,
-                                &pbxPhoneNumberLimit,
-                                &pbxCDRLimit,
-                                &pbxVoicemailMegabyteLimit,
-                                &pbxCallRecordingMegabyteLimit,
-                        )
+			err = pbxWhereUserGroupSQL.Scan(
+				&pbxName,
+				&pbxID,
+				&pbxDateAdded,
+				&pbxActive,
+				&pbxSIPEndpointLimit,
+				&pbxSIPTrunkLimit,
+				&pbxPhoneNumberLimit,
+				&pbxCDRLimit,
+				&pbxVoicemailMegabyteLimit,
+				&pbxCallRecordingMegabyteLimit,
+			)
 
-                        // Error
-                        if err != nil {
-                                panic(err)
-                        }
-                        fmt.Fprintf(w, "        <tr>")
-                        fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-                        fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
-                        fmt.Fprintf(w, "          <td>"+pbxDateAdded+"</td>")
-                        if pbxActive == "1" {
-                                fmt.Fprintf(w, "          <td>YES</td>")
-                        } else {
-                                fmt.Fprintf(w, "          <td>NO</td>")
-                        }
-                        fmt.Fprintf(w, "          <td>"+pbxSIPEndpointLimit+"</td>")
-                        fmt.Fprintf(w, "          <td>"+pbxSIPTrunkLimit+"</td>")
-                        fmt.Fprintf(w, "          <td>"+pbxPhoneNumberLimit+"</td>")
-                        fmt.Fprintf(w, "          <td>"+pbxCDRLimit+"</td>")
-                        fmt.Fprintf(w, "          <td>"+pbxVoicemailMegabyteLimit+"</td>")
-                        fmt.Fprintf(w, "          <td>"+pbxCallRecordingMegabyteLimit+"</td>")
-                        fmt.Fprintf(w, "        </tr>")
-                }
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxDateAdded+"</td>")
+			if pbxActive == "1" {
+				fmt.Fprintf(w, "          <td>YES</td>")
+			} else {
+				fmt.Fprintf(w, "          <td>NO</td>")
+			}
+			fmt.Fprintf(w, "          <td>"+pbxSIPEndpointLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxSIPTrunkLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxPhoneNumberLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxCDRLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxVoicemailMegabyteLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxCallRecordingMegabyteLimit+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		pbxWhereUserPBXSQL, err := dbDetail.connection.Query(`SELECT
                                                         pbx_date_added,
@@ -2401,6 +2402,305 @@ func dropDailplanTable(dbDetail databaseFunctionParameter) {
 //----------------------------------------------------------------------------------------------------
 
 // SIP endpoint page Functions
+
+func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string, userPBXID string) {
+
+	var (
+		sipUsername  string
+		sipPassword  string
+		codecAllowed string
+		dtmfUsed     string
+		callGroup    string
+		pickupGroup  string
+		pbxName      string
+		groupName    string
+		groupID      string
+	)
+
+	var dbTableCountUserSIPEndpoint databaseFunctionParameter
+	dbTableCountUserSIPEndpoint.connection = dbDetail.connection
+	dbTableCountUserSIPEndpoint.database = dbDetail.database
+	dbTableCountUserSIPEndpoint.table = "view___sip_endpoint_detail"
+	dbTableCountUserSIPEndpoint.columnWhere = "sip_username"
+
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "        <tr>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "          <th>Total SIP Endpoints On YAP</th>")
+	} else if userTypeID == "200" || userTypeID == "201" {
+		fmt.Fprintf(w, "          <th>Total SIP Endpoints Within the Group</th>")
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		fmt.Fprintf(w, "          <th>Total SIP Endpoints Within the PBX</th>")
+	}
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	if userTypeID == "100" {
+		dbTableCountUserSIPEndpoint.countMinusOne = false
+		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserSIPEndpoint)+"</td>")
+	} else if userTypeID == "200" || userTypeID == "201" {
+		var dbTableCountUserSIPEndpointWhere databaseFunctionParameter
+		dbTableCountUserSIPEndpointWhere.connection = dbDetail.connection
+		dbTableCountUserSIPEndpointWhere.database = dbDetail.database
+		dbTableCountUserSIPEndpointWhere.table = "view___sip_endpoint_detail"
+		dbTableCountUserSIPEndpointWhere.columnWhere = "group_id"
+		dbTableCountUserSIPEndpointWhere.columnWhereValue = userGroupID
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPEndpointWhere)+"</td>")
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		var dbTableCountUserSIPEndpointWhere databaseFunctionParameter
+		dbTableCountUserSIPEndpointWhere.connection = dbDetail.connection
+		dbTableCountUserSIPEndpointWhere.database = dbDetail.database
+		dbTableCountUserSIPEndpointWhere.table = "view___sip_endpoint_detail"
+		dbTableCountUserSIPEndpointWhere.columnWhere = "pbx_id"
+		dbTableCountUserSIPEndpointWhere.columnWhereValue = userPBXID
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPEndpointWhere)+"</td>")
+	}
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><button onclick=\"toggleSIPEndpoint() \"class=\"button-general button-sip-endpoint\">&nbsp Show/Hide SIP Endpoint(s) &nbsp</button></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+
+	fmt.Fprintf(w, "<div id=\"sip-endpoint-div\" style=\"display:none\">")
+	fmt.Fprintf(w, "<br>")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "  <tr>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoint Details on the Server:</th>")
+	} else if userTypeID == "200" || userTypeID == "201" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoint Details Within the Group:</th>")
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoint Details Within the PBX:</th>")
+	}
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointSearchSIPUsername", "sip-endpoint-input-sip-username", "SIP Username/PBX ID")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointSearchCodec", "sip-endpoint-input-codec", "Codec(s) Allowed")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointSearchDTMF", "sip-endpoint-input-dtmf", "DTMF Method Used")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointSearchCallGroup", "sip-endpoint-input-call-group", "Call Group")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointSearchPickupGroup", "sip-endpoint-input-pickup-group", "Pickup Group")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+		inputTableHTML(w, "sipEndpointSearchPBXName", "sip-endpoint-input-pbx-name", "PBX Name")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	}
+	if userTypeID == "100" {
+		inputTableHTML(w, "sipEndpointSearchGroupName", "sip-endpoint-input-group-name", "Group Name")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "sipEndpointSearchGroupID", "sip-endpoint-input-group-id", "Group ID")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	}
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table id=\"sip-endpoint-table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <th>SIP Username</th>")
+	fmt.Fprintf(w, "          <th>SIP Password</th>")
+	fmt.Fprintf(w, "          <th>Codec(s)<br>Allowed</th>")
+	fmt.Fprintf(w, "          <th>DTMF<br>Method<br>Used</th>")
+	fmt.Fprintf(w, "          <th>Call<br>Group</th>")
+	fmt.Fprintf(w, "          <th>Pickup<br>Group</th>")
+	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+		fmt.Fprintf(w, "          <th>PBX Name</th>")
+	}
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "          <th>Group Name</th>")
+		fmt.Fprintf(w, "          <th>Group ID</th>")
+	}
+	fmt.Fprintf(w, "        </tr>")
+	if userTypeID == "100" {
+		sipEndpointAllSQL, err := dbDetail.connection.Query(`SELECT
+							sip_username,
+							sip_password,
+							codec_allowed,
+					                dtmf_mode,
+					                named_call_group,
+					                named_pickup_group,
+					                pbx_name,
+					                group_name,
+					                group_id
+					              FROM
+					  	        yap.view___sip_endpoint_detail`)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for sipEndpointAllSQL.Next() {
+
+			err = sipEndpointAllSQL.Scan(
+				&sipUsername,
+				&sipPassword,
+				&codecAllowed,
+				&dtmfUsed,
+				&callGroup,
+				&pickupGroup,
+				&pbxName,
+				&groupName,
+				&groupID,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+sipUsername)
+			copyButtonJS(w, sipUsername)
+			fmt.Fprintf(w, "	  </td>")
+			fmt.Fprintf(w, "          <td>"+sipPassword)
+			copyButtonJS(w, sipPassword)
+			fmt.Fprintf(w, "          </td>")
+			fmt.Fprintf(w, "          <td>"+codecAllowed+"</td>")
+			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
+			fmt.Fprintf(w, "          <td>"+callGroup+"</td>")
+			fmt.Fprintf(w, "          <td>"+pickupGroup+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+	} else if userTypeID == "200" || userTypeID == "201" {
+		sipEndpointWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
+                                                        sip_username,
+                                                        sip_password,
+                                                        codec_allowed,
+                                                        dtmf_mode,
+                                                        named_call_group,
+                                                        named_pickup_group,
+                                                        pbx_name
+                                                      FROM
+                                                        yap.view___sip_endpoint_detail
+						      WHERE
+                                                        group_id = ?;`, userGroupID)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for sipEndpointWhereGroupSQL.Next() {
+
+			err = sipEndpointWhereGroupSQL.Scan(
+				&sipUsername,
+				&sipPassword,
+				&codecAllowed,
+				&dtmfUsed,
+				&callGroup,
+				&pickupGroup,
+				&pbxName,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+sipUsername)
+			copyButtonJS(w, sipUsername)
+			fmt.Fprintf(w, "          </td>")
+			fmt.Fprintf(w, "          <td>"+sipPassword)
+			copyButtonJS(w, sipPassword)
+			fmt.Fprintf(w, "          </td>")
+			fmt.Fprintf(w, "          <td>"+codecAllowed+"</td>")
+			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
+			fmt.Fprintf(w, "          <td>"+callGroup+"</td>")
+			fmt.Fprintf(w, "          <td>"+pickupGroup+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		sipEndpointWherePBXSQL, err := dbDetail.connection.Query(`SELECT
+                                                        sip_username,
+                                                        sip_password,
+                                                        codec_allowed,
+                                                        dtmf_mode,
+                                                        named_call_group,
+                                                        named_pickup_group
+                                                      FROM
+                                                        yap.view___sip_endpoint_detail
+                                                      WHERE
+                                                        pbx_id = ?;`, userPBXID)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for sipEndpointWherePBXSQL.Next() {
+
+			err = sipEndpointWherePBXSQL.Scan(
+				&sipUsername,
+				&sipPassword,
+				&codecAllowed,
+				&dtmfUsed,
+				&callGroup,
+				&pickupGroup,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+sipUsername)
+			copyButtonJS(w, sipUsername)
+			fmt.Fprintf(w, "          </td>")
+			fmt.Fprintf(w, "          <td>"+sipPassword)
+			copyButtonJS(w, sipPassword)
+			fmt.Fprintf(w, "          </td>")
+			fmt.Fprintf(w, "          <td>"+codecAllowed+"</td>")
+			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
+			fmt.Fprintf(w, "          <td>"+callGroup+"</td>")
+			fmt.Fprintf(w, "          <td>"+pickupGroup+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+	}
+
+	fmt.Fprintf(w, "      </table>")
+	filterTableJS(w, "sipEndpointSearchSIPUsername", "sip-endpoint-input-sip-username", "sip-endpoint-table", 0)
+	filterTableJS(w, "sipEndpointSearchCodec", "sip-endpoint-input-site-codec", "sip-endpoint-table", 1)
+	filterTableJS(w, "sipEndpointSearchDTMF", "sip-endpoint-input-site-dtmf", "sip-endpoint-table", 2)
+	filterTableJS(w, "sipEndpointSearchCallGroup", "sip-endpoint-input-call-group", "sip-endpoint-table", 3)
+	filterTableJS(w, "sipEndpointSearchPickupGroup", "sip-endpoint-input-pickup-group", "sip-endpoint-table", 4)
+	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+		filterTableJS(w, "sipEndpointSearchPBXName", "sip-endpoint-input-pbx-name", "sip-endpoint-table", 5)
+	}
+	if userTypeID == "100" {
+		filterTableJS(w, "sipEndpointSearchGroupName", "sip-endpoint-input-group-name", "sip-endpoint-table", 6)
+		filterTableJS(w, "sipEndpointSearchGroupID", "sip-endpoint-input-group-id", "sip-endpoint-table", 7)
+	}
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</div>")
+	toggleDivJS(w, "toggleSIPEndpoint", "sip-endpoint-div")
+}
 
 //----------------------------------------------------------------------------------------------------
 
@@ -2511,7 +2811,7 @@ func main() {
 		wallpaper(w, "wallpaper-main-menu")
 
 		// Code to call the emailHeaderHTTP function
-		email := emailHeaderHTTP(r)
+		//email := emailHeaderHTTP(r)
 
 		var dbDetail databaseFunctionParameter
 		dbDetail.connection = dbConnection
@@ -2812,66 +3112,106 @@ func main() {
 
 	http.HandleFunc("/pbx", func(w http.ResponseWriter, r *http.Request) {
 
-                // Open database connection
-                dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
-                defer dbConnection.Close()
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
+		defer dbConnection.Close()
 
-                // Error
-                if err != nil {
-                        panic(err)
-                }
+		// Error
+		if err != nil {
+			panic(err)
+		}
 
-                fmt.Fprintf(w, startHTML)
+		fmt.Fprintf(w, startHTML)
 
-                // Wallpaper
-                wallpaper(w, "wallpaper-pbx")
+		// Wallpaper
+		wallpaper(w, "wallpaper-pbx")
 
-                // Code to call the emailHeaderHTTP function
-                email := emailHeaderHTTP(r)
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
 
-                var dbDetail databaseFunctionParameter
-                dbDetail.connection = dbConnection
-                dbDetail.database = dbName
-                dbDetail.columnWhereValue = email
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
 
-                userTypeID := userAccountData(dbDetail, "type_id")
-                userGroupID := userAccountData(dbDetail, "group_id")
-                userGroupName := userAccountData(dbDetail, "group_name")
+		userTypeID := userAccountData(dbDetail, "type_id")
+		userGroupID := userAccountData(dbDetail, "group_id")
+		userGroupName := userAccountData(dbDetail, "group_name")
 		userPBXID := userAccountData(dbDetail, "pbx_id")
-                userPBXName := userAccountData(dbDetail, "pbx_name")
+		userPBXName := userAccountData(dbDetail, "pbx_name")
 
-                if userTypeID == "" {
-                        errorBox(w, "email_error", "header-pbx")
-                } else {
-                        if userTypeID == "100" {
-                                header(w, "All PBXs on the Server<br>YAP Admin Account", "header-pbx")
-                                pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
-                                footer(w, "header-pbx", "button-pbx")
-                        } else if userTypeID == "200" || userTypeID == "201" {
-                                header(w, "All PBXs Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-pbx")
-                                pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
-                                footer(w, "header-pbx", "button-pbx")
-                        } else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		if userTypeID == "" {
+			errorBox(w, "email_error", "header-pbx")
+		} else {
+			if userTypeID == "100" {
+				header(w, "All PBXs on the Server<br>YAP Admin Account", "header-pbx")
+				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-pbx", "button-pbx")
+			} else if userTypeID == "200" || userTypeID == "201" {
+				header(w, "All PBXs Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-pbx")
+				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-pbx", "button-pbx")
+			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 				header(w, "PBX Information<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-pbx")
-                                pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
-                                footer(w, "header-pbx", "button-pbx")
-                        } else {
-                                errorBox(w, "account_type_error", "header-pbx")
-                        }
-                }
-                fmt.Fprintf(w, endHTML)
-        })
+				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-pbx", "button-pbx")
+			} else {
+				errorBox(w, "account_type_error", "header-pbx")
+			}
+		}
+		fmt.Fprintf(w, endHTML)
+	})
 
 	// SIP Endpoint Page
 	http.HandleFunc("/sip-endpoint", func(w http.ResponseWriter, r *http.Request) {
 
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
 		fmt.Fprintf(w, startHTML)
-		header(w, "SIP Endpoints", "header-sip-endpoint")
+
 		// Wallpaper
 		wallpaper(w, "wallpaper-sip-endpoint")
 
-		footer(w, "header-sip-endpoint", "button-sip-endpoint")
-		fmt.Fprintf(w, endHTML)
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountData(dbDetail, "type_id")
+		userGroupID := userAccountData(dbDetail, "group_id")
+		userGroupName := userAccountData(dbDetail, "group_name")
+		userPBXID := userAccountData(dbDetail, "pbx_id")
+		userPBXName := userAccountData(dbDetail, "pbx_name")
+
+		if userTypeID == "" {
+			errorBox(w, "email_error", "header-sip-endpoint")
+		} else {
+			if userTypeID == "100" {
+				header(w, "All SIP Endpoints on the Server<br>YAP Admin Account", "header-sip-endpoint")
+				sipEndpointList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-sip-endpoint", "button-sip-endpoint")
+			} else if userTypeID == "200" || userTypeID == "201" {
+				header(w, "All SIP Endpoints Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-sip-endpoint")
+				sipEndpointList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-sip-endpoint", "button-sip-endpoint")
+			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+				header(w, "All SIP Endpoints Within the PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-sip-endpoint")
+				sipEndpointList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-sip-endpoint", "button-sip-endpoint")
+			} else {
+				errorBox(w, "account_type_error", "header-sip-endpoint")
+			}
+		}
 	})
 
 	// SIP Trunk Page
@@ -3021,5 +3361,7 @@ func main() {
 	}
 }
 
+// Contributor(s):
+// Elliot Michael Keavney
 // Contributor(s):
 // Elliot Michael Keavney
