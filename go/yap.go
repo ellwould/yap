@@ -2811,7 +2811,7 @@ func main() {
 		wallpaper(w, "wallpaper-main-menu")
 
 		// Code to call the emailHeaderHTTP function
-		//email := emailHeaderHTTP(r)
+		email := emailHeaderHTTP(r)
 
 		var dbDetail databaseFunctionParameter
 		dbDetail.connection = dbConnection
