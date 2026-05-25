@@ -2418,6 +2418,12 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		groupID      string
 	)
 
+	// Registered table
+	var (
+		uri       string
+		userAgent string
+	)
+
 	var dbTableCountUserSIPEndpoint databaseFunctionParameter
 	dbTableCountUserSIPEndpoint.connection = dbDetail.connection
 	dbTableCountUserSIPEndpoint.database = dbDetail.database
@@ -2483,27 +2489,27 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointSearchSIPUsername", "sip-endpoint-input-sip-username", "SIP Username/PBX ID")
+	inputTableHTML(w, "sipEndpointDetailSearchSIPUsername", "sip-endpoint-detail-input-sip-username", "SIP Username/PBX ID")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointSearchCodec", "sip-endpoint-input-codec", "Codec(s) Allowed")
+	inputTableHTML(w, "sipEndpointDetailSearchCodec", "sip-endpoint-detail-input-codec", "Codec(s) Allowed")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointSearchDTMF", "sip-endpoint-input-dtmf", "DTMF Method Used")
+	inputTableHTML(w, "sipEndpointDetailSearchDTMF", "sip-endpoint-detail-input-dtmf", "DTMF Method Used")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointSearchCallGroup", "sip-endpoint-input-call-group", "Call Group")
+	inputTableHTML(w, "sipEndpointDetailSearchCallGroup", "sip-endpoint-detail-input-call-group", "Call Group")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointSearchPickupGroup", "sip-endpoint-input-pickup-group", "Pickup Group")
+	inputTableHTML(w, "sipEndpointDetailSearchPickupGroup", "sip-endpoint-detail-input-pickup-group", "Pickup Group")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		inputTableHTML(w, "sipEndpointSearchPBXName", "sip-endpoint-input-pbx-name", "PBX Name")
+		inputTableHTML(w, "sipEndpointDetailSearchPBXName", "sip-endpoint-detail-input-pbx-name", "PBX Name")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	if userTypeID == "100" {
-		inputTableHTML(w, "sipEndpointSearchGroupName", "sip-endpoint-input-group-name", "Group Name")
+		inputTableHTML(w, "sipEndpointDetailSearchGroupName", "sip-endpoint-detail-input-group-name", "Group Name")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "sipEndpointSearchGroupID", "sip-endpoint-input-group-id", "Group ID")
+		inputTableHTML(w, "sipEndpointDetailSearchGroupID", "sip-endpoint-detail-input-group-id", "Group ID")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	fmt.Fprintf(w, "    <br>")
@@ -2512,7 +2518,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"sip-endpoint-table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "      <table id=\"sip-endpoint-detail-table\" class=\"table-sip-endpoint\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <th>SIP Username</th>")
 	fmt.Fprintf(w, "          <th>SIP Password</th>")
@@ -2530,7 +2536,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 	fmt.Fprintf(w, "        </tr>")
 	if userTypeID == "100" {
-		sipEndpointAllSQL, err := dbDetail.connection.Query(`SELECT
+		sipEndpointDetailAllSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							sip_password,
 							codec_allowed,
@@ -2550,9 +2556,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointAllSQL.Next() {
+		for sipEndpointDetailAllSQL.Next() {
 
-			err = sipEndpointAllSQL.Scan(
+			err = sipEndpointDetailAllSQL.Scan(
 				&sipUsername,
 				&sipPassword,
 				&codecAllowed,
@@ -2591,7 +2597,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "        </tr>")
 		}
 	} else if userTypeID == "200" || userTypeID == "201" {
-		sipEndpointWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
+		sipEndpointDetailWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
                                                         sip_username,
                                                         sip_password,
                                                         codec_allowed,
@@ -2611,9 +2617,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointWhereGroupSQL.Next() {
+		for sipEndpointDetailWhereGroupSQL.Next() {
 
-			err = sipEndpointWhereGroupSQL.Scan(
+			err = sipEndpointDetailWhereGroupSQL.Scan(
 				&sipUsername,
 				&sipPassword,
 				&codecAllowed,
@@ -2649,7 +2655,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		}
 
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		sipEndpointWherePBXSQL, err := dbDetail.connection.Query(`SELECT
+		sipEndpointDetailWherePBXSQL, err := dbDetail.connection.Query(`SELECT
                                                         sip_username,
                                                         sip_password,
                                                         codec_allowed,
@@ -2668,9 +2674,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointWherePBXSQL.Next() {
+		for sipEndpointDetailWherePBXSQL.Next() {
 
-			err = sipEndpointWherePBXSQL.Scan(
+			err = sipEndpointDetailWherePBXSQL.Scan(
 				&sipUsername,
 				&sipPassword,
 				&codecAllowed,
@@ -2706,17 +2712,202 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 
 	fmt.Fprintf(w, "      </table>")
-	filterTableJS(w, "sipEndpointSearchSIPUsername", "sip-endpoint-input-sip-username", "sip-endpoint-table", 0)
-	filterTableJS(w, "sipEndpointSearchCodec", "sip-endpoint-input-codec", "sip-endpoint-table", 2)
-	filterTableJS(w, "sipEndpointSearchDTMF", "sip-endpoint-input-dtmf", "sip-endpoint-table", 3)
-	filterTableJS(w, "sipEndpointSearchCallGroup", "sip-endpoint-input-call-group", "sip-endpoint-table", 4)
-	filterTableJS(w, "sipEndpointSearchPickupGroup", "sip-endpoint-input-pickup-group", "sip-endpoint-table", 5)
+	filterTableJS(w, "sipEndpointDetailSearchSIPUsername", "sip-endpoint-detail-input-sip-username", "sip-endpoint-detail-table", 0)
+	filterTableJS(w, "sipEndpointDetailSearchCodec", "sip-endpoint-detail-input-codec", "sip-endpoint-detail-table", 2)
+	filterTableJS(w, "sipEndpointDetailSearchDTMF", "sip-endpoint-detail-input-dtmf", "sip-endpoint-detail-table", 3)
+	filterTableJS(w, "sipEndpointDetailSearchCallGroup", "sip-endpoint-detail-input-call-group", "sip-endpoint-detail-table", 4)
+	filterTableJS(w, "sipEndpointDetailSearchPickupGroup", "sip-endpoint-detail-input-pickup-group", "sip-endpoint-detail-table", 5)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		filterTableJS(w, "sipEndpointSearchPBXName", "sip-endpoint-input-pbx-name", "sip-endpoint-table", 7)
+		filterTableJS(w, "sipEndpointDetailSearchPBXName", "sip-endpoint-detail-input-pbx-name", "sip-endpoint-detail-table", 7)
 	}
 	if userTypeID == "100" {
-		filterTableJS(w, "sipEndpointSearchGroupName", "sip-endpoint-input-group-name", "sip-endpoint-table", 8)
-		filterTableJS(w, "sipEndpointSearchGroupID", "sip-endpoint-input-group-id", "sip-endpoint-table", 9)
+		filterTableJS(w, "sipEndpointDetailSearchGroupName", "sip-endpoint-detail-input-group-name", "sip-endpoint-detail-table", 8)
+		filterTableJS(w, "sipEndpointDetailSearchGroupID", "sip-endpoint-detail-input-group-id", "sip-endpoint-detail-table", 9)
+	}
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "<br>")
+
+	// Registered SIP Endpoints Table
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "  <tr>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoints Registered on the Server:</th>")
+	} else if userTypeID == "200" || userTypeID == "201" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoints Registered Within the Group:</th>")
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoints Registered Within the PBX:</th>")
+	}
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointRegSearchSIPUsername", "sip-endpoint-reg-input-sip-username", "SIP Username/PBX ID")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointRegSearchURI", "sip-endpoint-reg-input-uri", "URI")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTML(w, "sipEndpointRegSearchUserAgent", "sip-endpoint-reg-input-user-agent", "User Agent")
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+		inputTableHTML(w, "sipEndpointRegSearchPBXName", "sip-endpoint-reg-input-pbx-name", "PBX Name")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	}
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "sipEndpointRegSearchGroupName", "sip-endpoint-reg-input-group-name", "Group Name")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTML(w, "sipEndpointRegSearchGroupID", "sip-endpoint-reg-input-group-id", "Group ID")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	}
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table id=\"sip-endpoint-reg-table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <th>SIP Username</th>")
+	fmt.Fprintf(w, "          <th>URI</th>")
+	fmt.Fprintf(w, "          <th>User Agent<br>SIP Client</th>")
+	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+		fmt.Fprintf(w, "          <th>PBX Name</th>")
+	}
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "          <th>Group Name</th>")
+		fmt.Fprintf(w, "          <th>Group ID</th>")
+	}
+	fmt.Fprintf(w, "        </tr>")
+	if userTypeID == "100" {
+		sipEndpointRegAllSQL, err := dbDetail.connection.Query(`SELECT
+							sip_username,
+							uri,
+							user_agent,
+					                pbx_name,
+					                group_name,
+					                group_id
+					              FROM
+					  	        yap.view___sip_endpoint_registered`)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for sipEndpointRegAllSQL.Next() {
+
+			err = sipEndpointRegAllSQL.Scan(
+				&sipUsername,
+				&uri,
+				&userAgent,
+				&pbxName,
+				&groupName,
+				&groupID,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+sipUsername+"</td>")
+			fmt.Fprintf(w, "          <td>"+uri+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
+			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+	} else if userTypeID == "200" || userTypeID == "201" {
+		sipEndpointRegWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
+                                                        sip_username,
+                                                        uri,
+                                                        user_agent,
+                                                        pbx_name
+                                                      FROM
+                                                        yap.view___sip_endpoint_registered
+						      WHERE
+                                                        group_id = ?;`, userGroupID)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for sipEndpointRegWhereGroupSQL.Next() {
+
+			err = sipEndpointRegWhereGroupSQL.Scan(
+				&sipUsername,
+				&uri,
+				&userAgent,
+				&pbxName,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+sipUsername+"</td>")
+			fmt.Fprintf(w, "          <td>"+uri+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		sipEndpointRegWherePBXSQL, err := dbDetail.connection.Query(`SELECT
+                                                        sip_username,
+                                                        uri,
+                                                        user_agent
+                                                      FROM
+                                                        yap.view___sip_endpoint_registered
+                                                      WHERE
+                                                        pbx_id = ?;`, userPBXID)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for sipEndpointRegWherePBXSQL.Next() {
+
+			err = sipEndpointRegWherePBXSQL.Scan(
+				&sipUsername,
+				&uri,
+				&userAgent,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+sipUsername+"</td>")
+			fmt.Fprintf(w, "          <td>"+uri+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+	}
+
+	fmt.Fprintf(w, "      </table>")
+	filterTableJS(w, "sipEndpointRegSearchSIPUsername", "sip-endpoint-reg-input-sip-username", "sip-endpoint-reg-table", 0)
+	filterTableJS(w, "sipEndpointRegSearchURI", "sip-endpoint-reg-input-uri", "sip-endpoint-reg-table", 1)
+	filterTableJS(w, "sipEndpointRegSearchUserAgent", "sip-endpoint-reg-input-user-agent", "sip-endpoint-reg-table", 2)
+	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
+		filterTableJS(w, "sipEndpointRegSearchPBXName", "sip-endpoint-reg-input-pbx-name", "sip-endpoint-reg-table", 3)
+	}
+	if userTypeID == "100" {
+		filterTableJS(w, "sipEndpointRegSearchGroupName", "sip-endpoint-reg-input-group-name", "sip-endpoint-reg-table", 4)
+		filterTableJS(w, "sipEndpointRegSearchGroupID", "sip-endpoint-reg-input-group-id", "sip-endpoint-reg-table", 5)
 	}
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
