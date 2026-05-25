@@ -415,6 +415,23 @@ on `ps_auths`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
 ON `pbx`.`group_id` = `user_group`.`id`;
 
+CREATE VIEW `view___sip_endpoint_registered` AS
+SELECT
+  `ps_auths`.`username` AS 'sip_username',
+  `ps_contacts`.`uri`,
+  `ps_contacts`.`user_agent`,
+  `pbx`.`pbx_name` AS 'pbx_name',
+  `pbx`.`id` AS 'pbx_id',
+  `user_group`.`group_name` AS 'group_name',
+  `user_group`.`id` AS 'group_id'
+FROM `ps_auths`
+INNER JOIN `pbx`
+ON `ps_auths`.`pbx_id` = `pbx`.`id`
+INNER JOIN `ps_contacts`
+on `ps_auths`.`id` = `ps_contacts`.`endpoint`
+INNER JOIN `user_group`
+ON `pbx`.`group_id` = `user_group`.`id`;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
