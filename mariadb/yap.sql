@@ -393,13 +393,14 @@ INNER JOIN `pbx_invoice_address`
 ON `pbx`.`id` = `pbx_invoice_address`.`id`;
 
 CREATE VIEW `view___sip_endpoint_detail` AS
-SELECT
+SELECT DISTINCT
   `ps_auths`.`username` AS 'sip_username',
   `ps_auths`.`password` AS 'sip_password',
   `ps_endpoints`.`allow` AS 'codec_allowed',
   `ps_endpoints`.`dtmf_mode`,
   `ps_endpoints`.`named_call_group`,
   `ps_endpoints`.`named_pickup_group`,
+  `ps_contacts`.`endpoint` IS NOT NULL AS 'registered',
   `pbx`.`pbx_name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
   `user_group`.`group_name` AS 'group_name',
@@ -409,6 +410,8 @@ INNER JOIN `ps_endpoints`
 ON `ps_auths`.`id` = `ps_endpoints`.`id`
 INNER JOIN `pbx`
 ON `ps_auths`.`pbx_id` = `pbx`.`id`
+LEFT JOIN `ps_contacts`
+on `ps_auths`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
 ON `pbx`.`group_id` = `user_group`.`id`;
 
