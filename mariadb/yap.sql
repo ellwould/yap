@@ -105,6 +105,7 @@ CREATE TABLE `user_account`
   `pbx_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `account_active` BOOLEAN NOT NULL,
+UNIQUE (`email`),
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
