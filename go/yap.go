@@ -2412,6 +2412,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		dtmfUsed     string
 		callGroup    string
 		pickupGroup  string
+		registered   string
 		pbxName      string
 		groupName    string
 		groupID      string
@@ -2519,6 +2520,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "          <th>DTMF<br>Method<br>Used</th>")
 	fmt.Fprintf(w, "          <th>Call<br>Group</th>")
 	fmt.Fprintf(w, "          <th>Pickup<br>Group</th>")
+	fmt.Fprintf(w, "          <th>Registered</th>")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
@@ -2535,6 +2537,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					                dtmf_mode,
 					                named_call_group,
 					                named_pickup_group,
+					                registered,
 					                pbx_name,
 					                group_name,
 					                group_id
@@ -2556,6 +2559,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				&dtmfUsed,
 				&callGroup,
 				&pickupGroup,
+				&registered,
 				&pbxName,
 				&groupName,
 				&groupID,
@@ -2576,6 +2580,11 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
 			fmt.Fprintf(w, "          <td>"+callGroup+"</td>")
 			fmt.Fprintf(w, "          <td>"+pickupGroup+"</td>")
+			if registered == "1" {
+				fmt.Fprintf(w, "          <td>&#128994</td>")
+			} else {
+				fmt.Fprintf(w, "          <td>&#128308</td>")
+			}
 			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
@@ -2589,6 +2598,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
                                                         dtmf_mode,
                                                         named_call_group,
                                                         named_pickup_group,
+                                                        registered,
                                                         pbx_name
                                                       FROM
                                                         yap.view___sip_endpoint_detail
@@ -2610,6 +2620,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				&dtmfUsed,
 				&callGroup,
 				&pickupGroup,
+				&registered,
 				&pbxName,
 			)
 
@@ -2628,6 +2639,11 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
 			fmt.Fprintf(w, "          <td>"+callGroup+"</td>")
 			fmt.Fprintf(w, "          <td>"+pickupGroup+"</td>")
+			if registered == "1" {
+				fmt.Fprintf(w, "          <td>&#128994</td>")
+			} else {
+				fmt.Fprintf(w, "          <td>&#128308</td>")
+			}
 			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
@@ -2639,7 +2655,8 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
                                                         codec_allowed,
                                                         dtmf_mode,
                                                         named_call_group,
-                                                        named_pickup_group
+                                                        named_pickup_group,
+                                                        registered
                                                       FROM
                                                         yap.view___sip_endpoint_detail
                                                       WHERE
@@ -2660,6 +2677,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				&dtmfUsed,
 				&callGroup,
 				&pickupGroup,
+				&registered,
 			)
 
 			// Error
@@ -2677,6 +2695,11 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
 			fmt.Fprintf(w, "          <td>"+callGroup+"</td>")
 			fmt.Fprintf(w, "          <td>"+pickupGroup+"</td>")
+			if registered == "1" {
+				fmt.Fprintf(w, "          <td>&#128994</td>")
+			} else {
+				fmt.Fprintf(w, "          <td>&#128308</td>")
+			}
 			fmt.Fprintf(w, "        </tr>")
 		}
 
@@ -2684,16 +2707,16 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 	fmt.Fprintf(w, "      </table>")
 	filterTableJS(w, "sipEndpointSearchSIPUsername", "sip-endpoint-input-sip-username", "sip-endpoint-table", 0)
-	filterTableJS(w, "sipEndpointSearchCodec", "sip-endpoint-input-site-codec", "sip-endpoint-table", 1)
-	filterTableJS(w, "sipEndpointSearchDTMF", "sip-endpoint-input-site-dtmf", "sip-endpoint-table", 2)
-	filterTableJS(w, "sipEndpointSearchCallGroup", "sip-endpoint-input-call-group", "sip-endpoint-table", 3)
-	filterTableJS(w, "sipEndpointSearchPickupGroup", "sip-endpoint-input-pickup-group", "sip-endpoint-table", 4)
+	filterTableJS(w, "sipEndpointSearchCodec", "sip-endpoint-input-codec", "sip-endpoint-table", 2)
+	filterTableJS(w, "sipEndpointSearchDTMF", "sip-endpoint-input-dtmf", "sip-endpoint-table", 3)
+	filterTableJS(w, "sipEndpointSearchCallGroup", "sip-endpoint-input-call-group", "sip-endpoint-table", 4)
+	filterTableJS(w, "sipEndpointSearchPickupGroup", "sip-endpoint-input-pickup-group", "sip-endpoint-table", 5)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		filterTableJS(w, "sipEndpointSearchPBXName", "sip-endpoint-input-pbx-name", "sip-endpoint-table", 5)
+		filterTableJS(w, "sipEndpointSearchPBXName", "sip-endpoint-input-pbx-name", "sip-endpoint-table", 7)
 	}
 	if userTypeID == "100" {
-		filterTableJS(w, "sipEndpointSearchGroupName", "sip-endpoint-input-group-name", "sip-endpoint-table", 6)
-		filterTableJS(w, "sipEndpointSearchGroupID", "sip-endpoint-input-group-id", "sip-endpoint-table", 7)
+		filterTableJS(w, "sipEndpointSearchGroupName", "sip-endpoint-input-group-name", "sip-endpoint-table", 8)
+		filterTableJS(w, "sipEndpointSearchGroupID", "sip-endpoint-input-group-id", "sip-endpoint-table", 9)
 	}
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
@@ -3361,7 +3384,5 @@ func main() {
 	}
 }
 
-// Contributor(s):
-// Elliot Michael Keavney
 // Contributor(s):
 // Elliot Michael Keavney
