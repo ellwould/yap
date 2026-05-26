@@ -130,13 +130,26 @@ func footer(w http.ResponseWriter, headerCSS string, buttonCSS string) {
 
 //----------------------------------------------------------------------------------------------------
 
+type jsFunctionParameter struct {
+	funcNameJS   string
+	inputID      string
+	tableID      string
+	divID        string
+	placeholder  string
+	columnNumber int
+	data         string
+	buttonCSS    string
+	fileName     string
+	pathURL      string
+}
+
 // Embedded JavaScript and associated HTML functions
 
 // JavaScript toggle function
-func toggleDivJS(w http.ResponseWriter, functionName string, divID string) {
+func toggleDivJS(w http.ResponseWriter, parameter jsFunctionParameter) {
 	fmt.Fprintf(w, "<script>")
-	fmt.Fprintf(w, "  function "+functionName+"() {")
-	fmt.Fprintf(w, "  var x = document.getElementById(\""+divID+"\");")
+	fmt.Fprintf(w, "  function "+parameter.funcNameJS+"() {")
+	fmt.Fprintf(w, "  var x = document.getElementById(\""+parameter.divID+"\");")
 	fmt.Fprintf(w, "  if (x.style.display === \"none\") {")
 	fmt.Fprintf(w, "    x.style.display = \"table\";")
 	fmt.Fprintf(w, "  } else {")
@@ -147,26 +160,26 @@ func toggleDivJS(w http.ResponseWriter, functionName string, divID string) {
 }
 
 // Input for filtering a HTML table
-func inputTableHTML(w http.ResponseWriter, functionName string, inputID string, placeholder string) {
-	fmt.Fprintf(w, "<input type=\"text\" id=\""+inputID+"\" onkeyup=\""+functionName+"()\" placeholder=\"Filter Via "+placeholder+"...\" title=\""+placeholder+"\">")
+func inputTableHTML(w http.ResponseWriter, parameter jsFunctionParameter) {
+	fmt.Fprintf(w, "<input type=\"text\" id=\""+parameter.inputID+"\" onkeyup=\""+parameter.funcNameJS+"()\" placeholder=\"Filter Via "+parameter.placeholder+"...\" title=\""+parameter.placeholder+"\">")
 }
 
 // JavaScript filter HTML table function
-func filterTableJS(w http.ResponseWriter, functionName string, inputID string, tableID string, columnNumber int) {
-	if columnNumber > 11 {
+func filterTableJS(w http.ResponseWriter, parameter jsFunctionParameter) {
+	if parameter.columnNumber > 11 {
 		panic("Table column number cannot exceed 11")
-	} else if columnNumber < 0 {
+	} else if parameter.columnNumber < 0 {
 		panic("Table column number cannot be a negative number")
 	} else {
 		fmt.Fprintf(w, "<script>")
-		fmt.Fprintf(w, "function "+functionName+"() {")
+		fmt.Fprintf(w, "function "+parameter.funcNameJS+"() {")
 		fmt.Fprintf(w, "  var input, filter, table, tr, td, i, txtValue;")
-		fmt.Fprintf(w, "  input = document.getElementById(\""+inputID+"\");")
+		fmt.Fprintf(w, "  input = document.getElementById(\""+parameter.inputID+"\");")
 		fmt.Fprintf(w, "  filter = input.value.toUpperCase();")
-		fmt.Fprintf(w, "  table = document.getElementById(\""+tableID+"\");")
+		fmt.Fprintf(w, "  table = document.getElementById(\""+parameter.tableID+"\");")
 		fmt.Fprintf(w, "  tr = table.getElementsByTagName(\"tr\");")
 		fmt.Fprintf(w, "  for (i = 0; i < tr.length; i++) {")
-		fmt.Fprintf(w, "    td = tr[i].getElementsByTagName(\"td\")["+strconv.Itoa(columnNumber)+"];")
+		fmt.Fprintf(w, "    td = tr[i].getElementsByTagName(\"td\")["+strconv.Itoa(parameter.columnNumber)+"];")
 		fmt.Fprintf(w, "    if (td) {")
 		fmt.Fprintf(w, "      txtValue = td.textContent || td.innerText;")
 		fmt.Fprintf(w, "      if (txtValue.toUpperCase().indexOf(filter) > -1) {")
@@ -182,26 +195,26 @@ func filterTableJS(w http.ResponseWriter, functionName string, inputID string, t
 }
 
 // JavaScript to copy data to users clipboard
-func copyButtonJS(w http.ResponseWriter, data string) {
-	jsFuncName := strings.Replace(data, "-", "", -1)
-	fmt.Fprintf(w, "<div class=\"button-data-space\"></div><button class=\"button-data\" onclick=cp"+jsFuncName+"()>Copy &#10697</button><br>")
+func copyButtonJS(w http.ResponseWriter, parameter jsFunctionParameter) {
+	dataTrim := strings.Replace(parameter.data, "-", "", -1)
+	fmt.Fprintf(w, "<div class=\"button-data-space\"></div><button class=\"button-data\" onclick=cp"+dataTrim+"()>Copy &#10697</button><br>")
 	fmt.Fprintf(w, "<script>")
-	fmt.Fprintf(w, "  function cp"+jsFuncName+"() {")
-	fmt.Fprintf(w, "    navigator.clipboard.writeText('"+data+"');")
+	fmt.Fprintf(w, "  function cp"+dataTrim+"() {")
+	fmt.Fprintf(w, "    navigator.clipboard.writeText('"+parameter.data+"');")
 	fmt.Fprintf(w, "  }")
 	fmt.Fprintf(w, "</script>")
 }
 
 // HTML button to call the JavaScript exportCSVJS function
-func exportCSVButtonHTML(w http.ResponseWriter, jsFuncName string, buttonCSS string) {
-	fmt.Fprintf(w, "<button class=\"button-general "+buttonCSS+"\" onclick=\"exportTable"+jsFuncName+"ToCSV()\">Export to CSV</button><br>")
+func exportCSVButtonHTML(w http.ResponseWriter, parameter jsFunctionParameter) {
+	fmt.Fprintf(w, "<button class=\"button-general "+parameter.buttonCSS+"\" onclick=\"exportTable"+parameter.funcNameJS+"ToCSV()\">Export to CSV</button><br>")
 }
 
 // JavaScript to download or view a HTML table as a CSV file
-func exportCSVJS(w http.ResponseWriter, jsFuncName string, tableID string, fileName string, path string) {
+func exportCSVJS(w http.ResponseWriter, parameter jsFunctionParameter) {
 	fmt.Fprintf(w, "<script>")
-	fmt.Fprintf(w, "  function exportTable"+jsFuncName+"ToCSV() {")
-	fmt.Fprintf(w, "    const table = document.getElementById('"+tableID+"');")
+	fmt.Fprintf(w, "  function exportTable"+parameter.funcNameJS+"ToCSV() {")
+	fmt.Fprintf(w, "    const table = document.getElementById('"+parameter.tableID+"');")
 	fmt.Fprintf(w, "    let csvData = '';")
 	fmt.Fprintf(w, "    for (let i = 0; i < table.rows.length; i++) {")
 	fmt.Fprintf(w, "      let row = table.rows[i];")
@@ -216,11 +229,11 @@ func exportCSVJS(w http.ResponseWriter, jsFuncName string, tableID string, fileN
 	fmt.Fprintf(w, "    const url = URL.createObjectURL(blob);")
 	fmt.Fprintf(w, "    const csv = document.createElement('a');")
 	fmt.Fprintf(w, "    csv.href = url;")
-	fmt.Fprintf(w, "    csv.download = '"+fileName+".csv';")
+	fmt.Fprintf(w, "    csv.download = '"+parameter.fileName+".csv';")
 	fmt.Fprintf(w, "    document.body.append(csv);")
 	fmt.Fprintf(w, "    csv.click();")
 	fmt.Fprintf(w, "    document.body.remove(csv);")
-	fmt.Fprintf(w, "    window.open('/"+path+"', '_blank');")
+	fmt.Fprintf(w, "    window.open('/"+parameter.pathURL+"', '_blank');")
 	fmt.Fprintf(w, "  }")
 	fmt.Fprintf(w, "</script>")
 }
@@ -819,7 +832,10 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 	} else {
 	}
 	fmt.Fprintf(w, "</div>")
-	toggleDivJS(w, "toggleAccountDetail", "account-detail-div")
+	var toggleDivJSArgument jsFunctionParameter
+	toggleDivJSArgument.funcNameJS = "toggleAccountDetail"
+	toggleDivJSArgument.divID = "account-detail-div"
+	toggleDivJS(w, toggleDivJSArgument)
 }
 
 type mainMenuParameter struct {
@@ -1019,32 +1035,64 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "otherAccountSearchName", "other-account-input-name", "Name")
+		var inputTableHTMLArgument jsFunctionParameter
+		inputTableHTMLArgument.inputID = "other-account-input-name"
+		inputTableHTMLArgument.funcNameJS = "otherAccountSearchName"
+		inputTableHTMLArgument.placeholder = "Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "otherAccountSearchEmail", "other-account-input-email", "Email")
+		inputTableHTMLArgument.inputID = "other-account-input-email"
+		inputTableHTMLArgument.funcNameJS = "otherAccountSearchEmail"
+		inputTableHTMLArgument.placeholder = "Email"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "otherAccountSearchDate", "other-account-input-date", "Date Created")
+		inputTableHTMLArgument.inputID = "other-account-input-type"
+		inputTableHTMLArgument.funcNameJS = "otherAccountSearchType"
+		inputTableHTMLArgument.placeholder = "Account Type"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "otherAccountSearchType", "other-account-input-type", "Account Type")
+		inputTableHTMLArgument.inputID = "other-account-input-date"
+		inputTableHTMLArgument.funcNameJS = "otherAccountSearchDate"
+		inputTableHTMLArgument.placeholder = "Date Created"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "    <br><br>")
-			inputTableHTML(w, "otherAccountSearchPBXName", "other-account-input-pbx-name", "PBX Name")
+			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTML(w, "otherAccountSearchPBXID", "other-account-input-pbx-id", "PBX ID")
+			inputTableHTMLArgument.inputID = "other-account-input-pbx-name"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchPBXName"
+			inputTableHTMLArgument.placeholder = "PBX Name"
+			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTMLArgument.inputID = "other-account-input-pbx-id"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchPBXID"
+			inputTableHTMLArgument.placeholder = "PBX ID"
+			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		}
 		if userTypeID == "100" {
+			inputTableHTMLArgument.inputID = "other-account-input-group-name"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchGroupName"
+			inputTableHTMLArgument.placeholder = "Group Name"
+			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTML(w, "otherAccountSearchGroupName", "other-account-input-group-name", "Group Name")
+			inputTableHTMLArgument.inputID = "other-account-input-group-id"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchGroupID"
+			inputTableHTMLArgument.placeholder = "Group ID"
+			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTML(w, "otherAccountSearchGroupID", "other-account-input-group-id", "Group ID")
 		}
-		fmt.Fprintf(w, "    <br><br>")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
-		exportCSVButtonHTML(w, "OtherAccount", "button-user-account")
+		var exportCSVButtonHTMLArgument jsFunctionParameter
+		exportCSVButtonHTMLArgument.funcNameJS = "OtherAccount"
+		exportCSVButtonHTMLArgument.buttonCSS = "button-user-account"
+		exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
@@ -1242,24 +1290,66 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			}
 		}
 		fmt.Fprintf(w, "      </table>")
-		filterTableJS(w, "otherAccountSearchName", "other-account-input-name", "other-account-table", 0)
-		filterTableJS(w, "otherAccountSearchEmail", "other-account-input-email", "other-account-table", 1)
-		filterTableJS(w, "otherAccountSearchType", "other-account-input-type", "other-account-table", 2)
-		filterTableJS(w, "otherAccountSearchDate", "other-account-input-date", "other-account-table", 3)
+		var filterTableJSArgument jsFunctionParameter
+		filterTableJSArgument.tableID = "other-account-table"
+		// JS filter function for name in the other account table
+		filterTableJSArgument.funcNameJS = "otherAccountSearchName"
+		filterTableJSArgument.inputID = "other-account-input-name"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for email in the other account table
+		filterTableJSArgument.funcNameJS = "otherAccountSearchEmail"
+		filterTableJSArgument.inputID = "other-account-input-email"
+		filterTableJSArgument.columnNumber = 1
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for type in the other account table
+		filterTableJSArgument.funcNameJS = "otherAccountSearchType"
+		filterTableJSArgument.inputID = "other-account-input-type"
+		filterTableJSArgument.columnNumber = 2
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for date in the other account table
+		filterTableJSArgument.funcNameJS = "otherAccountSearchDate"
+		filterTableJSArgument.inputID = "other-account-input-date"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			filterTableJS(w, "otherAccountSearchPBXName", "other-account-input-pbx-name", "other-account-table", 4)
-			filterTableJS(w, "otherAccountSearchPBXID", "other-account-input-pbx-id", "other-account-table", 5)
+			// JS filter function for PBX name in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchPBXName"
+			filterTableJSArgument.inputID = "other-account-input-pbx-name"
+			filterTableJSArgument.columnNumber = 4
+			filterTableJS(w, filterTableJSArgument)
+			// JS filter function for PBX ID in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchPBXID"
+			filterTableJSArgument.inputID = "other-account-input-pbx-id"
+			filterTableJSArgument.columnNumber = 5
+			filterTableJS(w, filterTableJSArgument)
 		}
 		if userTypeID == "100" {
-			filterTableJS(w, "otherAccountSearchGroupName", "other-account-input-group-name", "other-account-table", 6)
-			filterTableJS(w, "otherAccountSearchGroupID", "other-account-input-group-id", "other-account-table", 7)
+			// JS filter function for group name in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchGroupName"
+			filterTableJSArgument.inputID = "other-account-input-group-name"
+			filterTableJSArgument.columnNumber = 6
+			filterTableJS(w, filterTableJSArgument)
+			// JS filter function for group ID in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchGroupID"
+			filterTableJSArgument.inputID = "other-account-input-group-id"
+			filterTableJSArgument.columnNumber = 7
+			filterTableJS(w, filterTableJSArgument)
 		}
-		exportCSVJS(w, "OtherAccount", "other-account-table", "YAP_user_account_details", "user-account")
+		var exportCSVJSArgument jsFunctionParameter
+		exportCSVJSArgument.funcNameJS = "OtherAccount"
+		exportCSVJSArgument.tableID = "other-account-table"
+		exportCSVJSArgument.fileName = "YAP_user_account_details"
+		exportCSVJSArgument.pathURL = "user-account"
+		exportCSVJS(w, exportCSVJSArgument)
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "</div>")
-		toggleDivJS(w, "toggleOtherAccount", "other-account-div")
+		var toggleDivJSArgument jsFunctionParameter
+		toggleDivJSArgument.funcNameJS = "toggleOtherAccount"
+		toggleDivJSArgument.divID = "other-account-div"
+		toggleDivJS(w, toggleDivJSArgument)
 	}
 }
 
@@ -1363,22 +1453,47 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "groupContactSearchGroupName", "group-contact-input-group-name", "Group Name")
+		var inputTableHTMLArgument jsFunctionParameter
+		inputTableHTMLArgument.inputID = "group-contact-input-group-name"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchGroupName"
+		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupContactSearchGroupID", "group-contact-input-group-id", "Group ID")
+		inputTableHTMLArgument.inputID = "group-contact-input-group-id"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchGroupID"
+		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupContactSearchSiteAddress", "group-contact-input-site-address", "Group Site Address")
+		inputTableHTMLArgument.inputID = "group-contact-input-site-address"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchSiteAddress"
+		inputTableHTMLArgument.placeholder = "Group Site Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupContactSearchSiteEmail", "group-contact-input-site-email", "Group Site Email Address")
+		inputTableHTMLArgument.inputID = "group-contact-input-site-email"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchSiteEmail"
+		inputTableHTMLArgument.placeholder = "Group Site Email Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "groupContactSearchSitePhone", "group-contact-input-site-phone", "Group Site Phone Number")
+		inputTableHTMLArgument.inputID = "group-contact-input-site-phone"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchSitePhone"
+		inputTableHTMLArgument.placeholder = "Group Site Phone Number"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupContactSearchInvoiceAddress", "group-contact-input-invoice-address", "Group Invoice Address")
+		inputTableHTMLArgument.inputID = "group-contact-input-invoice-address"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchInvoiceAddress"
+		inputTableHTMLArgument.placeholder = "Group Invoice Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupContactSearchInvoiceEmail", "group-contact-input-invoice-email", "Group Invoice Email Address")
+		inputTableHTMLArgument.inputID = "group-contact-input-invoice-email"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchInvoiceEmail"
+		inputTableHTMLArgument.placeholder = "Group Invoice Email Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupContactSearchInvoicePhone", "group-contact-input-invoice-phone", "Group Invoice Phone Number")
+		inputTableHTMLArgument.inputID = "group-contact-input-invoice-phone"
+		inputTableHTMLArgument.funcNameJS = "groupContactSearchInvoicePhone"
+		inputTableHTMLArgument.placeholder = "Group Invoice Phone Number"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    </th>")
@@ -1386,7 +1501,10 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	}
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	exportCSVButtonHTML(w, "GroupContact", "button-group")
+	var exportCSVButtonHTMLArgument jsFunctionParameter
+	exportCSVButtonHTMLArgument.funcNameJS = "GroupContact"
+	exportCSVButtonHTMLArgument.buttonCSS = "button-group"
+	exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -1543,16 +1661,55 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	}
 	fmt.Fprintf(w, "      </table>")
 	if userTypeID == "100" {
-		filterTableJS(w, "groupContactSearchGroupName", "group-contact-input-group-name", "group-contact-table", 0)
-		filterTableJS(w, "groupContactSearchGroupID", "group-contact-input-group-id", "group-contact-table", 1)
-		filterTableJS(w, "groupContactSearchSiteAddress", "group-contact-input-site-address", "group-contact-table", 2)
-		filterTableJS(w, "groupContactSearchSiteEmail", "group-contact-input-site-email", "group-contact-table", 3)
-		filterTableJS(w, "groupContactSearchSitePhone", "group-contact-input-site-phone", "group-contact-table", 4)
-		filterTableJS(w, "groupContactSearchInvoiceAdddress", "group-contact-input-Invoice-address", "group-contact-table", 5)
-		filterTableJS(w, "groupContactSearchInvoiceEmail", "group-contact-input-invoice-email", "group-contact-table", 6)
-		filterTableJS(w, "groupContactSearchInvoicePhone", "group-contact-input-invoice-phone", "group-contact-table", 7)
+		var filterTableJSArgument jsFunctionParameter
+		filterTableJSArgument.tableID = "group-contact-table"
+		// JS filter function for group name in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchGroupName"
+		filterTableJSArgument.inputID = "group-contact-input-group-name"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for group ID in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchGroupID"
+		filterTableJSArgument.inputID = "group-contact-input-group-id"
+		filterTableJSArgument.columnNumber = 1
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for site address in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchSiteAddress"
+		filterTableJSArgument.inputID = "group-contact-input-site-address"
+		filterTableJSArgument.columnNumber = 2
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for site email in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchSiteEmail"
+		filterTableJSArgument.inputID = "group-contact-input-site-email"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for site phone in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchSitePhone"
+		filterTableJSArgument.inputID = "group-contact-input-site-phone"
+		filterTableJSArgument.columnNumber = 4
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for invoice address in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchInvoiceAddress"
+		filterTableJSArgument.inputID = "group-contact-input-invoice-address"
+		filterTableJSArgument.columnNumber = 5
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for invoice email in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchInvoiceEmail"
+		filterTableJSArgument.inputID = "group-contact-input-invoice-email"
+		filterTableJSArgument.columnNumber = 6
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for invoice phone in the group contact table
+		filterTableJSArgument.funcNameJS = "groupContactSearchInvoicePhone"
+		filterTableJSArgument.inputID = "group-contact-input-invoice-phone"
+		filterTableJSArgument.columnNumber = 7
+		filterTableJS(w, filterTableJSArgument)
 	}
-	exportCSVJS(w, "GroupContact", "group-contact-table", "YAP_group_contact_details", "group")
+	var exportCSVJSArgument jsFunctionParameter
+	exportCSVJSArgument.funcNameJS = "GroupContact"
+	exportCSVJSArgument.tableID = "group-contact-table"
+	exportCSVJSArgument.fileName = "YAP_group_contact_details"
+	exportCSVJSArgument.pathURL = "group"
+	exportCSVJS(w, exportCSVJSArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
@@ -1571,13 +1728,26 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "groupResourceSearchGroupName", "group-resource-input-group-name", "Group Name")
+		var inputTableHTMLArgument jsFunctionParameter
+		inputTableHTMLArgument.inputID = "group-resource-input-group-name"
+		inputTableHTMLArgument.funcNameJS = "groupResourceSearchGroupName"
+		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupResourceSearchGroupID", "group-resource-input-group-id", "Group ID")
+		inputTableHTMLArgument.inputID = "group-resource-input-group-id"
+		inputTableHTMLArgument.funcNameJS = "groupResourceSearchGroupID"
+		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupResourceSearchDate", "group-resource-input-date", "Date Created")
+		inputTableHTMLArgument.inputID = "group-resource-input-date"
+		inputTableHTMLArgument.funcNameJS = "groupResourceSearchDate"
+		inputTableHTMLArgument.placeholder = "Date Created"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "groupResourceSearchActive", "group-resource-input-active", "Group Active Status")
+		inputTableHTMLArgument.inputID = "group-resource-input-active"
+		inputTableHTMLArgument.funcNameJS = "groupResourceSearchActive"
+		inputTableHTMLArgument.placeholder = "Group Active Status"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    </th>")
@@ -1585,7 +1755,9 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	}
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	exportCSVButtonHTML(w, "GroupResource", "button-group")
+	exportCSVButtonHTMLArgument.funcNameJS = "GroupResource"
+	exportCSVButtonHTMLArgument.buttonCSS = "button-group"
+	exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -1727,18 +1899,43 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	}
 	fmt.Fprintf(w, "      </table>")
 	if userTypeID == "100" {
-		filterTableJS(w, "groupResourceSearchGroupName", "group-resource-input-group-name", "group-resource-table", 0)
-		filterTableJS(w, "groupResourceSearchGroupID", "group-resource-input-group-id", "group-resource-table", 1)
-		filterTableJS(w, "groupResourceSearchDate", "group-resource-input-date", "group-resource-table", 2)
-		filterTableJS(w, "groupResourceSearchActive", "group-resource-input-active", "group-resource-table", 3)
+		var filterTableJSArgument jsFunctionParameter
+		filterTableJSArgument.tableID = "group-resource-table"
+		// Call JS filter function for group name in the group resource table
+		filterTableJSArgument.funcNameJS = "groupResourceSearchGroupName"
+		filterTableJSArgument.inputID = "group-resource-input-group-name"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for group ID in the group resource table
+		filterTableJSArgument.funcNameJS = "groupResourceSearchGroupID"
+		filterTableJSArgument.inputID = "group-resource-input-group-id"
+		filterTableJSArgument.columnNumber = 1
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for date in the group resource table
+		filterTableJSArgument.funcNameJS = "groupResourceSearchDate"
+		filterTableJSArgument.inputID = "group-resource-input-date"
+		filterTableJSArgument.columnNumber = 2
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for active status in the group resource table
+		filterTableJSArgument.funcNameJS = "groupResourceSearchActive"
+		filterTableJSArgument.inputID = "group-resource-input-active"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
 	}
-	exportCSVJS(w, "GroupResource", "group-resource-table", "YAP_group_resource_details", "group")
+	exportCSVJSArgument.funcNameJS = "GroupResource"
+	exportCSVJSArgument.tableID = "group-resource-table"
+	exportCSVJSArgument.fileName = "YAP_group_resource_details"
+	exportCSVJSArgument.pathURL = "group"
+	exportCSVJS(w, exportCSVJSArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</div>")
 	if userTypeID == "100" {
-		toggleDivJS(w, "toggleGroup", "group-div")
+		var toggleDivJSArgument jsFunctionParameter
+		toggleDivJSArgument.funcNameJS = "toggleGroup"
+		toggleDivJSArgument.divID = "group-div"
+		toggleDivJS(w, toggleDivJSArgument)
 	}
 
 }
@@ -1848,28 +2045,59 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "pbxContactSearchPBXName", "pbx-contact-input-pbx-name", "PBX Name")
+		var inputTableHTMLArgument jsFunctionParameter
+		inputTableHTMLArgument.inputID = "pbx-contact-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchPBXName"
+		inputTableHTMLArgument.placeholder = "PBX Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxContactSearchPBXID", "pbx-contact-input-pbx-id", "PBX ID")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-pbx-id"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchPBXID"
+		inputTableHTMLArgument.placeholder = "PBX ID"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxContactSearchSiteAddress", "pbx-contact-input-site-address", "PBX Site Address")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-site-address"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchSiteAddress"
+		inputTableHTMLArgument.placeholder = "PBX Site Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxContactSearchSiteEmail", "pbx-contact-input-site-email", "PBX Site Email Address")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-site-email"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchSiteEmail"
+		inputTableHTMLArgument.placeholder = "PBX Site Email Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "pbxContactSearchSitePhone", "pbx-contact-input-site-phone", "PBX Site Phone Number")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-site-phone"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchSitePhone"
+		inputTableHTMLArgument.placeholder = "PBX Site Phone Number"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxContactSearchInvoiceAddress", "pbx-contact-input-invoice-address", "PBX Invoice Address")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-invoice-address"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchInvoiceAddress"
+		inputTableHTMLArgument.placeholder = "PBX Invoice Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxContactSearchInvoiceEmail", "pbx-contact-input-invoice-email", "PBX Invoice Email Address")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-invoice-email"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchInvoiceEmail"
+		inputTableHTMLArgument.placeholder = "PBX Invoice Email Address"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxContactSearchInvoicePhone", "pbx-contact-input-invoice-phone", "PBX Invoice Phone Number")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-invoice-phone"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchInvoicePhone"
+		inputTableHTMLArgument.placeholder = "PBX Invoice Phone Number"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
-			inputTableHTML(w, "pbxContactSearchGroupName", "pbx-contact-input-group-name", "Group Name")
+			inputTableHTMLArgument.inputID = "pbx-contact-input-group-name"
+			inputTableHTMLArgument.funcNameJS = "pbxContactSearchGroupName"
+			inputTableHTMLArgument.placeholder = "Group Name"
+			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTML(w, "pbxContactSearchGroupID", "pbx-contact-input-group-id", "Group ID")
+			inputTableHTMLArgument.inputID = "pbx-contact-input-group-id"
+			inputTableHTMLArgument.funcNameJS = "pbxContactSearchGroupID"
+			inputTableHTMLArgument.placeholder = "Group ID"
+			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
 		}
@@ -1878,7 +2106,10 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	}
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	exportCSVButtonHTML(w, "PBXContact", "button-pbx")
+	var exportCSVButtonHTMLArgument jsFunctionParameter
+	exportCSVButtonHTMLArgument.funcNameJS = "PBXContact"
+	exportCSVButtonHTMLArgument.buttonCSS = "button-pbx"
+	exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -2110,20 +2341,67 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	}
 	fmt.Fprintf(w, "      </table>")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		filterTableJS(w, "pbxContactSearchPBXName", "pbx-contact-input-pbx-name", "pbx-contact-table", 0)
-		filterTableJS(w, "pbxContactSearchPBXID", "pbx-contact-input-pbx-id", "pbx-contact-table", 1)
-		filterTableJS(w, "pbxContactSearchSiteAddress", "pbx-contact-input-site-address", "pbx-contact-table", 2)
-		filterTableJS(w, "pbxContactSearchSiteEmail", "pbx-contact-input-site-email", "pbx-contact-table", 3)
-		filterTableJS(w, "pbxContactSearchSitePhone", "pbx-contact-input-site-phone", "pbx-contact-table", 4)
-		filterTableJS(w, "pbxContactSearchInvoiceAdddress", "pbx-contact-input-Invoice-address", "pbx-contact-table", 5)
-		filterTableJS(w, "pbxContactSearchInvoiceEmail", "pbx-contact-input-invoice-email", "pbx-contact-table", 6)
-		filterTableJS(w, "pbxContactSearchInvoicePhone", "pbx-contact-input-invoice-phone", "pbx-contact-table", 7)
+		var filterTableJSArgument jsFunctionParameter
+		filterTableJSArgument.tableID = "pbx-contact-table"
+		// Call JS filter function for PBX name in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchPBXName"
+		filterTableJSArgument.inputID = "pbx-contact-input-pbx-name"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for PBX ID in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchPBXID"
+		filterTableJSArgument.inputID = "pbx-contact-input-pbx-id"
+		filterTableJSArgument.columnNumber = 1
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for site address in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchSiteAddress"
+		filterTableJSArgument.inputID = "pbx-contact-input-site-address"
+		filterTableJSArgument.columnNumber = 2
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for site email in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchSiteEmail"
+		filterTableJSArgument.inputID = "pbx-contact-input-site-email"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for site phone in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchSitePhone"
+		filterTableJSArgument.inputID = "pbx-contact-input-site-phone"
+		filterTableJSArgument.columnNumber = 4
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for invoice address in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchInvoiceAddress"
+		filterTableJSArgument.inputID = "pbx-contact-input-invoice-address"
+		filterTableJSArgument.columnNumber = 5
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for invoice email in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchInvoiceEmail"
+		filterTableJSArgument.inputID = "pbx-contact-input-invoice-email"
+		filterTableJSArgument.columnNumber = 6
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for invoice phone in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchInvoicePhone"
+		filterTableJSArgument.inputID = "pbx-contact-input-invoice-phone"
+		filterTableJSArgument.columnNumber = 7
+		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			filterTableJS(w, "pbxContactSearchGroupName", "pbx-contact-input-group-name", "pbx-contact-table", 8)
-			filterTableJS(w, "pbxContactSearchGroupID", "pbx-contact-input-group-id", "pbx-contact-table", 9)
+			// Call JS filter function for group name in the PBX contact table
+			filterTableJSArgument.funcNameJS = "pbxContactSearchGroupName"
+			filterTableJSArgument.inputID = "pbx-contact-input-group-name"
+			filterTableJSArgument.columnNumber = 8
+			filterTableJS(w, filterTableJSArgument)
+			// Call JS filter function for group ID in the PBX contact table
+			filterTableJSArgument.funcNameJS = "pbxContactSearchGroupID"
+			filterTableJSArgument.inputID = "pbx-contact-input-group-id"
+			filterTableJSArgument.columnNumber = 9
+			filterTableJS(w, filterTableJSArgument)
 		}
 	}
-	exportCSVJS(w, "PBXContact", "pbx-contact-table", "YAP_pbx_contact_details", "pbx")
+	var exportCSVJSArgument jsFunctionParameter
+	exportCSVJSArgument.funcNameJS = "PBXContact"
+	exportCSVJSArgument.tableID = "pbx-contact-table"
+	exportCSVJSArgument.fileName = "YAP_pbx_contact_details"
+	exportCSVJSArgument.pathURL = "pbx"
+	exportCSVJS(w, exportCSVJSArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
@@ -2142,19 +2420,38 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTML(w, "pbxResourceSearchPBXName", "pbx-resource-input-pbx-name", "PBX Name")
+		var inputTableHTMLArgument jsFunctionParameter
+		inputTableHTMLArgument.inputID = "pbx-resource-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchPBXName"
+		inputTableHTMLArgument.placeholder = "PBX Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxResourceSearchPBXID", "pbx-resource-input-pbx-id", "PBX ID")
+		inputTableHTMLArgument.inputID = "pbx-resource-input-pbx-id"
+		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchPBXID"
+		inputTableHTMLArgument.placeholder = "PBX ID"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxResourceSearchDate", "pbx-resource-input-date", "Date Created")
+		inputTableHTMLArgument.inputID = "pbx-resource-input-date"
+		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchDate"
+		inputTableHTMLArgument.placeholder = "Date Created"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "pbxResourceSearchActive", "pbx-resource-input-active", "PBX Active Status")
+		inputTableHTMLArgument.inputID = "pbx-resource-input-active"
+		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchActive"
+		inputTableHTMLArgument.placeholder = "PBX Active Status"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
-			inputTableHTML(w, "pbxResourceSearchGroupName", "pbx-resource-input-group-name", "Group Name")
+			inputTableHTMLArgument.inputID = "pbx-resource-input-group-name"
+			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchGroupName"
+			inputTableHTMLArgument.placeholder = "Group Name"
+			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTML(w, "pbxResourceSearchGroupID", "pbx-resource-input-group-id", "Group ID")
+			inputTableHTMLArgument.inputID = "pbx-resource-input-group-id"
+			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchGroupID"
+			inputTableHTMLArgument.placeholder = "Group ID"
+			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
 		}
@@ -2163,7 +2460,9 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	}
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	exportCSVButtonHTML(w, "PBXResource", "button-pbx")
+	exportCSVButtonHTMLArgument.funcNameJS = "PBXResource"
+	exportCSVButtonHTMLArgument.buttonCSS = "button-pbx"
+	exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -2363,22 +2662,55 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	}
 	fmt.Fprintf(w, "      </table>")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		filterTableJS(w, "pbxResourceSearchPBXName", "pbx-resource-input-pbx-name", "pbx-resource-table", 0)
-		filterTableJS(w, "pbxResourceSearchPBXID", "pbx-resource-input-pbx-id", "pbx-resource-table", 1)
-		filterTableJS(w, "pbxResourceSearchDate", "pbx-resource-input-date", "pbx-resource-table", 2)
-		filterTableJS(w, "pbxResourceSearchActive", "pbx-resource-input-active", "pbx-resource-table", 3)
+		var filterTableJSArgument jsFunctionParameter
+		filterTableJSArgument.tableID = "pbx-resource-table"
+		// Call JS filter function for PBX name in the PBX resource table
+		filterTableJSArgument.funcNameJS = "pbxResourceSearchPBXName"
+		filterTableJSArgument.inputID = "pbx-resource-input-pbx-name"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for PBX ID in the PBX resource table
+		filterTableJSArgument.funcNameJS = "pbxResourceSearchPBXID"
+		filterTableJSArgument.inputID = "pbx-resource-input-pbx-id"
+		filterTableJSArgument.columnNumber = 1
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for date in the PBX resource table
+		filterTableJSArgument.funcNameJS = "pbxResourceSearchDate"
+		filterTableJSArgument.inputID = "pbx-resource-input-date"
+		filterTableJSArgument.columnNumber = 2
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for active status in the PBX resource table
+		filterTableJSArgument.funcNameJS = "pbxResourceSearchActive"
+		filterTableJSArgument.inputID = "pbx-resource-input-active"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			filterTableJS(w, "pbxResourceSearchGroupName", "pbx-resource-input-group-name", "pbx-resource-table", 10)
-			filterTableJS(w, "pbxResourceSearchGroupID", "pbx-resource-input-group-id", "pbx-resource-table", 11)
+			// Call JS filter function for group name in the PBX resource table
+			filterTableJSArgument.funcNameJS = "pbxResourceSearchGroupName"
+			filterTableJSArgument.inputID = "pbx-resource-input-group-name"
+			filterTableJSArgument.columnNumber = 10
+			filterTableJS(w, filterTableJSArgument)
+			// Call JS filter function for group ID in the PBX resource table
+			filterTableJSArgument.funcNameJS = "pbxResourceSearchGroupID"
+			filterTableJSArgument.inputID = "pbx-resource-input-group-id"
+			filterTableJSArgument.columnNumber = 11
+			filterTableJS(w, filterTableJSArgument)
 		}
 	}
-	exportCSVJS(w, "PBXResource", "pbx-resource-table", "YAP_pbx_resource_details", "pbx")
+	exportCSVJSArgument.funcNameJS = "PBXResource"
+	exportCSVJSArgument.tableID = "pbx-resource-table"
+	exportCSVJSArgument.fileName = "YAP_pbx_resource_details"
+	exportCSVJSArgument.pathURL = "pbx"
+	exportCSVJS(w, exportCSVJSArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</div>")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		toggleDivJS(w, "togglePBX", "pbx-div")
+		var toggleDivJSArgument jsFunctionParameter
+		toggleDivJSArgument.funcNameJS = "togglePBX"
+		toggleDivJSArgument.divID = "pbx-div"
+		toggleDivJS(w, toggleDivJSArgument)
 	}
 
 }
@@ -2489,27 +2821,52 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointDetailSearchSIPUsername", "sip-endpoint-detail-input-sip-username", "SIP Username/PBX ID")
+	var inputTableHTMLArgument jsFunctionParameter
+	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-sip-username"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchSIPUsername"
+	inputTableHTMLArgument.placeholder = "SIP Username/PBX ID"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointDetailSearchCodec", "sip-endpoint-detail-input-codec", "Codec(s) Allowed")
+	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-codec"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchCodec"
+	inputTableHTMLArgument.placeholder = "Codec(s) Allowed"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointDetailSearchDTMF", "sip-endpoint-detail-input-dtmf", "DTMF Method Used")
+	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-dtmf"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchDTMF"
+	inputTableHTMLArgument.placeholder = "DTMF Method Used"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointDetailSearchCallGroup", "sip-endpoint-detail-input-call-group", "Call Group")
+	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-call-group"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchCallGroup"
+	inputTableHTMLArgument.placeholder = "Call Group"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointDetailSearchPickupGroup", "sip-endpoint-detail-input-pickup-group", "Pickup Group")
+	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-pickup-group"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchPickupGroup"
+	inputTableHTMLArgument.placeholder = "Pickup Group"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		inputTableHTML(w, "sipEndpointDetailSearchPBXName", "sip-endpoint-detail-input-pbx-name", "PBX Name")
+		inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchPBXName"
+		inputTableHTMLArgument.placeholder = "PBX Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	if userTypeID == "100" {
-		inputTableHTML(w, "sipEndpointDetailSearchGroupName", "sip-endpoint-detail-input-group-name", "Group Name")
+		inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-group-name"
+		inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchGroupName"
+		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "sipEndpointDetailSearchGroupID", "sip-endpoint-detail-input-group-id", "Group ID")
+		inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-group-id"
+		inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchGroupID"
+		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	fmt.Fprintf(w, "    <br>")
@@ -2577,10 +2934,13 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			}
 			fmt.Fprintf(w, "        <tr>")
 			fmt.Fprintf(w, "          <td>"+sipUsername)
-			copyButtonJS(w, sipUsername)
+			var copyButtonJSArgument jsFunctionParameter
+			copyButtonJSArgument.data = sipUsername
+			copyButtonJS(w, copyButtonJSArgument)
 			fmt.Fprintf(w, "	  </td>")
 			fmt.Fprintf(w, "          <td>"+sipPassword)
-			copyButtonJS(w, sipPassword)
+			copyButtonJSArgument.data = sipPassword
+			copyButtonJS(w, copyButtonJSArgument)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>"+codecAllowed+"</td>")
 			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
@@ -2635,11 +2995,13 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				panic(err)
 			}
 			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername)
-			copyButtonJS(w, sipUsername)
+			var copyButtonJSArgument jsFunctionParameter
+			copyButtonJSArgument.data = sipUsername
+			copyButtonJS(w, copyButtonJSArgument)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>"+sipPassword)
-			copyButtonJS(w, sipPassword)
+			copyButtonJSArgument.data = sipPassword
+			copyButtonJS(w, copyButtonJSArgument)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>"+codecAllowed+"</td>")
 			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
@@ -2691,11 +3053,13 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				panic(err)
 			}
 			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername)
-			copyButtonJS(w, sipUsername)
+			var copyButtonJSArgument jsFunctionParameter
+			copyButtonJSArgument.data = sipUsername
+			copyButtonJS(w, copyButtonJSArgument)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>"+sipPassword)
-			copyButtonJS(w, sipPassword)
+			copyButtonJSArgument.data = sipPassword
+			copyButtonJS(w, copyButtonJSArgument)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>"+codecAllowed+"</td>")
 			fmt.Fprintf(w, "          <td>"+dtmfUsed+"</td>")
@@ -2712,17 +3076,51 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 
 	fmt.Fprintf(w, "      </table>")
-	filterTableJS(w, "sipEndpointDetailSearchSIPUsername", "sip-endpoint-detail-input-sip-username", "sip-endpoint-detail-table", 0)
-	filterTableJS(w, "sipEndpointDetailSearchCodec", "sip-endpoint-detail-input-codec", "sip-endpoint-detail-table", 2)
-	filterTableJS(w, "sipEndpointDetailSearchDTMF", "sip-endpoint-detail-input-dtmf", "sip-endpoint-detail-table", 3)
-	filterTableJS(w, "sipEndpointDetailSearchCallGroup", "sip-endpoint-detail-input-call-group", "sip-endpoint-detail-table", 4)
-	filterTableJS(w, "sipEndpointDetailSearchPickupGroup", "sip-endpoint-detail-input-pickup-group", "sip-endpoint-detail-table", 5)
+	var filterTableJSArgument jsFunctionParameter
+	filterTableJSArgument.tableID = "sip-endpoint-detail-table"
+	// Call JS filter function for SIP username in the SIP endpoint detail table
+	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchSIPUsername"
+	filterTableJSArgument.inputID = "sip-endpoint-detail-input-sip-username"
+	filterTableJSArgument.columnNumber = 0
+	filterTableJS(w, filterTableJSArgument)
+	// Call JS filter function for codec in the SIP endpoint detail table
+	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchCodec"
+	filterTableJSArgument.inputID = "sip-endpoint-detail-input-codec"
+	filterTableJSArgument.columnNumber = 2
+	filterTableJS(w, filterTableJSArgument)
+	// Call JS filter function for DTMF method used in the SIP endpoint detail table
+	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchDTMF"
+	filterTableJSArgument.inputID = "sip-endpoint-detail-input-dtmf"
+	filterTableJSArgument.columnNumber = 3
+	filterTableJS(w, filterTableJSArgument)
+	// Call JS filter function for call group in the SIP endpoint detail table
+	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchCallGroup"
+	filterTableJSArgument.inputID = "sip-endpoint-detail-input-call-group"
+	filterTableJSArgument.columnNumber = 4
+	filterTableJS(w, filterTableJSArgument)
+	// Call JS filter function for pickup group in the SIP endpoint detail table
+	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchPickupGroup"
+	filterTableJSArgument.inputID = "sip-endpoint-detail-input-pickup-group"
+	filterTableJSArgument.columnNumber = 5
+	filterTableJS(w, filterTableJSArgument)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		filterTableJS(w, "sipEndpointDetailSearchPBXName", "sip-endpoint-detail-input-pbx-name", "sip-endpoint-detail-table", 7)
+		// Call JS filter function for PBX name in the SIP endpoint detail table
+		filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchPBXName"
+		filterTableJSArgument.inputID = "sip-endpoint-detail-input-pbx-name"
+		filterTableJSArgument.columnNumber = 7
+		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		filterTableJS(w, "sipEndpointDetailSearchGroupName", "sip-endpoint-detail-input-group-name", "sip-endpoint-detail-table", 8)
-		filterTableJS(w, "sipEndpointDetailSearchGroupID", "sip-endpoint-detail-input-group-id", "sip-endpoint-detail-table", 9)
+		// Call JS filter function for group name in the SIP endpoint detail table
+		filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchGroupName"
+		filterTableJSArgument.inputID = "sip-endpoint-detail-input-group-name"
+		filterTableJSArgument.columnNumber = 8
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for group ID in the SIP endpoint detail table
+		filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchGroupID"
+		filterTableJSArgument.inputID = "sip-endpoint-detail-input-group-id"
+		filterTableJSArgument.columnNumber = 9
+		filterTableJS(w, filterTableJSArgument)
 	}
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
@@ -2744,23 +3142,41 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointRegSearchSIPUsername", "sip-endpoint-reg-input-sip-username", "SIP Username/PBX ID")
+	inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-sip-username"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchSIPUsername"
+	inputTableHTMLArgument.placeholder = "SIP Username/PBX ID"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointRegSearchURI", "sip-endpoint-reg-input-uri", "URI")
+	inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-uri"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchURI"
+	inputTableHTMLArgument.placeholder = "URI"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTML(w, "sipEndpointRegSearchUserAgent", "sip-endpoint-reg-input-user-agent", "User Agent")
+	inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-user-agent"
+	inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchUserAgent"
+	inputTableHTMLArgument.placeholder = "User Agent"
+	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		inputTableHTML(w, "sipEndpointRegSearchPBXName", "sip-endpoint-reg-input-pbx-name", "PBX Name")
+		inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchPBXName"
+		inputTableHTMLArgument.placeholder = "PBX Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "sipEndpointRegSearchGroupName", "sip-endpoint-reg-input-group-name", "Group Name")
+		inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-group-name"
+		inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchGroupName"
+		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTML(w, "sipEndpointRegSearchGroupID", "sip-endpoint-reg-input-group-id", "Group ID")
+		inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-group-id"
+		inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchGroupID"
+		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	fmt.Fprintf(w, "    <br>")
@@ -2899,21 +3315,49 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 
 	fmt.Fprintf(w, "      </table>")
-	filterTableJS(w, "sipEndpointRegSearchSIPUsername", "sip-endpoint-reg-input-sip-username", "sip-endpoint-reg-table", 0)
-	filterTableJS(w, "sipEndpointRegSearchURI", "sip-endpoint-reg-input-uri", "sip-endpoint-reg-table", 1)
-	filterTableJS(w, "sipEndpointRegSearchUserAgent", "sip-endpoint-reg-input-user-agent", "sip-endpoint-reg-table", 2)
+	filterTableJSArgument.tableID = "sip-endpoint-reg-table"
+	// Call JS filter function for SIP username in the SIP endpoint registration (reg) table
+	filterTableJSArgument.funcNameJS = "sipEndpointRegSearchSIPUsername"
+	filterTableJSArgument.inputID = "sip-endpoint-reg-input-sip-username"
+	filterTableJSArgument.columnNumber = 0
+	filterTableJS(w, filterTableJSArgument)
+	// Call JS filter function for URI in the SIP endpoint registration (reg) table
+	filterTableJSArgument.funcNameJS = "sipEndpointRegSearchURI"
+	filterTableJSArgument.inputID = "sip-endpoint-reg-input-uri"
+	filterTableJSArgument.columnNumber = 1
+	filterTableJS(w, filterTableJSArgument)
+	// Call JS filter function for user agent in the SIP endpoint registration (reg) table
+	filterTableJSArgument.funcNameJS = "sipEndpointRegSearchUserAgent"
+	filterTableJSArgument.inputID = "sip-endpoint-reg-input-user-agent"
+	filterTableJSArgument.columnNumber = 2
+	filterTableJS(w, filterTableJSArgument)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		filterTableJS(w, "sipEndpointRegSearchPBXName", "sip-endpoint-reg-input-pbx-name", "sip-endpoint-reg-table", 3)
+		// Call JS filter function for PBX name in the SIP endpoint registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipEndpointRegSearchPBXName"
+		filterTableJSArgument.inputID = "sip-endpoint-reg-input-pbx-name"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		filterTableJS(w, "sipEndpointRegSearchGroupName", "sip-endpoint-reg-input-group-name", "sip-endpoint-reg-table", 4)
-		filterTableJS(w, "sipEndpointRegSearchGroupID", "sip-endpoint-reg-input-group-id", "sip-endpoint-reg-table", 5)
+		// Call JS filter function for group name in the SIP endpoint registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipEndpointRegSearchGroupName"
+		filterTableJSArgument.inputID = "sip-endpoint-reg-input-group-name"
+		filterTableJSArgument.columnNumber = 4
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for group ID in the SIP endpoint registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipEndpointRegSearchGroupID"
+		filterTableJSArgument.inputID = "sip-endpoint-reg-input-group-id"
+		filterTableJSArgument.columnNumber = 5
+		filterTableJS(w, filterTableJSArgument)
 	}
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</div>")
-	toggleDivJS(w, "toggleSIPEndpoint", "sip-endpoint-div")
+	var toggleDivJSArgument jsFunctionParameter
+	toggleDivJSArgument.funcNameJS = "toggleSIPEndpoint"
+	toggleDivJSArgument.divID = "sip-endpoint-div"
+	toggleDivJS(w, toggleDivJSArgument)
 }
 
 //----------------------------------------------------------------------------------------------------
