@@ -393,7 +393,7 @@ ON `pbx`.`id` = `pbx_site_address`.`id`
 INNER JOIN `pbx_invoice_address`
 ON `pbx`.`id` = `pbx_invoice_address`.`id`;
 
-CREATE VIEW `view___sip_endpoint_detail` AS
+CREATE VIEW `view___sip_extension_detail` AS
 SELECT DISTINCT
   `ps_auths`.`username` AS 'sip_username',
   `ps_auths`.`password` AS 'sip_password',
@@ -416,7 +416,7 @@ on `ps_auths`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
 ON `pbx`.`group_id` = `user_group`.`id`;
 
-CREATE VIEW `view___sip_endpoint_registered` AS
+CREATE VIEW `view___sip_extension_registered` AS
 SELECT
   `ps_auths`.`username` AS 'sip_username',
   `ps_contacts`.`uri`,
