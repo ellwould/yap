@@ -439,7 +439,7 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>Total Groups</th>")
 	fmt.Fprintf(w, "    <th>Total PBXs</th>")
-	fmt.Fprintf(w, "    <th>Total SIP Endpoints</th>")
+	fmt.Fprintf(w, "    <th>Total SIP Extensions</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCount.table = "user_group"
@@ -1377,7 +1377,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		groupDateAdded                          string
 		groupActive                             string
 		pbxLimit                                string
-		newPBXSIPEndpointDefaultLimit           string
+		newPBXSIPExtensionDefaultLimit          string
 		newPBXSIPTrunkDefaultLimit              string
 		newPBXPhoneNumberDefaultLimit           string
 		newPBXCDRDefaultLimit                   string
@@ -1769,7 +1769,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	fmt.Fprintf(w, "          <th>Group Date</th>")
 	fmt.Fprintf(w, "          <th>Group Active <br>Status</th>")
 	fmt.Fprintf(w, "          <th>PBX Limit</th>")
-	fmt.Fprintf(w, "          <th>SIP Endpoint <br>Limit for <br>a New PBX</th>")
+	fmt.Fprintf(w, "          <th>SIP Extension <br>Limit for <br>a New PBX</th>")
 	fmt.Fprintf(w, "          <th>SIP Trunk <br>Limit for <br>a New PBX</th>")
 	fmt.Fprintf(w, "          <th>Phone Number <br>Limit for <br>a new PBX</th>")
 	fmt.Fprintf(w, "          <th>CDR Limit <br>for a New PBX</th>")
@@ -1783,7 +1783,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 							group_date_added,
 							group_active,
 							pbx_limit,
-							new_pbx_sip_endpoint_default_limit,
+							new_pbx_sip_extension_default_limit,
 							new_pbx_sip_trunk_default_limit,
 							new_pbx_phone_number_default_limit,
 							new_pbx_cdr_default_limit,
@@ -1808,7 +1808,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 				&groupDateAdded,
 				&groupActive,
 				&pbxLimit,
-				&newPBXSIPEndpointDefaultLimit,
+				&newPBXSIPExtensionDefaultLimit,
 				&newPBXSIPTrunkDefaultLimit,
 				&newPBXPhoneNumberDefaultLimit,
 				&newPBXCDRDefaultLimit,
@@ -1830,7 +1830,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 				fmt.Fprintf(w, "          <td>NO</td>")
 			}
 			fmt.Fprintf(w, "          <td>"+pbxLimit+"</td>")
-			fmt.Fprintf(w, "          <td>"+newPBXSIPEndpointDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXSIPExtensionDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXSIPTrunkDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXPhoneNumberDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXCDRDefaultLimit+"</td>")
@@ -1845,7 +1845,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
                                                         group_date_added,
                                                         group_active,
                                                         pbx_limit,
-                                                        new_pbx_sip_endpoint_default_limit,
+                                                        new_pbx_sip_extension_default_limit,
                                                         new_pbx_sip_trunk_default_limit,
                                                         new_pbx_phone_number_default_limit,
                                                         new_pbx_cdr_default_limit,
@@ -1870,7 +1870,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 				&groupDateAdded,
 				&groupActive,
 				&pbxLimit,
-				&newPBXSIPEndpointDefaultLimit,
+				&newPBXSIPExtensionDefaultLimit,
 				&newPBXSIPTrunkDefaultLimit,
 				&newPBXPhoneNumberDefaultLimit,
 				&newPBXCDRDefaultLimit,
@@ -1888,7 +1888,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			fmt.Fprintf(w, "          <td>"+groupDateAdded+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupActive+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxLimit+"</td>")
-			fmt.Fprintf(w, "          <td>"+newPBXSIPEndpointDefaultLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+newPBXSIPExtensionDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXSIPTrunkDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXPhoneNumberDefaultLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+newPBXCDRDefaultLimit+"</td>")
@@ -1951,7 +1951,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		pbxID                         string
 		pbxDateAdded                  string
 		pbxActive                     string
-		pbxSIPEndpointLimit           string
+		pbxSIPExtensionLimit          string
 		pbxSIPTrunkLimit              string
 		pbxPhoneNumberLimit           string
 		pbxCDRLimit                   string
@@ -2475,7 +2475,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	}
 	fmt.Fprintf(w, "          <th>PBX Date</th>")
 	fmt.Fprintf(w, "          <th>PBX Active <br>Status</th>")
-	fmt.Fprintf(w, "          <th>SIP Endpoint <br>Limit for <br>PBX</th>")
+	fmt.Fprintf(w, "          <th>SIP Extension <br>Limit for <br>PBX</th>")
 	fmt.Fprintf(w, "          <th>SIP Trunk <br>Limit for <br>PBX</th>")
 	fmt.Fprintf(w, "          <th>Phone Number <br>Limit for <br>PBX</th>")
 	fmt.Fprintf(w, "          <th>CDR Limit <br>for PBX</th>")
@@ -2492,7 +2492,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 							pbx_id,
 							pbx_date_added,
 							pbx_active,
-							pbx_sip_endpoint_limit,
+							pbx_sip_extension_limit,
 							pbx_sip_trunk_limit,
 							pbx_phone_number_limit,
 							pbx_cdr_limit,
@@ -2518,7 +2518,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 				&pbxID,
 				&pbxDateAdded,
 				&pbxActive,
-				&pbxSIPEndpointLimit,
+				&pbxSIPExtensionLimit,
 				&pbxSIPTrunkLimit,
 				&pbxPhoneNumberLimit,
 				&pbxCDRLimit,
@@ -2541,7 +2541,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			} else {
 				fmt.Fprintf(w, "          <td>NO</td>")
 			}
-			fmt.Fprintf(w, "          <td>"+pbxSIPEndpointLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxSIPExtensionLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxSIPTrunkLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxPhoneNumberLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxCDRLimit+"</td>")
@@ -2557,7 +2557,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
                                                         pbx_id,
                                                         pbx_date_added,
                                                         pbx_active,
-                                                        pbx_sip_endpoint_limit,
+                                                        pbx_sip_extension_limit,
                                                         pbx_sip_trunk_limit,
                                                         pbx_phone_number_limit,
                                                         pbx_cdr_limit,
@@ -2581,7 +2581,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 				&pbxID,
 				&pbxDateAdded,
 				&pbxActive,
-				&pbxSIPEndpointLimit,
+				&pbxSIPExtensionLimit,
 				&pbxSIPTrunkLimit,
 				&pbxPhoneNumberLimit,
 				&pbxCDRLimit,
@@ -2602,7 +2602,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			} else {
 				fmt.Fprintf(w, "          <td>NO</td>")
 			}
-			fmt.Fprintf(w, "          <td>"+pbxSIPEndpointLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxSIPExtensionLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxSIPTrunkLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxPhoneNumberLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxCDRLimit+"</td>")
@@ -2614,7 +2614,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		pbxWhereUserPBXSQL, err := dbDetail.connection.Query(`SELECT
                                                         pbx_date_added,
                                                         pbx_active,
-                                                        pbx_sip_endpoint_limit,
+                                                        pbx_sip_extension_limit,
                                                         pbx_sip_trunk_limit,
                                                         pbx_phone_number_limit,
                                                         pbx_cdr_limit,
@@ -2636,7 +2636,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			err = pbxWhereUserPBXSQL.Scan(
 				&pbxDateAdded,
 				&pbxActive,
-				&pbxSIPEndpointLimit,
+				&pbxSIPExtensionLimit,
 				&pbxSIPTrunkLimit,
 				&pbxPhoneNumberLimit,
 				&pbxCDRLimit,
@@ -2651,7 +2651,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			fmt.Fprintf(w, "        <tr>")
 			fmt.Fprintf(w, "          <td>"+pbxDateAdded+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxActive+"</td>")
-			fmt.Fprintf(w, "          <td>"+pbxSIPEndpointLimit+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxSIPExtensionLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxSIPTrunkLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxPhoneNumberLimit+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxCDRLimit+"</td>")
@@ -2733,9 +2733,9 @@ func dropDailplanTable(dbDetail databaseFunctionParameter) {
 
 //----------------------------------------------------------------------------------------------------
 
-// SIP endpoint page Functions
+// SIP extension page functions
 
-func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string, userPBXID string) {
+func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string, userPBXID string) {
 
 	var (
 		sipUsername  string
@@ -2756,65 +2756,65 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		userAgent string
 	)
 
-	var dbTableCountUserSIPEndpoint databaseFunctionParameter
-	dbTableCountUserSIPEndpoint.connection = dbDetail.connection
-	dbTableCountUserSIPEndpoint.database = dbDetail.database
-	dbTableCountUserSIPEndpoint.table = "view___sip_endpoint_detail"
-	dbTableCountUserSIPEndpoint.columnWhere = "sip_username"
+	var dbTableCountUserSIPExtension databaseFunctionParameter
+	dbTableCountUserSIPExtension.connection = dbDetail.connection
+	dbTableCountUserSIPExtension.database = dbDetail.database
+	dbTableCountUserSIPExtension.table = "view___sip_extension_detail"
+	dbTableCountUserSIPExtension.columnWhere = "sip_username"
 
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-extension\">")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-sip-extension\">")
 	fmt.Fprintf(w, "        <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Total SIP Endpoints On YAP</th>")
+		fmt.Fprintf(w, "          <th>Total SIP Extensions On YAP</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "          <th>Total SIP Endpoints Within the Group</th>")
+		fmt.Fprintf(w, "          <th>Total SIP Extensions Within the Group</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		fmt.Fprintf(w, "          <th>Total SIP Endpoints Within the PBX</th>")
+		fmt.Fprintf(w, "          <th>Total SIP Extensions Within the PBX</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
 	if userTypeID == "100" {
-		dbTableCountUserSIPEndpoint.countMinusOne = false
-		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserSIPEndpoint)+"</td>")
+		dbTableCountUserSIPExtension.countMinusOne = false
+		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserSIPExtension)+"</td>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		var dbTableCountUserSIPEndpointWhere databaseFunctionParameter
-		dbTableCountUserSIPEndpointWhere.connection = dbDetail.connection
-		dbTableCountUserSIPEndpointWhere.database = dbDetail.database
-		dbTableCountUserSIPEndpointWhere.table = "view___sip_endpoint_detail"
-		dbTableCountUserSIPEndpointWhere.columnWhere = "group_id"
-		dbTableCountUserSIPEndpointWhere.columnWhereValue = userGroupID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPEndpointWhere)+"</td>")
+		var dbTableCountUserSIPExtensionWhere databaseFunctionParameter
+		dbTableCountUserSIPExtensionWhere.connection = dbDetail.connection
+		dbTableCountUserSIPExtensionWhere.database = dbDetail.database
+		dbTableCountUserSIPExtensionWhere.table = "view___sip_extension_detail"
+		dbTableCountUserSIPExtensionWhere.columnWhere = "group_id"
+		dbTableCountUserSIPExtensionWhere.columnWhereValue = userGroupID
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPExtensionWhere)+"</td>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		var dbTableCountUserSIPEndpointWhere databaseFunctionParameter
-		dbTableCountUserSIPEndpointWhere.connection = dbDetail.connection
-		dbTableCountUserSIPEndpointWhere.database = dbDetail.database
-		dbTableCountUserSIPEndpointWhere.table = "view___sip_endpoint_detail"
-		dbTableCountUserSIPEndpointWhere.columnWhere = "pbx_id"
-		dbTableCountUserSIPEndpointWhere.columnWhereValue = userPBXID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPEndpointWhere)+"</td>")
+		var dbTableCountUserSIPExtensionWhere databaseFunctionParameter
+		dbTableCountUserSIPExtensionWhere.connection = dbDetail.connection
+		dbTableCountUserSIPExtensionWhere.database = dbDetail.database
+		dbTableCountUserSIPExtensionWhere.table = "view___sip_extension_detail"
+		dbTableCountUserSIPExtensionWhere.columnWhere = "pbx_id"
+		dbTableCountUserSIPExtensionWhere.columnWhereValue = userPBXID
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPExtensionWhere)+"</td>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th><button onclick=\"toggleSIPEndpoint() \"class=\"button-general button-sip-endpoint\">&nbsp Show/Hide SIP Endpoint(s) &nbsp</button></th>")
+	fmt.Fprintf(w, "    <th><button onclick=\"toggleSIPExtension() \"class=\"button-general button-sip-extension\">&nbsp Show/Hide SIP Extension &nbsp</button></th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
-	fmt.Fprintf(w, "<div id=\"sip-endpoint-div\" style=\"display:none\">")
+	fmt.Fprintf(w, "<div id=\"sip-extension-div\" style=\"display:none\">")
 	fmt.Fprintf(w, "<br>")
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-extension\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoint Details on the Server:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details on the Server:</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoint Details Within the Group:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within the Group:</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoint Details Within the PBX:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within the PBX:</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -2822,49 +2822,49 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	var inputTableHTMLArgument jsFunctionParameter
-	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-sip-username"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchSIPUsername"
+	inputTableHTMLArgument.inputID = "sip-extension-detail-input-sip-username"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchSIPUsername"
 	inputTableHTMLArgument.placeholder = "SIP Username/PBX ID"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-codec"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchCodec"
+	inputTableHTMLArgument.inputID = "sip-extension-detail-input-codec"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCodec"
 	inputTableHTMLArgument.placeholder = "Codec(s) Allowed"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-dtmf"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchDTMF"
+	inputTableHTMLArgument.inputID = "sip-extension-detail-input-dtmf"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchDTMF"
 	inputTableHTMLArgument.placeholder = "DTMF Method Used"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-call-group"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchCallGroup"
+	inputTableHTMLArgument.inputID = "sip-extension-detail-input-call-group"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCallGroup"
 	inputTableHTMLArgument.placeholder = "Call Group"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-pickup-group"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchPickupGroup"
+	inputTableHTMLArgument.inputID = "sip-extension-detail-input-pickup-group"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchPickupGroup"
 	inputTableHTMLArgument.placeholder = "Pickup Group"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-pbx-name"
-		inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchPBXName"
+		inputTableHTMLArgument.inputID = "sip-extension-detail-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchPBXName"
 		inputTableHTMLArgument.placeholder = "PBX Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	if userTypeID == "100" {
-		inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-group-name"
-		inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchGroupName"
+		inputTableHTMLArgument.inputID = "sip-extension-detail-input-group-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchGroupName"
 		inputTableHTMLArgument.placeholder = "Group Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-endpoint-detail-input-group-id"
-		inputTableHTMLArgument.funcNameJS = "sipEndpointDetailSearchGroupID"
+		inputTableHTMLArgument.inputID = "sip-extension-detail-input-group-id"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchGroupID"
 		inputTableHTMLArgument.placeholder = "Group ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
@@ -2875,7 +2875,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"sip-endpoint-detail-table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "      <table id=\"sip-extension-detail-table\" class=\"table-sip-extension\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <th>SIP Username</th>")
 	fmt.Fprintf(w, "          <th>SIP Password</th>")
@@ -2893,7 +2893,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 	fmt.Fprintf(w, "        </tr>")
 	if userTypeID == "100" {
-		sipEndpointDetailAllSQL, err := dbDetail.connection.Query(`SELECT
+		sipExtensionDetailAllSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							sip_password,
 							codec_allowed,
@@ -2905,7 +2905,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					                group_name,
 					                group_id
 					              FROM
-					  	        yap.view___sip_endpoint_detail`)
+					  	        yap.view___sip_extension_detail`)
 
 		// Error
 		if err != nil {
@@ -2913,9 +2913,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointDetailAllSQL.Next() {
+		for sipExtensionDetailAllSQL.Next() {
 
-			err = sipEndpointDetailAllSQL.Scan(
+			err = sipExtensionDetailAllSQL.Scan(
 				&sipUsername,
 				&sipPassword,
 				&codecAllowed,
@@ -2957,7 +2957,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "        </tr>")
 		}
 	} else if userTypeID == "200" || userTypeID == "201" {
-		sipEndpointDetailWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
+		sipExtensionDetailWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
                                                         sip_username,
                                                         sip_password,
                                                         codec_allowed,
@@ -2967,7 +2967,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
                                                         registered,
                                                         pbx_name
                                                       FROM
-                                                        yap.view___sip_endpoint_detail
+                                                        yap.view___sip_extension_detail
 						      WHERE
                                                         group_id = ?;`, userGroupID)
 
@@ -2977,9 +2977,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointDetailWhereGroupSQL.Next() {
+		for sipExtensionDetailWhereGroupSQL.Next() {
 
-			err = sipEndpointDetailWhereGroupSQL.Scan(
+			err = sipExtensionDetailWhereGroupSQL.Scan(
 				&sipUsername,
 				&sipPassword,
 				&codecAllowed,
@@ -3017,7 +3017,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		}
 
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		sipEndpointDetailWherePBXSQL, err := dbDetail.connection.Query(`SELECT
+		sipExtensionDetailWherePBXSQL, err := dbDetail.connection.Query(`SELECT
                                                         sip_username,
                                                         sip_password,
                                                         codec_allowed,
@@ -3026,7 +3026,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
                                                         named_pickup_group,
                                                         registered
                                                       FROM
-                                                        yap.view___sip_endpoint_detail
+                                                        yap.view___sip_extension_detail
                                                       WHERE
                                                         pbx_id = ?;`, userPBXID)
 
@@ -3036,9 +3036,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointDetailWherePBXSQL.Next() {
+		for sipExtensionDetailWherePBXSQL.Next() {
 
-			err = sipEndpointDetailWherePBXSQL.Scan(
+			err = sipExtensionDetailWherePBXSQL.Scan(
 				&sipUsername,
 				&sipPassword,
 				&codecAllowed,
@@ -3077,48 +3077,48 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 	fmt.Fprintf(w, "      </table>")
 	var filterTableJSArgument jsFunctionParameter
-	filterTableJSArgument.tableID = "sip-endpoint-detail-table"
-	// Call JS filter function for SIP username in the SIP endpoint detail table
-	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchSIPUsername"
-	filterTableJSArgument.inputID = "sip-endpoint-detail-input-sip-username"
+	filterTableJSArgument.tableID = "sip-extension-detail-table"
+	// Call JS filter function for SIP username in the SIP extension detail table
+	filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchSIPUsername"
+	filterTableJSArgument.inputID = "sip-extension-detail-input-sip-username"
 	filterTableJSArgument.columnNumber = 0
 	filterTableJS(w, filterTableJSArgument)
-	// Call JS filter function for codec in the SIP endpoint detail table
-	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchCodec"
-	filterTableJSArgument.inputID = "sip-endpoint-detail-input-codec"
+	// Call JS filter function for codec in the SIP extension detail table
+	filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCodec"
+	filterTableJSArgument.inputID = "sip-extension-detail-input-codec"
 	filterTableJSArgument.columnNumber = 2
 	filterTableJS(w, filterTableJSArgument)
-	// Call JS filter function for DTMF method used in the SIP endpoint detail table
-	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchDTMF"
-	filterTableJSArgument.inputID = "sip-endpoint-detail-input-dtmf"
+	// Call JS filter function for DTMF method used in the SIP extension detail table
+	filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchDTMF"
+	filterTableJSArgument.inputID = "sip-extension-detail-input-dtmf"
 	filterTableJSArgument.columnNumber = 3
 	filterTableJS(w, filterTableJSArgument)
-	// Call JS filter function for call group in the SIP endpoint detail table
-	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchCallGroup"
-	filterTableJSArgument.inputID = "sip-endpoint-detail-input-call-group"
+	// Call JS filter function for call group in the SIP extension detail table
+	filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCallGroup"
+	filterTableJSArgument.inputID = "sip-extension-detail-input-call-group"
 	filterTableJSArgument.columnNumber = 4
 	filterTableJS(w, filterTableJSArgument)
-	// Call JS filter function for pickup group in the SIP endpoint detail table
-	filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchPickupGroup"
-	filterTableJSArgument.inputID = "sip-endpoint-detail-input-pickup-group"
+	// Call JS filter function for pickup group in the SIP extension detail table
+	filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchPickupGroup"
+	filterTableJSArgument.inputID = "sip-extension-detail-input-pickup-group"
 	filterTableJSArgument.columnNumber = 5
 	filterTableJS(w, filterTableJSArgument)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		// Call JS filter function for PBX name in the SIP endpoint detail table
-		filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchPBXName"
-		filterTableJSArgument.inputID = "sip-endpoint-detail-input-pbx-name"
+		// Call JS filter function for PBX name in the SIP extension detail table
+		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchPBXName"
+		filterTableJSArgument.inputID = "sip-extension-detail-input-pbx-name"
 		filterTableJSArgument.columnNumber = 7
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		// Call JS filter function for group name in the SIP endpoint detail table
-		filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchGroupName"
-		filterTableJSArgument.inputID = "sip-endpoint-detail-input-group-name"
+		// Call JS filter function for group name in the SIP extension detail table
+		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchGroupName"
+		filterTableJSArgument.inputID = "sip-extension-detail-input-group-name"
 		filterTableJSArgument.columnNumber = 8
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for group ID in the SIP endpoint detail table
-		filterTableJSArgument.funcNameJS = "sipEndpointDetailSearchGroupID"
-		filterTableJSArgument.inputID = "sip-endpoint-detail-input-group-id"
+		// Call JS filter function for group ID in the SIP extension detail table
+		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchGroupID"
+		filterTableJSArgument.inputID = "sip-extension-detail-input-group-id"
 		filterTableJSArgument.columnNumber = 9
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -3127,39 +3127,39 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<br>")
 
-	// Registered SIP Endpoints Table
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-endpoint\">")
+	// Registered SIP extension Table
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-extension\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoints Registered on the Server:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered on the Server:</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoints Registered Within the Group:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered Within the Group:</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Endpoints Registered Within the PBX:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered Within the PBX:</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-sip-username"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchSIPUsername"
+	inputTableHTMLArgument.inputID = "sip-extension-reg-input-sip-username"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchSIPUsername"
 	inputTableHTMLArgument.placeholder = "SIP Username/PBX ID"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-uri"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchURI"
+	inputTableHTMLArgument.inputID = "sip-extension-reg-input-uri"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchURI"
 	inputTableHTMLArgument.placeholder = "URI"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-user-agent"
-	inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchUserAgent"
+	inputTableHTMLArgument.inputID = "sip-extension-reg-input-user-agent"
+	inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchUserAgent"
 	inputTableHTMLArgument.placeholder = "User Agent"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-pbx-name"
-		inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchPBXName"
+		inputTableHTMLArgument.inputID = "sip-extension-reg-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchPBXName"
 		inputTableHTMLArgument.placeholder = "PBX Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
@@ -3168,13 +3168,13 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-group-name"
-		inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchGroupName"
+		inputTableHTMLArgument.inputID = "sip-extension-reg-input-group-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchGroupName"
 		inputTableHTMLArgument.placeholder = "Group Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-endpoint-reg-input-group-id"
-		inputTableHTMLArgument.funcNameJS = "sipEndpointRegSearchGroupID"
+		inputTableHTMLArgument.inputID = "sip-extension-reg-input-group-id"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchGroupID"
 		inputTableHTMLArgument.placeholder = "Group ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
@@ -3185,7 +3185,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"sip-endpoint-reg-table\" class=\"table-sip-endpoint\">")
+	fmt.Fprintf(w, "      <table id=\"sip-extension-reg-table\" class=\"table-sip-extension\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <th>SIP Username</th>")
 	fmt.Fprintf(w, "          <th>URI</th>")
@@ -3199,7 +3199,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 	fmt.Fprintf(w, "        </tr>")
 	if userTypeID == "100" {
-		sipEndpointRegAllSQL, err := dbDetail.connection.Query(`SELECT
+		sipExtensionRegAllSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							uri,
 							user_agent,
@@ -3207,7 +3207,7 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 					                group_name,
 					                group_id
 					              FROM
-					  	        yap.view___sip_endpoint_registered`)
+					  	        yap.view___sip_extension_registered`)
 
 		// Error
 		if err != nil {
@@ -3215,9 +3215,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointRegAllSQL.Next() {
+		for sipExtensionRegAllSQL.Next() {
 
-			err = sipEndpointRegAllSQL.Scan(
+			err = sipExtensionRegAllSQL.Scan(
 				&sipUsername,
 				&uri,
 				&userAgent,
@@ -3240,13 +3240,13 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "        </tr>")
 		}
 	} else if userTypeID == "200" || userTypeID == "201" {
-		sipEndpointRegWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
+		sipExtensionRegWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
                                                         sip_username,
                                                         uri,
                                                         user_agent,
                                                         pbx_name
                                                       FROM
-                                                        yap.view___sip_endpoint_registered
+                                                        yap.view___sip_extension_registered
 						      WHERE
                                                         group_id = ?;`, userGroupID)
 
@@ -3256,9 +3256,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointRegWhereGroupSQL.Next() {
+		for sipExtensionRegWhereGroupSQL.Next() {
 
-			err = sipEndpointRegWhereGroupSQL.Scan(
+			err = sipExtensionRegWhereGroupSQL.Scan(
 				&sipUsername,
 				&uri,
 				&userAgent,
@@ -3278,12 +3278,12 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		}
 
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		sipEndpointRegWherePBXSQL, err := dbDetail.connection.Query(`SELECT
+		sipExtensionRegWherePBXSQL, err := dbDetail.connection.Query(`SELECT
                                                         sip_username,
                                                         uri,
                                                         user_agent
                                                       FROM
-                                                        yap.view___sip_endpoint_registered
+                                                        yap.view___sip_extension_registered
                                                       WHERE
                                                         pbx_id = ?;`, userPBXID)
 
@@ -3293,9 +3293,9 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		}
 
-		for sipEndpointRegWherePBXSQL.Next() {
+		for sipExtensionRegWherePBXSQL.Next() {
 
-			err = sipEndpointRegWherePBXSQL.Scan(
+			err = sipExtensionRegWherePBXSQL.Scan(
 				&sipUsername,
 				&uri,
 				&userAgent,
@@ -3315,38 +3315,38 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 
 	fmt.Fprintf(w, "      </table>")
-	filterTableJSArgument.tableID = "sip-endpoint-reg-table"
-	// Call JS filter function for SIP username in the SIP endpoint registration (reg) table
-	filterTableJSArgument.funcNameJS = "sipEndpointRegSearchSIPUsername"
-	filterTableJSArgument.inputID = "sip-endpoint-reg-input-sip-username"
+	filterTableJSArgument.tableID = "sip-extension-reg-table"
+	// Call JS filter function for SIP username in the SIP extension registration (reg) table
+	filterTableJSArgument.funcNameJS = "sipExtensionRegSearchSIPUsername"
+	filterTableJSArgument.inputID = "sip-extension-reg-input-sip-username"
 	filterTableJSArgument.columnNumber = 0
 	filterTableJS(w, filterTableJSArgument)
-	// Call JS filter function for URI in the SIP endpoint registration (reg) table
-	filterTableJSArgument.funcNameJS = "sipEndpointRegSearchURI"
-	filterTableJSArgument.inputID = "sip-endpoint-reg-input-uri"
+	// Call JS filter function for URI in the SIP extension registration (reg) table
+	filterTableJSArgument.funcNameJS = "sipExtensionRegSearchURI"
+	filterTableJSArgument.inputID = "sip-extension-reg-input-uri"
 	filterTableJSArgument.columnNumber = 1
 	filterTableJS(w, filterTableJSArgument)
-	// Call JS filter function for user agent in the SIP endpoint registration (reg) table
-	filterTableJSArgument.funcNameJS = "sipEndpointRegSearchUserAgent"
-	filterTableJSArgument.inputID = "sip-endpoint-reg-input-user-agent"
+	// Call JS filter function for user agent in the SIP extension registration (reg) table
+	filterTableJSArgument.funcNameJS = "sipExtensionRegSearchUserAgent"
+	filterTableJSArgument.inputID = "sip-extension-reg-input-user-agent"
 	filterTableJSArgument.columnNumber = 2
 	filterTableJS(w, filterTableJSArgument)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		// Call JS filter function for PBX name in the SIP endpoint registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipEndpointRegSearchPBXName"
-		filterTableJSArgument.inputID = "sip-endpoint-reg-input-pbx-name"
+		// Call JS filter function for PBX name in the SIP extension registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchPBXName"
+		filterTableJSArgument.inputID = "sip-extension-reg-input-pbx-name"
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		// Call JS filter function for group name in the SIP endpoint registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipEndpointRegSearchGroupName"
-		filterTableJSArgument.inputID = "sip-endpoint-reg-input-group-name"
+		// Call JS filter function for group name in the SIP extension registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchGroupName"
+		filterTableJSArgument.inputID = "sip-extension-reg-input-group-name"
 		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for group ID in the SIP endpoint registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipEndpointRegSearchGroupID"
-		filterTableJSArgument.inputID = "sip-endpoint-reg-input-group-id"
+		// Call JS filter function for group ID in the SIP extension registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchGroupID"
+		filterTableJSArgument.inputID = "sip-extension-reg-input-group-id"
 		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -3355,8 +3355,8 @@ func sipEndpointList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</div>")
 	var toggleDivJSArgument jsFunctionParameter
-	toggleDivJSArgument.funcNameJS = "toggleSIPEndpoint"
-	toggleDivJSArgument.divID = "sip-endpoint-div"
+	toggleDivJSArgument.funcNameJS = "toggleSIPExtension"
+	toggleDivJSArgument.divID = "sip-extension-div"
 	toggleDivJS(w, toggleDivJSArgument)
 }
 
@@ -3452,7 +3452,7 @@ func main() {
 	endHTML := csvcell.FileData(dirHTML, fileEndHTML)
 
 	// Home Page
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3496,7 +3496,7 @@ func main() {
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "All<br>PBXs<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Endpoints<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3531,7 +3531,7 @@ func main() {
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX(s) Within<br>The Group<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3564,7 +3564,7 @@ func main() {
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX(s) Within<br>The Group<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3595,7 +3595,7 @@ func main() {
 				mainMenuButton(mainMenuButtonOne)
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Information<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonTwo)
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
 				mainMenuButton(mainMenuButtonFour)
@@ -3626,7 +3626,7 @@ func main() {
 				mainMenuButton(mainMenuButtonOne)
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Information<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonTwo)
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Endpoint(s)<br>&#128241", hyperlink: "/sip-endpoint", headerCSS: "header-sip-endpoint", buttonCSS: "button-sip-endpoint"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
 				mainMenuButton(mainMenuButtonFour)
@@ -3655,7 +3655,7 @@ func main() {
 	})
 
 	// User Account Page
-	http.HandleFunc("/user-account", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/user-account", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3720,7 +3720,7 @@ func main() {
 	})
 
 	// Group Page
-	http.HandleFunc("/group", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/group", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3768,7 +3768,7 @@ func main() {
 
 	// PBX Page
 
-	http.HandleFunc("/pbx", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/pbx", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3820,8 +3820,8 @@ func main() {
 		fmt.Fprintf(w, endHTML)
 	})
 
-	// SIP Endpoint Page
-	http.HandleFunc("/sip-endpoint", func(w http.ResponseWriter, r *http.Request) {
+	// SIP Extension Page
+	go http.HandleFunc("/sip-extension", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3835,7 +3835,7 @@ func main() {
 		fmt.Fprintf(w, startHTML)
 
 		// Wallpaper
-		wallpaper(w, "wallpaper-sip-endpoint")
+		wallpaper(w, "wallpaper-sip-extension")
 
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
@@ -3852,22 +3852,22 @@ func main() {
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-sip-endpoint")
+			errorBox(w, "email_error", "header-sip-extension")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All SIP Endpoints on the Server<br>YAP Admin Account", "header-sip-endpoint")
-				sipEndpointList(w, dbDetail, userTypeID, userGroupID, userPBXID)
-				footer(w, "header-sip-endpoint", "button-sip-endpoint")
+				header(w, "All SIP Extensions on the Server<br>YAP Admin Account", "header-sip-extension")
+				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-sip-extension", "button-sip-extension")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, "All SIP Endpoints Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-sip-endpoint")
-				sipEndpointList(w, dbDetail, userTypeID, userGroupID, userPBXID)
-				footer(w, "header-sip-endpoint", "button-sip-endpoint")
+				header(w, "All SIP Extensions Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-sip-extension")
+				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-sip-extension", "button-sip-extension")
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-				header(w, "All SIP Endpoints Within the PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-sip-endpoint")
-				sipEndpointList(w, dbDetail, userTypeID, userGroupID, userPBXID)
-				footer(w, "header-sip-endpoint", "button-sip-endpoint")
+				header(w, "All SIP Extensions Within the PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-sip-extension")
+				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				footer(w, "header-sip-extension", "button-sip-extension")
 			} else {
-				errorBox(w, "account_type_error", "header-sip-endpoint")
+				errorBox(w, "account_type_error", "header-sip-extension")
 			}
 		}
 	})
