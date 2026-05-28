@@ -406,14 +406,15 @@ SELECT DISTINCT
   `pbx`.`pbx_name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
   `user_group`.`group_name` AS 'group_name',
-  `user_group`.`id` AS 'group_id'
-FROM `ps_auths`
-INNER JOIN `ps_endpoints`
-ON `ps_auths`.`id` = `ps_endpoints`.`id`
+  `user_group`.`id` AS 'group_id',
+  `ps_endpoints`.`endpoint_type`
+FROM `ps_endpoints`
+INNER JOIN `ps_auths`
+ON `ps_endpoints`.`id` = `ps_auths`.`id` 
 INNER JOIN `pbx`
-ON `ps_auths`.`pbx_id` = `pbx`.`id`
+ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 LEFT JOIN `ps_contacts`
-on `ps_auths`.`id` = `ps_contacts`.`endpoint`
+on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
 ON `pbx`.`group_id` = `user_group`.`id`;
 
@@ -425,12 +426,15 @@ SELECT
   `pbx`.`pbx_name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
   `user_group`.`group_name` AS 'group_name',
-  `user_group`.`id` AS 'group_id'
-FROM `ps_auths`
+  `user_group`.`id` AS 'group_id',
+  `ps_endpoints`.`endpoint_type`
+FROM `ps_endpoints`
+INNER JOIN `ps_auths`
+ON `ps_endpoints`.`id` = `ps_auths`.`id`
 INNER JOIN `pbx`
-ON `ps_auths`.`pbx_id` = `pbx`.`id`
+ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 INNER JOIN `ps_contacts`
-on `ps_auths`.`id` = `ps_contacts`.`endpoint`
+on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
 ON `pbx`.`group_id` = `user_group`.`id`;
 
