@@ -124,6 +124,7 @@ ENGINE = InnoDB;
 -- Add pbx_id column to Asterisk tables
 
 ALTER TABLE `ps_endpoints`
+ADD COLUMN `endpoint_type` ENUM ('sip_extension','sip_trunk','webrtc_extension') NOT NULL;
 ADD COLUMN `pbx_id` BIGINT UNSIGNED NOT NULL;
 
 ALTER TABLE `ps_aors`
