@@ -1981,7 +1981,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	dbTableCountUserPBX.connection = dbDetail.connection
 	dbTableCountUserPBX.database = dbDetail.database
 	dbTableCountUserPBX.table = "pbx"
-	dbTableCountUserPBX.columnWhere = "id"
 
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
@@ -1998,24 +1997,22 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "        <tr>")
 		if userTypeID == "100" {
 			dbTableCountUserPBX.countMinusOne = true
-			fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserPBX)+"</td>")
-			dbTableCountUserPBX.columnWhereValue = "1"
-			fmt.Fprintf(w, "          <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
-			dbTableCountUserPBX.columnWhereValue = "0"
+			fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserPBX)+"</td>")
+			dbTableCountUserPBX.columnWhere = "pbx_active"
 			dbTableCountUserPBX.countMinusOne = false
-			fmt.Fprintf(w, "          <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
+			dbTableCountUserPBX.columnWhereValue = "1"
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
+			dbTableCountUserPBX.countMinusOne = true
+			dbTableCountUserPBX.columnWhereValue = "0"
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
 		} else if userTypeID == "200" || userTypeID == "201" {
-			var dbTableCountUserPBXWhere databaseFunctionParameter
-			dbTableCountUserPBXWhere.connection = dbDetail.connection
-			dbTableCountUserPBXWhere.database = dbDetail.database
-			dbTableCountUserPBXWhere.table = "pbx"
-			dbTableCountUserPBXWhere.columnWhere = "group_id"
-			dbTableCountUserPBXWhere.columnWhereValue = userGroupID
-			dbTableCountUserPBXWhere.columnWhereAnd = "pbx_active"
-			dbTableCountUserPBXWhere.columnWhereValueAnd = "1"
-			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBXWhere)+"</td>")
-			dbTableCountUserPBXWhere.columnWhereValueAnd = "0"
-			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBXWhere)+"</td>")
+			dbTableCountUserPBX.columnWhere = "group_id"
+			dbTableCountUserPBX.columnWhereValue = userGroupID
+			dbTableCountUserPBX.columnWhereAnd = "pbx_active"
+			dbTableCountUserPBX.columnWhereValueAnd = "1"
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBX)+"</td>")
+			dbTableCountUserPBX.columnWhereValueAnd = "0"
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBX)+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
