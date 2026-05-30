@@ -84,15 +84,15 @@ max_contacts=2
 ;type=registration
 ;transport=IPv4-UDP
 ;outbound_auth=SIP_TRUNK_AUTH
-;server_uri=sip:[sip-trunk-username]@[hostname]:5060
-;client_uri=sip:[hostname]:5060
+;server_uri=sip:[hostname]:5060
+;client_uri=sip:[sip-trunk-username]@[hostname]:5060
 ;retry_interval=20
 ;expiration=3600
 
 ;[SIP_TRUNK_AUTH] ; Stores inbound or outbound authentication credentials for use by trunks, endpoints, registrations.
 ;type=auth
-;password=[sip-trunk-password]
 ;username=[sip-trunk-username]
+;password=[sip-trunk-password]
 
 ;[SIP_TRUNK_AOR] ; Stores contact information for use by endpoints.
 ;type=aor
