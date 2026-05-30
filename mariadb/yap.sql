@@ -406,17 +406,17 @@ SELECT DISTINCT
   `pbx`.`pbx_name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
   `user_group`.`group_name` AS 'group_name',
-  `user_group`.`id` AS 'group_id',
-  `ps_endpoints`.`endpoint_type`
+  `user_group`.`id` AS 'group_id'
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
-ON `ps_endpoints`.`id` = `ps_auths`.`id` 
+ON `ps_endpoints`.`id` = `ps_auths`.`id`
 INNER JOIN `pbx`
 ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 LEFT JOIN `ps_contacts`
 on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
-ON `pbx`.`group_id` = `user_group`.`id`;
+ON `pbx`.`group_id` = `user_group`.`id`
+WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 CREATE VIEW `view___sip_extension_registered` AS
 SELECT
@@ -426,8 +426,7 @@ SELECT
   `pbx`.`pbx_name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
   `user_group`.`group_name` AS 'group_name',
-  `user_group`.`id` AS 'group_id',
-  `ps_endpoints`.`endpoint_type`
+  `user_group`.`id` AS 'group_id'
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
@@ -436,7 +435,8 @@ ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 INNER JOIN `ps_contacts`
 on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
-ON `pbx`.`group_id` = `user_group`.`id`;
+ON `pbx`.`group_id` = `user_group`.`id`
+WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 ----------------------------------------------------------------------------------------------------
 
