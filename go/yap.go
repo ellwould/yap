@@ -2883,8 +2883,18 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <th>Group ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
+
+	var whereClause string
+
 	if userTypeID == "100" {
-		sipExtensionDetailAllSQL, err := dbDetail.connection.Query(`SELECT
+		whereClause = ""
+	} else if userTypeID == "200" || userTypeID == "201" {
+		whereClause = "WHERE group_id = ?" + userGroupID + ";"
+	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		whereClause = "WHERE pbx_id = ?" + userPBXID + ";"
+	}
+
+	sipExtensionDetailSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							sip_password,
 							caller_id,
@@ -2908,268 +2918,84 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 					                group_name,
 					                group_id
 					              FROM
-					  	        yap.view___sip_extension_detail`)
+					                 yap.view___sip_extension_detail
+						      ` + whereClause)
+
+	// Error
+	if err != nil {
+		panic(err)
+
+	}
+
+	for sipExtensionDetailSQL.Next() {
+
+		err = sipExtensionDetailSQL.Scan(
+			&sipUsername,
+			&sipPassword,
+			&callerID,
+			&callerIDPrivacy,
+			&callGroup,
+			&codecAllowed,
+			&directMedia,
+			&directMediaMethod,
+			&dtmfMode,
+			&forceRPort,
+			&fromSIPHeaderUser,
+			&fromSIPHeaderDomain,
+			&ipAddressAllowed,
+			&pickupGroup,
+			&mediaEncryptionEnabled,
+			&stirShakenEnabled,
+			&stirShakenProfile,
+			&registered,
+			&pbxName,
+			&pbxID,
+			&groupName,
+			&groupID,
+		)
 
 		// Error
 		if err != nil {
 			panic(err)
-
 		}
-
-		for sipExtensionDetailAllSQL.Next() {
-
-			err = sipExtensionDetailAllSQL.Scan(
-				&sipUsername,
-				&sipPassword,
-				&callerID,
-				&callerIDPrivacy,
-				&callGroup,
-				&codecAllowed,
-				&directMedia,
-				&directMediaMethod,
-				&dtmfMode,
-				&forceRPort,
-				&fromSIPHeaderUser,
-				&fromSIPHeaderDomain,
-				&ipAddressAllowed,
-				&pickupGroup,
-				&mediaEncryptionEnabled,
-				&stirShakenEnabled,
-				&stirShakenProfile,
-				&registered,
-				&pbxName,
-				&pbxID,
-				&groupName,
-				&groupID,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername)
-			var copyButtonJSArgument jsFunctionParameter
-			copyButtonJSArgument.data = sipUsername
-			copyButtonJS(w, copyButtonJSArgument)
-			fmt.Fprintf(w, "	  </td>")
-			fmt.Fprintf(w, "          <td>"+sipPassword)
-			copyButtonJSArgument.data = sipPassword
-			copyButtonJS(w, copyButtonJSArgument)
-			fmt.Fprintf(w, "          </td>")
-			if registered == "1" {
-				fmt.Fprintf(w, "          <td>&#128994</td>")
-			} else {
-				fmt.Fprintf(w, "          <td>&#128308</td>")
-			}
-			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
-			fmt.Fprintf(w, "          <b>Caller ID:</b> "+callerID+"<br>")
-			fmt.Fprintf(w, "          <b>Caller ID Privacy:</b> "+callerIDPrivacy+"<br>")
-			fmt.Fprintf(w, "          <b>Call Group:</b> "+callGroup+"<br>")
-			fmt.Fprintf(w, "          <b>Codecs Allowed:</b> "+codecAllowed+"<br>")
-			fmt.Fprintf(w, "          <b>Direct Media:</b> "+directMedia+"<br>")
-			fmt.Fprintf(w, "          <b>Direct Media Method:</b> "+directMediaMethod+"<br>")
-			fmt.Fprintf(w, "          <b>DTMF Mode:</b> "+dtmfMode+"<br>")
-			fmt.Fprintf(w, "          <b>Force Rport:</b> "+forceRPort+"<br>")
-			fmt.Fprintf(w, "          <b>From SIP Header User:</b> "+fromSIPHeaderUser+"<br>")
-			fmt.Fprintf(w, "          <b>From SIP Header Domain:</b> "+fromSIPHeaderDomain+"<br>")
-			fmt.Fprintf(w, "          <b>IP Address Allowed:</b> "+ipAddressAllowed+"<br>")
-			fmt.Fprintf(w, "          <b>Pickup Group:</b> "+pickupGroup+"<br>")
-			fmt.Fprintf(w, "          <b>Media Encryption Enabled:</b> "+mediaEncryptionEnabled+"<br>")
-			fmt.Fprintf(w, "          <b>STIR/SHAKEN Enabled:</b> "+stirShakenEnabled+"<br>")
-			fmt.Fprintf(w, "          <b>STIR/SHAKEN Profile:</b> "+stirShakenProfile+"<br>")
-			fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>"+sipUsername)
+		var copyButtonJSArgument jsFunctionParameter
+		copyButtonJSArgument.data = sipUsername
+		copyButtonJS(w, copyButtonJSArgument)
+		fmt.Fprintf(w, "	  </td>")
+		fmt.Fprintf(w, "          <td>"+sipPassword)
+		copyButtonJSArgument.data = sipPassword
+		copyButtonJS(w, copyButtonJSArgument)
+		fmt.Fprintf(w, "          </td>")
+		if registered == "1" {
+			fmt.Fprintf(w, "          <td>&#128994</td>")
+		} else {
+			fmt.Fprintf(w, "          <td>&#128308</td>")
+		}
+		fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
+		fmt.Fprintf(w, "          <b>Caller ID:</b> "+callerID+"<br>")
+		fmt.Fprintf(w, "          <b>Caller ID Privacy:</b> "+callerIDPrivacy+"<br>")
+		fmt.Fprintf(w, "          <b>Call Group:</b> "+callGroup+"<br>")
+		fmt.Fprintf(w, "          <b>Codecs Allowed:</b> "+codecAllowed+"<br>")
+		fmt.Fprintf(w, "          <b>Direct Media:</b> "+directMedia+"<br>")
+		fmt.Fprintf(w, "          <b>Direct Media Method:</b> "+directMediaMethod+"<br>")
+		fmt.Fprintf(w, "          <b>DTMF Mode:</b> "+dtmfMode+"<br>")
+		fmt.Fprintf(w, "          <b>Force Rport:</b> "+forceRPort+"<br>")
+		fmt.Fprintf(w, "          <b>From SIP Header User:</b> "+fromSIPHeaderUser+"<br>")
+		fmt.Fprintf(w, "          <b>From SIP Header Domain:</b> "+fromSIPHeaderDomain+"<br>")
+		fmt.Fprintf(w, "          <b>IP Address Allowed:</b> "+ipAddressAllowed+"<br>")
+		fmt.Fprintf(w, "          <b>Pickup Group:</b> "+pickupGroup+"<br>")
+		fmt.Fprintf(w, "          <b>Media Encryption Enabled:</b> "+mediaEncryptionEnabled+"<br>")
+		fmt.Fprintf(w, "          <b>STIR/SHAKEN Enabled:</b> "+stirShakenEnabled+"<br>")
+		fmt.Fprintf(w, "          <b>STIR/SHAKEN Profile:</b> "+stirShakenProfile+"<br>")
+		fmt.Fprintf(w, "          </td>")
+		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+		}
+		if userTypeID == "100" {
 			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
-			fmt.Fprintf(w, "        </tr>")
-		}
-	} else if userTypeID == "200" || userTypeID == "201" {
-		sipExtensionDetailWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
-							sip_username,
-                                                        sip_password,
-                                                        caller_id,
-                                                        caller_id_privacy,
-                                                        call_group,
-                                                        codec_allowed,
-                                                        direct_media,
-                                                        direct_media_method,
-                                                        dtmf_mode,
-                                                        force_rport,
-                                                        from_sip_header_user,
-                                                        from_sip_Header_domain,
-                                                        ip_address_allowed,
-                                                        pickup_group,
-                                                        media_encryption_enabled,
-                                                        stir_shaken_enabled,
-                                                        stir_shaken_profile,
-                                                        registered,
-                                                        pbx_name
-                                                      FROM
-                                                        yap.view___sip_extension_detail
-						      WHERE
-                                                        group_id = ?;`, userGroupID)
-
-		// Error
-		if err != nil {
-			panic(err)
-
-		}
-
-		for sipExtensionDetailWhereGroupSQL.Next() {
-
-			err = sipExtensionDetailWhereGroupSQL.Scan(
-				&sipUsername,
-				&sipPassword,
-				&callerID,
-				&callerIDPrivacy,
-				&callGroup,
-				&codecAllowed,
-				&directMedia,
-				&directMediaMethod,
-				&dtmfMode,
-				&forceRPort,
-				&fromSIPHeaderUser,
-				&fromSIPHeaderDomain,
-				&ipAddressAllowed,
-				&pickupGroup,
-				&mediaEncryptionEnabled,
-				&stirShakenEnabled,
-				&stirShakenProfile,
-				&registered,
-				&pbxName,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername)
-			var copyButtonJSArgument jsFunctionParameter
-			copyButtonJSArgument.data = sipUsername
-			copyButtonJS(w, copyButtonJSArgument)
-			fmt.Fprintf(w, "          </td>")
-			fmt.Fprintf(w, "          <td>"+sipPassword)
-			copyButtonJSArgument.data = sipPassword
-			copyButtonJS(w, copyButtonJSArgument)
-			fmt.Fprintf(w, "          </td>")
-			if registered == "1" {
-				fmt.Fprintf(w, "          <td>&#128994</td>")
-			} else {
-				fmt.Fprintf(w, "          <td>&#128308</td>")
-			}
-			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
-			fmt.Fprintf(w, "          <b>Caller ID:</b> "+callerID+"<br>")
-			fmt.Fprintf(w, "          <b>Caller ID Privacy:</b> "+callerIDPrivacy+"<br>")
-			fmt.Fprintf(w, "          <b>Call Group:</b> "+callGroup+"<br>")
-			fmt.Fprintf(w, "          <b>Codecs Allowed:</b> "+codecAllowed+"<br>")
-			fmt.Fprintf(w, "          <b>Direct Media:</b> "+directMedia+"<br>")
-			fmt.Fprintf(w, "          <b>Direct Media Method:</b> "+directMediaMethod+"<br>")
-			fmt.Fprintf(w, "          <b>DTMF Mode:</b> "+dtmfMode+"<br>")
-			fmt.Fprintf(w, "          <b>Force Rport:</b> "+forceRPort+"<br>")
-			fmt.Fprintf(w, "          <b>From SIP Header User:</b> "+fromSIPHeaderUser+"<br>")
-			fmt.Fprintf(w, "          <b>From SIP Header Domain:</b> "+fromSIPHeaderDomain+"<br>")
-			fmt.Fprintf(w, "          <b>IP Address Allowed:</b> "+ipAddressAllowed+"<br>")
-			fmt.Fprintf(w, "          <b>Pickup Group:</b> "+pickupGroup+"<br>")
-			fmt.Fprintf(w, "          <b>Media Encryption Enabled:</b> "+mediaEncryptionEnabled+"<br>")
-			fmt.Fprintf(w, "          <b>STIR/SHAKEN Enabled:</b> "+stirShakenEnabled+"<br>")
-			fmt.Fprintf(w, "          <b>STIR/SHAKEN Profile:</b> "+stirShakenProfile+"<br>")
-			fmt.Fprintf(w, "          </td>")
-			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-			fmt.Fprintf(w, "        </tr>")
-		}
-
-	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		sipExtensionDetailWherePBXSQL, err := dbDetail.connection.Query(`SELECT
-							sip_username,
-                                                        sip_password,
-                                                        caller_id,
-                                                        caller_id_privacy,
-                                                        call_group,
-                                                        codec_allowed,
-                                                        direct_media,
-                                                        direct_media_method,
-                                                        dtmf_mode,
-                                                        force_rport,
-                                                        from_sip_header_user,
-                                                        from_sip_Header_domain,
-                                                        ip_address_allowed,
-                                                        pickup_group,
-                                                        media_encryption_enabled,
-                                                        stir_shaken_enabled,
-                                                        stir_shaken_profile,
-                                                        registered
-                                                      FROM
-                                                        yap.view___sip_extension_detail
-                                                      WHERE
-                                                        pbx_id = ?;`, userPBXID)
-
-		// Error
-		if err != nil {
-			panic(err)
-
-		}
-
-		for sipExtensionDetailWherePBXSQL.Next() {
-
-			err = sipExtensionDetailWherePBXSQL.Scan(
-				&sipUsername,
-				&sipPassword,
-				&callerID,
-				&callerIDPrivacy,
-				&callGroup,
-				&codecAllowed,
-				&directMedia,
-				&directMediaMethod,
-				&dtmfMode,
-				&forceRPort,
-				&fromSIPHeaderUser,
-				&fromSIPHeaderDomain,
-				&ipAddressAllowed,
-				&pickupGroup,
-				&mediaEncryptionEnabled,
-				&stirShakenEnabled,
-				&stirShakenProfile,
-				&registered,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername)
-			var copyButtonJSArgument jsFunctionParameter
-			copyButtonJSArgument.data = sipUsername
-			copyButtonJS(w, copyButtonJSArgument)
-			fmt.Fprintf(w, "          </td>")
-			fmt.Fprintf(w, "          <td>"+sipPassword)
-			copyButtonJSArgument.data = sipPassword
-			copyButtonJS(w, copyButtonJSArgument)
-			fmt.Fprintf(w, "          </td>")
-			if registered == "1" {
-				fmt.Fprintf(w, "          <td>&#128994</td>")
-			} else {
-				fmt.Fprintf(w, "          <td>&#128308</td>")
-			}
-			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
-			fmt.Fprintf(w, "          <b>Caller ID:</b> "+callerID+"<br>")
-			fmt.Fprintf(w, "          <b>Caller ID Privacy:</b> "+callerIDPrivacy+"<br>")
-			fmt.Fprintf(w, "          <b>Call Group:</b> "+callGroup+"<br>")
-			fmt.Fprintf(w, "          <b>Codecs Allowed:</b> "+codecAllowed+"<br>")
-			fmt.Fprintf(w, "          <b>Direct Media:</b> "+directMedia+"<br>")
-			fmt.Fprintf(w, "          <b>Direct Media Method:</b> "+directMediaMethod+"<br>")
-			fmt.Fprintf(w, "          <b>DTMF Mode:</b> "+dtmfMode+"<br>")
-			fmt.Fprintf(w, "          <b>Force Rport:</b> "+forceRPort+"<br>")
-			fmt.Fprintf(w, "          <b>From SIP Header User:</b> "+fromSIPHeaderUser+"<br>")
-			fmt.Fprintf(w, "          <b>From SIP Header Domain:</b> "+fromSIPHeaderDomain+"<br>")
-			fmt.Fprintf(w, "          <b>IP Address Allowed:</b> "+ipAddressAllowed+"<br>")
-			fmt.Fprintf(w, "          <b>Pickup Group:</b> "+pickupGroup+"<br>")
-			fmt.Fprintf(w, "          <b>Media Encryption Enabled:</b> "+mediaEncryptionEnabled+"<br>")
-			fmt.Fprintf(w, "          <b>STIR/SHAKEN Enabled:</b> "+stirShakenEnabled+"<br>")
-			fmt.Fprintf(w, "          <b>STIR/SHAKEN Profile:</b> "+stirShakenProfile+"<br>")
-			fmt.Fprintf(w, "          </td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -3282,8 +3108,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <th>Group ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
-	if userTypeID == "100" {
-		sipExtensionRegAllSQL, err := dbDetail.connection.Query(`SELECT
+
+	sipExtensionRegSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							uri,
 							user_agent,
@@ -3291,111 +3117,38 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 					                group_name,
 					                group_id
 					              FROM
-					  	        yap.view___sip_extension_registered`)
+					  	        yap.view___sip_extension_registered
+					  	      ` + whereClause)
+
+	// Error
+	if err != nil {
+		panic(err)
+
+	}
+
+	for sipExtensionRegSQL.Next() {
+
+		err = sipExtensionRegSQL.Scan(
+			&sipUsername,
+			&uri,
+			&userAgent,
+			&pbxName,
+			&groupName,
+			&groupID,
+		)
 
 		// Error
 		if err != nil {
 			panic(err)
-
 		}
-
-		for sipExtensionRegAllSQL.Next() {
-
-			err = sipExtensionRegAllSQL.Scan(
-				&sipUsername,
-				&uri,
-				&userAgent,
-				&pbxName,
-				&groupName,
-				&groupID,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername+"</td>")
-			fmt.Fprintf(w, "          <td>"+uri+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
-			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
-			fmt.Fprintf(w, "        </tr>")
-		}
-	} else if userTypeID == "200" || userTypeID == "201" {
-		sipExtensionRegWhereGroupSQL, err := dbDetail.connection.Query(`SELECT
-                                                        sip_username,
-                                                        uri,
-                                                        user_agent,
-                                                        pbx_name
-                                                      FROM
-                                                        yap.view___sip_extension_registered
-						      WHERE
-                                                        group_id = ?;`, userGroupID)
-
-		// Error
-		if err != nil {
-			panic(err)
-
-		}
-
-		for sipExtensionRegWhereGroupSQL.Next() {
-
-			err = sipExtensionRegWhereGroupSQL.Scan(
-				&sipUsername,
-				&uri,
-				&userAgent,
-				&pbxName,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername+"</td>")
-			fmt.Fprintf(w, "          <td>"+uri+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
-			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-			fmt.Fprintf(w, "        </tr>")
-		}
-
-	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		sipExtensionRegWherePBXSQL, err := dbDetail.connection.Query(`SELECT
-                                                        sip_username,
-                                                        uri,
-                                                        user_agent
-                                                      FROM
-                                                        yap.view___sip_extension_registered
-                                                      WHERE
-                                                        pbx_id = ?;`, userPBXID)
-
-		// Error
-		if err != nil {
-			panic(err)
-
-		}
-
-		for sipExtensionRegWherePBXSQL.Next() {
-
-			err = sipExtensionRegWherePBXSQL.Scan(
-				&sipUsername,
-				&uri,
-				&userAgent,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+sipUsername+"</td>")
-			fmt.Fprintf(w, "          <td>"+uri+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
-			fmt.Fprintf(w, "        </tr>")
-		}
-
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>"+sipUsername+"</td>")
+		fmt.Fprintf(w, "          <td>"+uri+"</td>")
+		fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
+		fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+		fmt.Fprintf(w, "          <td>"+groupName+"</td>")
+		fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+		fmt.Fprintf(w, "        </tr>")
 	}
 
 	fmt.Fprintf(w, "      </table>")
@@ -4105,3 +3858,4 @@ func main() {
 
 // Contributor(s):
 // Elliot Michael Keavney
+
