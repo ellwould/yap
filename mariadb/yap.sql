@@ -121,7 +121,7 @@ ENGINE = InnoDB;
 
 ----------------------------------------------------------------------------------------------------
 
--- Add pbx_id column to Asterisk tables
+-- Add pbx_id and and endpoint_type column to Asterisk tables
 
 ALTER TABLE `ps_endpoints`
 ADD COLUMN `endpoint_type` ENUM ('sip_extension','sip_trunk','webrtc_extension') NOT NULL;
@@ -422,7 +422,7 @@ FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
 INNER JOIN `pbx`
-ON `ps_endpoints`.`tenantid` = `pbx`.`id`
+ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 LEFT JOIN `ps_contacts`
 on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
