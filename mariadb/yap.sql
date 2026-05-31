@@ -398,20 +398,31 @@ CREATE VIEW `view___sip_extension_detail` AS
 SELECT DISTINCT
   `ps_auths`.`username` AS 'sip_username',
   `ps_auths`.`password` AS 'sip_password',
+  IFNULL(`ps_endpoints`.`callerid`, '(NOT SET)') AS 'callerid',
+  IFNULL(`ps_endpoints`.`callerid_privacy`, 'allowed_not_screened (DEFAULT)') AS 'callerid_privacy',
+  IFNULL(`ps_endpoints`.`named_call_group`, '(NOT SET)') AS 'call_group',
   `ps_endpoints`.`allow` AS 'codec_allowed',
-  `ps_endpoints`.`dtmf_mode`,
-  `ps_endpoints`.`named_call_group`,
-  `ps_endpoints`.`named_pickup_group`,
+  IFNULL(`ps_endpoints`.`direct_media`, 'yes (DEFAULT)') AS 'direct_media',
+  IFNULL(`ps_endpoints`.`direct_media_method`, 'invite (DEFAULT)') AS 'direct_media_method',
+  IFNULL(`ps_endpoints`.`dtmf_mode`, 'rfc4733 (DEFAULT)') AS 'dtmf_mode',
+  IFNULL(`ps_endpoints`.`force_rport`, 'yes (DEFAULT)') AS 'force_rport',  
+  IFNULL(`ps_endpoints`.`from_user`, '(NOT SET)') AS 'from_user',
+  IFNULL(`ps_endpoints`.`from_domain`, '(NOT SET)') AS 'from_domain',
+  IFNULL(`ps_endpoints`.`permit`, '(NOT SET)') AS 'ip_address_allowed',
+  IFNULL(`ps_endpoints`.`named_pickup_group`, '(NOT SET)') AS 'pickup_group',
+  IFNULL(`ps_endpoints`.`media_encryption`, 'no (RECOMMENDED TO ENABLE TLS OR SETUP A VPN SERVER)') AS 'media_encryption_enabled',
+  IFNULL(`ps_endpoints`.`stir_shaken`, 'no (DEFAULT)') AS 'stir_shaken_enabled',
+  IFNULL(`ps_endpoints`.`stir_shaken_profile`, '(NOT SET)') AS 'stir_shaken_profile',
   `ps_contacts`.`endpoint` IS NOT NULL AS 'registered',
-  `pbx`.`pbx_name` AS 'pbx_name',
+  `pbx`.`pbx_name`,
   `pbx`.`id` AS 'pbx_id',
-  `user_group`.`group_name` AS 'group_name',
+  `user_group`.`group_name`,
   `user_group`.`id` AS 'group_id'
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
 INNER JOIN `pbx`
-ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
+ON `ps_endpoints`.`tenantid` = `pbx`.`id`
 LEFT JOIN `ps_contacts`
 on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `user_group`
