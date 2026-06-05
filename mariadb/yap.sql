@@ -723,10 +723,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#9989 Add a SIP Trunk<br>
-      &#9989 View a SIP Trunk<br>
-      &#9989 Update a SIP Trunk<br>
-      &#9989 Delete a SIP Trunk<br>
+      &#10060 Add a SIP Trunk<br>
+      &#10060 View a SIP Trunk<br>
+      &#10060 Update a SIP Trunk<br>
+      &#10060 Delete a SIP Trunk<br>
     </td>
   </tr>
   <tr>
@@ -880,10 +880,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#9989 Add a SIP Trunk<br>
-      &#9989 View a SIP Trunk<br>
-      &#9989 Update a SIP Trunk<br>
-      &#9989 Delete a SIP Trunk<br>
+      &#10060 Add a SIP Trunk<br>
+      &#10060 View a SIP Trunk<br>
+      &#10060 Update a SIP Trunk<br>
+      &#10060 Delete a SIP Trunk<br>
     </td>
   </tr>
   <tr>
@@ -1037,10 +1037,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#9989 Add a SIP Trunk<br>
-      &#9989 View a SIP Trunk<br>
-      &#9989 Update a SIP Trunk<br>
-      &#9989 Delete a SIP Trunk<br>
+      &#10060 Add a SIP Trunk<br>
+      &#10060 View a SIP Trunk<br>
+      &#10060 Update a SIP Trunk<br>
+      &#10060 Delete a SIP Trunk<br>
     </td>
   </tr>
   <tr>
@@ -1194,10 +1194,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#9989 Add a SIP Trunk<br>
-      &#9989 View a SIP Trunk<br>
-      &#9989 Update a SIP Trunk<br>
-      &#9989 Delete a SIP Trunk<br>
+      &#10060 Add a SIP Trunk<br>
+      &#10060 View a SIP Trunk<br>
+      &#10060 Update a SIP Trunk<br>
+      &#10060 Delete a SIP Trunk<br>
     </td>
   </tr>
   <tr>
@@ -1352,7 +1352,7 @@ VALUES
     </td>
     <td>
       &#10060 Add a SIP Trunk<br>
-      &#9989 View a SIP Trunk<br>
+      &#10060 View a SIP Trunk<br>
       &#10060 Update a SIP Trunk<br>
       &#10060 Delete a SIP Trunk<br>
     </td>
