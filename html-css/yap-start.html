@@ -44,7 +44,7 @@
 }
 
 .wallpaper-phone-number {
-  background-image: linear-gradient(-45deg, #36BBA7 50vh, #99E1D7 25vh);
+  background-image: linear-gradient(-45deg, #DBBA00 50vh, #FFEB79 25vh);
 }
 
 .wallpaper-cdr {
@@ -56,7 +56,7 @@
 }
 
 .wallpaper-call-recording {
-  background-image: linear-gradient(-45deg, #DBBA00 50vh, #FFEB79 25vh);
+  background-image: linear-gradient(-45deg, #36BBA7 50vh, #99E1D7 25vh);
 }
 
 .wallpaper-music {
@@ -195,7 +195,7 @@ td {
 }
 
 .table-phone-number {
-  background: #D6F3EF;
+  background: #FFF4B4;
 }
 
 .table-cdr {
@@ -207,7 +207,7 @@ td {
 }
 
 .table-call-recording {
-  background: #FFF4B4;
+  background: #D6F3EF;
 }
 
 .table-music {
@@ -237,7 +237,7 @@ div {
 
 input[type=text], select {
   padding: 8px;
-  width: 300px;
+  width: 350px;
   height: auto;
   margin-left: auto;
   margin-right: auto;
@@ -254,36 +254,34 @@ input[type=text], select {
 }
 
 input[type=submit] {
-  width: auto;
-  max-width: 100%;
-  max-height: 100%;
-  height: 100px;
-  text-align: center;
+  font: bold 20px sans-serif;
+  text-decoration: none;
+  background-color: #B5010F;
+  color: #F0F0F0;
+  text-shadow: -1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;  
+  padding: 10px 10px 10px 10px;
+  border: 5px outset #B5010F;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+input[type=submit]:hover {
+  background-color: #008000;
+  color: #F0F0F0;
+  border: 5px inset #008000;
+}
+
+select {
   padding: 0px;
   background-color: #F0F0F0;
   color: #000000;
   font-size: .90em;
-  padding: 14px 20px;
-  margin: 8px 0;
   border: 4px solid #000000;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-input[type=submit]:hover {
-  background-color: #000000;
-  color: #F0F0F0;
-  text-align: center;
-  border: 4px solid #000000;
-}
-
-select {
-  padding: 12px;
-  background-color: #F0F0F0;
-  color: #000000;
-  font-size: 20px;
-  border: 4px solid #000000;
-  height: 60px;
+  height: 43px;
   text-align: center;
 }
 
@@ -304,20 +302,20 @@ select {
 }
 
 .button-general:hover {
-  background-color: #B5010F;
+  background-color: #CE0111;
   color: #F0F0F0;
-  border: 5px inset #B5010F;
+  border: 5px inset #CE0111;
 }
 
 .button-logout {
-  background-color: #D2666F;
-  border: 5px outset #D2666F;
+  background-color: #FF8C00;
+  border: 5px outset #FF8C00;
 }
 
 .button-logout:hover {
-  background-color: #D2666F;
+  background-color: #FF981A;
   color: #F0F0F0;
-  border: 5px inset #D2666F;
+  border: 5px inset #FF981A;
 }
 
 .button-home {
@@ -326,9 +324,9 @@ select {
 }
 
 .button-home:hover {
-  background-color: #6FE200;
+  background-color: #70E300;
   color: #F0F0F0;
-  border: 5px inset #6FE200;
+  border: 5px inset #70E300;
 }
 
 .button-license {
@@ -337,9 +335,9 @@ select {
 }
 
 .button-license:hover {
-  background-color: #6495ED;
+  background-color: #7BA5F0;
   color: #F0F0F0;
-  border: 5px inset #6495ED;
+  border: 5px inset #7BA5F0;
 }
 
 .div-main-menu {
@@ -365,9 +363,9 @@ select {
 }
 
 .button-user-account:hover {
-  background-color: #62748E;
+  background-color: #6E819B;
   color: #F0F0F0;
-  border: 5px inset #62748E;
+  border: 5px inset #6E819B;
 }
 
 .header-user-account {
@@ -380,9 +378,9 @@ select {
 }
 
 .button-group:hover {
-  background-color: #E61876;
+  background-color: #E92E84;
   color: #F0F0F0;
-  border: 5px inset #E61876;
+  border: 5px inset #E92E84;
 }
 
 .header-group {
@@ -395,9 +393,9 @@ select {
 }
 
 .button-pbx:hover {
-  background-color: #6E11B0;
+  background-color: #7D13C7;
   color: #F0F0F0;
-  border: 5px inset #6E11B0;
+  border: 5px inset #7D13C7;
 }
 
 .header-pbx {
@@ -410,9 +408,9 @@ select {
 }
 
 .button-sip-extension:hover {
-  background-color: #432DD7;
+  background-color: #5642DB;
   color: #F0F0F0;
-  border: 5px inset #432DD7;
+  border: 5px inset #5642DB;
 }
 
 .header-sip-extension {
@@ -425,9 +423,9 @@ select {
 }
 
 .button-sip-trunk:hover {
-  background-color: #2984D1;
+  background-color: #3B90D9;
   color: #F0F0F0;
-  border: 5px inset #2984D1;
+  border: 5px inset #3B90D9;
 }
 
 .header-sip-trunk {
@@ -435,18 +433,18 @@ select {
 }
 
 .button-phone-number {
-  background-color: #36BBA7;
-  border: 5px outset #36BBA7;
+  background-color: #DBBA00;
+  border: 5px outset #DBBA00;
 }
 
 .button-phone-number:hover {
-  background-color: #36BBA7;
+  background-color: #F5D000;
   color: #F0F0F0;
-  border: 5px inset #36BBA7;
+  border: 5px inset #F5D000;
 }
 
 .header-phone-number {
-  background-color: #36BBA7;
+  background-color: #DBBA00;
 }
 
 .button-cdr {
@@ -455,9 +453,9 @@ select {
 }
 
 .button-cdr:hover {
-  background-color: #008B8B;
+  background-color: #00A5A5;
   color: #F0F0F0;
-  border: 5px inset #008B8B;
+  border: 5px inset #00A5A5;
 }
 
 .header-cdr {
@@ -470,9 +468,9 @@ select {
 }
 
 .button-voicemail:hover {
-  background-color: #31C950;
+  background-color: #42D160;
   color: #F0F0F0;
-  border: 5px inset #31C950;
+  border: 5px inset #42D160;
 }
 
 .header-voicemail {
@@ -480,18 +478,18 @@ select {
 }
 
 .button-call-recording {
-  background-color: #DBBA00;
-  border: 5px outset #DBBA00;
+  background-color: #36BBA7;
+  border: 5px outset #36BBA7;
 }
 
 .button-call-recording:hover {
-  background-color: #DBBA00;
+  background-color: #42C8B4;
   color: #F0F0F0;
-  border: 5px inset #DBBA00;
+  border: 5px inset #42C8B4;
 }
 
 .header-call-recording {
-  background-color: #DBBA00;
+  background-color: #36BBA7;
 }
 
 .button-music {
@@ -500,9 +498,9 @@ select {
 }
 
 .button-music:hover {
-  background-color: #D0872E;
+  background-color: #D59342;
   color: #F0F0F0;
-  border: 5px inset #D0872E;
+  border: 5px inset #D59342;
 }
 
 .header-music {
@@ -515,9 +513,9 @@ select {
 }
 
 .button-server-log:hover {
-  background-color: #BB4D1A;
+  background-color: #D1561D;
   color: #F0F0F0;
-  border: 5px inset #BB4D1A;
+  border: 5px inset #D1561D;
 }
 
 .header-server-log {
@@ -530,31 +528,13 @@ select {
 }
 
 .button-server-information:hover {
-  background-color: #D83A00;
+  background-color: #F24100;
   color: #F0F0F0;
-  border: 5px inset #D83A00;
+  border: 5px inset #F24100;
 }
 
 .header-server-information {
   background-color: #D83A00;
-}
-
-.button-data {
-  width: auto;
-  font: bold 16px sans-serif;
-  text-decoration: none;
-  background-color: #F0F0F0;
-  color: #000000;
-  padding: 2px 6px 2px 6px;
-  border: 5px outset #000000;
-  border-radius: 5px;
-  display: inline-block;
-}
-
-.button-data:hover {
-  background-color: #E0E0E0;
-  color: #000000;
-  border: 5px inset #000000;
 }
 
 .button-data-space {
