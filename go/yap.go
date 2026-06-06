@@ -3007,14 +3007,17 @@ func main() {
 				mainMenuButton(mainMenuButtonSix)
 				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "All PBX<br>CDRs<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
 				mainMenuButton(mainMenuButtonSeven)
-				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "All PBX<br>Voicemails<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
-				mainMenuButton(mainMenuButtonEight)
+				// Work has been paused on creating these pages
+				//mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "All PBX<br>Voicemails<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				//mainMenuButton(mainMenuButtonEight)
+				//fmt.Fprintf(w, "</div>")
+				//fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				//mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "All PBX Call<br>Recordings<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				//mainMenuButton(mainMenuButtonNine)
+				//mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "All PBX MoH &<br>AA Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				//mainMenuButton(mainMenuButtonTen)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "All PBX Call<br>Recordings<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
-				mainMenuButton(mainMenuButtonNine)
-				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "All PBX MoH &<br>AA Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
-				mainMenuButton(mainMenuButtonTen)
 				mainMenuButtonEleven := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonEleven)
 				mainMenuButtonTweleve := mainMenuParameter{writeHTTP: w, buttonName: "YAP Server<br>Information<br>&#128421", hyperlink: "/server-information", headerCSS: "header-server-information", buttonCSS: "button-server-information"}
@@ -3036,22 +3039,21 @@ func main() {
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
 				mainMenuButton(mainMenuButtonFive)
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
 				mainMenuButton(mainMenuButtonSix)
-				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
-				mainMenuButton(mainMenuButtonSeven)
-				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
-				mainMenuButton(mainMenuButtonEight)
-				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
-				mainMenuButton(mainMenuButtonNine)
-				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				// Work has been paused on creating these pages
+				//mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				//mainMenuButton(mainMenuButtonSeven)
+				//mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				//mainMenuButton(mainMenuButtonEight)
+				//fmt.Fprintf(w, "</div>")
+				//fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				//mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				//mainMenuButton(mainMenuButtonNine)
+				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonTen)
-				mainMenuButtonEleven := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
-				mainMenuButton(mainMenuButtonEleven)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "201" {
@@ -3069,22 +3071,21 @@ func main() {
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
 				mainMenuButton(mainMenuButtonFive)
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
 				mainMenuButton(mainMenuButtonSix)
-				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
-				mainMenuButton(mainMenuButtonSeven)
-				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
-				mainMenuButton(mainMenuButtonEight)
-				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
-				mainMenuButton(mainMenuButtonNine)
-				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				// Work has been paused on creating these pages
+				//mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				//mainMenuButton(mainMenuButtonSeven)
+				//mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				//mainMenuButton(mainMenuButtonEight)
+				//fmt.Fprintf(w, "</div>")
+				//fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				//mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				//mainMenuButton(mainMenuButtonNine)
+				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonTen)
-				mainMenuButtonEleven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
-				mainMenuButton(mainMenuButtonEleven)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "300" {
@@ -3098,24 +3099,23 @@ func main() {
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
 				mainMenuButton(mainMenuButtonFive)
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
-				mainMenuButton(mainMenuButtonSix)
-				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
-				mainMenuButton(mainMenuButtonSeven)
-				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
-				mainMenuButton(mainMenuButtonEight)
-				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				// Work has been paused on creating these pages
+				//mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				//mainMenuButton(mainMenuButtonSix)
+				//mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				//mainMenuButton(mainMenuButtonSeven)
+				//mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				//mainMenuButton(mainMenuButtonEight)
+				//fmt.Fprintf(w, "</div>")
+				//fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonNine)
-				mainMenuButtonTen := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
-				mainMenuButton(mainMenuButtonTen)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "301" || userTypeID == "302" {
@@ -3129,22 +3129,19 @@ func main() {
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Trunk(s)<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX Phone<br>Number(s)<br>&#128290", hyperlink: "/phone-number", headerCSS: "header-phone-number", buttonCSS: "button-phone-number"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
 				mainMenuButton(mainMenuButtonFive)
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>CDR(s)<br>&#128202", hyperlink: "/cdr", headerCSS: "header-cdr", buttonCSS: "button-cdr"}
-				mainMenuButton(mainMenuButtonSix)
-				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
-				mainMenuButton(mainMenuButtonSeven)
-				mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
-				mainMenuButton(mainMenuButtonEight)
-				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonNine := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
-				mainMenuButton(mainMenuButtonNine)
+				// Work has been paused on creating these pages
+				//mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Voicemail(s)<br>&#127897", hyperlink: "/voicemail", headerCSS: "header-voicemail", buttonCSS: "button-voicemail"}
+				//mainMenuButton(mainMenuButtonSix)
+				//mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "PBX Call<br>Recording(s)<br>&#128252", hyperlink: "/call-recording", headerCSS: "header-call-recording", buttonCSS: "button-call-recording"}
+				//mainMenuButton(mainMenuButtonSeven)
+				//mainMenuButtonEight := mainMenuParameter{writeHTTP: w, buttonName: "PBX MoH & AA<br>Music<br>&#127925", hyperlink: "/music", headerCSS: "header-music", buttonCSS: "button-music"}
+				//mainMenuButton(mainMenuButtonEight)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else {
@@ -3409,67 +3406,73 @@ func main() {
 		fmt.Fprintf(w, endHTML)
 	})
 
-	// Voicemail Page
-	http.HandleFunc("/voicemail", func(w http.ResponseWriter, r *http.Request) {
+	// Work has been paused on creating these pages
 
-		fmt.Fprintf(w, startHTML)
-		header(w, "Voicemails", "header-voicemail")
-		// Wallpaper
-		wallpaper(w, "wallpaper-voicemail")
+	/*
 
-		footer(w, "header-voicemail", "button-voicemail")
-		fmt.Fprintf(w, endHTML)
-	})
+		// Voicemail Page
+		http.HandleFunc("/voicemail", func(w http.ResponseWriter, r *http.Request) {
 
-	// Call Recording Page
-	http.HandleFunc("/call-recording", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, startHTML)
+			header(w, "Voicemails", "header-voicemail")
+			// Wallpaper
+			wallpaper(w, "wallpaper-voicemail")
 
-		fmt.Fprintf(w, startHTML)
-		// Call Recording Wallpaper
-		wallpaper(w, "wallpaper-call-recording")
-		header(w, "Call Recordings", "header-call-recording")
-		fmt.Fprintf(w, "<table id=\"table\" class=\"table-call-recording\">")
-		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>From (Caller)</th>")
-		fmt.Fprintf(w, "    <th>To (Callie)</th>")
-		fmt.Fprintf(w, "    <th>Date (YYYY-MM-DD)<br>Time (HH:MM:SS)</th>")
-		fmt.Fprintf(w, "    <th>Listen</th>")
-		fmt.Fprintf(w, "    <th>Download</th>")
-		fmt.Fprintf(w, "  </tr>")
-		randomString := genID()
-		audioList := csvcell.DirList("/var/lib/yap/call-recording")
-		for _, audioListLoop := range audioList {
-			audioListSplit := strings.Split(audioListLoop, "_")
-			/*
-				check := "vm"
-				str := mohListLoop
-				if strings.Contains(str, check) {
-			*/
+			footer(w, "header-voicemail", "button-voicemail")
+			fmt.Fprintf(w, endHTML)
+		})
+
+		// Call Recording Page
+		http.HandleFunc("/call-recording", func(w http.ResponseWriter, r *http.Request) {
+
+			fmt.Fprintf(w, startHTML)
+			// Call Recording Wallpaper
+			wallpaper(w, "wallpaper-call-recording")
+			header(w, "Call Recordings", "header-call-recording")
+			fmt.Fprintf(w, "<table id=\"table\" class=\"table-call-recording\">")
 			fmt.Fprintf(w, "  <tr>")
-			fmt.Fprintf(w, "    <td>"+audioListSplit[0]+"</td>")
-			fmt.Fprintf(w, "    <td>"+audioListSplit[1]+"</td>")
-			fmt.Fprintf(w, "    <td>"+audioListSplit[2]+"<br>"+strings.Replace(audioListSplit[3], "-", ":", -1)+"</td>")
-			fmt.Fprintf(w, "    <td><a href=\"/download/"+randomString+"/"+audioListLoop+"\" style=\"text-decoration: none;\" target=\"_blank\">&#9654</a></td>")
-			fmt.Fprintf(w, "    <td><a href=\"/download/"+randomString+"/"+audioListLoop+"\" style=\"text-decoration: none;\" download=\""+audioListLoop+"\">&#11015</a></td>")
+			fmt.Fprintf(w, "    <th>From (Caller)</th>")
+			fmt.Fprintf(w, "    <th>To (Callie)</th>")
+			fmt.Fprintf(w, "    <th>Date (YYYY-MM-DD)<br>Time (HH:MM:SS)</th>")
+			fmt.Fprintf(w, "    <th>Listen</th>")
+			fmt.Fprintf(w, "    <th>Download</th>")
 			fmt.Fprintf(w, "  </tr>")
-			download(randomString, audioListLoop)
-		}
-		fmt.Fprintf(w, "</table>")
-		footer(w, "header-call-recording", "button-call-recording")
-		fmt.Fprintf(w, endHTML)
-	})
+			randomString := genID()
+			audioList := csvcell.DirList("/var/lib/yap/call-recording")
+			for _, audioListLoop := range audioList {
+				audioListSplit := strings.Split(audioListLoop, "_")
 
-	// MoH/AA (Music) Page
-	http.HandleFunc("/music", func(w http.ResponseWriter, r *http.Request) {
+					//check := "vm"
+					//str := mohListLoop
+					//if strings.Contains(str, check) {
 
-		fmt.Fprintf(w, startHTML)
-		header(w, "MoH and AA", "header-music")
-		// Wallpaper
-		wallpaper(w, "wallpaper-music")
+				fmt.Fprintf(w, "  <tr>")
+				fmt.Fprintf(w, "    <td>"+audioListSplit[0]+"</td>")
+				fmt.Fprintf(w, "    <td>"+audioListSplit[1]+"</td>")
+				fmt.Fprintf(w, "    <td>"+audioListSplit[2]+"<br>"+strings.Replace(audioListSplit[3], "-", ":", -1)+"</td>")
+				fmt.Fprintf(w, "    <td><a href=\"/download/"+randomString+"/"+audioListLoop+"\" style=\"text-decoration: none;\" target=\"_blank\">&#9654</a></td>")
+				fmt.Fprintf(w, "    <td><a href=\"/download/"+randomString+"/"+audioListLoop+"\" style=\"text-decoration: none;\" download=\""+audioListLoop+"\">&#11015</a></td>")
+				fmt.Fprintf(w, "  </tr>")
+				download(randomString, audioListLoop)
+			}
+			fmt.Fprintf(w, "</table>")
+			footer(w, "header-call-recording", "button-call-recording")
+			fmt.Fprintf(w, endHTML)
+		})
 
-		footer(w, "header-music", "button-music")
-		fmt.Fprintf(w, endHTML)
-	})
+		// MoH/AA (Music) Page
+		http.HandleFunc("/music", func(w http.ResponseWriter, r *http.Request) {
+
+			fmt.Fprintf(w, startHTML)
+			header(w, "MoH and AA", "header-music")
+			// Wallpaper
+			wallpaper(w, "wallpaper-music")
+
+			footer(w, "header-music", "button-music")
+			fmt.Fprintf(w, endHTML)
+		})
+
+	*/
 
 	// Server Log Page
 	http.HandleFunc("/server-log", func(w http.ResponseWriter, r *http.Request) {
