@@ -862,7 +862,6 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string) {
 
 	var (
-		userAccountTypeID    string
 		userAccountFirstName string
 		userAccountLastName  string
 		userAccountEmail     string
@@ -1114,9 +1113,20 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 		fmt.Fprintf(w, "        </tr>")
 
-		if userTypeID == "100" {
+		var whereClause string
 
-			otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+		if userTypeID == "100" {
+			whereClause = "WHERE group_id != ? AND pbx_id != ?;"
+			userGroupID = "0"
+			userPBXID = "0"
+		} else if userTypeID == "200" || userTypeID == "201" {
+			whereClause = "WHERE group_id = ? AND pbx_id != ?;"
+			userPBXID = "0"
+		} else if userTypeID == "300" {
+			whereClause = "WHERE group_id = ? AND pbx_id = ?;"
+		}
+
+		otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
 						     			 user_account_first_name,
 						     			 user_account_last_name,  
 						     			 user_account_email,                                                   
@@ -1127,37 +1137,39 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						     			 pbx_id,
 						     			 pbx_name						     
 								       FROM
-								         yap.view___account_detail;`)
+								         yap.view___account_detail
+								       `+whereClause, userGroupID, userPBXID)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		for otherUserAccountSQL.Next() {
+
+			err = otherUserAccountSQL.Scan(
+				&userAccountFirstName,
+				&userAccountLastName,
+				&userAccountEmail,
+				&userAccountType,
+				&userAccountDateAdded,
+				&groupID,
+				&groupName,
+				&pbxID,
+				&pbxName,
+			)
 
 			// Error
 			if err != nil {
 				panic(err)
 			}
 
-			for otherUserAccountSQL.Next() {
-
-				err = otherUserAccountSQL.Scan(
-					&userAccountFirstName,
-					&userAccountLastName,
-					&userAccountEmail,
-					&userAccountType,
-					&userAccountDateAdded,
-					&groupID,
-					&groupName,
-					&pbxID,
-					&pbxName,
-				)
-
-				// Error
-				if err != nil {
-					panic(err)
-				}
-
-				fmt.Fprintf(w, "        <tr>")
-				fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
-				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+			if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 				if pbxName != "system" {
 					fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 				} else {
@@ -1168,6 +1180,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
+			}
+			if userTypeID == "100" {
 				if groupName != "system" {
 					fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 				} else {
@@ -1178,117 +1192,10 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
-				fmt.Fprintf(w, "        </tr>")
 			}
-
-		} else if userTypeID == "200" || userTypeID == "201" {
-
-			otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
-                                                                    	 user_account_type_id,
-                                                                         user_account_first_name,
-                                          				 user_account_last_name,
-                                          				 user_account_email,
-                                          				 user_account_type,
-                                          				 user_account_date_added,
-                                          				 pbx_id,
-                                          				 pbx_name
-								       FROM
-								         yap.view___account_detail
-								       WHERE
-								         group_id =?;`, userGroupID)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-
-			for otherUserAccountSQL.Next() {
-
-				err = otherUserAccountSQL.Scan(
-					&userAccountTypeID,
-					&userAccountFirstName,
-					&userAccountLastName,
-					&userAccountEmail,
-					&userAccountType,
-					&userAccountDateAdded,
-					&pbxID,
-					&pbxName,
-				)
-
-				// Error
-				if err != nil {
-					panic(err)
-				}
-
-				if userTypeID == "200" {
-					fmt.Fprintf(w, "        <tr>")
-					fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
-					fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-					fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-					fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-					if pbxID != "1" {
-						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-						fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
-					} else {
-						fmt.Fprintf(w, "          <td>-</td>")
-						fmt.Fprintf(w, "          <td>-</td>")
-					}
-					fmt.Fprintf(w, "        </tr>")
-				} else if userTypeID == "201" {
-					if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
-						fmt.Fprintf(w, "        <tr>")
-						fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
-						fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-						fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-						fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-						fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-						fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
-						fmt.Fprintf(w, "        </tr>")
-					}
-				}
-			}
-
-		} else if userTypeID == "300" {
-
-			otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
-                                                                         user_account_first_name,
-                                                                         user_account_last_name,
-                                                                         user_account_email,
-                                                                         user_account_type,
-                                                                         user_account_date_added
-                                                                       FROM
-                                                                         yap.view___account_detail
-                                                                       WHERE
-                                                                         group_id =? AND pbx_id =?;`, userGroupID, userPBXID)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-
-			for otherUserAccountSQL.Next() {
-
-				err = otherUserAccountSQL.Scan(
-					&userAccountFirstName,
-					&userAccountLastName,
-					&userAccountEmail,
-					&userAccountType,
-					&userAccountDateAdded,
-				)
-
-				// Error
-				if err != nil {
-					panic(err)
-				}
-
-				fmt.Fprintf(w, "        <tr>")
-				fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
-				fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-				fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-				fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
-				fmt.Fprintf(w, "        </tr>")
-			}
+			fmt.Fprintf(w, "        </tr>")
 		}
+
 		fmt.Fprintf(w, "      </table>")
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "other-account-table"
@@ -3368,18 +3275,50 @@ func main() {
 				errorBox(w, "account_type_error", "header-sip-extension")
 			}
 		}
+		fmt.Fprintf(w, endHTML)
 	})
 
 	// SIP Trunk Page
-	http.HandleFunc("/sip-trunk", func(w http.ResponseWriter, r *http.Request) {
+
+	go http.HandleFunc("/sip-trunk", func(w http.ResponseWriter, r *http.Request) {
+
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
 
 		fmt.Fprintf(w, startHTML)
-		header(w, "SIP Trunks", "header-sip-trunk")
+
 		// Wallpaper
 		wallpaper(w, "wallpaper-sip-trunk")
 
-		footer(w, "header-sip-trunk", "button-sip-trunk")
-		fmt.Fprintf(w, endHTML)
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountData(dbDetail, "type_id")
+
+		if userTypeID == "" {
+			errorBox(w, "email_error", "header-sip-trunk")
+		} else {
+			if userTypeID == "100" {
+				header(w, "All SIP Trunks on the Server<br>YAP Admin Account", "header-sip-trunk")
+				//sipTrunkList(w, dbDetail, userTypeID)
+				footer(w, "header-sip-trunk", "button-sip-trunk")
+			} else {
+				errorBox(w, "account_type_error", "header-sip-trunk")
+			}
+		}
+
+		//footer(w, "header-sip-trunk", "button-sip-trunk")
 	})
 
 	// Phone Number Page
