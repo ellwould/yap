@@ -566,52 +566,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#9989 Add a SIP Trunk<br>
-      &#9989 View a SIP Trunk<br>
-      &#9989 Update a SIP Trunk<br>
-      &#9989 Delete a SIP Trunk<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 Add a Phone Number<br>
-      &#9989 View a Phone Number<br>
-      &#9989 Update a Phone Number<br>
-      &#9989 Delete a Phone Number<br>
-    </td>
-    <td>
-      &#9989 View CDRs<br>
-      &#9989 Download CDRs<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 View Voicemails<br>
-      &#10060 Listen to Voicemails<br>
-      &#10060 Download Voicemails<br>
-      &#9989 Delete Voicemails<br>
-    </td>
-    <td>
-      &#9989 View Call Recordings<br>
-      &#10060 Listen to Call Recordings<br>
-      &#10060 Download Call Recordings<br>
-      &#9989 Delete Call Recordings<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 Upload a MoH or AA Audio File<br>
-      &#9989 Listen to MoH and AA Audio Files<br>
-      &#9989 Download MoH and AA Audio Files<br>
-      &#9989 Delete MoH and AA Audio Files<br>
-    </td>
-    <td>
       &#9989 Set Resource Limits<br>
       &#9989 View Resource Limits<br>
-      &#9989 Set Storage Capacity<br>
-      &#9989 View Storage Capacity<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -723,52 +681,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Add a SIP Trunk<br>
-      &#10060 View a SIP Trunk<br>
-      &#10060 Update a SIP Trunk<br>
-      &#10060 Delete a SIP Trunk<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 Add a Phone Number<br>
-      &#9989 View a Phone Number<br>
-      &#9989 Update a Phone Number<br>
-      &#9989 Delete a Phone Number<br>
-    </td>
-    <td>
-      &#9989 View CDRs<br>
-      &#9989 Download CDRs<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 View Voicemails<br>
-      &#10060 Listen to Voicemails<br>
-      &#10060 Download Voicemails<br>
-      &#9989 Delete Voicemails<br>
-    </td>
-    <td>
-      &#9989 View Call Recordings<br>
-      &#10060 Listen to Call Recordings<br>
-      &#10060 Download Call Recordings<br>
-      &#9989 Delete Call Recordings<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#10060 Upload a MoH or AA Audio File<br>
-      &#9989 Listen to MoH and AA Audio Files<br>
-      &#9989 Download MoH and AA Audio Files<br>
-      &#10060 Delete MoH and AA Audio Files<br>
-    </td>
-    <td>
       &#10060 Set Resource Limits<br>
       &#9989 View Resource Limits<br>
-      &#10060 Set Storage Capacity<br>
-      &#9989 View Storage Capacity<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -880,52 +796,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Add a SIP Trunk<br>
-      &#10060 View a SIP Trunk<br>
-      &#10060 Update a SIP Trunk<br>
-      &#10060 Delete a SIP Trunk<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 Add a Phone Number<br>
-      &#9989 View a Phone Number<br>
-      &#9989 Update a Phone Number<br>
-      &#9989 Delete a Phone Number<br>
-    </td>
-    <td>
-      &#9989 View CDRs<br>
-      &#9989 Download CDRs<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 View Voicemails<br>
-      &#10060 Listen to Voicemails<br>
-      &#10060 Download Voicemails<br>
-      &#9989 Delete Voicemails<br>
-    </td>
-    <td>
-      &#9989 View Call Recordings<br>
-      &#10060 Listen to Call Recordings<br>
-      &#10060 Download Call Recordings<br>
-      &#9989 Delete Call Recordings<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#10060 Upload a MoH or AA Audio File<br>
-      &#9989 Listen to MoH and AA Audio Files<br>
-      &#9989 Download MoH and AA Audio Files<br>
-      &#10060 Delete MoH and AA Audio Files<br>
-    </td>
-    <td>
       &#10060 Set Resource Limits<br>
       &#9989 View Resource Limits<br>
-      &#10060 Set Storage Capacity<br>
-      &#9989 View Storage Capacity<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -1037,52 +911,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Add a SIP Trunk<br>
-      &#10060 View a SIP Trunk<br>
-      &#10060 Update a SIP Trunk<br>
-      &#10060 Delete a SIP Trunk<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 Add a Phone Number<br>
-      &#9989 View a Phone Number<br>
-      &#9989 Update a Phone Number<br>
-      &#9989 Delete a Phone Number<br>
-    </td>
-    <td>
-      &#9989 View CDRs<br>
-      &#9989 Download CDRs<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 View Voicemails<br>
-      &#9989 Listen to Voicemails<br>
-      &#9989 Download Voicemails<br>
-      &#9989 Delete Voicemails<br>
-    </td>
-    <td>
-      &#9989 View Call Recordings<br>
-      &#9989 Listen to Call Recordings<br>
-      &#9989 Download Call Recordings<br>
-      &#9989 Delete Call Recordings<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#10060 Upload a MoH or AA Audio File<br>
-      &#9989 Listen to MoH and AA Audio Files<br>
-      &#9989 Download MoH and AA Audio Files<br>
-      &#10060 Delete MoH and AA Audio Files<br>
-    </td>
-    <td>
       &#10060 Set Resource Limits<br>
       &#9989 View Resource Limits<br>
-      &#10060 Set Storage Capacity<br>
-      &#9989 View Storage Capacity<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -1194,52 +1026,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Add a SIP Trunk<br>
-      &#10060 View a SIP Trunk<br>
-      &#10060 Update a SIP Trunk<br>
-      &#10060 Delete a SIP Trunk<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 Add a Phone Number<br>
-      &#9989 View a Phone Number<br>
-      &#9989 Update a Phone Number<br>
-      &#9989 Delete a Phone Number<br>
-    </td>
-    <td>
-      &#9989 View CDRs<br>
-      &#9989 Download CDRs<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 View Voicemails<br>
-      &#9989 Listen to Voicemails<br>
-      &#9989 Download Voicemails<br>
-      &#10060 Delete Voicemails<br>
-    </td>
-    <td>
-      &#9989 View Call Recordings<br>
-      &#9989 Listen to Call Recordings<br>
-      &#9989 Download Call Recordings<br>
-      &#10060 Delete Call Recordings<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#10060 Upload a MoH or AA Audio File<br>
-      &#9989 Listen to MoH and AA Audio Files<br>
-      &#9989 Download MoH and AA Audio Files<br>
-      &#10060 Delete MoH and AA Audio Files<br>
-    </td>
-    <td>
       &#10060 Set Resource Limits<br>
       &#9989 View Resource Limits<br>
-      &#10060 Set Storage Capacity<br>
-      &#9989 View Storage Capacity<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -1351,52 +1141,10 @@ VALUES
       &#10060 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Add a SIP Trunk<br>
-      &#10060 View a SIP Trunk<br>
-      &#10060 Update a SIP Trunk<br>
-      &#10060 Delete a SIP Trunk<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#10060 Add a Phone Number<br>
-      &#9989 View a Phone Number<br>
-      &#10060 Update a Phone Number<br>
-      &#10060 Delete a Phone Number<br>
-    </td>
-    <td>
-      &#9989 View CDRs<br>
-      &#9989 Download CDRs<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#9989 View Voicemails<br>
-      &#9989 Listen to Voicemails<br>
-      &#9989 Download Voicemails<br>
-      &#10060 Delete Voicemails<br>
-    </td>
-    <td>
-      &#9989 View Call Recordings<br>
-      &#9989 Listen to Call Recordings<br>
-      &#9989 Download Call Recordings<br>
-      &#10060 Delete Call Recordings<br>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      &#10060 Upload a MoH or AA Audio File<br>
-      &#9989 Listen to MoH and AA Audio Files<br>
-      &#9989 Download MoH and AA Audio Files<br>
-      &#10060 Delete MoH and AA Audio Files<br>
-    </td>
-    <td>
       &#10060 Set Resource Limits<br>
       &#9989 View Resource Limits<br>
-      &#10060 Set Storage Capacity<br>
-      &#9989 View Storage Capacity<br>
+      <div class="main-menu-space"></div>
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
