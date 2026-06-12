@@ -104,16 +104,19 @@ func errorBox(w http.ResponseWriter, errorType string, headerCSS string, buttonC
 }
 
 // Function for the header
-func header(w http.ResponseWriter, headerTitle string, headerCSS string) {
+func header(w http.ResponseWriter, pageTitle string, headerCSS string, extraButtonName string, extraButtonURL string) {
 	fmt.Fprintf(w, "<div class=\"div-header\">")
 	fmt.Fprintf(w, "  <h1 class=\""+headerCSS+"\">")
 	fmt.Fprintf(w, "    ⊛ YAP [Yet Another PBX] ⊛")
 	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"button-general button-header button-logout\">Logout</a>")
-	fmt.Fprintf(w, "    <a href=\"/\" class=\"button-general button-header button-home\">Home</a>")
+	fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header button-home\">Home</a>")
 	fmt.Fprintf(w, "    <a href=\"https://github.com/ellwould/yap/blob/main/LICENSE\" target=\"_blank\" class=\"button-general button-header button-license\">License</a>")
+	if extraButtonName != "" {
+		fmt.Fprintf(w, "    <a href=\""+extraButtonURL+"\" class=\"button-general button-header button-extra\">"+extraButtonName+"</a>")
+	}
 	fmt.Fprintf(w, "    <br>")
-	fmt.Fprintf(w, "    "+headerTitle)
+	fmt.Fprintf(w, "    "+pageTitle)
 	fmt.Fprintf(w, "</h1>")
 	fmt.Fprintf(w, "</div>")
 }
@@ -2852,6 +2855,8 @@ func main() {
 	dbAddress := os.Getenv("dbAddress")
 	dbPort := os.Getenv("dbPort")
 	dbTls := os.Getenv("dbTls")
+	extraButtonName := os.Getenv("extraButtonName")
+	extraButtonURL := os.Getenv("extraButtonURL")
 
 	//Values allowed for dbTransport Variable
 	var allowedTransportValue = []string{"tcp", "udp"}
@@ -2868,6 +2873,9 @@ func main() {
 	//Values allowed for dbTls Variable
 	var allowedTlsValue = []string{"false", "true"}
 	validDbTls := slices.Contains(allowedTlsValue, dbTls)
+
+	validateExtraButtonURL := validator.New()
+	validateExtraButtonURLErr := validateExtraButtonURL.Var(extraButtonURL, "required,http_url")
 
 	//Catch if any errors were made in yap.env and feed back where to correct error
 	if dbUsername == "" {
@@ -2888,13 +2896,17 @@ func main() {
 		panic("DATABASE TLS OPTION CANNOT BE BLANK IN /etc/yap/yap.env")
 	} else if validDbTls == false {
 		panic("DATABASE TRANSPORT OPTION MUST BE false OR true IN /etc/yap/yap.env")
+	} else if extraButtonName != "" {
+		if validateExtraButtonURLErr != nil {
+			panic("THE EXTRA BUTTON URL VALUE MUST BE A VALID URL IN /etc/yap/yap.env")
+		}
 	}
 
 	startHTML := csvcell.FileData(dirHTML, fileStartHTML)
 	endHTML := csvcell.FileData(dirHTML, fileEndHTML)
 
 	// Home Page
-	go http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/yap", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -2928,7 +2940,7 @@ func main() {
 			errorBox(w, "email_error", "header-main-menu", "")
 		} else {
 			if userTypeID == "100" {
-				header(w, "Main Menu<br>YAP Admin Account", "")
+				header(w, "YAP Admin Account<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -2957,7 +2969,7 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "200" {
-				header(w, "Main Menu<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "")
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -2980,7 +2992,7 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "201" {
-				header(w, "Main Menu<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "")
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3003,7 +3015,7 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "300" {
-				header(w, "Main Menu<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "")
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3024,7 +3036,7 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "301" || userTypeID == "302" {
-				header(w, "Main Menu<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "")
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3085,29 +3097,29 @@ func main() {
 			errorBox(w, "email_error", "header-user-account", "button-user-account")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All User Accounts on the Server<br>YAP Admin Account", "header-user-account")
+				header(w, "YAP Admin Account<br>All User Accounts on YAP", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				fmt.Fprint(w, "<br>")
 				userAccountAdd(w)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "200" {
-				header(w, "All User Accounts Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-user-account")
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All User Accounts Within the Group", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "201" {
-				header(w, "All PBX User Accounts Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-user-account")
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All PBX User Accounts Within the Group", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "300" {
-				header(w, "All User Accounts Within the PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-user-account")
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All User Accounts Within the PBX", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "301" {
-				header(w, "Own User Account for PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-user-account")
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>Own User Account for PBX", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "302" {
-				header(w, "Own Read Only User Account for PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-user-account")
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>Own Read Only User Account for PBX", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else {
@@ -3150,11 +3162,11 @@ func main() {
 			errorBox(w, "email_error", "header-group", "button-group")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All Groups on the Server<br>YAP Admin Account", "header-group")
+				header(w, "YAP Admin Account<br>All Groups on YAP", "header-group", extraButtonName, extraButtonURL)
 				groupList(w, dbDetail, userTypeID, userGroupID)
 				footer(w, "header-group", "button-group")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, "Own Group Information<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-group")
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Own Group Information", "header-group", extraButtonName, extraButtonURL)
 				groupList(w, dbDetail, userTypeID, userGroupID)
 				footer(w, "header-group", "button-group")
 			} else {
@@ -3200,15 +3212,15 @@ func main() {
 			errorBox(w, "email_error", "header-pbx", "button-pbx")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All PBXs on the Server<br>YAP Admin Account", "header-pbx")
+				header(w, "YAP Admin Account<br>All BPXs on YAP", "header-pbx", extraButtonName, extraButtonURL)
 				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
 				footer(w, "header-pbx", "button-pbx")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, "All PBXs Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-pbx")
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All PBXs Within the Group", "header-pbx", extraButtonName, extraButtonURL)
 				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
 				footer(w, "header-pbx", "button-pbx")
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-				header(w, "PBX Information<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-pbx")
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>PBX Information", "header-pbx", extraButtonName, extraButtonURL)
 				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
 				footer(w, "header-pbx", "button-pbx")
 			} else {
@@ -3253,15 +3265,15 @@ func main() {
 			errorBox(w, "email_error", "header-sip-extension", "button-sip-extension")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All SIP Extensions on the Server<br>YAP Admin Account", "header-sip-extension")
+				header(w, "YAP Admin Account<br>All SIP Extensions on the Server", "header-sip-extension", extraButtonName, extraButtonURL)
 				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
 				footer(w, "header-sip-extension", "button-sip-extension")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, "All SIP Extensions Within the Group<br>"+userGroupName+"<br>[Group ID: "+userGroupID+"]", "header-sip-extension")
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All SIP Extensions Within the Group", "header-sip-extension", extraButtonName, extraButtonURL)
 				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
 				footer(w, "header-sip-extension", "button-sip-extension")
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-				header(w, "All SIP Extensions Within the PBX<br>"+userPBXName+"<br>[PBX ID: "+userPBXID+"]", "header-sip-extension")
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-sip-extension", extraButtonName, extraButtonURL)
 				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
 				footer(w, "header-sip-extension", "button-sip-extension")
 			} else {
@@ -3303,7 +3315,7 @@ func main() {
 			errorBox(w, "email_error", "header-sip-trunk", "button-sip-trunk")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All SIP Trunks on the Server<br>YAP Admin Account", "header-sip-trunk")
+				header(w, "All SIP Trunks on the Server<br>YAP Admin Account", "header-sip-trunk", extraButtonName, extraButtonURL)
 				//sipTrunkList(w, dbDetail, userTypeID)
 				footer(w, "header-sip-trunk", "button-sip-trunk")
 			} else {
@@ -3318,8 +3330,8 @@ func main() {
 	http.HandleFunc("/phone-number", func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, startHTML)
-		header(w, "Phone Numbers", "header-phone-number")
-		
+		header(w, "Phone Numbers", "header-phone-number", extraButtonName, extraButtonURL)
+
 		// Wallpaper
 		wallpaper(w, "wallpaper-phone-number")
 
@@ -3331,8 +3343,8 @@ func main() {
 	http.HandleFunc("/cdr", func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, startHTML)
-		header(w, "CDRs", "header-cdr")
-		
+		header(w, "CDRs", "header-cdr", extraButtonName, extraButtonURL)
+
 		// Wallpaper
 		wallpaper(w, "wallpaper-cdr")
 
@@ -3344,7 +3356,7 @@ func main() {
 	http.HandleFunc("/server-log", func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, startHTML)
-		header(w, "Server Logs", "header-server-log")
+		header(w, "Server Logs", "header-server-log", extraButtonName, extraButtonURL)
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-log")
 
@@ -3356,7 +3368,7 @@ func main() {
 	http.HandleFunc("/server-information", func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, startHTML)
-		header(w, "Server Information", "header-server-information")
+		header(w, "Server Information", "header-server-information", extraButtonName, extraButtonURL)
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-information")
 
