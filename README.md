@@ -193,38 +193,8 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 | Update a SIP Endpoint                        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Delete a SIP Endpoint                        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 |  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-| Add a SIP Trunk                              | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View a SIP Trunk                             | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Update a SIP Trunk                           | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Delete a SIP Trunk                           | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-|  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-| Add a Phone Number                           | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| View a Phone Number                          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Update a Phone Number                        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Delete a Phone Number                        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-|  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-| View CDRs                                    | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Download CDRs                                | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-|  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-| View Voicemails                              | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Listen to Voicemails                         | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Download Voicemails                          | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Delete Voicemails                            | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-|  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-| View Call Recordings                         | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Listen to Call Recordings                    | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Download Call Recordings                     | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Delete Call Recordings                       | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-|  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-| Upload a MoH or AA Audio File                | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Listen to MoH and AA Audio Files             | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Download MoH and AA Audio Files              | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Delete MoH and AA Audio Files                | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-|  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
 | Set Resource Limits                          | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View Resource Limits                         | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Set Storage Capacity                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View Storage Capacity                        | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 |  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
 | View YAP User Account Logs                   | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View Group Logs                              | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
