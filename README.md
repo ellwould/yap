@@ -49,12 +49,6 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-**Call Recording page (still in development):**
-
-![YAP (Yet Another PBX) Call Recording Page](https://github.com/ellwould/yap/blob/main/image/call_recordings_incomplete.jpeg)
-
-<br>
-
 **Groups page (still in development):**
 
 ![YAP (Yet Another PBX) Groups Page](https://github.com/ellwould/yap/blob/main/image/groups_incomplete.jpeg)
