@@ -566,10 +566,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#9989 Set Resource Limits<br>
-      &#9989 View Resource Limits<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#9989 Create a Group Invoice<br>
+      &#9989 View a Group Invoice<br>
+      &#9989 Update a Group Invoice<br>
+      &#9989 Delete a Group Invoice<br>
     </td>
   </tr>
   <tr>
@@ -582,8 +582,8 @@ VALUES
     <td>
       &#9989 View Server Information<br>
       &#9989 Download Server Information<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#9989 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
     </td>
   </tr>
 </table>'
@@ -681,10 +681,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Set Resource Limits<br>
-      &#9989 View Resource Limits<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Create a Group Invoice<br>
+      &#9989 View a Group Invoice<br>
+      &#10060 Update a Group Invoice<br>
+      &#10060 Delete a Group Invoice<br>
     </td>
   </tr>
   <tr>
@@ -697,8 +697,8 @@ VALUES
     <td>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
     </td>
   </tr>
 </table>'
@@ -796,10 +796,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Set Resource Limits<br>
-      &#9989 View Resource Limits<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Create a Group Invoice<br>
+      &#9989 View a Group Invoice<br>
+      &#10060 Update a Group Invoice<br>
+      &#10060 Delete a Group Invoice<br>
     </td>
   </tr>
   <tr>
@@ -812,8 +812,8 @@ VALUES
     <td>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
     </td>
   </tr>
 </table>'
@@ -911,10 +911,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Set Resource Limits<br>
-      &#9989 View Resource Limits<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Create a Group Invoice<br>
+      &#10060 View a Group Invoice<br>
+      &#10060 Update a Group Invoice<br>
+      &#10060 Delete a Group Invoice<br>
     </td>
   </tr>
   <tr>
@@ -927,8 +927,8 @@ VALUES
     <td>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
     </td>
   </tr>
 </table>'
@@ -1026,10 +1026,10 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Set Resource Limits<br>
-      &#9989 View Resource Limits<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Create a Group Invoice<br>
+      &#10060 View a Group Invoice<br>
+      &#10060 Update a Group Invoice<br>
+      &#10060 Delete a Group Invoice<br>
     </td>
   </tr>
   <tr>
@@ -1042,8 +1042,8 @@ VALUES
     <td>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
     </td>
   </tr>
 </table>'
@@ -1141,10 +1141,10 @@ VALUES
       &#10060 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Set Resource Limits<br>
-      &#9989 View Resource Limits<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Create a Group Invoice<br>
+      &#10060 View a Group Invoice<br>
+      &#10060 Update a Group Invoice<br>
+      &#10060 Delete a Group Invoice<br>
     </td>
   </tr>
   <tr>
@@ -1157,8 +1157,8 @@ VALUES
     <td>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
-      <div class="main-menu-space"></div>
-      <div class="main-menu-space"></div>
+      &#10060 Set Resource Limits<br>
+      &#9989 View Resource Limits<br>
     </td>
   </tr>
 </table>'
