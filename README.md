@@ -187,8 +187,10 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 | Update a SIP Endpoint                        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Delete a SIP Endpoint                        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 |  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
-| Set Resource Limits                          | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View Resource Limits                         | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Create a Group Invoice                       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| View a Group Invoice                         | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Update a Group Invoice                       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Delete a Group Invoice                       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
 | View YAP User Account Logs                   | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View Group Logs                              | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
@@ -197,6 +199,8 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 |  | YAP Admin (100) | Group Admin (200) | Group Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |
 | View Server Information                      | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Download Server Information                  | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Set Resource Limits                          | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| View Resource Limits                         | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
