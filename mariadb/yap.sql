@@ -2,24 +2,34 @@
 
 CREATE TABLE `user_group`
 (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` VARCHAR(255) NOT NULL,
   `group_name` VARCHAR(100) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `group_active` BOOLEAN NOT NULL,
-  `pbx_limit` SMALLINT UNSIGNED DEFAULT 1 NOT NULL,
-  `new_pbx_sip_extension_default_limit` SMALLINT UNSIGNED NOT NULL,
-  `new_pbx_sip_trunk_default_limit` SMALLINT UNSIGNED NOT NULL,
-  `new_pbx_phone_number_default_limit` SMALLINT UNSIGNED NOT NULL,
-  `new_pbx_cdr_default_limit` SMALLINT UNSIGNED NOT NULL,
-  `new_pbx_voicemail_default_megabyte_limit` INT UNSIGNED NOT NULL,
-  `new_pbx_call_recording_default_megabyte_limit` INT UNSIGNED NOT NULL,
+  `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
+  `uk_based` ENUM('yes', 'no') NOT NULL,
+  `customer_type` VARCHAR(255) NOT NULL,
+  `uk_vat_status` VARCHAR(255) NOT NULL,
+  `reselling_miniutes` ENUM('no', 'yes') NOT NULL,
 PRIMARY KEY(`id`)
+)
+ENGINE = InnoDB;
+
+CREATE TABLE `customer_type_lookup` (
+  `customer_type` VARCHAR(255),
+  PRIMARY KEY (`customer_type`)
+)
+ENGINE = InnoDB;
+  
+CREATE TABLE `uk_vat_status_lookup` (
+  `uk_vat_status` VARCHAR(255),
+  PRIMARY KEY (`uk_vat_status`)
 )
 ENGINE = InnoDB;
 
 CREATE TABLE `group_invoice_address`
 (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` VARCHAR(255) NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
   `address_line_2` VARCHAR(75) NOT NULL,
   `city_town_village` VARCHAR(75) NOT NULL,
@@ -34,7 +44,7 @@ ENGINE = InnoDB;
 
 CREATE TABLE `group_site_address`
 (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` VARCHAR(255) NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
   `address_line_2` VARCHAR(75) NOT NULL,
   `city_town_village` VARCHAR(75) NOT NULL,
@@ -54,12 +64,7 @@ CREATE TABLE `pbx`
   `group_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `pbx_active` BOOLEAN NOT NULL,
-  `pbx_sip_extension_limit` SMALLINT UNSIGNED NOT NULL,
-  `pbx_sip_trunk_limit` SMALLINT UNSIGNED NOT NULL,
-  `pbx_phone_number_limit` SMALLINT UNSIGNED NOT NULL,
-  `pbx_cdr_limit` SMALLINT UNSIGNED NOT NULL,
-  `pbx_voicemail_megabyte_limit` INT UNSIGNED NOT NULL,
-  `pbx_call_recording_megabyte_limit` INT UNSIGNED NOT NULL,
+  `pbx_sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -470,6 +475,23 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 
 INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
+  
+INSERT INTO `uk_vat_status_lookup` (`uk_vat_status`)
+VALUES (
+  'Registered',
+  'Not Registered'
+);
+
+INSERT INTO `customer_type_lookup` (`type`)
+VALUES (
+  'Residentail',
+  'Sole Trader',
+  'Partnership',
+  'Limited Liability Partnership (LLP)',
+  'Private Limited Company (LTD)',
+  'Public Limited Company (PLC)',
+  'Community Interest Company (CIC)'
+);
 
 INSERT INTO `user_account_type` (`id`, `type`, `permission`)
 VALUES
