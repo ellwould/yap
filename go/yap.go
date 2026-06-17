@@ -94,10 +94,10 @@ func errorBox(w http.ResponseWriter, errorType string, headerCSS string, buttonC
 		fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"button-general button-header "+buttonCSS+"\">Logout</a>")
 	} else if errorType == "account_type_error" {
 		fmt.Fprintf(w, "    Account Type Forbidden<br>")
-		fmt.Fprintf(w, "    <a href=\"/main-menu\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else {
 		fmt.Fprintf(w, "    Unknown Error<br>")
-		fmt.Fprintf(w, "    <a href=\"/main-menu\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	}
 	fmt.Fprintf(w, "</h1>")
 	fmt.Fprintf(w, "</div>")
@@ -2819,7 +2819,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 //----------------------------------------------------------------------------------------------------
 
-// SIP trunk page functions
+// Invoicing page functions
 
 //----------------------------------------------------------------------------------------------------
 
@@ -2946,7 +2946,7 @@ func main() {
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Trunks<br>&#8596", hyperlink: "/sip-trunk", headerCSS: "header-sip-trunk", buttonCSS: "button-sip-trunk"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group Billing<br>& Invoicing<br>&#8596", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
 				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
@@ -2969,8 +2969,12 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Logs<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#8596", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Logs<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "201" {
@@ -2988,8 +2992,12 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#8596", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "300" {
@@ -3251,7 +3259,7 @@ func main() {
 
 	// SIP Trunk Page
 
-	go http.HandleFunc("/sip-trunk", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/invoicing", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3265,7 +3273,7 @@ func main() {
 		fmt.Fprintf(w, startHTML)
 
 		// Wallpaper
-		wallpaper(w, "wallpaper-sip-trunk")
+		wallpaper(w, "wallpaper-invoicing")
 
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
@@ -3281,11 +3289,11 @@ func main() {
 			errorBox(w, "email_error", "header-sip-trunk", "button-sip-trunk")
 		} else {
 			if userTypeID == "100" {
-				header(w, "All SIP Trunks on the Server<br>YAP Admin Account", "header-sip-trunk", extraButtonName, extraButtonURL)
+				header(w, "YAP Admin Account<br>Group Billing & Invoicing", "header-invoicing", extraButtonName, extraButtonURL)
 				//sipTrunkList(w, dbDetail, userTypeID)
-				footer(w, "header-sip-trunk", "button-sip-trunk")
+				footer(w, "header-invoicing", "button-invoicing")
 			} else {
-				errorBox(w, "account_type_error", "header-sip-trunk", "button-sip-trunk")
+				errorBox(w, "account_type_error", "header-invoicing", "button-invoicing")
 			}
 		}
 
@@ -3297,6 +3305,7 @@ func main() {
 
 		fmt.Fprintf(w, startHTML)
 		header(w, "Server Logs", "header-server-log", extraButtonName, extraButtonURL)
+		
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-log")
 
@@ -3309,6 +3318,7 @@ func main() {
 
 		fmt.Fprintf(w, startHTML)
 		header(w, "Server Information", "header-server-information", extraButtonName, extraButtonURL)
+		
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-information")
 
