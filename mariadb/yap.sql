@@ -5,11 +5,11 @@ CREATE TABLE `user_group`
   `id` VARCHAR(255) NOT NULL,
   `group_name` VARCHAR(100) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `group_active` ENUM('yes', 'no') NOT NULL,
-  `uk_based` ENUM('yes', 'no') NOT NULL,
+  `group_active` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
   `group_type` VARCHAR(255) NOT NULL,
   `uk_vat_status` VARCHAR(255) NOT NULL,
-  `reselling_miniutes` ENUM('no', 'yes') NOT NULL,
+  `reselling_miniutes` ENUM('no', 'yes', 'n/a') NOT NULL,
   `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -63,7 +63,7 @@ CREATE TABLE `pbx`
   `pbx_name` VARCHAR(75) NOT NULL,
   `group_id` VARCHAR(255) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `pbx_active` ENUM('yes', 'no') NOT NULL,
+  `pbx_active` ENUM('yes', 'no', 'n/a') NOT NULL,
   `pbx_sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -463,29 +463,6 @@ WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 -- Insert data to YAP tables
 
-INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `pbx_limit`)
-VALUES (1, 'system', 'no', 0);
-  
-INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
-VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
-
-INSERT INTO `group_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
-VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
-
-INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `pbx_sip_extension_limit`)
-VALUES (1, 'system', 1, 'no', 0);
-  
-INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
-VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
-
-INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
-VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
-  
-INSERT INTO `uk_vat_status_lookup` (`uk_vat_status`)
-VALUES
-  ('Registered'),
-  ('Not Registered');
-
 INSERT INTO `group_type_lookup` (`group_type`)
 VALUES
   ('Residentail'),
@@ -494,7 +471,32 @@ VALUES
   ('Limited Liability Partnership (LLP)'),
   ('Private Limited Company (LTD)'),
   ('Public Limited Company (PLC)'),
-  ('Community Interest Company (CIC)');
+  ('Community Interest Company (CIC)'),
+  ('n/a');
+
+INSERT INTO `uk_vat_status_lookup` (`uk_vat_status`)
+VALUES
+  ('Registered'),
+  ('Not Registered'),
+  ('n/a');
+
+INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `uk_based`, `group_type`, `uk_vat_status`, `reselling_miniutes`, `pbx_limit`)
+VALUES (1, 'system', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 0);
+
+INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
+
+INSERT INTO `group_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
+
+INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `pbx_sip_extension_limit`)
+VALUES (1, 'system', 1, 'n/a', 0);
+  
+INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
+
+INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
 INSERT INTO `user_account_type` (`id`, `type`, `permission`)
 VALUES
