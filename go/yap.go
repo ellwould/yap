@@ -856,7 +856,6 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string) {
 
 	var (
-		//userAccountTypeID    string
 		userAccountFirstName string
 		userAccountLastName  string
 		userAccountEmail     string
@@ -1386,12 +1385,14 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		dbTableCountUserGroup.countMinusOne = true
-		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserGroup)+"</td>")
-		dbTableCountUserGroup.columnWhereValue = "1"
-		fmt.Fprintf(w, "          <td>"+totalTableCountWhere(w, dbTableCountUserGroup)+"</td>")
-		dbTableCountUserGroup.columnWhereValue = "0"
+		fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserGroup)+"</td>")
+		dbTableCountUserGroup.columnWhere = "group_active"
 		dbTableCountUserGroup.countMinusOne = false
-		fmt.Fprintf(w, "          <td>"+totalTableCountWhere(w, dbTableCountUserGroup)+"</td>")
+		dbTableCountUserGroup.columnWhereValue = "1"
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserGroup)+"</td>")
+		dbTableCountUserGroup.countMinusOne = true
+		dbTableCountUserGroup.columnWhereValue = "0"
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserGroup)+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
