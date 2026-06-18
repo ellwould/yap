@@ -1341,33 +1341,31 @@ func userAccountDelete() {
 func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string) {
 
 	var (
-		groupName                               string
-		groupID                                 string
-		groupDateAdded                          string
-		groupActive                             string
-		pbxLimit                                string
-		newPBXSIPExtensionDefaultLimit          string
-		newPBXSIPTrunkDefaultLimit              string
-		newPBXPhoneNumberDefaultLimit           string
-		newPBXCDRDefaultLimit                   string
-		newPBXVoicemailDefaultMegabyteLimit     string
-		newPBXCallRecordingDefaultMegabyteLimit string
-		groupSiteAddressLine1                   string
-		groupSiteAddressLine2                   string
-		groupSiteCityTownVillage                string
-		groupSiteCountyStateRegion              string
-		groupSitePostcodeZipCode                string
-		groupSiteCountry                        string
-		groupSiteContactEmail                   string
-		groupSiteContactNumber                  string
-		groupInvoiceAddressLine1                string
-		groupInvoiceAddressLine2                string
-		groupInvoiceCityTownVillage             string
-		groupInvoiceCountyStateRegion           string
-		groupInvoicePostcodeZipCode             string
-		groupInvoiceCountry                     string
-		groupInvoiceContactEmail                string
-		groupInvoiceContactNumber               string
+		groupName                     string
+		groupID                       string
+		groupDateAdded                string
+		groupActive                   string
+		ukBased                       string
+		groupType                     string
+		ukVATStatus                   string
+		resellingMiniutes             string
+		pbxLimit                      string
+		groupSiteAddressLine1         string
+		groupSiteAddressLine2         string
+		groupSiteCityTownVillage      string
+		groupSiteCountyStateRegion    string
+		groupSitePostcodeZipCode      string
+		groupSiteCountry              string
+		groupSiteContactEmail         string
+		groupSiteContactNumber        string
+		groupInvoiceAddressLine1      string
+		groupInvoiceAddressLine2      string
+		groupInvoiceCityTownVillage   string
+		groupInvoiceCountyStateRegion string
+		groupInvoicePostcodeZipCode   string
+		groupInvoiceCountry           string
+		groupInvoiceContactEmail      string
+		groupInvoiceContactNumber     string
 	)
 
 	var dbTableCountUserGroup databaseFunctionParameter
@@ -1676,13 +1674,11 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	fmt.Fprintf(w, "          <th>Group ID</th>")
 	fmt.Fprintf(w, "          <th>Group Date</th>")
 	fmt.Fprintf(w, "          <th>Group Active <br>Status</th>")
-	fmt.Fprintf(w, "          <th>PBX Limit</th>")
-	fmt.Fprintf(w, "          <th>SIP Extension <br>Limit for <br>a New PBX</th>")
-	fmt.Fprintf(w, "          <th>SIP Trunk <br>Limit for <br>a New PBX</th>")
-	fmt.Fprintf(w, "          <th>Phone Number <br>Limit for <br>a new PBX</th>")
-	fmt.Fprintf(w, "          <th>CDR Limit <br>for a New PBX</th>")
-	fmt.Fprintf(w, "          <th>Voicemail <br>Limit for a New PBX <br>(Megabytes)</th>")
-	fmt.Fprintf(w, "          <th>Call Recording <br>Limit for a New PBX <br>(Megabytes)</th>")
+	fmt.Fprintf(w, "          <th>Group UK Based</th>")
+	fmt.Fprintf(w, "          <th>Group Type</th>")
+	fmt.Fprintf(w, "          <th>Group UK VAT Status</th>")
+	fmt.Fprintf(w, "          <th>Group Reselling Miniutes</th>")
+	fmt.Fprintf(w, "          <th>Group PBX Limit</th>")
 	fmt.Fprintf(w, "        </tr>")
 
 	groupResourceSQL, err := dbDetail.connection.Query(`SELECT
@@ -1690,13 +1686,11 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 							group_id,
 							group_date_added,
 							group_active,
-							pbx_limit,
-							new_pbx_sip_extension_default_limit,
-							new_pbx_sip_trunk_default_limit,
-							new_pbx_phone_number_default_limit,
-							new_pbx_cdr_default_limit,
-							new_pbx_voicemail_default_megabyte_limit,
-							new_pbx_call_recording_default_megabyte_limit
+							uk_based,
+							group_type,
+							uk_vat_status,
+							reselling_miniutes,
+							pbx_limit
 					              FROM
 					  	        yap.view___group_detail
 						      `+whereClause, userGroupID)
@@ -1714,13 +1708,11 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			&groupID,
 			&groupDateAdded,
 			&groupActive,
+			&ukBased,
+			&groupType,
+			&ukVATStatus,
+			&resellingMiniutes,
 			&pbxLimit,
-			&newPBXSIPExtensionDefaultLimit,
-			&newPBXSIPTrunkDefaultLimit,
-			&newPBXPhoneNumberDefaultLimit,
-			&newPBXCDRDefaultLimit,
-			&newPBXVoicemailDefaultMegabyteLimit,
-			&newPBXCallRecordingDefaultMegabyteLimit,
 		)
 
 		// Error
@@ -1731,18 +1723,12 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 		fmt.Fprintf(w, "          <td>"+groupID+"</td>")
 		fmt.Fprintf(w, "          <td>"+groupDateAdded+"</td>")
-		if groupActive == "1" {
-			fmt.Fprintf(w, "          <td>YES</td>")
-		} else {
-			fmt.Fprintf(w, "          <td>NO</td>")
-		}
+		fmt.Fprintf(w, "          <td>"+groupActive+"</td>")
+		fmt.Fprintf(w, "          <td>"+ukBased+"</td>")
+		fmt.Fprintf(w, "          <td>"+groupType+"</td>")
+		fmt.Fprintf(w, "          <td>"+ukVATStatus+"</td>")
+		fmt.Fprintf(w, "          <td>"+resellingMiniutes+"</td>")
 		fmt.Fprintf(w, "          <td>"+pbxLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+newPBXSIPExtensionDefaultLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+newPBXSIPTrunkDefaultLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+newPBXPhoneNumberDefaultLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+newPBXCDRDefaultLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+newPBXVoicemailDefaultMegabyteLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+newPBXCallRecordingDefaultMegabyteLimit+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 	}
 
@@ -1796,34 +1782,29 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string, userPBXID string) {
 
 	var (
-		pbxName                       string
-		pbxID                         string
-		pbxDateAdded                  string
-		pbxActive                     string
-		pbxSIPExtensionLimit          string
-		pbxSIPTrunkLimit              string
-		pbxPhoneNumberLimit           string
-		pbxCDRLimit                   string
-		pbxVoicemailMegabyteLimit     string
-		pbxCallRecordingMegabyteLimit string
-		pbxSiteAddressLine1           string
-		pbxSiteAddressLine2           string
-		pbxSiteCityTownVillage        string
-		pbxSiteCountyStateRegion      string
-		pbxSitePostcodeZipCode        string
-		pbxSiteCountry                string
-		pbxSiteContactEmail           string
-		pbxSiteContactNumber          string
-		pbxInvoiceAddressLine1        string
-		pbxInvoiceAddressLine2        string
-		pbxInvoiceCityTownVillage     string
-		pbxInvoiceCountyStateRegion   string
-		pbxInvoicePostcodeZipCode     string
-		pbxInvoiceCountry             string
-		pbxInvoiceContactEmail        string
-		pbxInvoiceContactNumber       string
-		groupName                     string
-		groupID                       string
+		pbxName                     string
+		pbxID                       string
+		pbxDateAdded                string
+		pbxActive                   string
+		pbxSIPExtensionLimit        string
+		pbxSiteAddressLine1         string
+		pbxSiteAddressLine2         string
+		pbxSiteCityTownVillage      string
+		pbxSiteCountyStateRegion    string
+		pbxSitePostcodeZipCode      string
+		pbxSiteCountry              string
+		pbxSiteContactEmail         string
+		pbxSiteContactNumber        string
+		pbxInvoiceAddressLine1      string
+		pbxInvoiceAddressLine2      string
+		pbxInvoiceCityTownVillage   string
+		pbxInvoiceCountyStateRegion string
+		pbxInvoicePostcodeZipCode   string
+		pbxInvoiceCountry           string
+		pbxInvoiceContactEmail      string
+		pbxInvoiceContactNumber     string
+		groupName                   string
+		groupID                     string
 	)
 
 	var dbTableCountUserPBX databaseFunctionParameter
@@ -2207,11 +2188,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "          <th>PBX Date</th>")
 	fmt.Fprintf(w, "          <th>PBX Active <br>Status</th>")
 	fmt.Fprintf(w, "          <th>SIP Extension <br>Limit for <br>PBX</th>")
-	fmt.Fprintf(w, "          <th>SIP Trunk <br>Limit for <br>PBX</th>")
-	fmt.Fprintf(w, "          <th>Phone Number <br>Limit for <br>PBX</th>")
-	fmt.Fprintf(w, "          <th>CDR Limit <br>for PBX</th>")
-	fmt.Fprintf(w, "          <th>Voicemail <br>Limit for PBX <br>(Megabytes)</th>")
-	fmt.Fprintf(w, "          <th>Call Recording <br>Limit for PBX <br>(Megabytes)</th>")
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "          <th>Group Name</th>")
 		fmt.Fprintf(w, "          <th>Group ID</th>")
@@ -2224,11 +2200,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 							pbx_date_added,
 							pbx_active,
 							pbx_sip_extension_limit,
-							pbx_sip_trunk_limit,
-							pbx_phone_number_limit,
-							pbx_cdr_limit,
-							pbx_voicemail_megabyte_limit,
-							pbx_call_recording_megabyte_limit,
 							group_name,
 							group_id
 					              FROM
@@ -2249,11 +2220,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			&pbxDateAdded,
 			&pbxActive,
 			&pbxSIPExtensionLimit,
-			&pbxSIPTrunkLimit,
-			&pbxPhoneNumberLimit,
-			&pbxCDRLimit,
-			&pbxVoicemailMegabyteLimit,
-			&pbxCallRecordingMegabyteLimit,
 			&groupName,
 			&groupID,
 		)
@@ -2274,11 +2240,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			fmt.Fprintf(w, "          <td>NO</td>")
 		}
 		fmt.Fprintf(w, "          <td>"+pbxSIPExtensionLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+pbxSIPTrunkLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+pbxPhoneNumberLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+pbxCDRLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+pbxVoicemailMegabyteLimit+"</td>")
-		fmt.Fprintf(w, "          <td>"+pbxCallRecordingMegabyteLimit+"</td>")
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
