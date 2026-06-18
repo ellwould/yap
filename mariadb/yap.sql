@@ -1269,7 +1269,7 @@ VALUES
   </tr>
 </table>'
 ),
-(400, 'Group Invoicing (400)',
+(400, 'Group Invoice (400)',
 '<table>
   <tr>
     <td>
