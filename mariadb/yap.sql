@@ -61,7 +61,7 @@ CREATE TABLE `pbx`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `pbx_name` VARCHAR(75) NOT NULL,
-  `group_id` BIGINT UNSIGNED NOT NULL,
+  `group_id` VARCHAR(255) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `pbx_active` ENUM('yes', 'no') NOT NULL,
   `pbx_sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
