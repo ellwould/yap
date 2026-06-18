@@ -5,12 +5,12 @@ CREATE TABLE `user_group`
   `id` VARCHAR(255) NOT NULL,
   `group_name` VARCHAR(100) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `group_active` BOOLEAN NOT NULL,
-  `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
+  `group_active` ENUM('yes', 'no') NOT NULL,
   `uk_based` ENUM('yes', 'no') NOT NULL,
   `group_type` VARCHAR(255) NOT NULL,
   `uk_vat_status` VARCHAR(255) NOT NULL,
   `reselling_miniutes` ENUM('no', 'yes') NOT NULL,
+  `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -63,7 +63,7 @@ CREATE TABLE `pbx`
   `pbx_name` VARCHAR(75) NOT NULL,
   `group_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `pbx_active` BOOLEAN NOT NULL,
+  `pbx_active` ENUM('yes', 'no') NOT NULL,
   `pbx_sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -185,6 +185,16 @@ ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
 ----------------------------------------------------------------------------------------------------
 
 -- Create foreign key constraints
+
+ALTER TABLE `user_group`
+ADD CONSTRAINT fk___user_group___group_type_lookup
+FOREIGN KEY (`group_type`)
+REFERENCES `group_type_lookup` (`group_type`);
+
+ALTER TABLE `user_group`
+ADD CONSTRAINT fk___user_group___uk_vat_status_lookup
+FOREIGN KEY (`uk_vat_status`)
+REFERENCES `uk_vat_status_lookup` (`uk_vat_status`);
 
 ALTER TABLE `pbx`
 ADD CONSTRAINT fk___pbx___user_group
@@ -332,13 +342,11 @@ SELECT
   `user_group`.`group_name`,
   `user_group`.`date_added` AS 'group_date_added',
   `user_group`.`group_active`,
+  `user_group`.`uk_based`,
+  `user_group`.`group_type`,
+  `user_group`.`uk_vat_status`,
+  `user_group`.`reselling_miniutes`,
   `user_group`.`pbx_limit`,
-  `user_group`.`new_pbx_sip_extension_default_limit`,
-  `user_group`.`new_pbx_sip_trunk_default_limit`,
-  `user_group`.`new_pbx_phone_number_default_limit`,
-  `user_group`.`new_pbx_cdr_default_limit`,
-  `user_group`.`new_pbx_voicemail_default_megabyte_limit`,
-  `user_group`.`new_pbx_call_recording_default_megabyte_limit`,
   `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
   `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
   `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
