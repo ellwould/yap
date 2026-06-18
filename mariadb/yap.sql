@@ -106,7 +106,7 @@ CREATE TABLE `user_account`
   `first_name` VARCHAR(100) NOT NULL,
   `last_name` VARCHAR(100) NOT NULL,
   `user_account_type_id` SMALLINT UNSIGNED NOT NULL,
-  `group_id` BIGINT UNSIGNED NOT NULL,
+  `group_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `account_active` BOOLEAN NOT NULL,
