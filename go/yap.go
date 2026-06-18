@@ -1724,7 +1724,11 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "          <td>"+groupName+"</td>")
 		fmt.Fprintf(w, "          <td>"+groupID+"</td>")
 		fmt.Fprintf(w, "          <td>"+groupDateAdded+"</td>")
-		fmt.Fprintf(w, "          <td>"+groupActive+"</td>")
+		if groupActive == "1" {
+			fmt.Fprintf(w, "          <td>Yes</td>")
+		} else {
+			fmt.Fprintf(w, "	  <td>No</td>")
+		}
 		fmt.Fprintf(w, "          <td>"+ukBased+"</td>")
 		fmt.Fprintf(w, "          <td>"+groupType+"</td>")
 		fmt.Fprintf(w, "          <td>"+ukVATStatus+"</td>")
