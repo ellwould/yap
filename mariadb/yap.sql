@@ -555,6 +555,20 @@ VALUES
   </tr>
   <tr>
     <td>
+      &#9989 Create a Group Invoice (400) User Account<br>
+      &#9989 View a Group Invoice (400) User Account<br>
+      &#9989 Update a Group Invoice (400) User Account<br>
+      &#9989 Delete a Group Invoice (400) User Account<br>
+    </td>
+    <td>
+      Note: Group Invoice Accounts Are Read Only<br>
+      Accounts for Viewing Services and Goods<br>
+      Billed to a Group.
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
       &#9940 View Own Group<br>
       &#9940 Update Own Group<br>
       &#9940 Delete Own Group<br>
@@ -666,6 +680,20 @@ VALUES
       &#9989 View a PBX Read Only (302) User Account<br>
       &#9989 Update a PBX Read Only (302) User Account<br>
       &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Invoice (400) User Account<br>
+      &#10060 View a Group Invoice (400) User Account<br>
+      &#10060 Update a Group Invoice (400) User Account<br>
+      &#10060 Delete a Group Invoice (400) User Account<br>
+    </td>
+    <td>
+      Note: Group Invoice Accounts Are Read Only<br>
+      Accounts for Viewing Services and Goods<br>
+      Billed to a Group.
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -785,6 +813,20 @@ VALUES
   </tr>
   <tr>
     <td>
+      &#10060 Create a Group Invoice (400) User Account<br>
+      &#10060 View a Group Invoice (400) User Account<br>
+      &#10060 Update a Group Invoice (400) User Account<br>
+      &#10060 Delete a Group Invoice (400) User Account<br>
+    </td>
+    <td>
+      Note: Group Invoice Accounts Are Read Only<br>
+      Accounts for Viewing Services and Goods<br>
+      Billed to a Group.
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
       &#9989 View Own Group<br>
       &#10060 Update Own Group<br>
       &#10060 Delete Own Group<br>
@@ -896,6 +938,20 @@ VALUES
       &#9989 View a PBX Read Only (302) User Account<br>
       &#9989 Update a PBX Read Only (302) User Account<br>
       &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Invoice (400) User Account<br>
+      &#10060 View a Group Invoice (400) User Account<br>
+      &#10060 Update a Group Invoice (400) User Account<br>
+      &#10060 Delete a Group Invoice (400) User Account<br>
+    </td>
+    <td>
+      Note: Group Invoice Accounts Are Read Only<br>
+      Accounts for Viewing Services and Goods<br>
+      Billed to a Group.
+      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
@@ -1015,6 +1071,20 @@ VALUES
   </tr>
   <tr>
     <td>
+      &#10060 Create a Group Invoice (400) User Account<br>
+      &#10060 View a Group Invoice (400) User Account<br>
+      &#10060 Update a Group Invoice (400) User Account<br>
+      &#10060 Delete a Group Invoice (400) User Account<br>
+    </td>
+    <td>
+      Note: Group Invoice Accounts Are Read Only<br>
+      Accounts for Viewing Services and Goods<br>
+      Billed to a Group.
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
       &#9940 View Own Group<br>
       &#9940 Update Own Group<br>
       &#9940 Delete Own Group<br>
@@ -1130,6 +1200,20 @@ VALUES
   </tr>
   <tr>
     <td>
+      &#10060 Create a Group Invoice (400) User Account<br>
+      &#10060 View a Group Invoice (400) User Account<br>
+      &#10060 Update a Group Invoice (400) User Account<br>
+      &#10060 Delete a Group Invoice (400) User Account<br>
+    </td>
+    <td>
+      Note: Group Invoice Accounts Are Read Only<br>
+      Accounts for Viewing Services and Goods<br>
+      Billed to a Group.
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
       &#9940 View Own Group<br>
       &#9940 Update Own Group<br>
       &#9940 Delete Own Group<br>
@@ -1181,6 +1265,135 @@ VALUES
       &#10060 Download Server Information<br>
       &#10060 Set Resource Limits<br>
       &#9989 View Resource Limits<br>
+    </td>
+  </tr>
+</table>'
+),
+(400, 'Group Invoicing (400)',
+'<table>
+  <tr>
+    <td>
+      <b>Key:</b><br>
+      &#9989 = Allowed<br>
+      &#10060 = Prohibited<br>
+      &#9940 = Not Applicable<br>
+    </td>
+    <td>
+      &#9989 View Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a YAP Admin (100) User Account<br>
+      &#10060 View a YAP Admin (100) User Account<br>
+      &#10060 Update a YAP Admin (100) User Account<br>
+      &#10060 Delete a YAP Admin (100) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a Group Admin (200) User Account<br>
+      &#10060 View a Group Admin (200) User Account<br>
+      &#10060 Update a Group Admin (200) User Account<br>
+      &#10060 Delete a Group Admin (200) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Regular (201) User Account<br>
+      &#10060 View a Group Regular (201) User Account<br>
+      &#10060 Update a Group Regular (201) User Account<br>
+      &#10060 Delete a Group Regular (201) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#10060 View a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#10060 View a PBX Regular (301) User Account<br>
+      &#10060 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td>
+      &#10060 Create a PBX Read Only (302) User Account<br>
+      &#10060 View a PBX Read Only (302) User Account<br>
+      &#10060 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a Group Invoice (400) User Account<br>
+      &#10060 View a Group Invoice (400) User Account<br>
+      &#10060 Update a Group Invoice (400) User Account<br>
+      &#10060 Delete a Group Invoice (400) User Account<br>
+    </td>
+    <td>
+      Note: Group Invoice Accounts Are Read Only<br>
+      Accounts for Viewing Services and Goods<br>
+      Billed to a Group.
+      <div class="main-menu-space"></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#9989 View Own Group<br>
+      &#10060 Update Own Group<br>
+      &#10060 Delete Own Group<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a Group<br>
+      &#10060 View a Group<br>
+      &#10060 Update a Group<br>
+      &#10060 Delete a Group<br>
+    </td>
+  <tr>
+    <td>
+      &#9940 View Own PBX<br>
+      &#9940 Update Own PBX<br>
+      &#9940 Delete Own PBX<br>
+      <div class="main-menu-space"></div>
+    </td>
+    <td>
+      &#10060 Create a PBX<br>
+      &#10060 View a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 Create a SIP Endpoint<br>
+      &#10060 View a SIP Endpoint<br>
+      &#10060 Update a SIP Endpoint<br>
+      &#10060 Delete a SIP Endpoint<br>
+    </td>
+    <td>
+      &#10060 Create a Group Invoice<br>
+      &#9989 View a Group Invoice<br>
+      &#10060 Update a Group Invoice<br>
+      &#10060 Delete a Group Invoice<br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      &#10060 View YAP User Account Logs<br>
+      &#10060 View Group Logs<br>
+      &#10060 View PBX Logs<br>
+      &#10060 Download Logs<br>
+    </td>
+    <td>
+      &#10060 View Server Information<br>
+      &#10060 Download Server Information<br>
+      &#10060 Set Resource Limits<br>
+      &#10060 View Resource Limits<br>
     </td>
   </tr>
 </table>'
