@@ -1343,7 +1343,7 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 View Own Group<br>
+      &#10060 View Own Group<br>
       &#10060 Update Own Group<br>
       &#10060 Delete Own Group<br>
       <div class="main-menu-space"></div>
