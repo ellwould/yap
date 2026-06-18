@@ -5,7 +5,7 @@ CREATE TABLE `user_group`
   `id` VARCHAR(255) NOT NULL,
   `group_name` VARCHAR(100) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `group_active` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `group_active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
   `group_type` VARCHAR(255) NOT NULL,
   `uk_vat_status` VARCHAR(255) NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE `pbx`
   `pbx_name` VARCHAR(75) NOT NULL,
   `group_id` VARCHAR(255) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `pbx_active` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `pbx_active` BOOLEAN NOT NULL,
   `pbx_sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -481,7 +481,7 @@ VALUES
   ('n/a');
 
 INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `uk_based`, `group_type`, `uk_vat_status`, `reselling_miniutes`, `pbx_limit`)
-VALUES (1, 'system', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 0);
+VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
 
 INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
@@ -490,7 +490,7 @@ INSERT INTO `group_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`cit
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
 INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `pbx_sip_extension_limit`)
-VALUES (1, 'system', 1, 'n/a', 0);
+VALUES (1, 'system', 1, 0, 0);
   
 INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
