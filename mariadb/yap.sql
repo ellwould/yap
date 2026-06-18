@@ -463,8 +463,8 @@ WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 -- Insert data to YAP tables
 
-INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `pbx_limit`, `new_pbx_sip_endpoint_default_limit`, `new_pbx_sip_trunk_default_limit`, `new_pbx_phone_number_default_limit`, `new_pbx_cdr_default_limit`, `new_pbx_voicemail_default_megabyte_limit`, `new_pbx_call_recording_default_megabyte_limit`)
-VALUES (1, 'system', 1, 0, 0, 0, 0, 0, 0, 0);
+INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `pbx_limit`)
+VALUES (1, 'system', 1, 0);
   
 INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
@@ -472,8 +472,8 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 INSERT INTO `group_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `pbx_sip_endpoint_limit`, `pbx_sip_trunk_limit`, `pbx_phone_number_limit`, `pbx_cdr_limit`, `pbx_voicemail_megabyte_limit`, `pbx_call_recording_megabyte_limit`)
-VALUES (1, 'system', 1, 0, 0, 0, 0, 0, 0, 0);
+INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `pbx_sip_endpoint_limit`)
+VALUES (1, 'system', 1, 0, 0);
   
 INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
@@ -482,21 +482,19 @@ INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
   
 INSERT INTO `uk_vat_status_lookup` (`uk_vat_status`)
-VALUES (
-  'Registered',
-  'Not Registered'
-);
+VALUES
+  ('Registered'),
+  ('Not Registered');
 
-INSERT INTO `group_type_lookup` (`type`)
-VALUES (
-  'Residentail',
-  'Sole Trader',
-  'Partnership',
-  'Limited Liability Partnership (LLP)',
-  'Private Limited Company (LTD)',
-  'Public Limited Company (PLC)',
-  'Community Interest Company (CIC)'
-);
+INSERT INTO `group_type_lookup` (`group_type`)
+VALUES
+  ('Residentail'),
+  ('Sole Trader'),
+  ('Partnership'),
+  ('Limited Liability Partnership (LLP)'),
+  ('Private Limited Company (LTD)'),
+  ('Public Limited Company (PLC)'),
+  ('Community Interest Company (CIC)');
 
 INSERT INTO `user_account_type` (`id`, `type`, `permission`)
 VALUES
