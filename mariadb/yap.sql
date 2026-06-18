@@ -685,7 +685,7 @@ VALUES
   <tr>
     <td>
       &#10060 Create a Group Invoice (400) User Account<br>
-      &#10060 View a Group Invoice (400) User Account<br>
+      &#9989 View a Group Invoice (400) User Account<br>
       &#10060 Update a Group Invoice (400) User Account<br>
       &#10060 Delete a Group Invoice (400) User Account<br>
     </td>
