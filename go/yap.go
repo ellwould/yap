@@ -451,6 +451,7 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "    <th>Total PBX<br>Admin<br>Accounts<br>(Type ID: 300)</th>")
 	fmt.Fprintf(w, "    <th>Total PBX<br>Regular<br>Accounts<br>(Type ID: 301)</th>")
 	fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
+	fmt.Fprintf(w, "    <th>Total Group<br>Invoice<br>Accounts<br>(Type ID: 400)</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCountWhere.columnWhereValue = "100"
@@ -464,6 +465,8 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	dbTotalTableCountWhere.columnWhereValue = "301"
 	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "302"
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	dbTotalTableCountWhere.columnWhereValue = "400"
 	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
@@ -805,7 +808,6 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 	}
-	fmt.Fprintf(w, "<br>")
 
 	var dbDetail databaseFunctionParameter
 	dbDetail.connection = dbUserInformation.connection
@@ -813,10 +815,13 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 	dbDetail.columnWhereValue = dbUserInformation.columnWhereValue
 
 	if userTypeID == "100" {
+		fmt.Fprintf(w, "<br>")
 		mainMenuYapAccount(w, dbDetail)
 	} else if userTypeID == "200" || userTypeID == "201" {
+		fmt.Fprintf(w, "<br>")
 		mainMenuGroupAccount(w, dbDetail)
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
+		fmt.Fprintf(w, "<br>")
 		mainMenuPBXAccount(w, dbDetail)
 	} else {
 	}
@@ -923,6 +928,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "    <th>Total PBX<br>Regular<br>Accounts<br>(Type ID: 301)</th>")
 				fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
 			}
+			if userTypeID == "100" || userTypeID == "200" {
+				fmt.Fprintf(w, "    <th>Total Group<br>Invoice<br>Accounts<br>(Type ID: 400)</th>")
+			}
 			fmt.Fprintf(w, "  </tr>")
 			fmt.Fprintf(w, "  <tr>")
 			if userTypeID == "100" {
@@ -937,6 +945,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				dbTotalTableCountWhere.columnWhereValue = "301"
 				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				dbTotalTableCountWhere.columnWhereValue = "400"
 				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				dbTotalTableCountWhere.columnWhereAnd = "group_id"
@@ -953,6 +963,10 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
 				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				if userTypeID == "200" {
+					dbTotalTableCountWhere.columnWhereValue = "400"
+					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				}
 			} else if userTypeID == "300" {
 				dbTotalTableCountWhere.columnWhereAnd = "pbx_id"
 				dbTotalTableCountWhere.columnWhereValueAnd = pbxID
@@ -2819,7 +2833,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 //----------------------------------------------------------------------------------------------------
 
-// Invoicing page functions
+// Invoice page functions
 
 //----------------------------------------------------------------------------------------------------
 
@@ -2946,9 +2960,9 @@ func main() {
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group Billing<br>& Invoicing<br>&#8596", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group Billing<br>& Invoicing<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
 				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "YAP Server<br>Information<br>&#128421", hyperlink: "/server-information", headerCSS: "header-server-information", buttonCSS: "button-server-information"}
 				mainMenuButton(mainMenuButtonSeven)
@@ -2969,11 +2983,11 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#8596", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Logs<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -2992,11 +3006,11 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#8596", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -3011,7 +3025,7 @@ func main() {
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128195", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -3026,6 +3040,17 @@ func main() {
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
+				fmt.Fprintf(w, "</div>")
+				footer(w, "", "")
+			} else if userTypeID == "400" {
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
+				mainMenuUserInformation(w, dbDetail, userTypeID)
+				fmt.Fprintf(w, "<br>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Own<br>User Account<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButton(mainMenuButtonTwo)
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButton(mainMenuButtonOne)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else {
@@ -3094,6 +3119,10 @@ func main() {
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "302" {
 				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>Own Read Only User Account for PBX", "header-user-account", extraButtonName, extraButtonURL)
+				userAccountList(w, dbDetail, userTypeID)
+				footer(w, "header-user-account", "button-user-account")
+			} else if userTypeID == "400" {
+				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Own Invoice Group Account", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else {
@@ -3305,7 +3334,6 @@ func main() {
 
 		fmt.Fprintf(w, startHTML)
 		header(w, "Server Logs", "header-server-log", extraButtonName, extraButtonURL)
-		
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-log")
 
@@ -3318,7 +3346,6 @@ func main() {
 
 		fmt.Fprintf(w, startHTML)
 		header(w, "Server Information", "header-server-information", extraButtonName, extraButtonURL)
-		
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-information")
 
