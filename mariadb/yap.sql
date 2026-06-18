@@ -8,16 +8,16 @@ CREATE TABLE `user_group`
   `group_active` BOOLEAN NOT NULL,
   `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
   `uk_based` ENUM('yes', 'no') NOT NULL,
-  `customer_type` VARCHAR(255) NOT NULL,
+  `group_type` VARCHAR(255) NOT NULL,
   `uk_vat_status` VARCHAR(255) NOT NULL,
   `reselling_miniutes` ENUM('no', 'yes') NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `customer_type_lookup` (
-  `customer_type` VARCHAR(255),
-  PRIMARY KEY (`customer_type`)
+CREATE TABLE `group_type_lookup` (
+  `group_type` VARCHAR(255),
+  PRIMARY KEY (`group_type`)
 )
 ENGINE = InnoDB;
   
@@ -482,7 +482,7 @@ VALUES (
   'Not Registered'
 );
 
-INSERT INTO `customer_type_lookup` (`type`)
+INSERT INTO `group_type_lookup` (`type`)
 VALUES (
   'Residentail',
   'Sole Trader',
