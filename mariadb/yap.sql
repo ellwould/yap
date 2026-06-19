@@ -525,12 +525,12 @@ INSERT INTO `uk_sales_tax_rate_lookup` (`uk_sales_tax_rate`)
 VALUES
   (20),
   (5),
-  (0)
+  (0);
 
 INSERT INTO `uk_sales_tax_status_lookup` (`uk_sales_tax_status`)
 VALUES
   ('TAXABLE'),
-  ('EXEMPT')
+  ('EXEMPT');
 
 INSERT INTO `consumer_type_lookup` (`consumer_type`)
 VALUES
