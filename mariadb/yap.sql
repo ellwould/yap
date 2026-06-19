@@ -119,7 +119,7 @@ CREATE TABLE `user_account_type`
 (
   `id` SMALLINT UNSIGNED NOT NULL,
   `type` VARCHAR(20) NOT NULL,
-  `permission` VARCHAR(3800) NOT NULL,
+  `permission` VARCHAR(3900) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -189,9 +189,9 @@ ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
 -- Create foreign key constraints
 
 ALTER TABLE `customer`
-ADD CONSTRAINT fk___customer___customer_type_lookup
-FOREIGN KEY (`customer_type`)
-REFERENCES `customer_type_lookup` (`customer_type`);
+ADD CONSTRAINT fk___customer___consumer_type_lookup
+FOREIGN KEY (`consumer_type`)
+REFERENCES `consumer_type_lookup` (`consumer_type`);
 
 ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer___uk_vat_status_lookup
