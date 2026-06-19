@@ -318,7 +318,7 @@ ON DELETE CASCADE;
 ALTER TABLE `invoice`
 ADD CONSTRAINT fk___invoice___customer_id
 FOREIGN KEY (`customer_id`)
-REFERENCES `customer` (`id`);
+REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `invoice`
