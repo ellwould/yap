@@ -521,13 +521,13 @@ WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 -- Insert data to YAP tables
 
-INSERT INTO `sales_tax_rate_lookup` (`sales_tax_rate`)
+INSERT INTO `uk_sales_tax_rate_lookup` (`uk_sales_tax_rate`)
 VALUES
   (20),
   (5),
   (0)
 
-INSERT INTO `sales_tax_status_lookup` (`sales_tax_status`)
+INSERT INTO `uk_sales_tax_status_lookup` (`uk_sales_tax_status`)
 VALUES
   ('TAXABLE'),
   ('EXEMPT')
