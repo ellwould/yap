@@ -444,7 +444,7 @@ SELECT
   `ps_auths`.`username` AS 'sip_username',
   `ps_contacts`.`uri`,
   `ps_contacts`.`user_agent`,
-  `pbx`.`pbx_name` AS 'pbx_name',
+  `pbx`.`name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
   `customer`.`name` AS 'customer_name',
   `customer`.`id` AS 'customer_id'
@@ -489,7 +489,7 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 INSERT INTO `customer_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `pbx` (`id`, `name`, `customer_id`, `active`, `pbx_sip_extension_limit`)
+INSERT INTO `pbx` (`id`, `name`, `customer_id`, `active`, `sip_extension_limit`)
 VALUES (1, 'system', 1, 0, 0);
   
 INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
