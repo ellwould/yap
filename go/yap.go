@@ -1235,12 +1235,12 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			filterTableJS(w, filterTableJSArgument)
 		}
 		if userTypeID == "100" {
-			// JS filter function for customer name in the other account table
+			// JS filter function for the customer name in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerName"
 			filterTableJSArgument.inputID = "other-account-input-customer-name"
 			filterTableJSArgument.columnNumber = 6
 			filterTableJS(w, filterTableJSArgument)
-			// JS filter function for customer ID in the other account table
+			// JS filter function for the customer ID in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerID"
 			filterTableJSArgument.inputID = "other-account-input-customer-id"
 			filterTableJSArgument.columnNumber = 7
@@ -1570,12 +1570,12 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	if userTypeID == "100" {
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "customer-contact-table"
-		// JS filter function for customer name in the customer contact table
+		// JS filter function for the customer name in the customer contact table
 		filterTableJSArgument.funcNameJS = "customerContactSearchCustomerName"
 		filterTableJSArgument.inputID = "customer-contact-input-customer-name"
 		filterTableJSArgument.columnNumber = 0
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for customer ID in the customer contact table
+		// JS filter function for the customer ID in the customer contact table
 		filterTableJSArgument.funcNameJS = "customerContactSearchCustomerID"
 		filterTableJSArgument.inputID = "customer-contact-input-customer-id"
 		filterTableJSArgument.columnNumber = 1
@@ -1741,12 +1741,12 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	if userTypeID == "100" {
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "customer-resource-table"
-		// Call JS filter function for customer name in the customer resource table
+		// Call JS filter function for the customer name in the customer resource table
 		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerName"
 		filterTableJSArgument.inputID = "customer-resource-input-customer-name"
 		filterTableJSArgument.columnNumber = 0
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for customer ID in the customer resource table
+		// Call JS filter function for the customer ID in the customer resource table
 		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerID"
 		filterTableJSArgument.inputID = "customer-resource-input-customer-id"
 		filterTableJSArgument.columnNumber = 1
@@ -2101,12 +2101,12 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.columnNumber = 7
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			// Call JS filter function for customer name in the PBX contact table
+			// Call JS filter function for the customer name in the PBX contact table
 			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerName"
 			filterTableJSArgument.inputID = "pbx-contact-input-customer-name"
 			filterTableJSArgument.columnNumber = 8
 			filterTableJS(w, filterTableJSArgument)
-			// Call JS filter function for customer ID in the PBX contact table
+			// Call JS filter function for the customer ID in the PBX contact table
 			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerID"
 			filterTableJSArgument.inputID = "pbx-contact-input-customer-id"
 			filterTableJSArgument.columnNumber = 9
@@ -2277,12 +2277,12 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			// Call JS filter function for customer name in the PBX resource table
+			// Call JS filter function for the customer name in the PBX resource table
 			filterTableJSArgument.funcNameJS = "pbxResourceSearchCustomerName"
 			filterTableJSArgument.inputID = "pbx-resource-input-customer-name"
 			filterTableJSArgument.columnNumber = 10
 			filterTableJS(w, filterTableJSArgument)
-			// Call JS filter function for customer ID in the PBX resource table
+			// Call JS filter function for the customer ID in the PBX resource table
 			filterTableJSArgument.funcNameJS = "pbxResourceSearchCustomerID"
 			filterTableJSArgument.inputID = "pbx-resource-input-customer-id"
 			filterTableJSArgument.columnNumber = 11
@@ -2374,7 +2374,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "          <th>Total SIP Extensions On YAP</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "          <th>Total SIP Extensions Within for the Customer</th>")
+		fmt.Fprintf(w, "          <th>Total SIP Extensions for the Customer</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		fmt.Fprintf(w, "          <th>Total SIP Extensions Within the PBX</th>")
 	}
@@ -2416,7 +2416,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details on the Server:</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within for the Customer:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details for the Customer:</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within the PBX:</th>")
 	}
