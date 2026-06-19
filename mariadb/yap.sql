@@ -158,7 +158,7 @@ CREATE TABLE `good_service` (
   `supplier_name` VARCHAR(255) NOT NULL,
   `buy_price` DECIMAL(8,2) NOT NULL,
   `date_added` DATETIME NOT NULL,
-  PRIMARY KEY(`good_service_name`)
+  PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
 
@@ -245,8 +245,8 @@ ADD INDEX `index___invoice__uk_sales_tax_status` (`uk_sales_tax_status`);
 ALTER TABLE `invoice`
 ADD INDEX `index___invoice__good_service_id` (`good_service_id`);
 
-ALTER TABLE `invoice`
-ADD INDEX `index___invoice__good_service_type` (`good_service_type`);
+ALTER TABLE `good_service`
+ADD INDEX `index___good_service__good_service_type` (`good_service_type`);
 
 ----------------------------------------------------------------------------------------------------
 
