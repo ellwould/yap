@@ -3,7 +3,7 @@
 CREATE TABLE `customer`
 (
   `id` VARCHAR(255) NOT NULL,
-  `customer_name` VARCHAR(100) NOT NULL,
+  `customer_name` VARCHAR(255) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `customer_active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
@@ -30,12 +30,12 @@ ENGINE = InnoDB;
 CREATE TABLE `customer_invoice_address`
 (
   `id` VARCHAR(255) NOT NULL,
-  `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75) NOT NULL,
-  `city_town_village` VARCHAR(75) NOT NULL,
-  `county_state_region` VARCHAR(75) NOT NULL,
+  `address_line_1` VARCHAR(255) NOT NULL,
+  `address_line_2` VARCHAR(255) NOT NULL,
+  `city_town_village` VARCHAR(255) NOT NULL,
+  `county_state_region` VARCHAR(255) NOT NULL,
   `postcode_zip_code` VARCHAR(7) NOT NULL,
-  `country` VARCHAR(75) NOT NULL,
+  `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
   `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
@@ -45,12 +45,12 @@ ENGINE = InnoDB;
 CREATE TABLE `customer_site_address`
 (
   `id` VARCHAR(255) NOT NULL,
-  `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75) NOT NULL,
-  `city_town_village` VARCHAR(75) NOT NULL,
-  `county_state_region` VARCHAR(75) NOT NULL,
+  `address_line_1` VARCHAR(255) NOT NULL,
+  `address_line_2` VARCHAR(255) NOT NULL,
+  `city_town_village` VARCHAR(255) NOT NULL,
+  `county_state_region` VARCHAR(255) NOT NULL,
   `postcode_zip_code` VARCHAR(7) NOT NULL,
-  `country` VARCHAR(75) NOT NULL,
+  `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
   `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
@@ -60,7 +60,7 @@ ENGINE = InnoDB;
 CREATE TABLE `pbx`
 (
   `id` BIGINT UNSIGNED NOT NULL,
-  `pbx_name` VARCHAR(75) NOT NULL,
+  `pbx_name` VARCHAR(255) NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `pbx_active` BOOLEAN NOT NULL,
@@ -72,12 +72,12 @@ ENGINE = InnoDB;
 CREATE TABLE `pbx_invoice_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
-  `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75) NOT NULL,
-  `city_town_village` VARCHAR(75) NOT NULL,
-  `county_state_region` VARCHAR(75) NOT NULL,
+  `address_line_1` VARCHAR(255) NOT NULL,
+  `address_line_2` VARCHAR(255) NOT NULL,
+  `city_town_village` VARCHAR(255) NOT NULL,
+  `county_state_region` VARCHAR(255) NOT NULL,
   `postcode_zip_code` VARCHAR(7) NOT NULL,
-  `country` VARCHAR(75) NOT NULL,
+  `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
   `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
@@ -87,12 +87,12 @@ ENGINE = InnoDB;
 CREATE TABLE `pbx_site_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
-  `address_line_1` VARCHAR(75) NOT NULL,
-  `address_line_2` VARCHAR(75) NOT NULL,
-  `city_town_village` VARCHAR(75) NOT NULL,
-  `county_state_region` VARCHAR(75) NOT NULL,
+  `address_line_1` VARCHAR(255) NOT NULL,
+  `address_line_2` VARCHAR(255) NOT NULL,
+  `city_town_village` VARCHAR(255) NOT NULL,
+  `county_state_region` VARCHAR(255) NOT NULL,
   `postcode_zip_code` VARCHAR(7) NOT NULL,
-  `country` VARCHAR(75) NOT NULL,
+  `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
   `contact_number` VARCHAR(16) NOT NULL,
 PRIMARY KEY(`id`)
@@ -103,8 +103,8 @@ CREATE TABLE `user_account`
 (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `email` VARCHAR(255) NOT NULL,
-  `first_name` VARCHAR(100) NOT NULL,
-  `last_name` VARCHAR(100) NOT NULL,
+  `first_name` VARCHAR(255) NOT NULL,
+  `last_name` VARCHAR(255) NOT NULL,
   `user_account_type_id` SMALLINT UNSIGNED NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
@@ -118,7 +118,7 @@ ENGINE = InnoDB;
 CREATE TABLE `user_account_type`
 (
   `id` SMALLINT UNSIGNED NOT NULL,
-  `type` VARCHAR(20) NOT NULL,
+  `type` VARCHAR(255) NOT NULL,
   `permission` VARCHAR(4000) NOT NULL,
 PRIMARY KEY(`id`)
 )
