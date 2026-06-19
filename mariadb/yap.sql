@@ -37,7 +37,7 @@ CREATE TABLE `customer_invoice_address`
   `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
-  `contact_number` VARCHAR(16) NOT NULL,
+  `contact_number` VARCHAR(20) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -52,7 +52,7 @@ CREATE TABLE `customer_site_address`
   `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
-  `contact_number` VARCHAR(16) NOT NULL,
+  `contact_number` VARCHAR(20) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -79,7 +79,7 @@ CREATE TABLE `pbx_invoice_address`
   `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
-  `contact_number` VARCHAR(16) NOT NULL,
+  `contact_number` VARCHAR(20) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -94,7 +94,7 @@ CREATE TABLE `pbx_site_address`
   `postcode_zip_code` VARCHAR(7) NOT NULL,
   `country` VARCHAR(255) NOT NULL,
   `contact_email` VARCHAR(255) NOT NULL,
-  `contact_number` VARCHAR(16) NOT NULL,
+  `contact_number` VARCHAR(20) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -121,6 +121,33 @@ CREATE TABLE `user_account_type`
   `type` VARCHAR(255) NOT NULL,
   `permission` VARCHAR(4000) NOT NULL,
 PRIMARY KEY(`id`)
+)
+ENGINE = InnoDB;
+
+CREATE TABLE `invoice` (
+  `id` INT UNSIGNED,
+  `customer_id` VARCHAR(255) NOT NULL,
+  `phone_number` VARCHAR(20) NOT NULL,
+  `good_service_name` VARCHAR(255) NOT NULL,
+  `sell_price` DECIMAL(8,2) NOT NULL,
+  `uk_sales_tax_rate` DECIMAL(5,2) NOT NULL,
+  `uk_sales_tax_status` VARCHAR(255) NOT NULL,
+  `invoice_customer` ENUM('yes', 'no') NOT NULL,
+  `one_off_charge` ENUM('yes', 'no') NOT NULL,
+  `comment` VARCHAR(255) NOT NULL,
+  PRIMARY KEY(`id`)
+)
+ENGINE = InnoDB;
+  
+CREATE TABLE `uk_sales_tax_rate_lookup` (
+  `uk_sales_tax_rate` DECIMAL(5,2),
+  PRIMARY KEY(`uk_sales_tax_rate`)
+)
+ENGINE = InnoDB;
+  
+CREATE TABLE `uk_sales_tax_status_lookup` (
+  `uk_sales_tax_status` VARCHAR(255),
+  PRIMARY KEY(`uk_sales_tax_status`)
 )
 ENGINE = InnoDB;
 
@@ -156,6 +183,11 @@ MODIFY COLUMN `id` varchar(255) NOT NULL;
 ----------------------------------------------------------------------------------------------------
 
 -- Add index to columns
+ALTER TABLE `customer`
+ADD INDEX `index___customer__consumer_type` (`consumer_type`);
+
+ALTER TABLE `customer`
+ADD INDEX `index___customer__uk_tax_status` (`uk_tax_status`);
 
 ALTER TABLE `pbx`
 ADD INDEX `index___pbx__customer_id` (`customer_id`);
@@ -183,6 +215,15 @@ ADD INDEX `index___ps_aors__pbx_id` (`pbx_id`);
 
 ALTER TABLE `ps_auths`
 ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
+
+ALTER TABLE `invoice`
+ADD INDEX `index___invoice__customer_id` (`customer_id`);
+
+ALTER TABLE `invoice`
+ADD INDEX `index___invoice__uk_sales_tax_rate` (`uk_sales_tax_rate`);
+
+ALTER TABLE `invoice`
+ADD INDEX `index___invoice__uk_sales_tax_status` (`uk_sales_tax_status`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -272,6 +313,22 @@ ADD CONSTRAINT fk___ps_auths___pbx
 FOREIGN KEY (`pbx_id`)
 REFERENCES `pbx` (`id`)
 ON DELETE CASCADE;
+
+ALTER TABLE `invoice`
+ADD CONSTRAINT fk___invoice___customer_id
+FOREIGN KEY (`customer_id`)
+REFERENCES `customer` (`id`);
+ON DELETE CASCADE;
+
+ALTER TABLE `invoice`
+ADD CONSTRAINT fk___invoice___uk_sales_tax_rate_lookup
+FOREIGN KEY (`uk_sales_tax_rate`)
+REFERENCES `uk_sales_tax_rate_lookup` (`uk_sales_tax_rate`);
+
+ALTER TABLE `invoice`
+ADD CONSTRAINT fk___invoice___uk_sales_tax_status_lookup
+FOREIGN KEY (`uk_sales_tax_status`)
+REFERENCES `uk_sales_tax_status_lookup` (`uk_sales_tax_status`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -462,6 +519,17 @@ WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
+
+INSERT INTO `sales_tax_rate_lookup` (`sales_tax_rate`)
+VALUES
+  (20),
+  (5),
+  (0)
+
+INSERT INTO `sales_tax_status_lookup` (`sales_tax_status`)
+VALUES
+  ('TAXABLE'),
+  ('EXEMPT')
 
 INSERT INTO `consumer_type_lookup` (`consumer_type`)
 VALUES
