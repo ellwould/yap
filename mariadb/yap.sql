@@ -128,7 +128,7 @@ CREATE TABLE `invoice` (
   `id` INT UNSIGNED,
   `customer_id` VARCHAR(255) NOT NULL,
   `phone_number` VARCHAR(20) NOT NULL,
-  `good_service_name` VARCHAR(255) NOT NULL,
+  `good_service_id` VARCHAR(255) NOT NULL,
   `sell_price` DECIMAL(8,2) NOT NULL,
   `uk_sales_tax_rate` DECIMAL(5,2) NOT NULL,
   `uk_sales_tax_status` VARCHAR(255) NOT NULL,
@@ -149,6 +149,22 @@ ENGINE = InnoDB;
 CREATE TABLE `uk_sales_tax_status_lookup` (
   `uk_sales_tax_status` VARCHAR(255),
   PRIMARY KEY(`uk_sales_tax_status`)
+)
+ENGINE = InnoDB;
+
+CREATE TABLE `good_service` (
+  `id` VARCHAR(255) NOT NULL,
+  `good_service_type` VARCHAR(255) NOT NULL,
+  `supplier_name` VARCHAR(255) NOT NULL,
+  `buy_price` DECIMAL(8,2) NOT NULL,
+  `date_added` DATETIME NOT NULL,
+  PRIMARY KEY(`good_service_name`)
+)
+ENGINE = InnoDB;
+
+CREATE TABLE `good_service_type_lookup` (
+  `good_service_type` VARCHAR(255),
+  PRIMARY KEY(`good_service_type`)
 )
 ENGINE = InnoDB;
 
@@ -225,6 +241,12 @@ ADD INDEX `index___invoice__uk_sales_tax_rate` (`uk_sales_tax_rate`);
 
 ALTER TABLE `invoice`
 ADD INDEX `index___invoice__uk_sales_tax_status` (`uk_sales_tax_status`);
+
+ALTER TABLE `invoice`
+ADD INDEX `index___invoice__good_service_id` (`good_service_id`);
+
+ALTER TABLE `invoice`
+ADD INDEX `index___invoice__good_service_type` (`good_service_type`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -330,6 +352,16 @@ ALTER TABLE `invoice`
 ADD CONSTRAINT fk___invoice___uk_sales_tax_status_lookup
 FOREIGN KEY (`uk_sales_tax_status`)
 REFERENCES `uk_sales_tax_status_lookup` (`uk_sales_tax_status`);
+
+ALTER TABLE `invoice`
+ADD CONSTRAINT fk___invoice___good_service
+FOREIGN KEY (`good_service_id`)
+REFERENCES `good_service` (`id`);
+
+ALTER TABLE `good_service`
+ADD CONSTRAINT fk___good_service___good_service_type_lookup
+FOREIGN KEY (`good_service_type`)
+REFERENCES `good_service_type_lookup` (`good_service_type`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -548,6 +580,11 @@ VALUES
   ('Registered'),
   ('Not Registered'),
   ('n/a');
+
+INSERT INTO `good_service_type_lookup` (`good_service_type`)
+VALUES
+  ('Services'),
+  ('Products');
 
 INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_status`, `reselling_miniutes`, `pbx_limit`)
 VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
