@@ -1,13 +1,13 @@
 -- Create YAP tables
 
-CREATE TABLE `user_group`
+CREATE TABLE `customer`
 (
   `id` VARCHAR(255) NOT NULL,
-  `group_name` VARCHAR(100) NOT NULL,
+  `customer_name` VARCHAR(100) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `group_active` BOOLEAN NOT NULL,
+  `customer_active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
-  `group_type` VARCHAR(255) NOT NULL,
+  `consumer_type` VARCHAR(255) NOT NULL,
   `uk_vat_status` VARCHAR(255) NOT NULL,
   `reselling_miniutes` ENUM('no', 'yes', 'n/a') NOT NULL,
   `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
@@ -15,9 +15,9 @@ PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `group_type_lookup` (
-  `group_type` VARCHAR(255),
-  PRIMARY KEY (`group_type`)
+CREATE TABLE `consumer_type_lookup` (
+  `consumer_type` VARCHAR(255),
+  PRIMARY KEY (`consumer_type`)
 )
 ENGINE = InnoDB;
   
@@ -27,7 +27,7 @@ CREATE TABLE `uk_vat_status_lookup` (
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `group_invoice_address`
+CREATE TABLE `customer_invoice_address`
 (
   `id` VARCHAR(255) NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
@@ -42,7 +42,7 @@ PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `group_site_address`
+CREATE TABLE `customer_site_address`
 (
   `id` VARCHAR(255) NOT NULL,
   `address_line_1` VARCHAR(75) NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE `pbx`
 (
   `id` BIGINT UNSIGNED NOT NULL,
   `pbx_name` VARCHAR(75) NOT NULL,
-  `group_id` VARCHAR(255) NOT NULL,
+  `customer_id` VARCHAR(255) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `pbx_active` BOOLEAN NOT NULL,
   `pbx_sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE `user_account`
   `first_name` VARCHAR(100) NOT NULL,
   `last_name` VARCHAR(100) NOT NULL,
   `user_account_type_id` SMALLINT UNSIGNED NOT NULL,
-  `group_id` VARCHAR(255) NOT NULL,
+  `customer_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `account_active` BOOLEAN NOT NULL,
@@ -158,13 +158,13 @@ MODIFY COLUMN `id` varchar(255) NOT NULL;
 -- Add index to columns
 
 ALTER TABLE `pbx`
-ADD INDEX `index___pbx__group_id` (`group_id`);
+ADD INDEX `index___pbx__customer_id` (`customer_id`);
 
 ALTER TABLE `user_account`
 ADD INDEX `index___user_account__user_account_type_id` (`user_account_type_id`);
 
 ALTER TABLE `user_account`
-ADD INDEX `index___user_account__group_id` (`group_id`);
+ADD INDEX `index___user_account__customer_id` (`customer_id`);
 
 ALTER TABLE `user_account`
 ADD INDEX `index___user_account__pbx_id` (`pbx_id`);
@@ -188,32 +188,32 @@ ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
 
 -- Create foreign key constraints
 
-ALTER TABLE `user_group`
-ADD CONSTRAINT fk___user_group___group_type_lookup
-FOREIGN KEY (`group_type`)
-REFERENCES `group_type_lookup` (`group_type`);
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer___customer_type_lookup
+FOREIGN KEY (`customer_type`)
+REFERENCES `customer_type_lookup` (`customer_type`);
 
-ALTER TABLE `user_group`
-ADD CONSTRAINT fk___user_group___uk_vat_status_lookup
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer___uk_vat_status_lookup
 FOREIGN KEY (`uk_vat_status`)
 REFERENCES `uk_vat_status_lookup` (`uk_vat_status`);
 
 ALTER TABLE `pbx`
-ADD CONSTRAINT fk___pbx___user_group
-FOREIGN KEY (`group_id`)
-REFERENCES `user_group` (`id`)
+ADD CONSTRAINT fk___pbx___customer
+FOREIGN KEY (`customer_id`)
+REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
 
-ALTER TABLE `group_invoice_address`
-ADD CONSTRAINT fk___group_invoice_address___user_group
+ALTER TABLE `customer_invoice_address`
+ADD CONSTRAINT fk___customer_invoice_address___customer
 FOREIGN KEY (`id`)
-REFERENCES `user_group` (`id`)
+REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
 
-ALTER TABLE `group_site_address`
-ADD CONSTRAINT fk___group_site_address___user_group
+ALTER TABLE `customer_site_address`
+ADD CONSTRAINT fk___customer_site_address___customer
 FOREIGN KEY (`id`)
-REFERENCES `user_group` (`id`)
+REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `pbx_invoice_address`
@@ -234,9 +234,9 @@ FOREIGN KEY (`user_account_type_id`)
 REFERENCES `user_account_type` (`id`);
 
 ALTER TABLE `user_account`
-ADD CONSTRAINT fk___user_account___user_group
-FOREIGN KEY (`group_id`)
-REFERENCES `user_group` (`id`);
+ADD CONSTRAINT fk___user_account___customer
+FOREIGN KEY (`customer_id`)
+REFERENCES `customer` (`id`);
 
 ALTER TABLE `user_account`
 ADD CONSTRAINT fk___user_account___pbx
@@ -285,27 +285,27 @@ SELECT
   `user_account`.`email` AS 'user_account_email',
   `user_account_type`.`type` AS 'user_account_type',
   `user_account`.`date_added` AS 'user_account_date_added',
-  `user_group`.`group_name`,
-  `user_account`.`group_id`,
+  `customer`.`customer_name`,
+  `user_account`.`customer_id`,
   `pbx`.`pbx_name`,
   `user_account`.`pbx_id`,
   `user_account_type`.`permission` AS 'user_account_type_permission',
-  `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
-  `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
-  `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
-  `group_site_address`.`county_state_region` AS 'group_site_county_state_region',
-  `group_site_address`.`postcode_zip_code` AS 'group_site_postcode_zip_code',
-  `group_site_address`.`country` AS 'group_site_country',
-  `group_site_address`.`contact_email` AS 'group_site_contact_email',
-  `group_site_address`.`contact_number` AS 'group_site_contact_number',
-  `group_invoice_address`.`address_line_1` AS 'group_invoice_address_line_1',
-  `group_invoice_address`.`address_line_2` AS 'group_invoice_address_line_2',
-  `group_invoice_address`.`city_town_village` AS 'group_invoice_city_town_village',
-  `group_invoice_address`.`county_state_region` AS 'group_invoice_county_state_region',
-  `group_invoice_address`.`postcode_zip_code` AS 'group_invoice_postcode_zip_code',
-  `group_invoice_address`.`country` AS 'group_invoice_country',
-  `group_invoice_address`.`contact_email` AS 'group_invoice_contact_email',
-  `group_invoice_address`.`contact_number` AS 'group_invoice_contact_number',
+  `customer_site_address`.`address_line_1` AS 'customer_site_address_line_1',
+  `customer_site_address`.`address_line_2` AS 'customer_site_address_line_2',
+  `customer_site_address`.`city_town_village` AS 'customer_site_city_town_village',
+  `customer_site_address`.`county_state_region` AS 'customer_site_county_state_region',
+  `customer_site_address`.`postcode_zip_code` AS 'customer_site_postcode_zip_code',
+  `customer_site_address`.`country` AS 'customer_site_country',
+  `customer_site_address`.`contact_email` AS 'customer_site_contact_email',
+  `customer_site_address`.`contact_number` AS 'customer_site_contact_number',
+  `customer_invoice_address`.`address_line_1` AS 'customer_invoice_address_line_1',
+  `customer_invoice_address`.`address_line_2` AS 'customer_invoice_address_line_2',
+  `customer_invoice_address`.`city_town_village` AS 'customer_invoice_city_town_village',
+  `customer_invoice_address`.`county_state_region` AS 'customer_invoice_county_state_region',
+  `customer_invoice_address`.`postcode_zip_code` AS 'customer_invoice_postcode_zip_code',
+  `customer_invoice_address`.`country` AS 'customer_invoice_country',
+  `customer_invoice_address`.`contact_email` AS 'customer_invoice_contact_email',
+  `customer_invoice_address`.`contact_number` AS 'customer_invoice_contact_number',
   `pbx_site_address`.`address_line_1` AS 'pbx_site_address_line_1',
   `pbx_site_address`.`address_line_2` AS 'pbx_site_address_line_2',
   `pbx_site_address`.`city_town_village` AS 'pbx_site_city_town_village',
@@ -325,58 +325,58 @@ SELECT
 FROM `user_account`
 INNER JOIN `user_account_type`
 ON `user_account`.`user_account_type_id` = `user_account_type`.`id`
-INNER JOIN `user_group`
-ON `user_account`.`group_id` = `user_group`.`id`
+INNER JOIN `customer`
+ON `user_account`.`customer_id` = `customer`.`id`
 INNER JOIN `pbx`
 ON `user_account`.`pbx_id` = `pbx`.`id`
-INNER JOIN `group_site_address`
-ON `user_account`.`group_id` = `group_site_address`.`id`
-INNER JOIN `group_invoice_address`
-ON `user_account`.`group_id` = `group_invoice_address`.`id`
+INNER JOIN `customer_site_address`
+ON `user_account`.`customer_id` = `customer_site_address`.`id`
+INNER JOIN `customer_invoice_address`
+ON `user_account`.`customer_id` = `customer_invoice_address`.`id`
 INNER JOIN `pbx_site_address`
 ON `user_account`.`pbx_id` = `pbx_site_address`.`id`
 INNER JOIN `pbx_invoice_address`
 ON `user_account`.`pbx_id` = `pbx_invoice_address`.`id`;
 
-CREATE VIEW `view___group_detail` AS
+CREATE VIEW `view___customer_detail` AS
 SELECT
-  `user_group`.`id` AS 'group_id',
-  `user_group`.`group_name`,
-  `user_group`.`date_added` AS 'group_date_added',
-  `user_group`.`group_active`,
-  `user_group`.`uk_based`,
-  `user_group`.`group_type`,
-  `user_group`.`uk_vat_status`,
-  `user_group`.`reselling_miniutes`,
-  `user_group`.`pbx_limit`,
-  `group_site_address`.`address_line_1` AS 'group_site_address_line_1',
-  `group_site_address`.`address_line_2` AS 'group_site_address_line_2',
-  `group_site_address`.`city_town_village` AS 'group_site_city_town_village',
-  `group_site_address`.`county_state_region` AS 'group_site_county_state_region',
-  `group_site_address`.`postcode_zip_code` AS 'group_site_postcode_zip_code',
-  `group_site_address`.`country` AS 'group_site_country',
-  `group_site_address`.`contact_email` AS 'group_site_contact_email',
-  `group_site_address`.`contact_number` AS 'group_site_contact_number',
-  `group_invoice_address`.`address_line_1` AS 'group_invoice_address_line_1',
-  `group_invoice_address`.`address_line_2` AS 'group_invoice_address_line_2',
-  `group_invoice_address`.`city_town_village` AS 'group_invoice_city_town_village',
-  `group_invoice_address`.`county_state_region` AS 'group_invoice_county_state_region',
-  `group_invoice_address`.`postcode_zip_code` AS 'group_invoice_postcode_zip_code',
-  `group_invoice_address`.`country` AS 'group_invoice_country',
-  `group_invoice_address`.`contact_email` AS 'group_invoice_contact_email',
-  `group_invoice_address`.`contact_number` AS 'group_invoice_contact_number'
-FROM `user_group`
-INNER JOIN `group_site_address`
-ON `user_group`.`id` = `group_site_address`.`id`
-INNER JOIN `group_invoice_address`
-ON `user_group`.`id` = `group_invoice_address`.`id`;
+  `customer`.`id` AS 'customer_id',
+  `customer`.`customer_name`,
+  `customer`.`date_added` AS 'customer_date_added',
+  `customer`.`customer_active`,
+  `customer`.`uk_based`,
+  `customer`.`consumer_type`,
+  `customer`.`uk_vat_status`,
+  `customer`.`reselling_miniutes`,
+  `customer`.`pbx_limit`,
+  `customer_site_address`.`address_line_1` AS 'customer_site_address_line_1',
+  `customer_site_address`.`address_line_2` AS 'customer_site_address_line_2',
+  `customer_site_address`.`city_town_village` AS 'customer_site_city_town_village',
+  `customer_site_address`.`county_state_region` AS 'customer_site_county_state_region',
+  `customer_site_address`.`postcode_zip_code` AS 'customer_site_postcode_zip_code',
+  `customer_site_address`.`country` AS 'customer_site_country',
+  `customer_site_address`.`contact_email` AS 'customer_site_contact_email',
+  `customer_site_address`.`contact_number` AS 'customer_site_contact_number',
+  `customer_invoice_address`.`address_line_1` AS 'customer_invoice_address_line_1',
+  `customer_invoice_address`.`address_line_2` AS 'customer_invoice_address_line_2',
+  `customer_invoice_address`.`city_town_village` AS 'customer_invoice_city_town_village',
+  `customer_invoice_address`.`county_state_region` AS 'customer_invoice_county_state_region',
+  `customer_invoice_address`.`postcode_zip_code` AS 'customer_invoice_postcode_zip_code',
+  `customer_invoice_address`.`country` AS 'customer_invoice_country',
+  `customer_invoice_address`.`contact_email` AS 'customer_invoice_contact_email',
+  `customer_invoice_address`.`contact_number` AS 'customer_invoice_contact_number'
+FROM `customer`
+INNER JOIN `customer_site_address`
+ON `customer`.`id` = `customer_site_address`.`id`
+INNER JOIN `customer_invoice_address`
+ON `customer`.`id` = `customer_invoice_address`.`id`;
 
 CREATE VIEW `view___pbx_detail` AS
 SELECT
   `pbx`.`id` AS 'pbx_id',
   `pbx`.`pbx_name`,
-  `pbx`.`group_id`,
-  `user_group`.`group_name`,
+  `pbx`.`customer_id`,
+  `customer`.`customer_name`,
   `pbx`.`date_added` AS 'pbx_date_added',
   `pbx`.`pbx_active`,
   `pbx`.`pbx_sip_extension_limit`,
@@ -397,8 +397,8 @@ SELECT
   `pbx_invoice_address`.`contact_email` AS 'pbx_invoice_contact_email',
   `pbx_invoice_address`.`contact_number` AS 'pbx_invoice_contact_number'
 FROM `pbx`
-INNER JOIN `user_group`
-ON `pbx`.`group_id` = `user_group`.`id`
+INNER JOIN `customer`
+ON `pbx`.`customer_id` = `customer`.`id`
 INNER JOIN `pbx_site_address`
 ON `pbx`.`id` = `pbx_site_address`.`id`
 INNER JOIN `pbx_invoice_address`
@@ -426,8 +426,8 @@ SELECT DISTINCT
   `ps_contacts`.`endpoint` IS NOT NULL AS 'registered',
   `pbx`.`pbx_name`,
   `pbx`.`id` AS 'pbx_id',
-  `user_group`.`group_name`,
-  `user_group`.`id` AS 'group_id'
+  `customer`.`customer_name`,
+  `customer`.`id` AS 'customer_id'
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
@@ -435,8 +435,8 @@ INNER JOIN `pbx`
 ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 LEFT JOIN `ps_contacts`
 on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
-INNER JOIN `user_group`
-ON `pbx`.`group_id` = `user_group`.`id`
+INNER JOIN `customer`
+ON `pbx`.`customer_id` = `customer`.`id`
 WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 CREATE VIEW `view___sip_extension_registered` AS
@@ -446,8 +446,8 @@ SELECT
   `ps_contacts`.`user_agent`,
   `pbx`.`pbx_name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
-  `user_group`.`group_name` AS 'group_name',
-  `user_group`.`id` AS 'group_id'
+  `customer`.`customer_name` AS 'customer_name',
+  `customer`.`id` AS 'customer_id'
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
@@ -455,15 +455,15 @@ INNER JOIN `pbx`
 ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 INNER JOIN `ps_contacts`
 on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
-INNER JOIN `user_group`
-ON `pbx`.`group_id` = `user_group`.`id`
+INNER JOIN `customer`
+ON `pbx`.`customer_id` = `customer`.`id`
 WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
 
-INSERT INTO `group_type_lookup` (`group_type`)
+INSERT INTO `consumer_type_lookup` (`consumer_type`)
 VALUES
   ('Residentail'),
   ('Sole Trader'),
@@ -480,16 +480,16 @@ VALUES
   ('Not Registered'),
   ('n/a');
 
-INSERT INTO `user_group` (`id`, `group_name`, `group_active`, `uk_based`, `group_type`, `uk_vat_status`, `reselling_miniutes`, `pbx_limit`)
+INSERT INTO `customer` (`id`, `customer_name`, `customer_active`, `uk_based`, `consumer_type`, `uk_vat_status`, `reselling_miniutes`, `pbx_limit`)
 VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
 
-INSERT INTO `group_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `group_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
+INSERT INTO `customer_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `pbx` (`id`, `pbx_name`, `group_id`, `pbx_active`, `pbx_sip_extension_limit`)
+INSERT INTO `pbx` (`id`, `pbx_name`, `customer_id`, `pbx_active`, `pbx_sip_extension_limit`)
 VALUES (1, 'system', 1, 0, 0);
   
 INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
@@ -524,18 +524,18 @@ VALUES
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
-      &#9989 Create a Group Admin (200) User Account<br>
-      &#9989 View a Group Admin (200) User Account<br>
-      &#9989 Update a Group Admin (200) User Account<br>
-      &#9989 Delete a Group Admin (200) User Account<br>
+      &#9989 Create a Customer Admin (200) User Account<br>
+      &#9989 View a Customer Admin (200) User Account<br>
+      &#9989 Update a Customer Admin (200) User Account<br>
+      &#9989 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td>
-      &#9989 Create a Group Regular (201) User Account<br>
-      &#9989 View a Group Regular (201) User Account<br>
-      &#9989 Update a Group Regular (201) User Account<br>
-      &#9989 Delete a Group Regular (201) User Account<br>
+      &#9989 Create a Customer Regular (201) User Account<br>
+      &#9989 View a Customer Regular (201) User Account<br>
+      &#9989 Update a Customer Regular (201) User Account<br>
+      &#9989 Delete a Customer Regular (201) User Account<br>
     </td>
     <td>
       &#9989 Create a PBX Admin (300) User Account<br>
@@ -560,30 +560,30 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 Create a Group Invoice (400) User Account<br>
-      &#9989 View a Group Invoice (400) User Account<br>
-      &#9989 Update a Group Invoice (400) User Account<br>
-      &#9989 Delete a Group Invoice (400) User Account<br>
+      &#9989 Create a Customer Invoice (400) User Account<br>
+      &#9989 View a Customer Invoice (400) User Account<br>
+      &#9989 Update a Customer Invoice (400) User Account<br>
+      &#9989 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Group Invoice Accounts Are Read Only<br>
+      Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Group.
+      Billed to a Customer.
       <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
     <td>
-      &#9940 View Own Group<br>
-      &#9940 Update Own Group<br>
-      &#9940 Delete Own Group<br>
+      &#9940 View Own Customer<br>
+      &#9940 Update Own Customer<br>
+      &#9940 Delete Own Customer<br>
       <div class="main-menu-space"></div>
     </td>
     <td>
-      &#9989 Create a Group<br>
-      &#9989 View a Group<br>
-      &#9989 Update a Group<br>
-      &#9989 Delete a Group<br>
+      &#9989 Create a Customer<br>
+      &#9989 View a Customer<br>
+      &#9989 Update a Customer<br>
+      &#9989 Delete a Customer<br>
     </td>
   <tr>
     <td>
@@ -607,16 +607,16 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#9989 Create a Group Invoice<br>
-      &#9989 View a Group Invoice<br>
-      &#9989 Update a Group Invoice<br>
-      &#9989 Delete a Group Invoice<br>
+      &#9989 Create a Customer Invoice<br>
+      &#9989 View a Customer Invoice<br>
+      &#9989 Update a Customer Invoice<br>
+      &#9989 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td>
       &#9989 View YAP User Account Logs<br>
-      &#9989 View Group Logs<br>
+      &#9989 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
@@ -629,7 +629,7 @@ VALUES
   </tr>
 </table>'
 ),
-(200, 'Group Admin (200)',
+(200, 'Customer Admin (200)',
 '<table>
   <tr>
     <td>
@@ -653,18 +653,18 @@ VALUES
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
-      &#10060 Create a Group Admin (200) User Account<br>
-      &#9989 View a Group Admin (200) User Account<br>
-      &#10060 Update a Group Admin (200) User Account<br>
-      &#10060 Delete a Group Admin (200) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#9989 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Regular (201) User Account<br>
-      &#9989 View a Group Regular (201) User Account<br>
-      &#9989 Update a Group Regular (201) User Account<br>
-      &#10060 Delete a Group Regular (201) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#9989 View a Customer Regular (201) User Account<br>
+      &#9989 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td>
       &#10060 Create a PBX Admin (300) User Account<br>
@@ -689,30 +689,30 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Invoice (400) User Account<br>
-      &#9989 View a Group Invoice (400) User Account<br>
-      &#10060 Update a Group Invoice (400) User Account<br>
-      &#10060 Delete a Group Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#9989 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Group Invoice Accounts Are Read Only<br>
+      Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Group.
+      Billed to a Customer.
       <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
     <td>
-      &#9989 View Own Group<br>
-      &#9989 Update Own Group<br>
-      &#10060 Delete Own Group<br>
+      &#9989 View Own Customer<br>
+      &#9989 Update Own Customer<br>
+      &#10060 Delete Own Customer<br>
       <div class="main-menu-space"></div>
     </td>
     <td>
-      &#10060 Create a Group<br>
-      &#10060 View a Group<br>
-      &#10060 Update a Group<br>
-      &#10060 Delete a Group<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td>
@@ -736,16 +736,16 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Create a Group Invoice<br>
-      &#9989 View a Group Invoice<br>
-      &#10060 Update a Group Invoice<br>
-      &#10060 Delete a Group Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#9989 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td>
       &#10060 View YAP User Account Logs<br>
-      &#9989 View Group Logs<br>
+      &#9989 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
@@ -758,7 +758,7 @@ VALUES
   </tr>
 </table>'
 ),
-(201, 'Group Regular (201)',
+(201, 'Customer Regular (201)',
 '<table>
   <tr>
     <td>
@@ -782,18 +782,18 @@ VALUES
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
-      &#10060 Create a Group Admin (200) User Account<br>
-      &#10060 View a Group Admin (200) User Account<br>
-      &#10060 Update a Group Admin (200) User Account<br>
-      &#10060 Delete a Group Admin (200) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Regular (201) User Account<br>
-      &#10060 View a Group Regular (201) User Account<br>
-      &#10060 Update a Group Regular (201) User Account<br>
-      &#10060 Delete a Group Regular (201) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td>
       &#10060 Create a PBX Admin (300) User Account<br>
@@ -818,30 +818,30 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Invoice (400) User Account<br>
-      &#10060 View a Group Invoice (400) User Account<br>
-      &#10060 Update a Group Invoice (400) User Account<br>
-      &#10060 Delete a Group Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Group Invoice Accounts Are Read Only<br>
+      Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Group.
+      Billed to a Customer.
       <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
     <td>
-      &#9989 View Own Group<br>
-      &#10060 Update Own Group<br>
-      &#10060 Delete Own Group<br>
+      &#9989 View Own Customer<br>
+      &#10060 Update Own Customer<br>
+      &#10060 Delete Own Customer<br>
       <div class="main-menu-space"></div>
     </td>
     <td>
-      &#10060 Create a Group<br>
-      &#10060 View a Group<br>
-      &#10060 Update a Group<br>
-      &#10060 Delete a Group<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td>
@@ -865,16 +865,16 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Create a Group Invoice<br>
-      &#9989 View a Group Invoice<br>
-      &#10060 Update a Group Invoice<br>
-      &#10060 Delete a Group Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#9989 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td>
       &#10060 View YAP User Account Logs<br>
-      &#10060 View Group Logs<br>
+      &#10060 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
@@ -911,18 +911,18 @@ VALUES
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
-      &#10060 Create a Group Admin (200) User Account<br>
-      &#10060 View a Group Admin (200) User Account<br>
-      &#10060 Update a Group Admin (200) User Account<br>
-      &#10060 Delete a Group Admin (200) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Regular (201) User Account<br>
-      &#10060 View a Group Regular (201) User Account<br>
-      &#10060 Update a Group Regular (201) User Account<br>
-      &#10060 Delete a Group Regular (201) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td>
       &#10060 Create a PBX Admin (300) User Account<br>
@@ -947,30 +947,30 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Invoice (400) User Account<br>
-      &#10060 View a Group Invoice (400) User Account<br>
-      &#10060 Update a Group Invoice (400) User Account<br>
-      &#10060 Delete a Group Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Group Invoice Accounts Are Read Only<br>
+      Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Group.
+      Billed to a Customer.
       <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
     <td>
-      &#9940 View Own Group<br>
-      &#9940 Update Own Group<br>
-      &#9940 Delete Own Group<br>
+      &#9940 View Own Customer<br>
+      &#9940 Update Own Customer<br>
+      &#9940 Delete Own Customer<br>
       <div class="main-menu-space"></div>
     </td>
     <td>
-      &#10060 Create a Group<br>
-      &#10060 View a Group<br>
-      &#10060 Update a Group<br>
-      &#10060 Delete a Group<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td>
@@ -994,16 +994,16 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Create a Group Invoice<br>
-      &#10060 View a Group Invoice<br>
-      &#10060 Update a Group Invoice<br>
-      &#10060 Delete a Group Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#10060 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td>
       &#10060 View YAP User Account Logs<br>
-      &#10060 View Group Logs<br>
+      &#10060 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
@@ -1040,18 +1040,18 @@ VALUES
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
-      &#10060 Create a Group Admin (200) User Account<br>
-      &#10060 View a Group Admin (200) User Account<br>
-      &#10060 Update a Group Admin (200) User Account<br>
-      &#10060 Delete a Group Admin (200) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Regular (201) User Account<br>
-      &#10060 View a Group Regular (201) User Account<br>
-      &#10060 Update a Group Regular (201) User Account<br>
-      &#10060 Delete a Group Regular (201) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td>
       &#10060 Create a PBX Admin (300) User Account<br>
@@ -1076,30 +1076,30 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Invoice (400) User Account<br>
-      &#10060 View a Group Invoice (400) User Account<br>
-      &#10060 Update a Group Invoice (400) User Account<br>
-      &#10060 Delete a Group Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Group Invoice Accounts Are Read Only<br>
+      Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Group.
+      Billed to a Customer.
       <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
     <td>
-      &#9940 View Own Group<br>
-      &#9940 Update Own Group<br>
-      &#9940 Delete Own Group<br>
+      &#9940 View Own Customer<br>
+      &#9940 Update Own Customer<br>
+      &#9940 Delete Own Customer<br>
       <div class="main-menu-space"></div>
     </td>
     <td>
-      &#10060 Create a Group<br>
-      &#10060 View a Group<br>
-      &#10060 Update a Group<br>
-      &#10060 Delete a Group<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td>
@@ -1123,16 +1123,16 @@ VALUES
       &#9989 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Create a Group Invoice<br>
-      &#10060 View a Group Invoice<br>
-      &#10060 Update a Group Invoice<br>
-      &#10060 Delete a Group Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#10060 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td>
       &#10060 View YAP User Account Logs<br>
-      &#10060 View Group Logs<br>
+      &#10060 View Customer Logs<br>
       &#10060 View PBX Logs<br>
       &#10060 Download Logs<br>
     </td>
@@ -1169,18 +1169,18 @@ VALUES
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
-      &#10060 Create a Group Admin (200) User Account<br>
-      &#10060 View a Group Admin (200) User Account<br>
-      &#10060 Update a Group Admin (200) User Account<br>
-      &#10060 Delete a Group Admin (200) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Regular (201) User Account<br>
-      &#10060 View a Group Regular (201) User Account<br>
-      &#10060 Update a Group Regular (201) User Account<br>
-      &#10060 Delete a Group Regular (201) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td>
       &#10060 Create a PBX Admin (300) User Account<br>
@@ -1205,30 +1205,30 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Invoice (400) User Account<br>
-      &#10060 View a Group Invoice (400) User Account<br>
-      &#10060 Update a Group Invoice (400) User Account<br>
-      &#10060 Delete a Group Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Group Invoice Accounts Are Read Only<br>
+      Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Group.
+      Billed to a Customer.
       <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
     <td>
-      &#9940 View Own Group<br>
-      &#9940 Update Own Group<br>
-      &#9940 Delete Own Group<br>
+      &#9940 View Own Customer<br>
+      &#9940 Update Own Customer<br>
+      &#9940 Delete Own Customer<br>
       <div class="main-menu-space"></div>
     </td>
     <td>
-      &#10060 Create a Group<br>
-      &#10060 View a Group<br>
-      &#10060 Update a Group<br>
-      &#10060 Delete a Group<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td>
@@ -1252,16 +1252,16 @@ VALUES
       &#10060 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Create a Group Invoice<br>
-      &#10060 View a Group Invoice<br>
-      &#10060 Update a Group Invoice<br>
-      &#10060 Delete a Group Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#10060 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td>
       &#10060 View YAP User Account Logs<br>
-      &#10060 View Group Logs<br>
+      &#10060 View Customer Logs<br>
       &#10060 View PBX Logs<br>
       &#10060 Download Logs<br>
     </td>
@@ -1298,18 +1298,18 @@ VALUES
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
-      &#10060 Create a Group Admin (200) User Account<br>
-      &#10060 View a Group Admin (200) User Account<br>
-      &#10060 Update a Group Admin (200) User Account<br>
-      &#10060 Delete a Group Admin (200) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Regular (201) User Account<br>
-      &#10060 View a Group Regular (201) User Account<br>
-      &#10060 Update a Group Regular (201) User Account<br>
-      &#10060 Delete a Group Regular (201) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td>
       &#10060 Create a PBX Admin (300) User Account<br>
@@ -1334,30 +1334,30 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a Group Invoice (400) User Account<br>
-      &#10060 View a Group Invoice (400) User Account<br>
-      &#10060 Update a Group Invoice (400) User Account<br>
-      &#10060 Delete a Group Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Group Invoice Accounts Are Read Only<br>
+      Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Group.
+      Billed to a Customer.
       <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
     <td>
-      &#10060 View Own Group<br>
-      &#10060 Update Own Group<br>
-      &#10060 Delete Own Group<br>
+      &#10060 View Own Customer<br>
+      &#10060 Update Own Customer<br>
+      &#10060 Delete Own Customer<br>
       <div class="main-menu-space"></div>
     </td>
     <td>
-      &#10060 Create a Group<br>
-      &#10060 View a Group<br>
-      &#10060 Update a Group<br>
-      &#10060 Delete a Group<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td>
@@ -1381,16 +1381,16 @@ VALUES
       &#10060 Delete a SIP Endpoint<br>
     </td>
     <td>
-      &#10060 Create a Group Invoice<br>
-      &#9989 View a Group Invoice<br>
-      &#10060 Update a Group Invoice<br>
-      &#10060 Delete a Group Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#9989 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td>
       &#10060 View YAP User Account Logs<br>
-      &#10060 View Group Logs<br>
+      &#10060 View Customer Logs<br>
       &#10060 View PBX Logs<br>
       &#10060 Download Logs<br>
     </td>
