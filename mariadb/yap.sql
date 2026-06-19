@@ -188,7 +188,7 @@ ALTER TABLE `customer`
 ADD INDEX `index___customer__consumer_type` (`consumer_type`);
 
 ALTER TABLE `customer`
-ADD INDEX `index___customer__uk_tax_status` (`uk_tax_status`);
+ADD INDEX `index___customer__uk_vat_status` (`uk_vat_status`);
 
 ALTER TABLE `pbx`
 ADD INDEX `index___pbx__customer_id` (`customer_id`);
