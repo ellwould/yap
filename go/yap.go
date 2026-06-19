@@ -390,16 +390,16 @@ func userAccountData(dbUserAccountData databaseFunctionParameter, data string) s
 	dbSelectWhere.table = "view___account_detail"
 	if data == "type_id" {
 		dbSelectWhere.column = "user_account_type_id"
-	} else if data == "group_id" {
-		dbSelectWhere.column = "group_id"
-	} else if data == "group_name" {
-		dbSelectWhere.column = "group_name"
+	} else if data == "customer_id" {
+		dbSelectWhere.column = "customer_id"
+	} else if data == "customer_name" {
+		dbSelectWhere.column = "customer_name"
 	} else if data == "pbx_id" {
 		dbSelectWhere.column = "pbx_id"
 	} else if data == "pbx_name" {
 		dbSelectWhere.column = "pbx_name"
 	} else {
-		panic("The function userAccountData can only accept the following arguments: type_id, group_id, group_name or pbx_id")
+		panic("The function userAccountData can only accept the following arguments: type_id, customer_id, customer_name or pbx_id")
 	}
 	dbSelectWhere.columnWhere = "user_account_email"
 	dbSelectWhere.columnWhereValue = dbUserAccountData.columnWhereValue
@@ -426,12 +426,12 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th>Total Groups</th>")
+	fmt.Fprintf(w, "    <th>Total Customers</th>")
 	fmt.Fprintf(w, "    <th>Total PBXs</th>")
 	fmt.Fprintf(w, "    <th>Total SIP Extensions</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	dbTotalTableCount.table = "user_group"
+	dbTotalTableCount.table = "customer"
 	dbTotalTableCount.countMinusOne = true
 	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
 	dbTotalTableCount.table = "pbx"
@@ -446,12 +446,12 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>Total YAP<br>Admin<br>Accounts<br>(Type ID: 100)</th>")
-	fmt.Fprintf(w, "    <th>Total Group<br>Admin<br>Accounts<br>(Type ID: 200)</th>")
-	fmt.Fprintf(w, "    <th>Total Group<br>Regular<br>Accounts<br>(Type ID: 201)</th>")
+	fmt.Fprintf(w, "    <th>Total Customer<br>Admin<br>Accounts<br>(Type ID: 200)</th>")
+	fmt.Fprintf(w, "    <th>Total Customer<br>Regular<br>Accounts<br>(Type ID: 201)</th>")
 	fmt.Fprintf(w, "    <th>Total PBX<br>Admin<br>Accounts<br>(Type ID: 300)</th>")
 	fmt.Fprintf(w, "    <th>Total PBX<br>Regular<br>Accounts<br>(Type ID: 301)</th>")
 	fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
-	fmt.Fprintf(w, "    <th>Total Group<br>Invoice<br>Accounts<br>(Type ID: 400)</th>")
+	fmt.Fprintf(w, "    <th>Total Customer<br>Invoice<br>Accounts<br>(Type ID: 400)</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCountWhere.columnWhereValue = "100"
@@ -473,32 +473,32 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 
 }
 
-func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunctionParameter) {
+func mainMenuCustomerAccount(w http.ResponseWriter, dbCustomerAccount databaseFunctionParameter) {
 
-	result, err := dbGroupAccount.connection.Query(`SELECT
-					                  group_name,
-					                  group_id,
-					                  group_site_address_line_1,
-					                  group_site_address_line_2,
-					                  group_site_city_town_village,
-					                  group_site_county_state_region,
-					                  group_site_postcode_zip_code,
-					                  group_site_country,
-					                  group_site_contact_email,
-					                  group_site_contact_number,
-					                  group_invoice_address_line_1,
-					                  group_invoice_address_line_2,
-					                  group_invoice_city_town_village,
-					                  group_invoice_county_state_region,
-					                  group_invoice_postcode_zip_code,
-					                  group_invoice_country,
-					                  group_invoice_contact_email,
-					                  group_invoice_contact_number,
+	result, err := dbCustomerAccount.connection.Query(`SELECT
+					                  customer_name,
+					                  customer_id,
+					                  customer_site_address_line_1,
+					                  customer_site_address_line_2,
+					                  customer_site_city_town_village,
+					                  customer_site_county_state_region,
+					                  customer_site_postcode_zip_code,
+					                  customer_site_country,
+					                  customer_site_contact_email,
+					                  customer_site_contact_number,
+					                  customer_invoice_address_line_1,
+					                  customer_invoice_address_line_2,
+					                  customer_invoice_city_town_village,
+					                  customer_invoice_county_state_region,
+					                  customer_invoice_postcode_zip_code,
+					                  customer_invoice_country,
+					                  customer_invoice_contact_email,
+					                  customer_invoice_contact_number,
 					                  pbx_id
 					                FROM
 					                  yap.view___account_detail
 					                WHERE
-					                  user_account_email = ?;`, dbGroupAccount.columnWhereValue)
+					                  user_account_email = ?;`, dbCustomerAccount.columnWhereValue)
 
 	// Error
 	if err != nil {
@@ -507,46 +507,46 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 
 	for result.Next() {
 		var (
-			groupName                     string
-			groupID                       string
-			groupSiteAddressLine1         string
-			groupSiteAddressLine2         string
-			groupSiteCityTownVillage      string
-			groupSiteCountyStateRegion    string
-			groupSitePostcodeZipCode      string
-			groupSiteCountry              string
-			groupSiteContactEmail         string
-			groupSiteContactNumber        string
-			groupInvoiceAddressLine1      string
-			groupInvoiceAddressLine2      string
-			groupInvoiceCityTownVillage   string
-			groupInvoiceCountyStateRegion string
-			groupInvoicePostcodeZipCode   string
-			groupInvoiceCountry           string
-			groupInvoiceContactEmail      string
-			groupInvoiceContactNumber     string
-			pbxID                         string
+			customerName                     string
+			customerID                       string
+			customerSiteAddressLine1         string
+			customerSiteAddressLine2         string
+			customerSiteCityTownVillage      string
+			customerSiteCountyStateRegion    string
+			customerSitePostcodeZipCode      string
+			customerSiteCountry              string
+			customerSiteContactEmail         string
+			customerSiteContactNumber        string
+			customerInvoiceAddressLine1      string
+			customerInvoiceAddressLine2      string
+			customerInvoiceCityTownVillage   string
+			customerInvoiceCountyStateRegion string
+			customerInvoicePostcodeZipCode   string
+			customerInvoiceCountry           string
+			customerInvoiceContactEmail      string
+			customerInvoiceContactNumber     string
+			pbxID                            string
 		)
 
 		err = result.Scan(
-			&groupName,
-			&groupID,
-			&groupSiteAddressLine1,
-			&groupSiteAddressLine2,
-			&groupSiteCityTownVillage,
-			&groupSiteCountyStateRegion,
-			&groupSitePostcodeZipCode,
-			&groupSiteCountry,
-			&groupSiteContactEmail,
-			&groupSiteContactNumber,
-			&groupInvoiceAddressLine1,
-			&groupInvoiceAddressLine2,
-			&groupInvoiceCityTownVillage,
-			&groupInvoiceCountyStateRegion,
-			&groupInvoicePostcodeZipCode,
-			&groupInvoiceCountry,
-			&groupInvoiceContactEmail,
-			&groupInvoiceContactNumber,
+			&customerName,
+			&customerID,
+			&customerSiteAddressLine1,
+			&customerSiteAddressLine2,
+			&customerSiteCityTownVillage,
+			&customerSiteCountyStateRegion,
+			&customerSitePostcodeZipCode,
+			&customerSiteCountry,
+			&customerSiteContactEmail,
+			&customerSiteContactNumber,
+			&customerInvoiceAddressLine1,
+			&customerInvoiceAddressLine2,
+			&customerInvoiceCityTownVillage,
+			&customerInvoiceCountyStateRegion,
+			&customerInvoicePostcodeZipCode,
+			&customerInvoiceCountry,
+			&customerInvoiceContactEmail,
+			&customerInvoiceContactNumber,
 			&pbxID,
 		)
 
@@ -557,14 +557,14 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>Group Name and ID</th>")
-		fmt.Fprintf(w, "    <th>Total PBXs in Group</th>")
+		fmt.Fprintf(w, "    <th>Customer Name and ID</th>")
+		fmt.Fprintf(w, "    <th>Customers Total PBXs</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td>Group Name: "+groupName+"<br><br>Group ID: "+groupID+"</td>")
+		fmt.Fprintf(w, "    <td>Customer Name: "+customerName+"<br><br>Customer ID: "+customerID+"</td>")
 		var dbTotalTableCountWhere databaseFunctionParameter
-		dbTotalTableCountWhere.connection = dbGroupAccount.connection
-		dbTotalTableCountWhere.database = dbGroupAccount.database
+		dbTotalTableCountWhere.connection = dbCustomerAccount.connection
+		dbTotalTableCountWhere.database = dbCustomerAccount.database
 		dbTotalTableCountWhere.table = "pbx"
 		dbTotalTableCountWhere.columnWhere = "id"
 		dbTotalTableCountWhere.columnWhereValue = pbxID
@@ -574,27 +574,27 @@ func mainMenuGroupAccount(w http.ResponseWriter, dbGroupAccount databaseFunction
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>Group Site Address</th>")
-		fmt.Fprintf(w, "    <th>Group Site Email</th>")
-		fmt.Fprintf(w, "    <th>Group Site Phone Number</th>")
+		fmt.Fprintf(w, "    <th>Customer Site Address</th>")
+		fmt.Fprintf(w, "    <th>Customer Site Email</th>")
+		fmt.Fprintf(w, "    <th>Customer Site Phone Number</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+groupSiteAddressLine1+"<br>"+groupSiteAddressLine2+"<br>"+groupSiteCityTownVillage+"<br>"+groupSiteCountyStateRegion+"<br><br>"+groupSitePostcodeZipCode+"<br><br>"+groupSiteCountry+"</td>")
-		fmt.Fprintf(w, "    <td><a href=\"mailto:"+groupSiteContactEmail+"\">"+groupSiteContactEmail+"</a></td>")
-		fmt.Fprintf(w, "    <td><a href=\"tel:"+groupSiteContactNumber+"\">"+groupSiteContactNumber+"</a></td>")
+		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+customerSiteAddressLine1+"<br>"+customerSiteAddressLine2+"<br>"+customerSiteCityTownVillage+"<br>"+customerSiteCountyStateRegion+"<br><br>"+customerSitePostcodeZipCode+"<br><br>"+customerSiteCountry+"</td>")
+		fmt.Fprintf(w, "    <td><a href=\"mailto:"+customerSiteContactEmail+"\">"+customerSiteContactEmail+"</a></td>")
+		fmt.Fprintf(w, "    <td><a href=\"tel:"+customerSiteContactNumber+"\">"+customerSiteContactNumber+"</a></td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>Group Invoice Address</th>")
-		fmt.Fprintf(w, "    <th>Group Invoice Email</th>")
-		fmt.Fprintf(w, "    <th>Group Invoice Phone Number</th>")
+		fmt.Fprintf(w, "    <th>Customer Invoice Address</th>")
+		fmt.Fprintf(w, "    <th>Customer Invoice Email</th>")
+		fmt.Fprintf(w, "    <th>Customer Invoice Phone Number</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+groupInvoiceAddressLine1+"<br>"+groupInvoiceAddressLine2+"<br>"+groupInvoiceCityTownVillage+"<br>"+groupInvoiceCountyStateRegion+"<br><br>"+groupInvoicePostcodeZipCode+"<br><br>"+groupInvoiceCountry+"</td>")
-		fmt.Fprintf(w, "    <td><a href=\"mailto:"+groupInvoiceContactEmail+"\">"+groupInvoiceContactEmail+"</a></td>")
-		fmt.Fprintf(w, "    <td><a href=\"tel:"+groupInvoiceContactNumber+"\">"+groupInvoiceContactNumber+"</a></td>")
+		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+customerInvoiceAddressLine1+"<br>"+customerInvoiceAddressLine2+"<br>"+customerInvoiceCityTownVillage+"<br>"+customerInvoiceCountyStateRegion+"<br><br>"+customerInvoicePostcodeZipCode+"<br><br>"+customerInvoiceCountry+"</td>")
+		fmt.Fprintf(w, "    <td><a href=\"mailto:"+customerInvoiceContactEmail+"\">"+customerInvoiceContactEmail+"</a></td>")
+		fmt.Fprintf(w, "    <td><a href=\"tel:"+customerInvoiceContactNumber+"\">"+customerInvoiceContactNumber+"</a></td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 	}
@@ -819,7 +819,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		mainMenuYapAccount(w, dbDetail)
 	} else if userTypeID == "200" || userTypeID == "201" {
 		fmt.Fprintf(w, "<br>")
-		mainMenuGroupAccount(w, dbDetail)
+		mainMenuCustomerAccount(w, dbDetail)
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		fmt.Fprintf(w, "<br>")
 		mainMenuPBXAccount(w, dbDetail)
@@ -861,8 +861,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		userAccountEmail     string
 		userAccountType      string
 		userAccountDateAdded string
-		groupID              string
-		groupName            string
+		customerID           string
+		customerName         string
 		pbxID                string
 		pbxName              string
 	)
@@ -873,7 +873,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 							       user_account_email,
 							       user_account_type,
 							       user_account_date_added,
-							       group_id,
+							       customer_id,
 							       pbx_id
 							     FROM
 							       yap.view___account_detail
@@ -893,7 +893,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			&userAccountEmail,
 			&userAccountType,
 			&userAccountDateAdded,
-			&groupID,
+			&customerID,
 			&pbxID,
 		)
 
@@ -919,8 +919,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "    <th>Total YAP<br>Admin<br>Accounts<br>(Type ID: 100)</th>")
 			}
 			if userTypeID == "100" || userTypeID == "200" {
-				fmt.Fprintf(w, "    <th>Total Group<br>Admin<br>Accounts<br>(Type ID: 200)</th>")
-				fmt.Fprintf(w, "    <th>Total Group<br>Regular<br>Accounts<br>(Type ID: 201)</th>")
+				fmt.Fprintf(w, "    <th>Total Customer<br>Admin<br>Accounts<br>(Type ID: 200)</th>")
+				fmt.Fprintf(w, "    <th>Total Customer<br>Regular<br>Accounts<br>(Type ID: 201)</th>")
 			}
 			if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
 				fmt.Fprintf(w, "    <th>Total PBX<br>Admin<br>Accounts<br>(Type ID: 300)</th>")
@@ -928,7 +928,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
 			}
 			if userTypeID == "100" || userTypeID == "200" {
-				fmt.Fprintf(w, "    <th>Total Group<br>Invoice<br>Accounts<br>(Type ID: 400)</th>")
+				fmt.Fprintf(w, "    <th>Total Customer<br>Invoice<br>Accounts<br>(Type ID: 400)</th>")
 			}
 			fmt.Fprintf(w, "  </tr>")
 			fmt.Fprintf(w, "  <tr>")
@@ -948,8 +948,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				dbTotalTableCountWhere.columnWhereValue = "400"
 				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				dbTotalTableCountWhere.columnWhereAnd = "group_id"
-				dbTotalTableCountWhere.columnWhereValueAnd = groupID
+				dbTotalTableCountWhere.columnWhereAnd = "customer_id"
+				dbTotalTableCountWhere.columnWhereValueAnd = customerID
 				if userTypeID == "200" {
 					dbTotalTableCountWhere.columnWhereValue = "200"
 					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
@@ -1014,8 +1014,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" || userTypeID == "300" {
 
-		userGroupID := userAccountData(dbDetail, "group_id")
-		userGroupName := userAccountData(dbDetail, "group_name")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+		userCustomerName := userAccountData(dbDetail, "customer_name")
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
@@ -1026,9 +1026,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>All User Account Details on the Server:</th>")
 		} else if userTypeID == "200" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>User Account Details for the Customer<br>"+userCustomerName+"<br>(Customer ID: "+userCustomerID+")</th>")
 		} else if userTypeID == "201" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX User Account Details Within the Group<br>"+userGroupName+"<br>(Group ID: "+userGroupID+")</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX User Account Details for the Customer<br>"+userCustomerName+"<br>(Customer ID: "+userCustomerID+")</th>")
 		} else if userTypeID == "300" {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX User Account Details Within the PBX<br>"+userPBXName+"<br>(PBX ID: "+userPBXID+")</th>")
 		}
@@ -1074,14 +1074,14 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		}
 		if userTypeID == "100" {
-			inputTableHTMLArgument.inputID = "other-account-input-group-name"
-			inputTableHTMLArgument.funcNameJS = "otherAccountSearchGroupName"
-			inputTableHTMLArgument.placeholder = "Group Name"
+			inputTableHTMLArgument.inputID = "other-account-input-customer-name"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerName"
+			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTMLArgument.inputID = "other-account-input-group-id"
-			inputTableHTMLArgument.funcNameJS = "otherAccountSearchGroupID"
-			inputTableHTMLArgument.placeholder = "Group ID"
+			inputTableHTMLArgument.inputID = "other-account-input-customer-id"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerID"
+			inputTableHTMLArgument.placeholder = "Customer ID"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		}
@@ -1110,8 +1110,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "          <th>PBX ID</th>")
 		}
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <th>Group Name</th>")
-			fmt.Fprintf(w, "          <th>Group ID</th>")
+			fmt.Fprintf(w, "          <th>Customer Name</th>")
+			fmt.Fprintf(w, "          <th>Customer ID</th>")
 		}
 
 		fmt.Fprintf(w, "        </tr>")
@@ -1119,14 +1119,14 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		var whereClause string
 
 		if userTypeID == "100" {
-			whereClause = "WHERE group_id != ? AND pbx_id != ?;"
-			userGroupID = "0"
+			whereClause = "WHERE customer_id != ? AND pbx_id != ?;"
+			userCustomerID = "0"
 			userPBXID = "0"
 		} else if userTypeID == "200" || userTypeID == "201" {
-			whereClause = "WHERE group_id = ? AND pbx_id != ?;"
+			whereClause = "WHERE customer_id = ? AND pbx_id != ?;"
 			userPBXID = "0"
 		} else if userTypeID == "300" {
-			whereClause = "WHERE group_id = ? AND pbx_id = ?;"
+			whereClause = "WHERE customer_id = ? AND pbx_id = ?;"
 		}
 
 		otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
@@ -1135,13 +1135,13 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						     			 user_account_email,                                                   
 						     			 user_account_type,  
 						     			 user_account_date_added, 
-						     			 group_id,
-						     			 group_name,
+						     			 customer_id,
+						     			 customer_name,
 						     			 pbx_id,
 						     			 pbx_name						     
 								       FROM
 								         yap.view___account_detail
-								       `+whereClause, userGroupID, userPBXID)
+								       `+whereClause, userCustomerID, userPBXID)
 
 		// Error
 		if err != nil {
@@ -1156,8 +1156,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				&userAccountEmail,
 				&userAccountType,
 				&userAccountDateAdded,
-				&groupID,
-				&groupName,
+				&customerID,
+				&customerName,
 				&pbxID,
 				&pbxName,
 			)
@@ -1185,13 +1185,13 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				}
 			}
 			if userTypeID == "100" {
-				if groupName != "system" {
-					fmt.Fprintf(w, "          <td>"+groupName+"</td>")
+				if customerName != "system" {
+					fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
-				if groupID != "1" {
-					fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+				if customerID != "1" {
+					fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 				} else {
 					fmt.Fprintf(w, "          <td>-</td>")
 				}
@@ -1235,14 +1235,14 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			filterTableJS(w, filterTableJSArgument)
 		}
 		if userTypeID == "100" {
-			// JS filter function for group name in the other account table
-			filterTableJSArgument.funcNameJS = "otherAccountSearchGroupName"
-			filterTableJSArgument.inputID = "other-account-input-group-name"
+			// JS filter function for customer name in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerName"
+			filterTableJSArgument.inputID = "other-account-input-customer-name"
 			filterTableJSArgument.columnNumber = 6
 			filterTableJS(w, filterTableJSArgument)
-			// JS filter function for group ID in the other account table
-			filterTableJSArgument.funcNameJS = "otherAccountSearchGroupID"
-			filterTableJSArgument.inputID = "other-account-input-group-id"
+			// JS filter function for customer ID in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerID"
+			filterTableJSArgument.inputID = "other-account-input-customer-id"
 			filterTableJSArgument.columnNumber = 7
 			filterTableJS(w, filterTableJSArgument)
 		}
@@ -1335,86 +1335,86 @@ func userAccountDelete() {
 
 //----------------------------------------------------------------------------------------------------
 
-// Group page functions
+// Customer page functions
 
-func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string) {
+func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string) {
 
 	var (
-		groupName                     string
-		groupID                       string
-		groupDateAdded                string
-		groupActive                   string
-		ukBased                       string
-		groupType                     string
-		ukVATStatus                   string
-		resellingMiniutes             string
-		pbxLimit                      string
-		groupSiteAddressLine1         string
-		groupSiteAddressLine2         string
-		groupSiteCityTownVillage      string
-		groupSiteCountyStateRegion    string
-		groupSitePostcodeZipCode      string
-		groupSiteCountry              string
-		groupSiteContactEmail         string
-		groupSiteContactNumber        string
-		groupInvoiceAddressLine1      string
-		groupInvoiceAddressLine2      string
-		groupInvoiceCityTownVillage   string
-		groupInvoiceCountyStateRegion string
-		groupInvoicePostcodeZipCode   string
-		groupInvoiceCountry           string
-		groupInvoiceContactEmail      string
-		groupInvoiceContactNumber     string
+		customerName                     string
+		customerID                       string
+		customerDateAdded                string
+		customerActive                   string
+		ukBased                          string
+		consumerType                     string
+		ukVATStatus                      string
+		resellingMiniutes                string
+		pbxLimit                         string
+		customerSiteAddressLine1         string
+		customerSiteAddressLine2         string
+		customerSiteCityTownVillage      string
+		customerSiteCountyStateRegion    string
+		customerSitePostcodeZipCode      string
+		customerSiteCountry              string
+		customerSiteContactEmail         string
+		customerSiteContactNumber        string
+		customerInvoiceAddressLine1      string
+		customerInvoiceAddressLine2      string
+		customerInvoiceCityTownVillage   string
+		customerInvoiceCountyStateRegion string
+		customerInvoicePostcodeZipCode   string
+		customerInvoiceCountry           string
+		customerInvoiceContactEmail      string
+		customerInvoiceContactNumber     string
 	)
 
-	var dbTableCountUserGroup databaseFunctionParameter
-	dbTableCountUserGroup.connection = dbDetail.connection
-	dbTableCountUserGroup.database = dbDetail.database
-	dbTableCountUserGroup.table = "user_group"
-	dbTableCountUserGroup.columnWhere = "group_active"
+	var dbTableCountUserCustomer databaseFunctionParameter
+	dbTableCountUserCustomer.connection = dbDetail.connection
+	dbTableCountUserCustomer.database = dbDetail.database
+	dbTableCountUserCustomer.table = "customer"
+	dbTableCountUserCustomer.columnWhere = "customer_active"
 
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "<table id=\"table\" class=\"table-group\">")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
-		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-group\">")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-customer\">")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <th>Total Groups On YAP</th>")
-		fmt.Fprintf(w, "          <th>Total Active Groups</th>")
-		fmt.Fprintf(w, "          <th>Total Inactive Groups</th>")
+		fmt.Fprintf(w, "          <th>Total Customers On YAP</th>")
+		fmt.Fprintf(w, "          <th>Total Active Customers</th>")
+		fmt.Fprintf(w, "          <th>Total Inactive Customers</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
-		dbTableCountUserGroup.countMinusOne = true
-		fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserGroup)+"</td>")
-		dbTableCountUserGroup.columnWhere = "group_active"
-		dbTableCountUserGroup.countMinusOne = false
-		dbTableCountUserGroup.columnWhereValue = "1"
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserGroup)+"</td>")
-		dbTableCountUserGroup.countMinusOne = true
-		dbTableCountUserGroup.columnWhereValue = "0"
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserGroup)+"</td>")
+		dbTableCountUserCustomer.countMinusOne = true
+		fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserCustomer)+"</td>")
+		dbTableCountUserCustomer.columnWhere = "customer_active"
+		dbTableCountUserCustomer.countMinusOne = false
+		dbTableCountUserCustomer.columnWhereValue = "1"
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserCustomer)+"</td>")
+		dbTableCountUserCustomer.countMinusOne = true
+		dbTableCountUserCustomer.columnWhereValue = "0"
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserCustomer)+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th><button onclick=\"toggleGroup() \"class=\"button-general button-group\">&nbsp Show/Hide Groups &nbsp</button></th>")
+		fmt.Fprintf(w, "    <th><button onclick=\"toggleCustomer() \"class=\"button-general button-customer\">&nbsp Show/Hide Customers &nbsp</button></th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 	}
 
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "<div id=\"group-div\" style=\"display:none\">")
+		fmt.Fprintf(w, "<div id=\"customer-div\" style=\"display:none\">")
 		fmt.Fprintf(w, "<br>")
 	} else {
-		fmt.Fprintf(w, "<div id=\"group-div\">")
+		fmt.Fprintf(w, "<div id=\"customer-div\">")
 	}
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-group\">")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All Group Contact Details on the Server:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Contact Details on the Server:</th>")
 	} else {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Group Contact Details</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Contact Details</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	if userTypeID == "100" {
@@ -1422,45 +1422,45 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
-		inputTableHTMLArgument.inputID = "group-contact-input-group-name"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchGroupName"
-		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTMLArgument.inputID = "customer-contact-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-contact-input-group-id"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchGroupID"
-		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTMLArgument.inputID = "customer-contact-input-customer-id"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchCustomerID"
+		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-contact-input-site-address"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchSiteAddress"
-		inputTableHTMLArgument.placeholder = "Group Site Address"
+		inputTableHTMLArgument.inputID = "customer-contact-input-site-address"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchSiteAddress"
+		inputTableHTMLArgument.placeholder = "Customer Site Address"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-contact-input-site-email"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchSiteEmail"
-		inputTableHTMLArgument.placeholder = "Group Site Email Address"
+		inputTableHTMLArgument.inputID = "customer-contact-input-site-email"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchSiteEmail"
+		inputTableHTMLArgument.placeholder = "Customer Site Email Address"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
-		inputTableHTMLArgument.inputID = "group-contact-input-site-phone"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchSitePhone"
-		inputTableHTMLArgument.placeholder = "Group Site Phone Number"
+		inputTableHTMLArgument.inputID = "customer-contact-input-site-phone"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchSitePhone"
+		inputTableHTMLArgument.placeholder = "Customer Site Phone Number"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-contact-input-invoice-address"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchInvoiceAddress"
-		inputTableHTMLArgument.placeholder = "Group Invoice Address"
+		inputTableHTMLArgument.inputID = "customer-contact-input-invoice-address"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchInvoiceAddress"
+		inputTableHTMLArgument.placeholder = "Customer Invoice Address"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-contact-input-invoice-email"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchInvoiceEmail"
-		inputTableHTMLArgument.placeholder = "Group Invoice Email Address"
+		inputTableHTMLArgument.inputID = "customer-contact-input-invoice-email"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchInvoiceEmail"
+		inputTableHTMLArgument.placeholder = "Customer Invoice Email Address"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-contact-input-invoice-phone"
-		inputTableHTMLArgument.funcNameJS = "groupContactSearchInvoicePhone"
-		inputTableHTMLArgument.placeholder = "Group Invoice Phone Number"
+		inputTableHTMLArgument.inputID = "customer-contact-input-invoice-phone"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchInvoicePhone"
+		inputTableHTMLArgument.placeholder = "Customer Invoice Phone Number"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
@@ -1470,56 +1470,56 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
 	var exportCSVButtonHTMLArgument jsFunctionParameter
-	exportCSVButtonHTMLArgument.funcNameJS = "GroupContact"
-	exportCSVButtonHTMLArgument.buttonCSS = "button-group"
+	exportCSVButtonHTMLArgument.funcNameJS = "CustomerContact"
+	exportCSVButtonHTMLArgument.buttonCSS = "button-customer"
 	exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"group-contact-table\" class=\"table-group\">")
+	fmt.Fprintf(w, "      <table id=\"customer-contact-table\" class=\"table-customer\">")
 	fmt.Fprintf(w, "        <tr>")
-	fmt.Fprintf(w, "          <th>Group Name</th>")
-	fmt.Fprintf(w, "          <th>Group ID</th>")
-	fmt.Fprintf(w, "          <th>Group Site<br> Address</th>")
-	fmt.Fprintf(w, "          <th>Group Site<br> Email Address</th>")
-	fmt.Fprintf(w, "          <th>Group Site<br> Phone Number</th>")
-	fmt.Fprintf(w, "          <th>Group Invoice<br> Address</th>")
-	fmt.Fprintf(w, "          <th>Group Invoice<br> Email Address</th>")
-	fmt.Fprintf(w, "          <th>Group Invoice<br> Phone Number</th>")
+	fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
+	fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
+	fmt.Fprintf(w, "          <th>Customer Site<br>Address</th>")
+	fmt.Fprintf(w, "          <th>Customer Site<br>Email Address</th>")
+	fmt.Fprintf(w, "          <th>Customer Site<br>Phone Number</th>")
+	fmt.Fprintf(w, "          <th>Customer Invoice<br>Address</th>")
+	fmt.Fprintf(w, "          <th>Customer Invoice<br>Email Address</th>")
+	fmt.Fprintf(w, "          <th>Customer Invoice<br>Phone Number</th>")
 	fmt.Fprintf(w, "        </tr>")
 
 	var whereClause string
 
 	if userTypeID == "100" {
-		whereClause = "WHERE group_id != ?;"
-		userGroupID = "1"
+		whereClause = "WHERE customer_id != ?;"
+		userCustomerID = "1"
 	} else if userTypeID == "200" || userTypeID == "201" {
-		whereClause = "WHERE group_id = ?;"
+		whereClause = "WHERE customer_id = ?;"
 	}
 
-	groupContactSQL, err := dbDetail.connection.Query(`SELECT
-							group_name,
-							group_id,
-							group_site_address_line_1,
-					                group_site_address_line_2,
-					                group_site_city_town_village,
-					                group_site_county_state_region,
-					                group_site_postcode_zip_code,
-					                group_site_country,
-					                group_site_contact_email,
-					                group_site_contact_number,
-					                group_invoice_address_line_1,
-					                group_invoice_address_line_2,
-					                group_invoice_city_town_village,
-					                group_invoice_county_state_region,
-					                group_invoice_postcode_zip_code,
-					                group_invoice_country,
-					                group_invoice_contact_email,
-					                group_invoice_contact_number
+	customerContactSQL, err := dbDetail.connection.Query(`SELECT
+							customer_name,
+							customer_id,
+							customer_site_address_line_1,
+					                customer_site_address_line_2,
+					                customer_site_city_town_village,
+					                customer_site_county_state_region,
+					                customer_site_postcode_zip_code,
+					                customer_site_country,
+					                customer_site_contact_email,
+					                customer_site_contact_number,
+					                customer_invoice_address_line_1,
+					                customer_invoice_address_line_2,
+					                customer_invoice_city_town_village,
+					                customer_invoice_county_state_region,
+					                customer_invoice_postcode_zip_code,
+					                customer_invoice_country,
+					                customer_invoice_contact_email,
+					                customer_invoice_contact_number
 					              FROM
-					  	        yap.view___group_detail
-						      `+whereClause, userGroupID)
+					  	        yap.view___customer_detail
+						      `+whereClause, userCustomerID)
 
 	// Error
 	if err != nil {
@@ -1527,27 +1527,27 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 
 	}
 
-	for groupContactSQL.Next() {
+	for customerContactSQL.Next() {
 
-		err = groupContactSQL.Scan(
-			&groupName,
-			&groupID,
-			&groupSiteAddressLine1,
-			&groupSiteAddressLine2,
-			&groupSiteCityTownVillage,
-			&groupSiteCountyStateRegion,
-			&groupSitePostcodeZipCode,
-			&groupSiteCountry,
-			&groupSiteContactEmail,
-			&groupSiteContactNumber,
-			&groupInvoiceAddressLine1,
-			&groupInvoiceAddressLine2,
-			&groupInvoiceCityTownVillage,
-			&groupInvoiceCountyStateRegion,
-			&groupInvoicePostcodeZipCode,
-			&groupInvoiceCountry,
-			&groupInvoiceContactEmail,
-			&groupInvoiceContactNumber,
+		err = customerContactSQL.Scan(
+			&customerName,
+			&customerID,
+			&customerSiteAddressLine1,
+			&customerSiteAddressLine2,
+			&customerSiteCityTownVillage,
+			&customerSiteCountyStateRegion,
+			&customerSitePostcodeZipCode,
+			&customerSiteCountry,
+			&customerSiteContactEmail,
+			&customerSiteContactNumber,
+			&customerInvoiceAddressLine1,
+			&customerInvoiceAddressLine2,
+			&customerInvoiceCityTownVillage,
+			&customerInvoiceCountyStateRegion,
+			&customerInvoicePostcodeZipCode,
+			&customerInvoiceCountry,
+			&customerInvoiceContactEmail,
+			&customerInvoiceContactNumber,
 		)
 
 		// Error
@@ -1555,80 +1555,80 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			panic(err)
 		}
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-		fmt.Fprintf(w, "          <td>"+groupID+"</td>")
-		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+groupSiteAddressLine1+"&nbsp<br>"+groupSiteAddressLine2+"&nbsp<br>"+groupSiteCityTownVillage+"&nbsp<br>"+groupSiteCountyStateRegion+"&nbsp<br><br>"+groupSitePostcodeZipCode+"&nbsp<br><br>"+groupSiteCountry+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td><a href=\"mailto:"+groupSiteContactEmail+"\">"+groupSiteContactEmail+"</a></td>")
-		fmt.Fprintf(w, "          <td><a href=\"tel:"+groupSiteContactNumber+"\">"+groupSiteContactNumber+"</a></td>")
-		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+groupInvoiceAddressLine1+"&nbsp<br>"+groupInvoiceAddressLine2+"&nbsp<br>"+groupInvoiceCityTownVillage+"&nbsp<br>"+groupInvoiceCountyStateRegion+"&nbsp<br><br>"+groupInvoicePostcodeZipCode+"&nbsp<br><br>"+groupInvoiceCountry+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+groupInvoiceContactEmail+"\">"+groupInvoiceContactEmail+"</a></td>")
-		fmt.Fprintf(w, "          <td><a href=\"tel:"+groupInvoiceContactNumber+"\">"+groupInvoiceContactNumber+"</a></td>")
+		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+customerSiteAddressLine1+"&nbsp<br>"+customerSiteAddressLine2+"&nbsp<br>"+customerSiteCityTownVillage+"&nbsp<br>"+customerSiteCountyStateRegion+"&nbsp<br><br>"+customerSitePostcodeZipCode+"&nbsp<br><br>"+customerSiteCountry+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td><a href=\"mailto:"+customerSiteContactEmail+"\">"+customerSiteContactEmail+"</a></td>")
+		fmt.Fprintf(w, "          <td><a href=\"tel:"+customerSiteContactNumber+"\">"+customerSiteContactNumber+"</a></td>")
+		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+customerInvoiceAddressLine1+"&nbsp<br>"+customerInvoiceAddressLine2+"&nbsp<br>"+customerInvoiceCityTownVillage+"&nbsp<br>"+customerInvoiceCountyStateRegion+"&nbsp<br><br>"+customerInvoicePostcodeZipCode+"&nbsp<br><br>"+customerInvoiceCountry+"&nbsp</td>")
+		fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+customerInvoiceContactEmail+"\">"+customerInvoiceContactEmail+"</a></td>")
+		fmt.Fprintf(w, "          <td><a href=\"tel:"+customerInvoiceContactNumber+"\">"+customerInvoiceContactNumber+"</a></td>")
 		fmt.Fprintf(w, "        </tr>")
 	}
 
 	fmt.Fprintf(w, "      </table>")
 	if userTypeID == "100" {
 		var filterTableJSArgument jsFunctionParameter
-		filterTableJSArgument.tableID = "group-contact-table"
-		// JS filter function for group name in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchGroupName"
-		filterTableJSArgument.inputID = "group-contact-input-group-name"
+		filterTableJSArgument.tableID = "customer-contact-table"
+		// JS filter function for customer name in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchCustomerName"
+		filterTableJSArgument.inputID = "customer-contact-input-customer-name"
 		filterTableJSArgument.columnNumber = 0
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for group ID in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchGroupID"
-		filterTableJSArgument.inputID = "group-contact-input-group-id"
+		// JS filter function for customer ID in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchCustomerID"
+		filterTableJSArgument.inputID = "customer-contact-input-customer-id"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for site address in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchSiteAddress"
-		filterTableJSArgument.inputID = "group-contact-input-site-address"
+		// JS filter function for site address in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchSiteAddress"
+		filterTableJSArgument.inputID = "customer-contact-input-site-address"
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for site email in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchSiteEmail"
-		filterTableJSArgument.inputID = "group-contact-input-site-email"
+		// JS filter function for site email in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchSiteEmail"
+		filterTableJSArgument.inputID = "customer-contact-input-site-email"
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for site phone in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchSitePhone"
-		filterTableJSArgument.inputID = "group-contact-input-site-phone"
+		// JS filter function for site phone in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchSitePhone"
+		filterTableJSArgument.inputID = "customer-contact-input-site-phone"
 		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for invoice address in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchInvoiceAddress"
-		filterTableJSArgument.inputID = "group-contact-input-invoice-address"
+		// JS filter function for invoice address in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchInvoiceAddress"
+		filterTableJSArgument.inputID = "customer-contact-input-invoice-address"
 		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for invoice email in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchInvoiceEmail"
-		filterTableJSArgument.inputID = "group-contact-input-invoice-email"
+		// JS filter function for invoice email in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchInvoiceEmail"
+		filterTableJSArgument.inputID = "customer-contact-input-invoice-email"
 		filterTableJSArgument.columnNumber = 6
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for invoice phone in the group contact table
-		filterTableJSArgument.funcNameJS = "groupContactSearchInvoicePhone"
-		filterTableJSArgument.inputID = "group-contact-input-invoice-phone"
+		// JS filter function for invoice phone in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchInvoicePhone"
+		filterTableJSArgument.inputID = "customer-contact-input-invoice-phone"
 		filterTableJSArgument.columnNumber = 7
 		filterTableJS(w, filterTableJSArgument)
 	}
 	var exportCSVJSArgument jsFunctionParameter
-	exportCSVJSArgument.funcNameJS = "GroupContact"
-	exportCSVJSArgument.tableID = "group-contact-table"
-	exportCSVJSArgument.fileName = "YAP_group_contact_details"
-	exportCSVJSArgument.pathURL = "group"
+	exportCSVJSArgument.funcNameJS = "CustomerContact"
+	exportCSVJSArgument.tableID = "customer-contact-table"
+	exportCSVJSArgument.fileName = "YAP_customer_contact_details"
+	exportCSVJSArgument.pathURL = "customer"
 	exportCSVJS(w, exportCSVJSArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
-	// Group resource table
+	// Customer resource table
 	fmt.Fprintf(w, "<br>")
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-group\">")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX  Default Resource Limits on the Server for Each Group:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX  Default Resource Limits on the Server for Each Customer:</th>")
 	} else {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>PBX Default Resource Limits for Group</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>PBX Default Resource Limits for Customer</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	if userTypeID == "100" {
@@ -1636,24 +1636,24 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
-		inputTableHTMLArgument.inputID = "group-resource-input-group-name"
-		inputTableHTMLArgument.funcNameJS = "groupResourceSearchGroupName"
-		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTMLArgument.inputID = "customer-resource-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "customerResourceSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-resource-input-group-id"
-		inputTableHTMLArgument.funcNameJS = "groupResourceSearchGroupID"
-		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTMLArgument.inputID = "customer-resource-input-customer-id"
+		inputTableHTMLArgument.funcNameJS = "customerResourceSearchCustomerID"
+		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-resource-input-date"
-		inputTableHTMLArgument.funcNameJS = "groupResourceSearchDate"
+		inputTableHTMLArgument.inputID = "customer-resource-input-date"
+		inputTableHTMLArgument.funcNameJS = "customerResourceSearchDate"
 		inputTableHTMLArgument.placeholder = "Date Created"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "group-resource-input-active"
-		inputTableHTMLArgument.funcNameJS = "groupResourceSearchActive"
-		inputTableHTMLArgument.placeholder = "Group Active Status"
+		inputTableHTMLArgument.inputID = "customer-resource-input-active"
+		inputTableHTMLArgument.funcNameJS = "customerResourceSearchActive"
+		inputTableHTMLArgument.placeholder = "Customer Active Status"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
@@ -1662,39 +1662,39 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	}
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	exportCSVButtonHTMLArgument.funcNameJS = "GroupResource"
-	exportCSVButtonHTMLArgument.buttonCSS = "button-group"
+	exportCSVButtonHTMLArgument.funcNameJS = "CustomerResource"
+	exportCSVButtonHTMLArgument.buttonCSS = "button-customer"
 	exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"group-resource-table\" class=\"table-group\">")
+	fmt.Fprintf(w, "      <table id=\"customer-resource-table\" class=\"table-customer\">")
 	fmt.Fprintf(w, "        <tr>")
-	fmt.Fprintf(w, "          <th>Group Name</th>")
-	fmt.Fprintf(w, "          <th>Group ID</th>")
-	fmt.Fprintf(w, "          <th>Group Date</th>")
-	fmt.Fprintf(w, "          <th>Group Active <br>Status</th>")
-	fmt.Fprintf(w, "          <th>Group UK Based</th>")
-	fmt.Fprintf(w, "          <th>Group Type</th>")
-	fmt.Fprintf(w, "          <th>Group UK VAT Status</th>")
-	fmt.Fprintf(w, "          <th>Group Reselling Miniutes</th>")
-	fmt.Fprintf(w, "          <th>Group PBX Limit</th>")
+	fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
+	fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
+	fmt.Fprintf(w, "          <th>Date Customer<br>Added</th>")
+	fmt.Fprintf(w, "          <th>Customer<br>Active</th>")
+	fmt.Fprintf(w, "          <th>UK Based</th>")
+	fmt.Fprintf(w, "          <th>Consumer<br>Type</th>")
+	fmt.Fprintf(w, "          <th>UK VAT Status</th>")
+	fmt.Fprintf(w, "          <th>Reselling<br>Miniutes</th>")
+	fmt.Fprintf(w, "          <th>PBX Limit</th>")
 	fmt.Fprintf(w, "        </tr>")
 
-	groupResourceSQL, err := dbDetail.connection.Query(`SELECT
-							group_name,
-							group_id,
-							group_date_added,
-							group_active,
+	customerResourceSQL, err := dbDetail.connection.Query(`SELECT
+							customer_name,
+							customer_id,
+							customer_date_added,
+							customer_active,
 							uk_based,
-							group_type,
+							consumer_type,
 							uk_vat_status,
 							reselling_miniutes,
 							pbx_limit
 					              FROM
-					  	        yap.view___group_detail
-						      `+whereClause, userGroupID)
+					  	        yap.view___customer_detail
+						      `+whereClause, userCustomerID)
 
 	// Error
 	if err != nil {
@@ -1702,15 +1702,15 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 
 	}
 
-	for groupResourceSQL.Next() {
+	for customerResourceSQL.Next() {
 
-		err = groupResourceSQL.Scan(
-			&groupName,
-			&groupID,
-			&groupDateAdded,
-			&groupActive,
+		err = customerResourceSQL.Scan(
+			&customerName,
+			&customerID,
+			&customerDateAdded,
+			&customerActive,
 			&ukBased,
-			&groupType,
+			&consumerType,
 			&ukVATStatus,
 			&resellingMiniutes,
 			&pbxLimit,
@@ -1721,16 +1721,16 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 			panic(err)
 		}
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-		fmt.Fprintf(w, "          <td>"+groupID+"</td>")
-		fmt.Fprintf(w, "          <td>"+groupDateAdded+"</td>")
-		if groupActive == "1" {
+		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerDateAdded+"</td>")
+		if customerActive == "1" {
 			fmt.Fprintf(w, "          <td>Yes</td>")
 		} else {
 			fmt.Fprintf(w, "	  <td>No</td>")
 		}
 		fmt.Fprintf(w, "          <td>"+ukBased+"</td>")
-		fmt.Fprintf(w, "          <td>"+groupType+"</td>")
+		fmt.Fprintf(w, "          <td>"+consumerType+"</td>")
 		fmt.Fprintf(w, "          <td>"+ukVATStatus+"</td>")
 		fmt.Fprintf(w, "          <td>"+resellingMiniutes+"</td>")
 		fmt.Fprintf(w, "          <td>"+pbxLimit+"</td>")
@@ -1740,32 +1740,32 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	fmt.Fprintf(w, "      </table>")
 	if userTypeID == "100" {
 		var filterTableJSArgument jsFunctionParameter
-		filterTableJSArgument.tableID = "group-resource-table"
-		// Call JS filter function for group name in the group resource table
-		filterTableJSArgument.funcNameJS = "groupResourceSearchGroupName"
-		filterTableJSArgument.inputID = "group-resource-input-group-name"
+		filterTableJSArgument.tableID = "customer-resource-table"
+		// Call JS filter function for customer name in the customer resource table
+		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerName"
+		filterTableJSArgument.inputID = "customer-resource-input-customer-name"
 		filterTableJSArgument.columnNumber = 0
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for group ID in the group resource table
-		filterTableJSArgument.funcNameJS = "groupResourceSearchGroupID"
-		filterTableJSArgument.inputID = "group-resource-input-group-id"
+		// Call JS filter function for customer ID in the customer resource table
+		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerID"
+		filterTableJSArgument.inputID = "customer-resource-input-customer-id"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for date in the group resource table
-		filterTableJSArgument.funcNameJS = "groupResourceSearchDate"
-		filterTableJSArgument.inputID = "group-resource-input-date"
+		// Call JS filter function for date in the customer resource table
+		filterTableJSArgument.funcNameJS = "customerResourceSearchDate"
+		filterTableJSArgument.inputID = "customer-resource-input-date"
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for active status in the group resource table
-		filterTableJSArgument.funcNameJS = "groupResourceSearchActive"
-		filterTableJSArgument.inputID = "group-resource-input-active"
+		// Call JS filter function for active status in the customer resource table
+		filterTableJSArgument.funcNameJS = "customerResourceSearchActive"
+		filterTableJSArgument.inputID = "customer-resource-input-active"
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 	}
-	exportCSVJSArgument.funcNameJS = "GroupResource"
-	exportCSVJSArgument.tableID = "group-resource-table"
-	exportCSVJSArgument.fileName = "YAP_group_resource_details"
-	exportCSVJSArgument.pathURL = "group"
+	exportCSVJSArgument.funcNameJS = "customerResource"
+	exportCSVJSArgument.tableID = "customer-resource-table"
+	exportCSVJSArgument.fileName = "YAP_customer_resource_details"
+	exportCSVJSArgument.pathURL = "customer"
 	exportCSVJS(w, exportCSVJSArgument)
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
@@ -1773,8 +1773,8 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 	fmt.Fprintf(w, "</div>")
 	if userTypeID == "100" {
 		var toggleDivJSArgument jsFunctionParameter
-		toggleDivJSArgument.funcNameJS = "toggleGroup"
-		toggleDivJSArgument.divID = "group-div"
+		toggleDivJSArgument.funcNameJS = "toggleCustomer"
+		toggleDivJSArgument.divID = "customer-div"
 		toggleDivJS(w, toggleDivJSArgument)
 	}
 
@@ -1784,7 +1784,7 @@ func groupList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTy
 
 // PBX page functions
 
-func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string, userPBXID string) {
+func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, userPBXID string) {
 
 	var (
 		pbxName                     string
@@ -1808,8 +1808,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		pbxInvoiceCountry           string
 		pbxInvoiceContactEmail      string
 		pbxInvoiceContactNumber     string
-		groupName                   string
-		groupID                     string
+		customerName                string
+		customerID                  string
 	)
 
 	var dbTableCountUserPBX databaseFunctionParameter
@@ -1841,8 +1841,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			dbTableCountUserPBX.columnWhereValue = "0"
 			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
 		} else if userTypeID == "200" || userTypeID == "201" {
-			dbTableCountUserPBX.columnWhere = "group_id"
-			dbTableCountUserPBX.columnWhereValue = userGroupID
+			dbTableCountUserPBX.columnWhere = "customer_id"
+			dbTableCountUserPBX.columnWhereValue = userCustomerID
 			dbTableCountUserPBX.columnWhereAnd = "pbx_active"
 			dbTableCountUserPBX.columnWhereValueAnd = "1"
 			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBX)+"</td>")
@@ -1921,14 +1921,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
-			inputTableHTMLArgument.inputID = "pbx-contact-input-group-name"
-			inputTableHTMLArgument.funcNameJS = "pbxContactSearchGroupName"
-			inputTableHTMLArgument.placeholder = "Group Name"
+			inputTableHTMLArgument.inputID = "pbx-contact-input-customer-name"
+			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerName"
+			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTMLArgument.inputID = "pbx-contact-input-group-id"
-			inputTableHTMLArgument.funcNameJS = "pbxContactSearchGroupID"
-			inputTableHTMLArgument.placeholder = "Group ID"
+			inputTableHTMLArgument.inputID = "pbx-contact-input-customer-id"
+			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerID"
+			inputTableHTMLArgument.placeholder = "Customer ID"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
@@ -1959,8 +1959,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "          <th>PBX Invoice<br> Email Address</th>")
 	fmt.Fprintf(w, "          <th>PBX Invoice<br> Phone Number</th>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Group Name</th>")
-		fmt.Fprintf(w, "          <th>Group ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
+		fmt.Fprintf(w, "          <th>Customer ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -1971,8 +1971,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		whereClause = "WHERE pbx_id != ?;"
 		userWhereID = "1"
 	} else if userTypeID == "200" || userTypeID == "201" {
-		whereClause = "WHERE group_id = ?;"
-		userWhereID = userGroupID
+		whereClause = "WHERE customer_id = ?;"
+		userWhereID = userCustomerID
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		whereClause = "WHERE pbx_id = ?;"
 		userWhereID = userPBXID
@@ -1997,8 +1997,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 					                pbx_invoice_country,
 					                pbx_invoice_contact_email,
 					                pbx_invoice_contact_number,
-					                group_name,
-					                group_id
+					                customer_name,
+					                customer_id
 					              FROM
 					  	        yap.view___pbx_detail
 						      `+whereClause, userWhereID)
@@ -2030,8 +2030,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			&pbxInvoiceCountry,
 			&pbxInvoiceContactEmail,
 			&pbxInvoiceContactNumber,
-			&groupName,
-			&groupID,
+			&customerName,
+			&customerID,
 		)
 
 		// Error
@@ -2050,8 +2050,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+pbxInvoiceContactEmail+"\">"+pbxInvoiceContactEmail+"</a></td>")
 		fmt.Fprintf(w, "          <td><a href=\"tel:"+pbxInvoiceContactNumber+"\">"+pbxInvoiceContactNumber+"</a></td>")
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -2101,14 +2101,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.columnNumber = 7
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			// Call JS filter function for group name in the PBX contact table
-			filterTableJSArgument.funcNameJS = "pbxContactSearchGroupName"
-			filterTableJSArgument.inputID = "pbx-contact-input-group-name"
+			// Call JS filter function for customer name in the PBX contact table
+			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerName"
+			filterTableJSArgument.inputID = "pbx-contact-input-customer-name"
 			filterTableJSArgument.columnNumber = 8
 			filterTableJS(w, filterTableJSArgument)
-			// Call JS filter function for group ID in the PBX contact table
-			filterTableJSArgument.funcNameJS = "pbxContactSearchGroupID"
-			filterTableJSArgument.inputID = "pbx-contact-input-group-id"
+			// Call JS filter function for customer ID in the PBX contact table
+			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerID"
+			filterTableJSArgument.inputID = "pbx-contact-input-customer-id"
 			filterTableJSArgument.columnNumber = 9
 			filterTableJS(w, filterTableJSArgument)
 		}
@@ -2123,7 +2123,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
-	// Group resource table
+	// Customer resource table
 	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
 	fmt.Fprintf(w, "  <tr>")
@@ -2160,14 +2160,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
-			inputTableHTMLArgument.inputID = "pbx-resource-input-group-name"
-			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchGroupName"
-			inputTableHTMLArgument.placeholder = "Group Name"
+			inputTableHTMLArgument.inputID = "pbx-resource-input-customer-name"
+			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerName"
+			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTMLArgument.inputID = "pbx-resource-input-group-id"
-			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchGroupID"
-			inputTableHTMLArgument.placeholder = "Group ID"
+			inputTableHTMLArgument.inputID = "pbx-resource-input-customer-id"
+			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerID"
+			inputTableHTMLArgument.placeholder = "Customer ID"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
@@ -2194,8 +2194,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "          <th>PBX Active <br>Status</th>")
 	fmt.Fprintf(w, "          <th>SIP Extension <br>Limit for <br>PBX</th>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Group Name</th>")
-		fmt.Fprintf(w, "          <th>Group ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
+		fmt.Fprintf(w, "          <th>Customer ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -2205,8 +2205,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 							pbx_date_added,
 							pbx_active,
 							pbx_sip_extension_limit,
-							group_name,
-							group_id
+							customer_name,
+							customer_id
 					              FROM
 					  	        yap.view___pbx_detail
 						      `+whereClause, userWhereID)
@@ -2225,8 +2225,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			&pbxDateAdded,
 			&pbxActive,
 			&pbxSIPExtensionLimit,
-			&groupName,
-			&groupID,
+			&customerName,
+			&customerID,
 		)
 
 		// Error
@@ -2246,8 +2246,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		}
 		fmt.Fprintf(w, "          <td>"+pbxSIPExtensionLimit+"</td>")
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -2277,14 +2277,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			// Call JS filter function for group name in the PBX resource table
-			filterTableJSArgument.funcNameJS = "pbxResourceSearchGroupName"
-			filterTableJSArgument.inputID = "pbx-resource-input-group-name"
+			// Call JS filter function for customer name in the PBX resource table
+			filterTableJSArgument.funcNameJS = "pbxResourceSearchCustomerName"
+			filterTableJSArgument.inputID = "pbx-resource-input-customer-name"
 			filterTableJSArgument.columnNumber = 10
 			filterTableJS(w, filterTableJSArgument)
-			// Call JS filter function for group ID in the PBX resource table
-			filterTableJSArgument.funcNameJS = "pbxResourceSearchGroupID"
-			filterTableJSArgument.inputID = "pbx-resource-input-group-id"
+			// Call JS filter function for customer ID in the PBX resource table
+			filterTableJSArgument.funcNameJS = "pbxResourceSearchCustomerID"
+			filterTableJSArgument.inputID = "pbx-resource-input-customer-id"
 			filterTableJSArgument.columnNumber = 11
 			filterTableJS(w, filterTableJSArgument)
 		}
@@ -2327,7 +2327,7 @@ func dropDailplanTable(dbDetail databaseFunctionParameter) {
 
 // SIP extension page functions
 
-func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userGroupID string, userPBXID string) {
+func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, userPBXID string) {
 
 	var (
 		sipUsername            string
@@ -2350,8 +2350,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		registered             string
 		pbxName                string
 		pbxID                  string
-		groupName              string
-		groupID                string
+		customerName           string
+		customerID             string
 	)
 
 	// Registered table
@@ -2374,7 +2374,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "          <th>Total SIP Extensions On YAP</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "          <th>Total SIP Extensions Within the Group</th>")
+		fmt.Fprintf(w, "          <th>Total SIP Extensions Within for the Customer</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		fmt.Fprintf(w, "          <th>Total SIP Extensions Within the PBX</th>")
 	}
@@ -2388,8 +2388,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		dbTableCountUserSIPExtensionWhere.connection = dbDetail.connection
 		dbTableCountUserSIPExtensionWhere.database = dbDetail.database
 		dbTableCountUserSIPExtensionWhere.table = "view___sip_extension_detail"
-		dbTableCountUserSIPExtensionWhere.columnWhere = "group_id"
-		dbTableCountUserSIPExtensionWhere.columnWhereValue = userGroupID
+		dbTableCountUserSIPExtensionWhere.columnWhere = "customer_id"
+		dbTableCountUserSIPExtensionWhere.columnWhereValue = userCustomerID
 		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPExtensionWhere)+"</td>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		var dbTableCountUserSIPExtensionWhere databaseFunctionParameter
@@ -2416,7 +2416,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details on the Server:</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within the Group:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within for the Customer:</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within the PBX:</th>")
 	}
@@ -2444,17 +2444,17 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	if userTypeID == "100" {
-		inputTableHTMLArgument.inputID = "sip-extension-detail-input-group-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchGroupName"
-		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-detail-input-group-id"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchGroupID"
-		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-id"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerID"
+		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
@@ -2474,8 +2474,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Group Name</th>")
-		fmt.Fprintf(w, "          <th>Group ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
+		fmt.Fprintf(w, "          <th>Customer ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -2483,11 +2483,11 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	var userWhereID string
 
 	if userTypeID == "100" {
-		whereClause = "WHERE group_id != ?;"
+		whereClause = "WHERE customer_id != ?;"
 		userWhereID = "1"
 	} else if userTypeID == "200" || userTypeID == "201" {
-		whereClause = "WHERE group_id = ?;"
-		userWhereID = userGroupID
+		whereClause = "WHERE customer_id = ?;"
+		userWhereID = userCustomerID
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		whereClause = "WHERE pbx_id = ?;"
 		userWhereID = userPBXID
@@ -2514,8 +2514,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 					                registered,
 					                pbx_name,
 					                pbx_id,
-					                group_name,
-					                group_id
+					                customer_name,
+					                customer_id
 					              FROM
 					                 yap.view___sip_extension_detail
 						      `+whereClause, userWhereID)
@@ -2549,8 +2549,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 			&registered,
 			&pbxName,
 			&pbxID,
-			&groupName,
-			&groupID,
+			&customerName,
+			&customerID,
 		)
 
 		// Error
@@ -2594,8 +2594,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 		}
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-			fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -2621,14 +2621,14 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		// Call JS filter function for group name in the SIP extension detail table
-		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchGroupName"
-		filterTableJSArgument.inputID = "sip-extension-detail-input-group-name"
+		// Call JS filter function for the customer name in the SIP extension detail table
+		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
+		filterTableJSArgument.inputID = "sip-extension-detail-input-customer-name"
 		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for group ID in the SIP extension detail table
-		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchGroupID"
-		filterTableJSArgument.inputID = "sip-extension-detail-input-group-id"
+		// Call JS filter function for the customer ID in the SIP extension detail table
+		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCustomerID"
+		filterTableJSArgument.inputID = "sip-extension-detail-input-customer-id"
 		filterTableJSArgument.columnNumber = 6
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -2643,7 +2643,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered on the Server:</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered Within the Group:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered for the Customer:</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered Within the PBX:</th>")
 	}
@@ -2678,14 +2678,14 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-reg-input-group-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchGroupName"
-		inputTableHTMLArgument.placeholder = "Group Name"
+		inputTableHTMLArgument.inputID = "sip-extension-reg-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-reg-input-group-id"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchGroupID"
-		inputTableHTMLArgument.placeholder = "Group ID"
+		inputTableHTMLArgument.inputID = "sip-extension-reg-input-customer-id"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchCustomerID"
+		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
@@ -2704,8 +2704,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Group Name</th>")
-		fmt.Fprintf(w, "          <th>Group ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
+		fmt.Fprintf(w, "          <th>Customer ID</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -2714,8 +2714,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 							uri,
 							user_agent,
 					                pbx_name,
-					                group_name,
-					                group_id
+					                customer_name,
+					                customer_id
 					              FROM
 					  	        yap.view___sip_extension_registered
 					  	      `+whereClause, userWhereID)
@@ -2733,8 +2733,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 			&uri,
 			&userAgent,
 			&pbxName,
-			&groupName,
-			&groupID,
+			&customerName,
+			&customerID,
 		)
 
 		// Error
@@ -2746,8 +2746,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <td>"+uri+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
 		fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-		fmt.Fprintf(w, "          <td>"+groupName+"</td>")
-		fmt.Fprintf(w, "          <td>"+groupID+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 	}
 
@@ -2776,14 +2776,14 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		// Call JS filter function for group name in the SIP extension registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchGroupName"
-		filterTableJSArgument.inputID = "sip-extension-reg-input-group-name"
+		// Call JS filter function for the customer name in the SIP extension registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
+		filterTableJSArgument.inputID = "sip-extension-reg-input-customer-name"
 		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for group ID in the SIP extension registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchGroupID"
-		filterTableJSArgument.inputID = "sip-extension-reg-input-group-id"
+		// Call JS filter function for the customer ID in the SIP extension registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchCustomerID"
+		filterTableJSArgument.inputID = "sip-extension-reg-input-customer-id"
 		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -2903,8 +2903,8 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
-		userGroupID := userAccountData(dbDetail, "group_id")
-		userGroupName := userAccountData(dbDetail, "group_name")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+		userCustomerName := userAccountData(dbDetail, "customer_name")
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
@@ -2916,9 +2916,9 @@ func main() {
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "All Group & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
-				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "All<br>Groups<br>&#128101", hyperlink: "/group", headerCSS: "header-group", buttonCSS: "button-group"}
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "All<br>Customers<br>&#128101", hyperlink: "/customer", headerCSS: "header-customer", buttonCSS: "button-customer"}
 				mainMenuButton(mainMenuButtonTwo)
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "All<br>PBXs<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
@@ -2926,7 +2926,7 @@ func main() {
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group Billing<br>& Invoicing<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All Customer<br>Invoicing<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
 				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
@@ -2935,44 +2935,44 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "200" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
-				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Information<br>&#128101", hyperlink: "/group", headerCSS: "header-group", buttonCSS: "button-group"}
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Information<br>&#128101", hyperlink: "/customer", headerCSS: "header-customer", buttonCSS: "button-customer"}
 				mainMenuButton(mainMenuButtonTwo)
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBXs Within<br>The Group<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBXs for the<br>Customer<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Group & PBX<br>Server Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Customer & PBX<br>Server Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "201" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Own & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
-				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Information<br>&#128101", hyperlink: "/group", headerCSS: "header-group", buttonCSS: "button-group"}
+				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Information<br>&#128101", hyperlink: "/customer", headerCSS: "header-customer", buttonCSS: "button-customer"}
 				mainMenuButton(mainMenuButtonTwo)
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBXs Within<br>The Group<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBXs for the<br>Customer<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3009,13 +3009,13 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "400" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
 				mainMenuUserInformation(w, dbDetail, userTypeID)
 				fmt.Fprintf(w, "<br>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Own<br>User Account<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonTwo)
-				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Group<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
 				mainMenuButton(mainMenuButtonOne)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -3053,8 +3053,8 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
-		userGroupID := userAccountData(dbDetail, "group_id")
-		userGroupName := userAccountData(dbDetail, "group_name")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+		userCustomerName := userAccountData(dbDetail, "customer_name")
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
@@ -3068,11 +3068,11 @@ func main() {
 				userAccountAdd(w)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "200" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All User Accounts Within the Group", "header-user-account", extraButtonName, extraButtonURL)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All User Accounts for the Customer", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "201" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All PBX User Accounts Within the Group", "header-user-account", extraButtonName, extraButtonURL)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All PBX User Accounts for the Customer", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "300" {
@@ -3088,7 +3088,7 @@ func main() {
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "400" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Own Invoice Group Account", "header-user-account", extraButtonName, extraButtonURL)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Own Invoice Customer Account", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				footer(w, "header-user-account", "button-user-account")
 			} else {
@@ -3098,8 +3098,8 @@ func main() {
 		fmt.Fprintf(w, endHTML)
 	})
 
-	// Group Page
-	go http.HandleFunc("/group", func(w http.ResponseWriter, r *http.Request) {
+	// Customer Page
+	go http.HandleFunc("/customer", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3113,7 +3113,7 @@ func main() {
 		fmt.Fprintf(w, startHTML)
 
 		// Wallpaper
-		wallpaper(w, "wallpaper-group")
+		wallpaper(w, "wallpaper-customer")
 
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
@@ -3124,22 +3124,22 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
-		userGroupID := userAccountData(dbDetail, "group_id")
-		userGroupName := userAccountData(dbDetail, "group_name")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+		userCustomerName := userAccountData(dbDetail, "customer_name")
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-group", "button-group")
+			errorBox(w, "email_error", "header-customer", "button-customer")
 		} else {
 			if userTypeID == "100" {
-				header(w, "YAP Admin Account<br>All Groups on YAP", "header-group", extraButtonName, extraButtonURL)
-				groupList(w, dbDetail, userTypeID, userGroupID)
-				footer(w, "header-group", "button-group")
+				header(w, "YAP Admin Account<br>All Customers on YAP", "header-customer", extraButtonName, extraButtonURL)
+				customerList(w, dbDetail, userTypeID, userCustomerID)
+				footer(w, "header-customer", "button-customer")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>Own Group Information", "header-group", extraButtonName, extraButtonURL)
-				groupList(w, dbDetail, userTypeID, userGroupID)
-				footer(w, "header-group", "button-group")
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Own Customer Information", "header-customer", extraButtonName, extraButtonURL)
+				customerList(w, dbDetail, userTypeID, userCustomerID)
+				footer(w, "header-customer", "button-customer")
 			} else {
-				errorBox(w, "account_type_error", "header-group", "button-group")
+				errorBox(w, "account_type_error", "header-customer", "button-customer")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -3172,8 +3172,8 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
-		userGroupID := userAccountData(dbDetail, "group_id")
-		userGroupName := userAccountData(dbDetail, "group_name")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+		userCustomerName := userAccountData(dbDetail, "customer_name")
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
@@ -3182,15 +3182,15 @@ func main() {
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All BPXs on YAP", "header-pbx", extraButtonName, extraButtonURL)
-				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				pbxList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
 				footer(w, "header-pbx", "button-pbx")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All PBXs Within the Group", "header-pbx", extraButtonName, extraButtonURL)
-				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All PBXs for the Customer", "header-pbx", extraButtonName, extraButtonURL)
+				pbxList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
 				footer(w, "header-pbx", "button-pbx")
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>PBX Information", "header-pbx", extraButtonName, extraButtonURL)
-				pbxList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				pbxList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
 				footer(w, "header-pbx", "button-pbx")
 			} else {
 				errorBox(w, "account_type_error", "header-pbx", "button-pbx")
@@ -3225,8 +3225,8 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
-		userGroupID := userAccountData(dbDetail, "group_id")
-		userGroupName := userAccountData(dbDetail, "group_name")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+		userCustomerName := userAccountData(dbDetail, "customer_name")
 		userPBXID := userAccountData(dbDetail, "pbx_id")
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
@@ -3235,15 +3235,15 @@ func main() {
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All SIP Extensions on the Server", "header-sip-extension", extraButtonName, extraButtonURL)
-				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				sipExtensionList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
 				footer(w, "header-sip-extension", "button-sip-extension")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, userGroupName+"<br>[Group ID: "+userGroupID+"]<br>All SIP Extensions Within the Group", "header-sip-extension", extraButtonName, extraButtonURL)
-				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All SIP Extensions for the Customer", "header-sip-extension", extraButtonName, extraButtonURL)
+				sipExtensionList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
 				footer(w, "header-sip-extension", "button-sip-extension")
 			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-sip-extension", extraButtonName, extraButtonURL)
-				sipExtensionList(w, dbDetail, userTypeID, userGroupID, userPBXID)
+				sipExtensionList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
 				footer(w, "header-sip-extension", "button-sip-extension")
 			} else {
 				errorBox(w, "account_type_error", "header-sip-extension", "button-sip-extension")
@@ -3284,8 +3284,8 @@ func main() {
 			errorBox(w, "email_error", "header-sip-trunk", "button-sip-trunk")
 		} else {
 			if userTypeID == "100" {
-				header(w, "YAP Admin Account<br>Group Billing & Invoicing", "header-invoicing", extraButtonName, extraButtonURL)
-				//sipTrunkList(w, dbDetail, userTypeID)
+				header(w, "YAP Admin Account<br>Customer Invoicing", "header-invoicing", extraButtonName, extraButtonURL)
+
 				footer(w, "header-invoicing", "button-invoicing")
 			} else {
 				errorBox(w, "account_type_error", "header-invoicing", "button-invoicing")
