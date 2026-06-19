@@ -2191,8 +2191,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "          <th>PBX ID</th>")
 	}
 	fmt.Fprintf(w, "          <th>PBX Date</th>")
-	fmt.Fprintf(w, "          <th>PBX Active <br>Status</th>")
-	fmt.Fprintf(w, "          <th>SIP Extension <br>Limit for <br>PBX</th>")
+	fmt.Fprintf(w, "          <th>PBX Active<br>Status</th>")
+	fmt.Fprintf(w, "          <th>SIP Extension<br>Limit for PBX</th>")
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "          <th>Customer Name</th>")
 		fmt.Fprintf(w, "          <th>Customer ID</th>")
