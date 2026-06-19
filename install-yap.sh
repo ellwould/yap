@@ -323,9 +323,9 @@ mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Grant privileges for YAP MariaDB user
 mysql -u root -e "GRANT SELECT ON yap.* TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.user_group TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.group_invoice_address TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.group_site_address TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer_invoice_address TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer_site_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx_invoice_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx_site_address TO 'yap'@'localhost';";
