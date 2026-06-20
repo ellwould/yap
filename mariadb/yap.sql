@@ -157,7 +157,7 @@ CREATE TABLE `good_service` (
   `good_service_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
   `buy_price` DECIMAL(8,2) NOT NULL,
-  `date_added` DEFAULT NOW() NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
