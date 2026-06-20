@@ -1371,7 +1371,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	dbTableCountUserCustomer.connection = dbDetail.connection
 	dbTableCountUserCustomer.database = dbDetail.database
 	dbTableCountUserCustomer.table = "customer"
-	dbTableCountUserCustomer.columnWhere = "customer_active"
+	dbTableCountUserCustomer.columnWhere = "active"
 
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
@@ -1386,7 +1386,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "        <tr>")
 		dbTableCountUserCustomer.countMinusOne = true
 		fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserCustomer)+"</td>")
-		dbTableCountUserCustomer.columnWhere = "customer_active"
+		dbTableCountUserCustomer.columnWhere = "active"
 		dbTableCountUserCustomer.countMinusOne = false
 		dbTableCountUserCustomer.columnWhereValue = "1"
 		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserCustomer)+"</td>")
@@ -1687,11 +1687,11 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 							customer_id,
 							customer_date_added,
 							customer_active,
-							uk_based,
-							consumer_type,
-							uk_vat_status,
-							reselling_miniutes,
-							pbx_limit
+							customer_uk_based,
+							customer_consumer_type,
+							customer_uk_vat_status,
+							customer_reselling_miniutes,
+							customer_pbx_limit
 					              FROM
 					  	        yap.view___customer_detail
 						      `+whereClause, userCustomerID)
@@ -1833,7 +1833,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		if userTypeID == "100" {
 			dbTableCountUserPBX.countMinusOne = true
 			fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserPBX)+"</td>")
-			dbTableCountUserPBX.columnWhere = "pbx_active"
+			dbTableCountUserPBX.columnWhere = "active"
 			dbTableCountUserPBX.countMinusOne = false
 			dbTableCountUserPBX.columnWhereValue = "1"
 			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
@@ -1843,7 +1843,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		} else if userTypeID == "200" || userTypeID == "201" {
 			dbTableCountUserPBX.columnWhere = "customer_id"
 			dbTableCountUserPBX.columnWhereValue = userCustomerID
-			dbTableCountUserPBX.columnWhereAnd = "pbx_active"
+			dbTableCountUserPBX.columnWhereAnd = "active"
 			dbTableCountUserPBX.columnWhereValueAnd = "1"
 			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBX)+"</td>")
 			dbTableCountUserPBX.columnWhereValueAnd = "0"
@@ -3252,7 +3252,7 @@ func main() {
 		fmt.Fprintf(w, endHTML)
 	})
 
-	// SIP Trunk Page
+	// Invoicing Page
 
 	go http.HandleFunc("/invoicing", func(w http.ResponseWriter, r *http.Request) {
 
