@@ -127,7 +127,7 @@ ENGINE = InnoDB;
 CREATE TABLE `invoice` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
-  `phone_number` VARCHAR(20) NOT NULL,
+  `tag` VARCHAR(255),
   `good_service_id` VARCHAR(255) NOT NULL,
   `sell_price` DECIMAL(8,2) NOT NULL,
   `uk_sales_tax_rate` DECIMAL(5,2) NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE `invoice` (
   `invoice_customer` ENUM('yes', 'no') NOT NULL,
   `one_off_charge` ENUM('yes', 'no') NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `comment` VARCHAR(255) NOT NULL,
+  `comment` VARCHAR(1000) NOT NULL,
   PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
