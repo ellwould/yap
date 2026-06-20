@@ -134,8 +134,7 @@ CREATE TABLE `invoice_item` (
   `uk_sales_tax_status` VARCHAR(255) NOT NULL,
   `invoice_customer` ENUM('yes', 'no') NOT NULL,
   `one_off_charge` ENUM('yes', 'no') NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  `comment` VARCHAR(1000) NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL
   PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -563,8 +562,7 @@ SELECT DISTINCT
   `invoice_item`.`one_off_charge` AS 'invoice_item_one_off_charge',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
-  `good_service`.`buy_price` AS 'good_service_buy_price',
-  `invoice_item`.`comment` AS 'invoice_item_comment'
+  `good_service`.`buy_price` AS 'good_service_buy_price'
 FROM `customer`
 INNER JOIN `invoice_item`
 ON `invoice_item`.`customer_id` = `customer`.`id`
