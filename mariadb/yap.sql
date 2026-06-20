@@ -125,7 +125,7 @@ PRIMARY KEY(`id`)
 ENGINE = InnoDB;
 
 CREATE TABLE `invoice` (
-  `id` INT UNSIGNED,
+  `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `phone_number` VARCHAR(20) NOT NULL,
   `good_service_id` VARCHAR(255) NOT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE `good_service` (
   `good_service_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
   `buy_price` DECIMAL(8,2) NOT NULL,
-  `date_added` DATETIME NOT NULL,
+  `date_added` DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
