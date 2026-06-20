@@ -584,7 +584,8 @@ VALUES
 INSERT INTO `good_service_type_lookup` (`good_service_type`)
 VALUES
   ('Services'),
-  ('Products');
+  ('Products'),
+  ('n/a');
 
 INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_status`, `reselling_miniutes`, `pbx_limit`)
 VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
