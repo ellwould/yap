@@ -549,6 +549,28 @@ INNER JOIN `customer`
 ON `pbx`.`customer_id` = `customer`.`id`
 WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
+CREATE VIEW `view___invoice` AS
+SELECT DISTINCT
+  `customer`.`name` AS 'customer_name',
+  `customer`.`id` AS 'customer_id',
+  IFNULL(`invoice`.`tag`, ' ') AS 'invoice_tag',
+  `good_service`.`id` AS 'good_service_id',
+  `invoice`.`sell_price` AS 'invoice_sell_price',
+  `invoice`.`uk_sales_tax_rate` AS 'invoice_uk_sales_tax_rate',
+  `invoice`.`uk_sales_tax_status` AS 'invoice_uk_sales_tax_status',
+  `invoice`.`invoice_customer` AS 'invoice_invoice_customer',
+  `invoice`.`one_off_charge` AS 'invoice_one_off_charge',
+  `invoice`.`date_added` AS 'invoice_date_added',
+  `invoice`.`comment` AS 'invoice_comment',
+  `good_service`.`good_service_type`,
+  `good_service`.`supplier_name` AS 'good_service_supplier_name',
+  `good_service`.`buy_price` AS 'good_service_buy_price'
+FROM `customer`
+INNER JOIN `invoice`
+ON `invoice`.`customer_id` = `customer`.`id`
+INNER JOIN `good_service`
+ON `good_service`.`id` = `invoice`.`good_service_id`;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
