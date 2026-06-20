@@ -1344,11 +1344,12 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		customerID                       string
 		customerDateAdded                string
 		customerActive                   string
-		ukBased                          string
-		consumerType                     string
-		ukVATStatus                      string
-		resellingMiniutes                string
-		pbxLimit                         string
+		customerUKBased                  string
+		customerConsumerType             string
+		customerUKVATRegistered          string
+		customerUKVATNumber              string
+		customerResellingMiniutes        string
+		customerPBXLimit                 string
 		customerSiteAddressLine1         string
 		customerSiteAddressLine2         string
 		customerSiteCityTownVillage      string
@@ -1677,7 +1678,8 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	fmt.Fprintf(w, "          <th>Customer<br>Active</th>")
 	fmt.Fprintf(w, "          <th>UK Based</th>")
 	fmt.Fprintf(w, "          <th>Consumer<br>Type</th>")
-	fmt.Fprintf(w, "          <th>UK VAT Status</th>")
+	fmt.Fprintf(w, "          <th>UK VAT Registered</th>")
+	fmt.Fprintf(w, "          <th>UK VAT Number</th>")
 	fmt.Fprintf(w, "          <th>Reselling<br>Miniutes</th>")
 	fmt.Fprintf(w, "          <th>PBX Limit</th>")
 	fmt.Fprintf(w, "        </tr>")
@@ -1689,7 +1691,8 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 							customer_active,
 							customer_uk_based,
 							customer_consumer_type,
-							customer_uk_vat_status,
+							customer_uk_vat_registered,
+							customer_uk_vat_number,
 							customer_reselling_miniutes,
 							customer_pbx_limit
 					              FROM
@@ -1709,11 +1712,12 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 			&customerID,
 			&customerDateAdded,
 			&customerActive,
-			&ukBased,
-			&consumerType,
-			&ukVATStatus,
-			&resellingMiniutes,
-			&pbxLimit,
+			&customerUKBased,
+			&customerConsumerType,
+			&customerUKVATRegistered,
+			&customerUKVATNumber,
+			&customerResellingMiniutes,
+			&customerPBXLimit,
 		)
 
 		// Error
@@ -1725,15 +1729,16 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerDateAdded+"</td>")
 		if customerActive == "1" {
-			fmt.Fprintf(w, "          <td>Yes</td>")
+			fmt.Fprintf(w, "          <td>yes</td>")
 		} else {
-			fmt.Fprintf(w, "	  <td>No</td>")
+			fmt.Fprintf(w, "	  <td>no</td>")
 		}
-		fmt.Fprintf(w, "          <td>"+ukBased+"</td>")
-		fmt.Fprintf(w, "          <td>"+consumerType+"</td>")
-		fmt.Fprintf(w, "          <td>"+ukVATStatus+"</td>")
-		fmt.Fprintf(w, "          <td>"+resellingMiniutes+"</td>")
-		fmt.Fprintf(w, "          <td>"+pbxLimit+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerUKBased+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerConsumerType+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerUKVATRegistered+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerUKVATNumber+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerResellingMiniutes+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerPBXLimit+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 	}
 
@@ -2801,6 +2806,314 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 // Invoice page functions
 
+func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string) {
+
+	var (
+		invoiceItemTag              string
+		goodServiceName             string
+		invoiceItemSellPrice        string
+		invoiceItemDateAdded        string
+		invoiceItemUKSalesTaxRate   string
+		invoiceItemUKSalesTaxStatus string
+		invoiceItemInvoiceCustomer  string
+		invoiceItemOneOffCharge     string
+		supplierUKBased             string
+		supplierUKVATRegistered     string
+		supplierUKVATNumber         string
+		goodServiceType             string
+		goodServiceSupplierName     string
+		goodServiceBuyPrice         string
+		customerName                string
+		customerID                  string
+		customerUKVATRegistered     string
+		customerUKVATNumber         string
+	)
+
+	var dbTableCountInvoice databaseFunctionParameter
+	dbTableCountInvoice.connection = dbDetail.connection
+	dbTableCountInvoice.database = dbDetail.database
+	dbTableCountInvoice.table = "view___invoice_item"
+
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-invoice\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-invoice\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Total Invoice Items</th>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "        <tr>")
+		dbTableCountInvoice.countMinusOne = false
+		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountInvoice)+"</td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><button onclick=\"toggleInvoice() \"class=\"button-general button-invoice\">&nbsp Show/Hide Invoice &nbsp</button></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+	}
+
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "<div id=\"invoice-div\" style=\"display:none\">")
+		fmt.Fprintf(w, "<br>")
+	} else {
+		fmt.Fprintf(w, "<div id=\"invoice-div\">")
+	}
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-invoice\">")
+	fmt.Fprintf(w, "  <tr>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Invoices on YAP:</th>")
+	} else {
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Invoice</th>")
+	}
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "    <br>")
+
+	var inputTableHTMLArgument jsFunctionParameter
+	inputTableHTMLArgument.inputID = "invoice-input-tag"
+	inputTableHTMLArgument.funcNameJS = "invoiceSearchTag"
+	inputTableHTMLArgument.placeholder = "Invoice Item Tag"
+	inputTableHTML(w, inputTableHTMLArgument)
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTMLArgument.inputID = "invoice-good-service-name"
+	inputTableHTMLArgument.funcNameJS = "invoiceSearchGoodServiceName"
+	inputTableHTMLArgument.placeholder = "Service/Product Name"
+	inputTableHTML(w, inputTableHTMLArgument)
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTMLArgument.inputID = "invoice-input-sell-price"
+	inputTableHTMLArgument.funcNameJS = "invoiceSearchSellPrice"
+	inputTableHTMLArgument.placeholder = "Sell Price"
+	inputTableHTML(w, inputTableHTMLArgument)
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTMLArgument.inputID = "invoice-input-date-added"
+	inputTableHTMLArgument.funcNameJS = "invoiceSearchDateAdded"
+	inputTableHTMLArgument.placeholder = "Invoice Item Added"
+	inputTableHTML(w, inputTableHTMLArgument)
+
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		inputTableHTMLArgument.inputID = "invoice-input-detail"
+		inputTableHTMLArgument.funcNameJS = "invoiceSearchDetail"
+		inputTableHTMLArgument.placeholder = "Invoice Item Details"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "invoice-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "invoice-customer-id"
+		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerID"
+		inputTableHTMLArgument.placeholder = "Customer ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		inputTableHTMLArgument.inputID = "invoice-input-uk-vat-registered"
+		inputTableHTMLArgument.funcNameJS = "invoiceSearchUKVATRegistered"
+		inputTableHTMLArgument.placeholder = "UK VAT Registered"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "invoice-customer-uk-vat-number"
+		inputTableHTMLArgument.funcNameJS = "invoiceSearchUKVATNumber"
+		inputTableHTMLArgument.placeholder = "UK VAT Number"
+		inputTableHTML(w, inputTableHTMLArgument)
+	}
+
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    <br>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	var exportCSVButtonHTMLArgument jsFunctionParameter
+	exportCSVButtonHTMLArgument.funcNameJS = "Invoice"
+	exportCSVButtonHTMLArgument.buttonCSS = "button-invoice"
+	exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table id=\"invoice-table\" class=\"table-invoice\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <th>Invoice Item<br>Tag</th>")
+	fmt.Fprintf(w, "          <th>Service/Product<br>Name</th>")
+	fmt.Fprintf(w, "          <th>Price</th>")
+	fmt.Fprintf(w, "          <th>Date Added to Invoice</th>")
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "          <th>Invoice Item<br>Details</th>")
+	}
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
+		fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
+		fmt.Fprintf(w, "          <th>Customer UK<br>VAT Registered</th>")
+		fmt.Fprintf(w, "          <th>Customer UK<br>VAT Number</th>")
+	}
+	fmt.Fprintf(w, "        </tr>")
+
+	var whereClause string
+
+	if userTypeID == "100" {
+		whereClause = "WHERE customer_id != ?;"
+		userCustomerID = "1"
+	} else if userTypeID == "200" || userTypeID == "400" {
+		whereClause = "WHERE customer_id = ?;"
+	}
+
+	invoiceSQL, err := dbDetail.connection.Query(`SELECT
+							invoice_item_tag,
+							good_service_name,
+							invoice_item_sell_price,
+							invoice_item_date_added,
+							invoice_item_uk_sales_tax_rate,
+							invoice_item_uk_sales_tax_status,
+							invoice_item_invoice_customer,
+							invoice_item_one_off_charge,
+							supplier_uk_based,
+							supplier_uk_vat_registered,
+  							supplier_uk_vat_number,
+							good_service_type,
+							good_service_supplier_name,
+							good_service_buy_price,
+							customer_name,
+                                                        customer_id,
+                                                        customer_uk_vat_registered,
+                                                        customer_uk_vat_number
+					              FROM
+					  	        yap.view___invoice_item
+						      `+whereClause, userCustomerID)
+
+	// Error
+	if err != nil {
+		panic(err)
+
+	}
+
+	for invoiceSQL.Next() {
+
+		err = invoiceSQL.Scan(
+			&invoiceItemTag,
+			&goodServiceName,
+			&invoiceItemSellPrice,
+			&invoiceItemDateAdded,
+			&invoiceItemUKSalesTaxRate,
+			&invoiceItemUKSalesTaxStatus,
+			&invoiceItemInvoiceCustomer,
+			&invoiceItemOneOffCharge,
+			&supplierUKBased,
+			&supplierUKVATRegistered,
+			&supplierUKVATNumber,
+			&goodServiceType,
+			&goodServiceSupplierName,
+			&goodServiceBuyPrice,
+			&customerName,
+			&customerID,
+			&customerUKVATRegistered,
+			&customerUKVATNumber,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>"+invoiceItemTag+"</td>")
+		fmt.Fprintf(w, "          <td>"+goodServiceName+"</td>")
+		fmt.Fprintf(w, "          <td>£"+invoiceItemSellPrice+"</td>")
+		fmt.Fprintf(w, "          <td>"+invoiceItemDateAdded+"</td>")
+		if userTypeID == "100" {
+			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
+			fmt.Fprintf(w, "            Sales Tax Rate: "+invoiceItemUKSalesTaxRate+"&nbsp<br>")
+			fmt.Fprintf(w, "            Sales Tax Status: "+invoiceItemUKSalesTaxStatus+"&nbsp<br>")
+			fmt.Fprintf(w, "            Invoice Customer: "+invoiceItemInvoiceCustomer+"&nbsp<br>")
+			fmt.Fprintf(w, "            One Off Charge: "+invoiceItemOneOffCharge+"&nbsp<br>")
+			fmt.Fprintf(w, "            Services or Products: "+goodServiceType+"&nbsp<br>")
+			fmt.Fprintf(w, "            Supplier Name: "+goodServiceSupplierName+"&nbsp<br>")
+			fmt.Fprintf(w, "            Supplier UK Based: "+supplierUKBased+"&nbsp<br>")
+			fmt.Fprintf(w, "            Supplier UK<br>VAT Registered: "+supplierUKVATRegistered+"&nbsp<br>")
+			fmt.Fprintf(w, "            Supplier UK<br>VAT Number: "+supplierUKVATNumber+"&nbsp<br>")
+			fmt.Fprintf(w, "            Buy Price: £"+goodServiceBuyPrice)
+			fmt.Fprintf(w, "          </td>")
+		}
+		if userTypeID == "100" {
+			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerUKVATRegistered+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerUKVATNumber+"</td>")
+		}
+		fmt.Fprintf(w, "        </tr>")
+	}
+
+	fmt.Fprintf(w, "      </table>")
+	var filterTableJSArgument jsFunctionParameter
+	filterTableJSArgument.tableID = "invoice-table"
+
+	filterTableJSArgument.funcNameJS = "invoiceSearchTag"
+	filterTableJSArgument.inputID = "invoice-input-tag"
+	filterTableJSArgument.columnNumber = 0
+	filterTableJS(w, filterTableJSArgument)
+
+	filterTableJSArgument.funcNameJS = "invoiceSearchGoodServiceName"
+	filterTableJSArgument.inputID = "invoice-good-service-name"
+	filterTableJSArgument.columnNumber = 1
+	filterTableJS(w, filterTableJSArgument)
+
+	filterTableJSArgument.funcNameJS = "invoiceSearchSellPrice"
+	filterTableJSArgument.inputID = "invoice-input-sell-price"
+	filterTableJSArgument.columnNumber = 2
+	filterTableJS(w, filterTableJSArgument)
+
+	filterTableJSArgument.funcNameJS = "invoiceSearchDateAdded"
+	filterTableJSArgument.inputID = "invoice-input-date-added"
+	filterTableJSArgument.columnNumber = 3
+	filterTableJS(w, filterTableJSArgument)
+
+	if userTypeID == "100" {
+		filterTableJSArgument.funcNameJS = "invoiceSearchDetail"
+		filterTableJSArgument.inputID = "invoice-input-detail"
+		filterTableJSArgument.columnNumber = 4
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "invoiceSearchCustomerName"
+		filterTableJSArgument.inputID = "invoice-input-customer-name"
+		filterTableJSArgument.columnNumber = 5
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "invoiceSearchCustomerID"
+		filterTableJSArgument.inputID = "invoice-customer-id"
+		filterTableJSArgument.columnNumber = 6
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "invoiceSearchUKVATRegistered"
+		filterTableJSArgument.inputID = "invoice-input-uk-vat-registered"
+		filterTableJSArgument.columnNumber = 7
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "invoiceSearchUKVATNumber"
+		filterTableJSArgument.inputID = "invoice-customer-uk-vat-number"
+		filterTableJSArgument.columnNumber = 8
+		filterTableJS(w, filterTableJSArgument)
+	}
+	var exportCSVJSArgument jsFunctionParameter
+	exportCSVJSArgument.funcNameJS = "Invoice"
+	exportCSVJSArgument.tableID = "invoice-table"
+	exportCSVJSArgument.fileName = "YAP_customer_contact_details"
+	exportCSVJSArgument.pathURL = "invoice"
+	exportCSVJS(w, exportCSVJSArgument)
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</div>")
+	var toggleDivJSArgument jsFunctionParameter
+	toggleDivJSArgument.funcNameJS = "toggleInvoice"
+	toggleDivJSArgument.divID = "invoice-div"
+	toggleDivJS(w, toggleDivJSArgument)
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // Server log page functions
@@ -2926,7 +3239,7 @@ func main() {
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All Customer<br>Invoicing<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All Customer<br>Invoicing<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonFive)
 				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
@@ -2949,7 +3262,7 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -2972,7 +3285,7 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -3015,7 +3328,7 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Own<br>User Account<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonTwo)
-				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoicing", headerCSS: "header-invoicing", buttonCSS: "button-invoicing"}
+				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonOne)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -3254,7 +3567,7 @@ func main() {
 
 	// Invoicing Page
 
-	go http.HandleFunc("/invoicing", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/invoice", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3268,7 +3581,7 @@ func main() {
 		fmt.Fprintf(w, startHTML)
 
 		// Wallpaper
-		wallpaper(w, "wallpaper-invoicing")
+		wallpaper(w, "wallpaper-invoice")
 
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
@@ -3279,16 +3592,27 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+		userCustomerName := userAccountData(dbDetail, "customer_name")
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-sip-trunk", "button-sip-trunk")
+			errorBox(w, "email_error", "header-invoice", "button-invoice")
 		} else {
 			if userTypeID == "100" {
-				header(w, "YAP Admin Account<br>Customer Invoicing", "header-invoicing", extraButtonName, extraButtonURL)
+				header(w, "YAP Admin Account<br>All Customer Invoices", "header-invoice", extraButtonName, extraButtonURL)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID)
+				footer(w, "header-invoice", "button-invoice")
+			} else if userTypeID == "200" {
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID)
+				footer(w, "header-invoice", "button-invoice")
+			} else if userTypeID == "400" {
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID)
+				footer(w, "header-invoice", "button-invoice")
 
-				footer(w, "header-invoicing", "button-invoicing")
 			} else {
-				errorBox(w, "account_type_error", "header-invoicing", "button-invoicing")
+				errorBox(w, "account_type_error", "header-invoice", "button-invoice")
 			}
 		}
 
