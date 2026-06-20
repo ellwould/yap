@@ -8,7 +8,8 @@ CREATE TABLE `customer`
   `active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
   `consumer_type` VARCHAR(255) NOT NULL,
-  `uk_vat_status` VARCHAR(255) NOT NULL,
+  `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `uk_vat_number` VARCHAR(20) DEFAULT 'n/a' NOT NULL,
   `reselling_miniutes` ENUM('no', 'yes', 'n/a') NOT NULL,
   `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
 PRIMARY KEY(`id`)
@@ -18,12 +19,6 @@ ENGINE = InnoDB;
 CREATE TABLE `consumer_type_lookup` (
   `consumer_type` VARCHAR(255),
   PRIMARY KEY (`consumer_type`)
-)
-ENGINE = InnoDB;
-  
-CREATE TABLE `uk_vat_status_lookup` (
-  `uk_vat_status` VARCHAR(255),
-  PRIMARY KEY (`uk_vat_status`)
 )
 ENGINE = InnoDB;
 
@@ -128,7 +123,7 @@ CREATE TABLE `invoice_item` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `tag` VARCHAR(255),
-  `good_service_id` VARCHAR(255) NOT NULL,
+  `good_service_name` VARCHAR(255) NOT NULL,
   `sell_price` DECIMAL(8,2) NOT NULL,
   `uk_sales_tax_rate` DECIMAL(5,2) NOT NULL,
   `uk_sales_tax_status` VARCHAR(255) NOT NULL,
@@ -152,18 +147,28 @@ CREATE TABLE `uk_sales_tax_status_lookup` (
 ENGINE = InnoDB;
 
 CREATE TABLE `good_service` (
-  `id` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   `good_service_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
   `buy_price` DECIMAL(8,2) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`name`)
 )
 ENGINE = InnoDB;
 
 CREATE TABLE `good_service_type_lookup` (
   `good_service_type` VARCHAR(255),
   PRIMARY KEY(`good_service_type`)
+)
+ENGINE = InnoDB;
+
+CREATE TABLE `supplier` (
+  `name` VARCHAR(255) NOT NULL,
+  `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `uk_vat_number` VARCHAR(20) DEFAULT 'n/a' NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  PRIMARY KEY(`name`)
 )
 ENGINE = InnoDB;
 
@@ -202,9 +207,6 @@ MODIFY COLUMN `id` varchar(255) NOT NULL;
 ALTER TABLE `customer`
 ADD INDEX `index___customer__consumer_type` (`consumer_type`);
 
-ALTER TABLE `customer`
-ADD INDEX `index___customer__uk_vat_status` (`uk_vat_status`);
-
 ALTER TABLE `pbx`
 ADD INDEX `index___pbx__customer_id` (`customer_id`);
 
@@ -242,10 +244,13 @@ ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__uk_sales_tax_status` (`uk_sales_tax_status`);
 
 ALTER TABLE `invoice_item`
-ADD INDEX `index___invoice_item__good_service_id` (`good_service_id`);
+ADD INDEX `index___invoice_item__good_service_name` (`good_service_name`);
 
 ALTER TABLE `good_service`
 ADD INDEX `index___good_service__good_service_type` (`good_service_type`);
+
+ALTER TABLE `good_service`
+ADD INDEX `index___good_service__supplier_name` (`supplier_name`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -255,11 +260,6 @@ ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer___consumer_type_lookup
 FOREIGN KEY (`consumer_type`)
 REFERENCES `consumer_type_lookup` (`consumer_type`);
-
-ALTER TABLE `customer`
-ADD CONSTRAINT fk___customer___uk_vat_status_lookup
-FOREIGN KEY (`uk_vat_status`)
-REFERENCES `uk_vat_status_lookup` (`uk_vat_status`);
 
 ALTER TABLE `pbx`
 ADD CONSTRAINT fk___pbx___customer
@@ -354,13 +354,18 @@ REFERENCES `uk_sales_tax_status_lookup` (`uk_sales_tax_status`);
 
 ALTER TABLE `invoice_item`
 ADD CONSTRAINT fk___invoice_item___good_service
-FOREIGN KEY (`good_service_id`)
-REFERENCES `good_service` (`id`);
+FOREIGN KEY (`good_service_name`)
+REFERENCES `good_service` (`name`);
 
 ALTER TABLE `good_service`
 ADD CONSTRAINT fk___good_service___good_service_type_lookup
 FOREIGN KEY (`good_service_type`)
 REFERENCES `good_service_type_lookup` (`good_service_type`);
+
+ALTER TABLE `good_service`
+ADD CONSTRAINT fk___good_service___supplier
+FOREIGN KEY (`supplier_name`)
+REFERENCES `supplier` (`name`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -435,7 +440,8 @@ SELECT
   `customer`.`active` AS 'customer_active',
   `customer`.`uk_based` AS 'customer_uk_based',
   `customer`.`consumer_type` AS 'customer_consumer_type',
-  `customer`.`uk_vat_status` AS 'customer_uk_vat_status',
+  `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
+  `customer`.`uk_vat_number` AS 'customer_uk_vat_number',
   `customer`.`reselling_miniutes` AS 'customer_reselling_miniutes',
   `customer`.`pbx_limit` AS 'customer_pbx_limit',
   `customer_site_address`.`address_line_1` AS 'customer_site_address_line_1',
@@ -552,6 +558,8 @@ CREATE VIEW `view___invoice_item` AS
 SELECT DISTINCT
   `customer`.`name` AS 'customer_name',
   `customer`.`id` AS 'customer_id',
+  `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
+  `customer`.`uk_based` AS 'customer_uk_based',
   IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
   `good_service`.`id` AS 'good_service_id',
   `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
@@ -567,7 +575,7 @@ FROM `customer`
 INNER JOIN `invoice_item`
 ON `invoice_item`.`customer_id` = `customer`.`id`
 INNER JOIN `good_service`
-ON `good_service`.`id` = `invoice_item`.`good_service_id`;
+ON `good_service`.`name` = `invoice_item`.`good_service_name`;
 
 ----------------------------------------------------------------------------------------------------
 
@@ -593,12 +601,6 @@ VALUES
   ('Private Limited Company (LTD)'),
   ('Public Limited Company (PLC)'),
   ('Community Interest Company (CIC)'),
-  ('n/a');
-
-INSERT INTO `uk_vat_status_lookup` (`uk_vat_status`)
-VALUES
-  ('Registered'),
-  ('Not Registered'),
   ('n/a');
 
 INSERT INTO `good_service_type_lookup` (`good_service_type`)
