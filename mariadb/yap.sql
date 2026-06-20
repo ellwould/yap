@@ -124,7 +124,7 @@ PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `invoice` (
+CREATE TABLE `invoice_item` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `tag` VARCHAR(255),
@@ -233,17 +233,17 @@ ADD INDEX `index___ps_aors__pbx_id` (`pbx_id`);
 ALTER TABLE `ps_auths`
 ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
 
-ALTER TABLE `invoice`
-ADD INDEX `index___invoice__customer_id` (`customer_id`);
+ALTER TABLE `invoice_item`
+ADD INDEX `index___invoice_item__customer_id` (`customer_id`);
 
-ALTER TABLE `invoice`
-ADD INDEX `index___invoice__uk_sales_tax_rate` (`uk_sales_tax_rate`);
+ALTER TABLE `invoice_item`
+ADD INDEX `index___invoice_item__uk_sales_tax_rate` (`uk_sales_tax_rate`);
 
-ALTER TABLE `invoice`
-ADD INDEX `index___invoice__uk_sales_tax_status` (`uk_sales_tax_status`);
+ALTER TABLE `invoice_item`
+ADD INDEX `index___invoice_item__uk_sales_tax_status` (`uk_sales_tax_status`);
 
-ALTER TABLE `invoice`
-ADD INDEX `index___invoice__good_service_id` (`good_service_id`);
+ALTER TABLE `invoice_item`
+ADD INDEX `index___invoice_item__good_service_id` (`good_service_id`);
 
 ALTER TABLE `good_service`
 ADD INDEX `index___good_service__good_service_type` (`good_service_type`);
@@ -337,24 +337,24 @@ FOREIGN KEY (`pbx_id`)
 REFERENCES `pbx` (`id`)
 ON DELETE CASCADE;
 
-ALTER TABLE `invoice`
-ADD CONSTRAINT fk___invoice___customer_id
+ALTER TABLE `invoice_item`
+ADD CONSTRAINT fk___invoice_item___customer_id
 FOREIGN KEY (`customer_id`)
 REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
 
-ALTER TABLE `invoice`
-ADD CONSTRAINT fk___invoice___uk_sales_tax_rate_lookup
+ALTER TABLE `invoice_item`
+ADD CONSTRAINT fk___invoice_item___uk_sales_tax_rate_lookup
 FOREIGN KEY (`uk_sales_tax_rate`)
 REFERENCES `uk_sales_tax_rate_lookup` (`uk_sales_tax_rate`);
 
-ALTER TABLE `invoice`
-ADD CONSTRAINT fk___invoice___uk_sales_tax_status_lookup
+ALTER TABLE `invoice_item`
+ADD CONSTRAINT fk___invoice_item___uk_sales_tax_status_lookup
 FOREIGN KEY (`uk_sales_tax_status`)
 REFERENCES `uk_sales_tax_status_lookup` (`uk_sales_tax_status`);
 
-ALTER TABLE `invoice`
-ADD CONSTRAINT fk___invoice___good_service
+ALTER TABLE `invoice_item`
+ADD CONSTRAINT fk___invoice_item___good_service
 FOREIGN KEY (`good_service_id`)
 REFERENCES `good_service` (`id`);
 
@@ -549,27 +549,27 @@ INNER JOIN `customer`
 ON `pbx`.`customer_id` = `customer`.`id`
 WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
-CREATE VIEW `view___invoice` AS
+CREATE VIEW `view___invoice_item` AS
 SELECT DISTINCT
   `customer`.`name` AS 'customer_name',
   `customer`.`id` AS 'customer_id',
-  IFNULL(`invoice`.`tag`, ' ') AS 'invoice_tag',
+  IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
   `good_service`.`id` AS 'good_service_id',
-  `invoice`.`sell_price` AS 'invoice_sell_price',
-  `invoice`.`uk_sales_tax_rate` AS 'invoice_uk_sales_tax_rate',
-  `invoice`.`uk_sales_tax_status` AS 'invoice_uk_sales_tax_status',
-  `invoice`.`invoice_customer` AS 'invoice_invoice_customer',
-  `invoice`.`one_off_charge` AS 'invoice_one_off_charge',
-  `invoice`.`date_added` AS 'invoice_date_added',
-  `invoice`.`comment` AS 'invoice_comment',
+  `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
+  `invoice_item`.`date_added` AS 'invoice_item_date_added',
+  `invoice_item`.`uk_sales_tax_rate` AS 'invoice_item_uk_sales_tax_rate',
+  `invoice_item`.`uk_sales_tax_status` AS 'invoice_item_uk_sales_tax_status',
+  `invoice_item`.`invoice_customer` AS 'invoice_item_invoice_customer',
+  `invoice_item`.`one_off_charge` AS 'invoice_item_one_off_charge',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
-  `good_service`.`buy_price` AS 'good_service_buy_price'
+  `good_service`.`buy_price` AS 'good_service_buy_price',
+  `invoice_item`.`comment` AS 'invoice_item_comment'
 FROM `customer`
-INNER JOIN `invoice`
-ON `invoice`.`customer_id` = `customer`.`id`
+INNER JOIN `invoice_item`
+ON `invoice_item`.`customer_id` = `customer`.`id`
 INNER JOIN `good_service`
-ON `good_service`.`id` = `invoice`.`good_service_id`;
+ON `good_service`.`id` = `invoice_item`.`good_service_id`;
 
 ----------------------------------------------------------------------------------------------------
 
