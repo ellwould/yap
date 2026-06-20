@@ -561,7 +561,7 @@ SELECT DISTINCT
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
   `customer`.`uk_based` AS 'customer_uk_based',
   IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
-  `good_service`.`id` AS 'good_service_id',
+  `good_service`.`name` AS 'good_service_name',
   `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
   `invoice_item`.`date_added` AS 'invoice_item_date_added',
   `invoice_item`.`uk_sales_tax_rate` AS 'invoice_item_uk_sales_tax_rate',
@@ -609,7 +609,7 @@ VALUES
   ('Products'),
   ('n/a');
 
-INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_status`, `reselling_miniutes`, `pbx_limit`)
+INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_miniutes`, `pbx_limit`)
 VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
