@@ -559,6 +559,7 @@ SELECT DISTINCT
   `customer`.`name` AS 'customer_name',
   `customer`.`id` AS 'customer_id',
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
+  `customer`.`uk_vat_number` AS 'customer_uk_vat_number',
   `customer`.`uk_based` AS 'customer_uk_based',
   IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
   `good_service`.`name` AS 'good_service_name',
@@ -570,12 +571,17 @@ SELECT DISTINCT
   `invoice_item`.`one_off_charge` AS 'invoice_item_one_off_charge',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
+  `supplier`.`uk_based` AS 'supplier_uk_based',
+  `supplier`.`uk_vat_registered` AS 'supplier_uk_vat_registered',
+  `supplier`.`uk_vat_number` AS 'supplier_uk_vat_number',
   `good_service`.`buy_price` AS 'good_service_buy_price'
 FROM `customer`
 INNER JOIN `invoice_item`
 ON `invoice_item`.`customer_id` = `customer`.`id`
 INNER JOIN `good_service`
-ON `good_service`.`name` = `invoice_item`.`good_service_name`;
+ON `good_service`.`name` = `invoice_item`.`good_service_name`
+INNER JOIN `supplier`
+ON `supplier`.`name` = `good_service`.`supplier_name`;
 
 ----------------------------------------------------------------------------------------------------
 
