@@ -134,7 +134,7 @@ CREATE TABLE `invoice_item` (
   `uk_sales_tax_status` VARCHAR(255) NOT NULL,
   `invoice_customer` ENUM('yes', 'no') NOT NULL,
   `one_off_charge` ENUM('yes', 'no') NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
