@@ -7,10 +7,10 @@ CREATE TABLE `customer`
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `reselling_miniutes` ENUM('no', 'yes', 'n/a') NOT NULL,
   `consumer_type` VARCHAR(255) NOT NULL,
   `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
   `uk_vat_number` VARCHAR(20) DEFAULT 'n/a' NOT NULL,
-  `reselling_miniutes` ENUM('no', 'yes', 'n/a') NOT NULL,
   `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -579,9 +579,10 @@ CREATE VIEW `view___invoice_item` AS
 SELECT DISTINCT
   `customer`.`name` AS 'customer_name',
   `customer`.`id` AS 'customer_id',
+  `customer`.`uk_based` AS 'customer_uk_based',
+  `customer`.`reselling_miniutes` AS 'customer_reselling_miniutes',
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
   `customer`.`uk_vat_number` AS 'customer_uk_vat_number',
-  `customer`.`uk_based` AS 'customer_uk_based',
   IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
   `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
   `invoice_item`.`date_added` AS 'invoice_item_date_added',
