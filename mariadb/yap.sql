@@ -127,8 +127,8 @@ CREATE TABLE `invoice_item` (
   `sell_price` DECIMAL(8,2) NOT NULL,
   `uk_sales_tax_rate` DECIMAL(5,2) NOT NULL,
   `uk_sales_tax_status` VARCHAR(255) NOT NULL,
-  `invoice_customer` ENUM('yes', 'no') NOT NULL,
-  `one_off_charge` ENUM('yes', 'no') NOT NULL,
+  `bill_item_once` ENUM('yes', 'no') NOT NULL,
+  `item_on_hold` ENUM('yes', 'no') NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
@@ -567,8 +567,8 @@ SELECT DISTINCT
   `invoice_item`.`date_added` AS 'invoice_item_date_added',
   `invoice_item`.`uk_sales_tax_rate` AS 'invoice_item_uk_sales_tax_rate',
   `invoice_item`.`uk_sales_tax_status` AS 'invoice_item_uk_sales_tax_status',
-  `invoice_item`.`invoice_customer` AS 'invoice_item_invoice_customer',
-  `invoice_item`.`one_off_charge` AS 'invoice_item_one_off_charge',
+  `invoice_item`.`item_on_hold` AS 'invoice_item_on_hold',
+  `invoice_item`.`bill_item_once` AS 'invoice_bill_item_once',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
   `supplier`.`uk_based` AS 'supplier_uk_based',
