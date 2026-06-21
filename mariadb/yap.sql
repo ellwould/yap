@@ -130,7 +130,7 @@ CREATE TABLE `invoice_item` (
   `bill_item_once` ENUM('yes', 'no') NOT NULL,
   `item_on_hold` ENUM('yes', 'no') NOT NULL,
   `contract_length` VARCHAR(255) NOT NULL,
-  `contract_start_date` VARCHAR(255) NOT NULL,
+  `contract_start_date` DATE NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
