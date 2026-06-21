@@ -129,6 +129,8 @@ CREATE TABLE `invoice_item` (
   `sales_tax_status` VARCHAR(255) NOT NULL,
   `bill_item_once` ENUM('yes', 'no') NOT NULL,
   `item_on_hold` ENUM('yes', 'no') NOT NULL,
+  `contract_length` VARCHAR(255) NOT NULL,
+  `contract_start_date` VARCHAR(255) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
@@ -152,6 +154,7 @@ CREATE TABLE `good_service` (
   `supplier_name` VARCHAR(255) NOT NULL,
   `buy_price` DECIMAL(8,2) NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  `contract_length` VARCHAR(255) NOT NULL,
   PRIMARY KEY(`name`)
 )
 ENGINE = InnoDB;
@@ -164,11 +167,14 @@ ENGINE = InnoDB;
 
 CREATE TABLE `supplier` (
   `name` VARCHAR(255) NOT NULL,
-  `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
-  `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
-  `uk_vat_number` VARCHAR(20) DEFAULT 'n/a' NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`name`)
+)
+ENGINE = InnoDB;
+
+CREATE TABLE `contract_length_lookup` (
+  `contract_length` VARCHAR(255),
+  PRIMARY KEY(`contract_length`)
 )
 ENGINE = InnoDB;
 
@@ -246,11 +252,17 @@ ADD INDEX `index___invoice_item__sales_tax_status` (`sales_tax_status`);
 ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__good_service_name` (`good_service_name`);
 
+ALTER TABLE `invoice_item`
+ADD INDEX `index___invoice_item__contract_length` (`contract_length`);
+
 ALTER TABLE `good_service`
 ADD INDEX `index___good_service__good_service_type` (`good_service_type`);
 
 ALTER TABLE `good_service`
 ADD INDEX `index___good_service__supplier_name` (`supplier_name`);
+
+ALTER TABLE `good_service`
+ADD INDEX `index___good_service__contract_length` (`contract_length`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -357,6 +369,11 @@ ADD CONSTRAINT fk___invoice_item___good_service
 FOREIGN KEY (`good_service_name`)
 REFERENCES `good_service` (`name`);
 
+ALTER TABLE `invoice_item`
+ADD CONSTRAINT fk___invoice_item___contract_length_lookup
+FOREIGN KEY (`contract_length`)
+REFERENCES `contract_length_lookup` (`contract_length`);
+
 ALTER TABLE `good_service`
 ADD CONSTRAINT fk___good_service___good_service_type_lookup
 FOREIGN KEY (`good_service_type`)
@@ -366,6 +383,11 @@ ALTER TABLE `good_service`
 ADD CONSTRAINT fk___good_service___supplier
 FOREIGN KEY (`supplier_name`)
 REFERENCES `supplier` (`name`);
+
+ALTER TABLE `good_service`
+ADD CONSTRAINT fk___good_service___contract_length_lookup
+FOREIGN KEY (`contract_length`)
+REFERENCES `contract_length_lookup` (`contract_length`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -569,19 +591,16 @@ SELECT DISTINCT
   `invoice_item`.`sales_tax_status` AS 'invoice_item_sales_tax_status',
   `invoice_item`.`item_on_hold` AS 'invoice_item_on_hold',
   `invoice_item`.`bill_item_once` AS 'invoice_bill_item_once',
+  `invoice_item`.`contract_length` AS 'invoice_item_contract_length',
+  `invoice_item`.`contract_start_date` AS 'invoice_item_contract_start_date',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
-  `supplier`.`uk_based` AS 'supplier_uk_based',
-  `supplier`.`uk_vat_registered` AS 'supplier_uk_vat_registered',
-  `supplier`.`uk_vat_number` AS 'supplier_uk_vat_number',
-  `good_service`.`buy_price` AS 'good_service_buy_price'
+  `good_service`.`contract_length` AS 'good_service_contract_length'
 FROM `customer`
 INNER JOIN `invoice_item`
 ON `invoice_item`.`customer_id` = `customer`.`id`
 INNER JOIN `good_service`
-ON `good_service`.`name` = `invoice_item`.`good_service_name`
-INNER JOIN `supplier`
-ON `supplier`.`name` = `good_service`.`supplier_name`;
+ON `good_service`.`name` = `invoice_item`.`good_service_name`;
 
 ----------------------------------------------------------------------------------------------------
 
@@ -596,8 +615,7 @@ VALUES
 INSERT INTO `sales_tax_status_lookup` (`sales_tax_status`)
 VALUES
   ('TAXABLE'),
-  ('EXEMPT'),
-  ('OUT_OF_SCOPE');
+  ('EXEMPT');
 
 INSERT INTO `consumer_type_lookup` (`consumer_type`)
 VALUES
@@ -615,6 +633,17 @@ VALUES
   ('Services'),
   ('Products'),
   ('n/a');
+
+INSERT INTO `contract_length_lookup` (`contract_length`)
+VALUES
+  ('1 Day'),
+  ('1 Week'),
+  ('1 Month'),
+  ('3 Months'),
+  ('6 Months'),
+  ('12 Months (1 year)'),
+  ('18 Months (1.5 years)'),
+  ('24 Months (2 years)');
 
 INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_miniutes`, `pbx_limit`)
 VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
