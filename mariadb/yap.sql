@@ -130,7 +130,6 @@ CREATE TABLE `invoice_item` (
   `bill_item_once` ENUM('yes', 'no') NOT NULL,
   `item_on_hold` ENUM('yes', 'no') NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
-  UNIQUE (`tag`),
   PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
