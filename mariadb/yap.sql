@@ -640,9 +640,9 @@ VALUES
   ('1 Month'),
   ('3 Months'),
   ('6 Months'),
-  ('12 Months (1 year)'),
-  ('18 Months (1.5 years)'),
-  ('24 Months (2 years)'),
+  ('12 Months'),
+  ('18 Months'),
+  ('24 Months'),
   ('n/a');
 
 INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_miniutes`, `pbx_limit`)
