@@ -583,7 +583,6 @@ SELECT DISTINCT
   `customer`.`uk_vat_number` AS 'customer_uk_vat_number',
   `customer`.`uk_based` AS 'customer_uk_based',
   IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
-  `good_service`.`name` AS 'good_service_name',
   `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
   `invoice_item`.`date_added` AS 'invoice_item_date_added',
   `invoice_item`.`sales_tax_rate` AS 'invoice_item_sales_tax_rate',
@@ -592,6 +591,7 @@ SELECT DISTINCT
   `invoice_item`.`bill_item_once` AS 'invoice_bill_item_once',
   `invoice_item`.`contract_length` AS 'invoice_item_contract_length',
   `invoice_item`.`contract_start_date` AS 'invoice_item_contract_start_date',
+  `good_service`.`name` AS 'good_service_name',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
   `good_service`.`contract_length` AS 'good_service_contract_length'
