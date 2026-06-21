@@ -125,8 +125,8 @@ CREATE TABLE `invoice_item` (
   `tag` VARCHAR(255),
   `good_service_name` VARCHAR(255) NOT NULL,
   `sell_price` DECIMAL(8,2) NOT NULL,
-  `uk_sales_tax_rate` DECIMAL(5,2) NOT NULL,
-  `uk_sales_tax_status` VARCHAR(255) NOT NULL,
+  `sales_tax_rate` DECIMAL(5,2) NOT NULL,
+  `sales_tax_status` VARCHAR(255) NOT NULL,
   `bill_item_once` ENUM('yes', 'no') NOT NULL,
   `item_on_hold` ENUM('yes', 'no') NOT NULL,
   `date_added` DATETIME DEFAULT NOW() NOT NULL,
@@ -134,15 +134,15 @@ CREATE TABLE `invoice_item` (
 )
 ENGINE = InnoDB;
   
-CREATE TABLE `uk_sales_tax_rate_lookup` (
-  `uk_sales_tax_rate` DECIMAL(5,2),
-  PRIMARY KEY(`uk_sales_tax_rate`)
+CREATE TABLE `sales_tax_rate_lookup` (
+  `sales_tax_rate` DECIMAL(5,2),
+  PRIMARY KEY(`sales_tax_rate`)
 )
 ENGINE = InnoDB;
   
-CREATE TABLE `uk_sales_tax_status_lookup` (
-  `uk_sales_tax_status` VARCHAR(255),
-  PRIMARY KEY(`uk_sales_tax_status`)
+CREATE TABLE `sales_tax_status_lookup` (
+  `sales_tax_status` VARCHAR(255),
+  PRIMARY KEY(`sales_tax_status`)
 )
 ENGINE = InnoDB;
 
@@ -238,10 +238,10 @@ ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__customer_id` (`customer_id`);
 
 ALTER TABLE `invoice_item`
-ADD INDEX `index___invoice_item__uk_sales_tax_rate` (`uk_sales_tax_rate`);
+ADD INDEX `index___invoice_item__sales_tax_rate` (`sales_tax_rate`);
 
 ALTER TABLE `invoice_item`
-ADD INDEX `index___invoice_item__uk_sales_tax_status` (`uk_sales_tax_status`);
+ADD INDEX `index___invoice_item__sales_tax_status` (`sales_tax_status`);
 
 ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__good_service_name` (`good_service_name`);
@@ -343,14 +343,14 @@ REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
 
 ALTER TABLE `invoice_item`
-ADD CONSTRAINT fk___invoice_item___uk_sales_tax_rate_lookup
-FOREIGN KEY (`uk_sales_tax_rate`)
-REFERENCES `uk_sales_tax_rate_lookup` (`uk_sales_tax_rate`);
+ADD CONSTRAINT fk___invoice_item___sales_tax_rate_lookup
+FOREIGN KEY (`sales_tax_rate`)
+REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`);
 
 ALTER TABLE `invoice_item`
-ADD CONSTRAINT fk___invoice_item___uk_sales_tax_status_lookup
-FOREIGN KEY (`uk_sales_tax_status`)
-REFERENCES `uk_sales_tax_status_lookup` (`uk_sales_tax_status`);
+ADD CONSTRAINT fk___invoice_item___sales_tax_status_lookup
+FOREIGN KEY (`sales_tax_status`)
+REFERENCES `sales_tax_status_lookup` (`sales_tax_status`);
 
 ALTER TABLE `invoice_item`
 ADD CONSTRAINT fk___invoice_item___good_service
@@ -565,8 +565,8 @@ SELECT DISTINCT
   `good_service`.`name` AS 'good_service_name',
   `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
   `invoice_item`.`date_added` AS 'invoice_item_date_added',
-  `invoice_item`.`uk_sales_tax_rate` AS 'invoice_item_uk_sales_tax_rate',
-  `invoice_item`.`uk_sales_tax_status` AS 'invoice_item_uk_sales_tax_status',
+  `invoice_item`.`sales_tax_rate` AS 'invoice_item_sales_tax_rate',
+  `invoice_item`.`sales_tax_status` AS 'invoice_item_sales_tax_status',
   `invoice_item`.`item_on_hold` AS 'invoice_item_on_hold',
   `invoice_item`.`bill_item_once` AS 'invoice_bill_item_once',
   `good_service`.`good_service_type`,
@@ -587,16 +587,17 @@ ON `supplier`.`name` = `good_service`.`supplier_name`;
 
 -- Insert data to YAP tables
 
-INSERT INTO `uk_sales_tax_rate_lookup` (`uk_sales_tax_rate`)
+INSERT INTO `sales_tax_rate_lookup` (`sales_tax_rate`)
 VALUES
   (20),
   (5),
   (0);
 
-INSERT INTO `uk_sales_tax_status_lookup` (`uk_sales_tax_status`)
+INSERT INTO `sales_tax_status_lookup` (`sales_tax_status`)
 VALUES
   ('TAXABLE'),
-  ('EXEMPT');
+  ('EXEMPT'),
+  ('OUT_OF_SCOPE');
 
 INSERT INTO `consumer_type_lookup` (`consumer_type`)
 VALUES
