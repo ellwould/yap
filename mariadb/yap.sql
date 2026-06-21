@@ -4,7 +4,6 @@ CREATE TABLE `customer`
 (
   `id` VARCHAR(255) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
   `reselling_miniutes` ENUM('no', 'yes', 'n/a') NOT NULL,
@@ -12,6 +11,7 @@ CREATE TABLE `customer`
   `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
   `uk_vat_number` VARCHAR(20) DEFAULT 'n/a' NOT NULL,
   `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -57,9 +57,9 @@ CREATE TABLE `pbx`
   `id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `active` BOOLEAN NOT NULL,
   `sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -103,8 +103,8 @@ CREATE TABLE `user_account`
   `user_account_type_id` SMALLINT UNSIGNED NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `account_active` BOOLEAN NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
 UNIQUE (`email`),
 PRIMARY KEY(`id`)
 )
