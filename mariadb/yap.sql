@@ -152,9 +152,8 @@ CREATE TABLE `good_service` (
   `name` VARCHAR(255) NOT NULL,
   `good_service_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
-  `buy_price` DECIMAL(8,2) NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   `contract_length` VARCHAR(255) NOT NULL,
+  `date_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`name`)
 )
 ENGINE = InnoDB;
@@ -643,7 +642,8 @@ VALUES
   ('6 Months'),
   ('12 Months (1 year)'),
   ('18 Months (1.5 years)'),
-  ('24 Months (2 years)');
+  ('24 Months (2 years)'),
+  ('n/a');
 
 INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_miniutes`, `pbx_limit`)
 VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
