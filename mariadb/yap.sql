@@ -11,7 +11,7 @@ CREATE TABLE `customer`
   `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
   `uk_vat_number` VARCHAR(20) DEFAULT 'n/a' NOT NULL,
   `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -59,7 +59,7 @@ CREATE TABLE `pbx`
   `customer_id` VARCHAR(255) NOT NULL,
   `active` BOOLEAN NOT NULL,
   `sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -104,7 +104,7 @@ CREATE TABLE `user_account`
   `customer_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
   `account_active` BOOLEAN NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 UNIQUE (`email`),
 PRIMARY KEY(`id`)
 )
@@ -131,7 +131,7 @@ CREATE TABLE `invoice_item` (
   `item_on_hold` ENUM('yes', 'no') NOT NULL,
   `contract_length` VARCHAR(255) NOT NULL,
   `contract_start_date` DATE NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -153,7 +153,7 @@ CREATE TABLE `good_service` (
   `good_service_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
   `contract_length` VARCHAR(255) NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`name`)
 )
 ENGINE = InnoDB;
@@ -166,7 +166,7 @@ ENGINE = InnoDB;
 
 CREATE TABLE `supplier` (
   `name` VARCHAR(255) NOT NULL,
-  `date_added` DATETIME DEFAULT NOW() NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`name`)
 )
 ENGINE = InnoDB;
@@ -399,7 +399,7 @@ SELECT
   `user_account`.`last_name` AS 'user_account_last_name',
   `user_account`.`email` AS 'user_account_email',
   `user_account_type`.`type` AS 'user_account_type',
-  `user_account`.`date_added` AS 'user_account_date_added',
+  `user_account`.`date_time_added` AS 'user_account_date_time_added',
   `customer`.`name` AS 'customer_name',
   `user_account`.`customer_id`,
   `pbx`.`name` AS 'pbx_name',
@@ -457,7 +457,7 @@ CREATE VIEW `view___customer_detail` AS
 SELECT
   `customer`.`id` AS 'customer_id',
   `customer`.`name` AS 'customer_name',
-  `customer`.`date_added` AS 'customer_date_added',
+  `customer`.`date_time_added` AS 'customer_date_time_added',
   `customer`.`active` AS 'customer_active',
   `customer`.`uk_based` AS 'customer_uk_based',
   `customer`.`consumer_type` AS 'customer_consumer_type',
@@ -493,7 +493,7 @@ SELECT
   `pbx`.`name` AS 'pbx_name',
   `pbx`.`customer_id`,
   `customer`.`name` AS 'customer_name',
-  `pbx`.`date_added` AS 'pbx_date_added',
+  `pbx`.`date_time_added` AS 'pbx_date_time_added',
   `pbx`.`active` AS 'pbx_active',
   `pbx`.`sip_extension_limit` AS 'pbx_sip_extension_limit',
   `pbx_site_address`.`address_line_1` AS 'pbx_site_address_line_1',
@@ -585,7 +585,7 @@ SELECT DISTINCT
   `customer`.`uk_vat_number` AS 'customer_uk_vat_number',
   IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
   `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
-  `invoice_item`.`date_added` AS 'invoice_item_date_added',
+  `invoice_item`.`date_time_added` AS 'invoice_item_date_time_added',
   `invoice_item`.`sales_tax_rate` AS 'invoice_item_sales_tax_rate',
   `invoice_item`.`sales_tax_status` AS 'invoice_item_sales_tax_status',
   `invoice_item`.`bill_item_once` AS 'invoice_bill_item_once',
