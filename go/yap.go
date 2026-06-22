@@ -1348,7 +1348,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		customerConsumerType             string
 		customerUKVATRegistered          string
 		customerUKVATNumber              string
-		customerResellingMiniutes        string
+		customerResellingMinutes         string
 		customerPBXLimit                 string
 		customerSiteAddressLine1         string
 		customerSiteAddressLine2         string
@@ -1680,7 +1680,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	fmt.Fprintf(w, "          <th>Consumer<br>Type</th>")
 	fmt.Fprintf(w, "          <th>UK VAT Registered</th>")
 	fmt.Fprintf(w, "          <th>UK VAT Number</th>")
-	fmt.Fprintf(w, "          <th>Reselling<br>Miniutes</th>")
+	fmt.Fprintf(w, "          <th>Reselling<br>Minutes</th>")
 	fmt.Fprintf(w, "          <th>PBX Limit</th>")
 	fmt.Fprintf(w, "        </tr>")
 
@@ -1693,7 +1693,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 							customer_consumer_type,
 							customer_uk_vat_registered,
 							customer_uk_vat_number,
-							customer_reselling_miniutes,
+							customer_reselling_minutes,
 							customer_pbx_limit
 					              FROM
 					  	        yap.view___customer_detail
@@ -1716,7 +1716,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 			&customerConsumerType,
 			&customerUKVATRegistered,
 			&customerUKVATNumber,
-			&customerResellingMiniutes,
+			&customerResellingMinutes,
 			&customerPBXLimit,
 		)
 
@@ -1737,7 +1737,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "          <td>"+customerConsumerType+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerUKVATRegistered+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerUKVATNumber+"</td>")
-		fmt.Fprintf(w, "          <td>"+customerResellingMiniutes+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerResellingMinutes+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerPBXLimit+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -2806,27 +2806,28 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 // Invoice page functions
 
-func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string) {
+func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, yapAdminUKVATRegistered string) {
 
 	var (
-		invoiceItemTag              string
-		goodServiceName             string
-		invoiceItemSellPrice        string
-		invoiceItemDateAdded        string
-		invoiceItemUKSalesTaxRate   string
-		invoiceItemUKSalesTaxStatus string
-		invoiceItemInvoiceCustomer  string
-		invoiceItemOneOffCharge     string
-		supplierUKBased             string
-		supplierUKVATRegistered     string
-		supplierUKVATNumber         string
-		goodServiceType             string
-		goodServiceSupplierName     string
-		goodServiceBuyPrice         string
-		customerName                string
-		customerID                  string
-		customerUKVATRegistered     string
-		customerUKVATNumber         string
+		customerName                 string
+		customerID                   string
+		customerUKBased              string
+		customerResellingMinutes     string
+		customerUKVATRegistered      string
+		customerUKVATNumber          string
+		invoiceItemTag               string
+		invoiceItemSellPrice         string
+		invoiceItemDateAdded         string
+		invoiceItemSalesTaxRate      string
+		invoiceItemSalesTaxStatus    string
+		invoiceBillItemOnce          string
+		invoiceItemOnHold            string
+		invoiceItemContractLength    string
+		invoiceItemContractStartDate string
+		goodServiceName              string
+		goodServiceType              string
+		goodServiceSupplierName      string
+		goodServiceContractLength    string
 	)
 
 	var dbTableCountInvoice databaseFunctionParameter
@@ -2840,7 +2841,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-invoice\">")
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <th>Total Invoice Items</th>")
+		fmt.Fprintf(w, "          <th>Total Invoice Services/Products</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		dbTableCountInvoice.countMinusOne = false
@@ -2864,9 +2865,9 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	fmt.Fprintf(w, "<table id=\"table\" class=\"table-invoice\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Invoices on YAP:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Service/Product Invoice Items on YAP:</th>")
 	} else {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Invoice</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Invoice Services/Products</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -2874,29 +2875,17 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	fmt.Fprintf(w, "    <br>")
 
 	var inputTableHTMLArgument jsFunctionParameter
-	inputTableHTMLArgument.inputID = "invoice-input-tag"
-	inputTableHTMLArgument.funcNameJS = "invoiceSearchTag"
-	inputTableHTMLArgument.placeholder = "Invoice Item Tag"
+	inputTableHTMLArgument.inputID = "invoice-input-name-information"
+	inputTableHTMLArgument.funcNameJS = "invoiceSearchNameInformation"
+	inputTableHTMLArgument.placeholder = "Service/Product Name & Information"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "invoice-good-service-name"
-	inputTableHTMLArgument.funcNameJS = "invoiceSearchGoodServiceName"
-	inputTableHTMLArgument.placeholder = "Service/Product Name"
+	inputTableHTMLArgument.inputID = "invoice-input-sale-price"
+	inputTableHTMLArgument.funcNameJS = "invoiceSearchSalePrice"
+	inputTableHTMLArgument.placeholder = "Service/Product Sale Price"
 	inputTableHTML(w, inputTableHTMLArgument)
-	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "invoice-input-sell-price"
-	inputTableHTMLArgument.funcNameJS = "invoiceSearchSellPrice"
-	inputTableHTMLArgument.placeholder = "Sell Price"
-	inputTableHTML(w, inputTableHTMLArgument)
-	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "invoice-input-date-added"
-	inputTableHTMLArgument.funcNameJS = "invoiceSearchDateAdded"
-	inputTableHTMLArgument.placeholder = "Invoice Item Added"
-	inputTableHTML(w, inputTableHTMLArgument)
-
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <br>")
-		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "invoice-input-detail"
 		inputTableHTMLArgument.funcNameJS = "invoiceSearchDetail"
 		inputTableHTMLArgument.placeholder = "Invoice Item Details"
@@ -2906,21 +2895,10 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerName"
 		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "invoice-customer-id"
+		fmt.Fprintf(w, "    <br><br>")
+		inputTableHTMLArgument.inputID = "invoice-input-customer-id"
 		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    <br>")
-		fmt.Fprintf(w, "    <br>")
-		inputTableHTMLArgument.inputID = "invoice-input-uk-vat-registered"
-		inputTableHTMLArgument.funcNameJS = "invoiceSearchUKVATRegistered"
-		inputTableHTMLArgument.placeholder = "UK VAT Registered"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "invoice-customer-uk-vat-number"
-		inputTableHTMLArgument.funcNameJS = "invoiceSearchUKVATNumber"
-		inputTableHTMLArgument.placeholder = "UK VAT Number"
 		inputTableHTML(w, inputTableHTMLArgument)
 	}
 
@@ -2940,18 +2918,12 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "      <table id=\"invoice-table\" class=\"table-invoice\">")
 	fmt.Fprintf(w, "        <tr>")
-	fmt.Fprintf(w, "          <th>Invoice Item<br>Tag</th>")
-	fmt.Fprintf(w, "          <th>Service/Product<br>Name</th>")
-	fmt.Fprintf(w, "          <th>Price</th>")
-	fmt.Fprintf(w, "          <th>Date Added to Invoice</th>")
+	fmt.Fprintf(w, "          <th>Service/Product<br>Name & Information</th>")
+	fmt.Fprintf(w, "          <th>Service/Product<br>Sale Price</th>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Invoice Item<br>Details</th>")
-	}
-	if userTypeID == "100" {
+		fmt.Fprintf(w, "          <th>Service/Product<br>Details</th>")
 		fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
 		fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
-		fmt.Fprintf(w, "          <th>Customer UK<br>VAT Registered</th>")
-		fmt.Fprintf(w, "          <th>Customer UK<br>VAT Number</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -2965,24 +2937,25 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	}
 
 	invoiceSQL, err := dbDetail.connection.Query(`SELECT
+			                                customer_name,
+                                                        customer_id,
+                                                        customer_uk_based,
+                                                        customer_reselling_minutes,
+                                                        customer_uk_vat_registered,
+                                                        customer_uk_vat_number,
 							invoice_item_tag,
-							good_service_name,
 							invoice_item_sell_price,
 							invoice_item_date_added,
-							invoice_item_uk_sales_tax_rate,
-							invoice_item_uk_sales_tax_status,
-							invoice_item_invoice_customer,
-							invoice_item_one_off_charge,
-							supplier_uk_based,
-							supplier_uk_vat_registered,
-  							supplier_uk_vat_number,
+							invoice_item_sales_tax_rate,
+							invoice_item_sales_tax_status,
+							invoice_bill_item_once,
+							invoice_item_on_hold,
+							invoice_item_contract_length,
+							invoice_item_contract_start_date,
+							good_service_name,
 							good_service_type,
 							good_service_supplier_name,
-							good_service_buy_price,
-							customer_name,
-                                                        customer_id,
-                                                        customer_uk_vat_registered,
-                                                        customer_uk_vat_number
+							good_service_contract_length
 					              FROM
 					  	        yap.view___invoice_item
 						      `+whereClause, userCustomerID)
@@ -2996,106 +2969,121 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	for invoiceSQL.Next() {
 
 		err = invoiceSQL.Scan(
-			&invoiceItemTag,
-			&goodServiceName,
-			&invoiceItemSellPrice,
-			&invoiceItemDateAdded,
-			&invoiceItemUKSalesTaxRate,
-			&invoiceItemUKSalesTaxStatus,
-			&invoiceItemInvoiceCustomer,
-			&invoiceItemOneOffCharge,
-			&supplierUKBased,
-			&supplierUKVATRegistered,
-			&supplierUKVATNumber,
-			&goodServiceType,
-			&goodServiceSupplierName,
-			&goodServiceBuyPrice,
 			&customerName,
 			&customerID,
+			&customerUKBased,
+			&customerResellingMinutes,
 			&customerUKVATRegistered,
 			&customerUKVATNumber,
+			&invoiceItemTag,
+			&invoiceItemSellPrice,
+			&invoiceItemDateAdded,
+			&invoiceItemSalesTaxRate,
+			&invoiceItemSalesTaxStatus,
+			&invoiceBillItemOnce,
+			&invoiceItemOnHold,
+			&invoiceItemContractLength,
+			&invoiceItemContractStartDate,
+			&goodServiceName,
+			&goodServiceType,
+			&goodServiceSupplierName,
+			&goodServiceContractLength,
 		)
 
 		// Error
 		if err != nil {
 			panic(err)
 		}
-		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>"+invoiceItemTag+"</td>")
-		fmt.Fprintf(w, "          <td>"+goodServiceName+"</td>")
-		fmt.Fprintf(w, "          <td>£"+invoiceItemSellPrice+"</td>")
-		fmt.Fprintf(w, "          <td>"+invoiceItemDateAdded+"</td>")
-		if userTypeID == "100" {
+		if userTypeID != "100" && invoiceItemOnHold == "yes" {
+		} else {
+			fmt.Fprintf(w, "        <tr>")
 			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
-			fmt.Fprintf(w, "            Sales Tax Rate: "+invoiceItemUKSalesTaxRate+"&nbsp<br>")
-			fmt.Fprintf(w, "            Sales Tax Status: "+invoiceItemUKSalesTaxStatus+"&nbsp<br>")
-			fmt.Fprintf(w, "            Invoice Customer: "+invoiceItemInvoiceCustomer+"&nbsp<br>")
-			fmt.Fprintf(w, "            One Off Charge: "+invoiceItemOneOffCharge+"&nbsp<br>")
-			fmt.Fprintf(w, "            Services or Products: "+goodServiceType+"&nbsp<br>")
-			fmt.Fprintf(w, "            Supplier Name: "+goodServiceSupplierName+"&nbsp<br>")
-			fmt.Fprintf(w, "            Supplier UK Based: "+supplierUKBased+"&nbsp<br>")
-			fmt.Fprintf(w, "            Supplier UK<br>VAT Registered: "+supplierUKVATRegistered+"&nbsp<br>")
-			fmt.Fprintf(w, "            Supplier UK<br>VAT Number: "+supplierUKVATNumber+"&nbsp<br>")
-			fmt.Fprintf(w, "            Buy Price: £"+goodServiceBuyPrice)
+			fmt.Fprintf(w, "            "+goodServiceName+"<br><br>")
+			fmt.Fprintf(w, "            <b>Service/Product Tag:</b> "+invoiceItemTag+"<br>")
+			if invoiceItemContractLength == "n/a" {
+				fmt.Fprintf(w, "          <b>Contract Start Date:</b> n/a<br><b>Contract Length:</b> n/a")
+			} else {
+				fmt.Fprintf(w, "          <b>Contract Start Date:</b> "+invoiceItemContractStartDate+"<br><b>Contract Length:</b> "+invoiceItemContractLength)
+			}
 			fmt.Fprintf(w, "          </td>")
+			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
+			//If the YAP Admin is UK VAT registered and the service/product is taxable
+			if yapAdminUKVATRegistered == "yes" && invoiceItemSalesTaxStatus == "TAXABLE" {
+				fmt.Fprintf(w, "            <b>Price (exVAT):</b> £"+invoiceItemSellPrice+"<br>")
+				// Convert UK sales VAT rate to float64
+				invoiceItemSalesTaxRateFloat64, _ := strconv.ParseFloat(invoiceItemSalesTaxRate, 64)
+				fmt.Fprintf(w, "            <b>VAT Rate:</b> "+strconv.FormatFloat(invoiceItemSalesTaxRateFloat64, 'f', -1, 64)+"&#37;<br>")
+				// Convert item sell price to float64
+				invoiceItemSellPriceExVATFloat64, _ := strconv.ParseFloat(invoiceItemSellPrice, 64)
+				var invoiceItemSellPriceIncVATFloat64 float64 = invoiceItemSellPriceExVATFloat64 * (invoiceItemSalesTaxRateFloat64/100 + 1)
+				var invoiceItemSellVATFloat64 float64 = invoiceItemSellPriceIncVATFloat64 - invoiceItemSellPriceExVATFloat64
+				fmt.Fprintf(w, "            <b>VAT:</b> £"+strconv.FormatFloat(invoiceItemSellVATFloat64, 'f', 2, 64)+"<br>")
+				fmt.Fprintf(w, "            <b>Total Price (incVAT):</b> £"+strconv.FormatFloat(invoiceItemSellPriceIncVATFloat64, 'f', 2, 64)+"<br>")
+				//If the YAP Admin is UK VAT registered and the service/product is exempt
+			} else if yapAdminUKVATRegistered == "yes" && invoiceItemSalesTaxStatus == "EXEMPT" {
+				fmt.Fprintf(w, "            <b>Price (exVAT):</b> £"+invoiceItemSellPrice+"<br>")
+				fmt.Fprintf(w, "            <b>VAT Rate:</b> Exempt<br>")
+				fmt.Fprintf(w, "            <b>VAT:</b> £0.00</b><br>")
+				fmt.Fprintf(w, "            <b>Total Price (incVAT):</b> £"+invoiceItemSellPrice)
+				//If the YAP Admin is not UK VAT registered
+			} else if yapAdminUKVATRegistered == "no" {
+				fmt.Fprintf(w, "            £"+invoiceItemSellPrice+"<br>")
+			}
+			fmt.Fprintf(w, "          </td>")
+			if userTypeID == "100" {
+				fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
+				fmt.Fprintf(w, "            <b><u>Item Details</u></b><br><br>")
+				fmt.Fprintf(w, " 	    <b>Item Added Date: </b>"+invoiceItemDateAdded+"<br>")
+				fmt.Fprintf(w, "            <b>Sale VAT Status: </b>"+invoiceItemSalesTaxStatus+"<br>")
+				fmt.Fprintf(w, "            <b>Bill Item Once: </b>"+invoiceBillItemOnce+"<br>")
+				fmt.Fprintf(w, "            <b>Item on Hold: </b>"+invoiceItemOnHold+"<br>")
+				fmt.Fprintf(w, "            <b>Item Type: </b>"+goodServiceType+"<br>")
+				fmt.Fprintf(w, "            <hr class=\"line-table\"></h>")
+				fmt.Fprintf(w, "            <b><u>Customer Details</u></b><br><br>")
+				fmt.Fprintf(w, "            <b>Reselling Minutes: </b>"+customerResellingMinutes+"<br>")
+				fmt.Fprintf(w, "            <b>UK Based: </b>"+customerUKBased+"<br>")
+				fmt.Fprintf(w, "            <b>UK VAT Registered: </b>"+customerUKVATRegistered+"<br>")
+				fmt.Fprintf(w, "            <b>UK VAT Number: </b>"+customerUKVATNumber+"<br>")
+				fmt.Fprintf(w, "            <hr class=\"line-table\"></h>")
+				fmt.Fprintf(w, "            <b><u>Supplier Details</u></b><br><br>")
+				fmt.Fprintf(w, "            <b>Name: </b>"+goodServiceSupplierName+"<br>")
+				fmt.Fprintf(w, "            <b>Supplier Contract Length: </b>"+goodServiceContractLength)
+				fmt.Fprintf(w, "          </td>")
+				fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+				fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+			}
+			fmt.Fprintf(w, "        </tr>")
 		}
-		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
-			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
-			fmt.Fprintf(w, "          <td>"+customerUKVATRegistered+"</td>")
-			fmt.Fprintf(w, "          <td>"+customerUKVATNumber+"</td>")
-		}
-		fmt.Fprintf(w, "        </tr>")
 	}
 
 	fmt.Fprintf(w, "      </table>")
 	var filterTableJSArgument jsFunctionParameter
 	filterTableJSArgument.tableID = "invoice-table"
 
-	filterTableJSArgument.funcNameJS = "invoiceSearchTag"
-	filterTableJSArgument.inputID = "invoice-input-tag"
+	filterTableJSArgument.funcNameJS = "invoiceSearchNameInformation"
+	filterTableJSArgument.inputID = "invoice-input-name-information"
 	filterTableJSArgument.columnNumber = 0
 	filterTableJS(w, filterTableJSArgument)
 
-	filterTableJSArgument.funcNameJS = "invoiceSearchGoodServiceName"
-	filterTableJSArgument.inputID = "invoice-good-service-name"
+	filterTableJSArgument.funcNameJS = "invoiceSearchSalePrice"
+	filterTableJSArgument.inputID = "invoice-input-sale-price"
 	filterTableJSArgument.columnNumber = 1
-	filterTableJS(w, filterTableJSArgument)
-
-	filterTableJSArgument.funcNameJS = "invoiceSearchSellPrice"
-	filterTableJSArgument.inputID = "invoice-input-sell-price"
-	filterTableJSArgument.columnNumber = 2
-	filterTableJS(w, filterTableJSArgument)
-
-	filterTableJSArgument.funcNameJS = "invoiceSearchDateAdded"
-	filterTableJSArgument.inputID = "invoice-input-date-added"
-	filterTableJSArgument.columnNumber = 3
 	filterTableJS(w, filterTableJSArgument)
 
 	if userTypeID == "100" {
 		filterTableJSArgument.funcNameJS = "invoiceSearchDetail"
 		filterTableJSArgument.inputID = "invoice-input-detail"
-		filterTableJSArgument.columnNumber = 4
+		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
 
 		filterTableJSArgument.funcNameJS = "invoiceSearchCustomerName"
 		filterTableJSArgument.inputID = "invoice-input-customer-name"
-		filterTableJSArgument.columnNumber = 5
+		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 
 		filterTableJSArgument.funcNameJS = "invoiceSearchCustomerID"
-		filterTableJSArgument.inputID = "invoice-customer-id"
-		filterTableJSArgument.columnNumber = 6
-		filterTableJS(w, filterTableJSArgument)
-
-		filterTableJSArgument.funcNameJS = "invoiceSearchUKVATRegistered"
-		filterTableJSArgument.inputID = "invoice-input-uk-vat-registered"
-		filterTableJSArgument.columnNumber = 7
-		filterTableJS(w, filterTableJSArgument)
-
-		filterTableJSArgument.funcNameJS = "invoiceSearchUKVATNumber"
-		filterTableJSArgument.inputID = "invoice-customer-uk-vat-number"
-		filterTableJSArgument.columnNumber = 8
+		filterTableJSArgument.inputID = "invoice-input-customer-id"
+		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
 	}
 	var exportCSVJSArgument jsFunctionParameter
@@ -3142,6 +3130,7 @@ func main() {
 	dbTls := os.Getenv("dbTls")
 	extraButtonName := os.Getenv("extraButtonName")
 	extraButtonURL := os.Getenv("extraButtonURL")
+	yapAdminUKVATRegistered := os.Getenv("yapAdminUKVATRegistered")
 
 	//Values allowed for dbTransport Variable
 	var allowedTransportValue = []string{"tcp", "udp"}
@@ -3161,6 +3150,10 @@ func main() {
 
 	validateExtraButtonURL := validator.New()
 	validateExtraButtonURLErr := validateExtraButtonURL.Var(extraButtonURL, "required,http_url")
+
+	//Values allowed for ukVATRegistered Variable
+	var allowedYAPAdminUKVATRegisteredValue = []string{"no", "yes"}
+	validYAPAdminUKVATRegistered := slices.Contains(allowedYAPAdminUKVATRegisteredValue, yapAdminUKVATRegistered)
 
 	//Catch if any errors were made in yap.env and feed back where to correct error
 	if dbUsername == "" {
@@ -3185,6 +3178,10 @@ func main() {
 		if validateExtraButtonURLErr != nil {
 			panic("THE EXTRA BUTTON URL VALUE MUST BE A VALID URL IN /etc/yap/yap.env")
 		}
+	} else if yapAdminUKVATRegistered == "" {
+		panic("UK YAP ADMIN VAT REGISTERED OPTION CANNOT BE BLANK IN /etc/yap/yap.env")
+	} else if validYAPAdminUKVATRegistered == false {
+		panic("UK YAP ADMIN VAT REGISTERED OPTION MUST BE no OR yes IN /etc/yap/yap.env")
 	}
 
 	startHTML := csvcell.FileData(dirHTML, fileStartHTML)
@@ -3600,15 +3597,15 @@ func main() {
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All Customer Invoices", "header-invoice", extraButtonName, extraButtonURL)
-				invoiceList(w, dbDetail, userTypeID, userCustomerID)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID, yapAdminUKVATRegistered)
 				footer(w, "header-invoice", "button-invoice")
 			} else if userTypeID == "200" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
-				invoiceList(w, dbDetail, userTypeID, userCustomerID)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID, yapAdminUKVATRegistered)
 				footer(w, "header-invoice", "button-invoice")
 			} else if userTypeID == "400" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
-				invoiceList(w, dbDetail, userTypeID, userCustomerID)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID, yapAdminUKVATRegistered)
 				footer(w, "header-invoice", "button-invoice")
 
 			} else {
