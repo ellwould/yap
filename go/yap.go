@@ -131,6 +131,28 @@ func footer(w http.ResponseWriter, headerCSS string, buttonCSS string) {
 	fmt.Fprintf(w, "</div>")
 }
 
+// Function to format ISO DATE format
+func formatDate(date string) string {
+	const (
+		iso    = "2006-01-02"
+		layout = "2/January/2006"
+	)
+
+	parse, _ := time.Parse(iso, date)
+	return string(parse.Format(layout))
+}
+
+// Function to format ISO DATETIME format
+func formatDateTime(dateTime string) string {
+	const (
+		iso    = "2006-01-02 15:04:05"
+		layout = "2/January/2006 15:04:05 PM"
+	)
+
+	parse, _ := time.Parse(iso, dateTime)
+	return string(parse.Format(layout))
+}
+
 //----------------------------------------------------------------------------------------------------
 
 type jsFunctionParameter struct {
@@ -735,7 +757,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 					                     user_account_last_name,
 					                     user_account_email,
 					                     user_account_type,
-					                     user_account_date_added,
+					                     user_account_date_time_added,
 					                     user_account_type_permission
 					                   FROM
 					                     yap.view___account_detail
@@ -753,7 +775,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 			userAccountLastName       string
 			userAccountEmail          string
 			userAccountType           string
-			userAccountDateAdded      string
+			userAccountDateTimeAdded  string
 			userAccountTypePermission string
 		)
 
@@ -762,7 +784,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 			&userAccountLastName,
 			&userAccountEmail,
 			&userAccountType,
-			&userAccountDateAdded,
+			&userAccountDateTimeAdded,
 			&userAccountTypePermission,
 		)
 
@@ -786,7 +808,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-		fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+		fmt.Fprintf(w, "          <td>"+formatDateTime(userAccountDateTimeAdded)+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
@@ -856,15 +878,15 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string) {
 
 	var (
-		userAccountFirstName string
-		userAccountLastName  string
-		userAccountEmail     string
-		userAccountType      string
-		userAccountDateAdded string
-		customerID           string
-		customerName         string
-		pbxID                string
-		pbxName              string
+		userAccountFirstName     string
+		userAccountLastName      string
+		userAccountEmail         string
+		userAccountType          string
+		userAccountDateTimeAdded string
+		customerID               string
+		customerName             string
+		pbxID                    string
+		pbxName                  string
 	)
 
 	ownUserAccountSQL, err := dbDetail.connection.Query(`SELECT
@@ -872,7 +894,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 							       user_account_last_name,
 							       user_account_email,
 							       user_account_type,
-							       user_account_date_added,
+							       user_account_date_time_added,
 							       customer_id,
 							       pbx_id
 							     FROM
@@ -892,7 +914,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			&userAccountLastName,
 			&userAccountEmail,
 			&userAccountType,
-			&userAccountDateAdded,
+			&userAccountDateTimeAdded,
 			&customerID,
 			&pbxID,
 		)
@@ -999,7 +1021,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-		fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+		fmt.Fprintf(w, "          <td>"+formatDateTime(userAccountDateTimeAdded)+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
@@ -1053,9 +1075,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		inputTableHTMLArgument.placeholder = "Account Type"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "other-account-input-date"
-		inputTableHTMLArgument.funcNameJS = "otherAccountSearchDate"
-		inputTableHTMLArgument.placeholder = "Date Created"
+		inputTableHTMLArgument.inputID = "other-account-input-date-time"
+		inputTableHTMLArgument.funcNameJS = "otherAccountSearchDateTime"
+		inputTableHTMLArgument.placeholder = "Date & Time Created"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
@@ -1134,7 +1156,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						     			 user_account_last_name,  
 						     			 user_account_email,                                                   
 						     			 user_account_type,  
-						     			 user_account_date_added, 
+						     			 user_account_date_time_added, 
 						     			 customer_id,
 						     			 customer_name,
 						     			 pbx_id,
@@ -1155,7 +1177,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				&userAccountLastName,
 				&userAccountEmail,
 				&userAccountType,
-				&userAccountDateAdded,
+				&userAccountDateTimeAdded,
 				&customerID,
 				&customerName,
 				&pbxID,
@@ -1171,7 +1193,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAccountDateAdded+"</td>")
+			fmt.Fprintf(w, "          <td>"+formatDateTime(userAccountDateTimeAdded)+"</td>")
 			if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 				if pbxName != "system" {
 					fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
@@ -1217,9 +1239,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		filterTableJSArgument.inputID = "other-account-input-type"
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
-		// JS filter function for date in the other account table
-		filterTableJSArgument.funcNameJS = "otherAccountSearchDate"
-		filterTableJSArgument.inputID = "other-account-input-date"
+		// JS filter function for date and time in the other account table
+		filterTableJSArgument.funcNameJS = "otherAccountSearchDateTime"
+		filterTableJSArgument.inputID = "other-account-input-date-time"
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
@@ -1342,7 +1364,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	var (
 		customerName                     string
 		customerID                       string
-		customerDateAdded                string
+		customerDateTimeAdded            string
 		customerActive                   string
 		customerUKBased                  string
 		customerConsumerType             string
@@ -1647,9 +1669,9 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "customer-resource-input-date"
-		inputTableHTMLArgument.funcNameJS = "customerResourceSearchDate"
-		inputTableHTMLArgument.placeholder = "Date Created"
+		inputTableHTMLArgument.inputID = "customer-resource-input-date-time"
+		inputTableHTMLArgument.funcNameJS = "customerResourceSearchDateTime"
+		inputTableHTMLArgument.placeholder = "Date & Time Created"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-resource-input-active"
@@ -1674,7 +1696,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
 	fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
-	fmt.Fprintf(w, "          <th>Date Customer<br>Added</th>")
+	fmt.Fprintf(w, "          <th>Date & Time Customer<br>Added</th>")
 	fmt.Fprintf(w, "          <th>Customer<br>Active</th>")
 	fmt.Fprintf(w, "          <th>UK Based</th>")
 	fmt.Fprintf(w, "          <th>Consumer<br>Type</th>")
@@ -1687,7 +1709,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	customerResourceSQL, err := dbDetail.connection.Query(`SELECT
 							customer_name,
 							customer_id,
-							customer_date_added,
+							customer_date_time_added,
 							customer_active,
 							customer_uk_based,
 							customer_consumer_type,
@@ -1710,7 +1732,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		err = customerResourceSQL.Scan(
 			&customerName,
 			&customerID,
-			&customerDateAdded,
+			&customerDateTimeAdded,
 			&customerActive,
 			&customerUKBased,
 			&customerConsumerType,
@@ -1727,7 +1749,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
-		fmt.Fprintf(w, "          <td>"+customerDateAdded+"</td>")
+		fmt.Fprintf(w, "          <td>"+formatDateTime(customerDateTimeAdded)+"</td>")
 		if customerActive == "1" {
 			fmt.Fprintf(w, "          <td>yes</td>")
 		} else {
@@ -1756,9 +1778,9 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		filterTableJSArgument.inputID = "customer-resource-input-customer-id"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for date in the customer resource table
-		filterTableJSArgument.funcNameJS = "customerResourceSearchDate"
-		filterTableJSArgument.inputID = "customer-resource-input-date"
+		// Call JS filter function for date and time in the customer resource table
+		filterTableJSArgument.funcNameJS = "customerResourceSearchDateTime"
+		filterTableJSArgument.inputID = "customer-resource-input-date-time"
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for active status in the customer resource table
@@ -1794,7 +1816,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	var (
 		pbxName                     string
 		pbxID                       string
-		pbxDateAdded                string
+		pbxDateTimeAdded            string
 		pbxActive                   string
 		pbxSIPExtensionLimit        string
 		pbxSiteAddressLine1         string
@@ -2153,9 +2175,9 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		inputTableHTMLArgument.placeholder = "PBX ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "pbx-resource-input-date"
-		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchDate"
-		inputTableHTMLArgument.placeholder = "Date Created"
+		inputTableHTMLArgument.inputID = "pbx-resource-input-date-time"
+		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchDateTime"
+		inputTableHTMLArgument.placeholder = "Date & Time Created"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-resource-input-active"
@@ -2195,7 +2217,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 		fmt.Fprintf(w, "          <th>PBX ID</th>")
 	}
-	fmt.Fprintf(w, "          <th>PBX Date</th>")
+	fmt.Fprintf(w, "          <th>PBX Date & Time</th>")
 	fmt.Fprintf(w, "          <th>PBX Active<br>Status</th>")
 	fmt.Fprintf(w, "          <th>SIP Extension<br>Limit for PBX</th>")
 	if userTypeID == "100" {
@@ -2207,7 +2229,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	pbxResourceSQL, err := dbDetail.connection.Query(`SELECT
 							pbx_name,
 							pbx_id,
-							pbx_date_added,
+							pbx_date_time_added,
 							pbx_active,
 							pbx_sip_extension_limit,
 							customer_name,
@@ -2227,7 +2249,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		err = pbxResourceSQL.Scan(
 			&pbxName,
 			&pbxID,
-			&pbxDateAdded,
+			&pbxDateTimeAdded,
 			&pbxActive,
 			&pbxSIPExtensionLimit,
 			&customerName,
@@ -2243,7 +2265,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
 		}
-		fmt.Fprintf(w, "          <td>"+pbxDateAdded+"</td>")
+		fmt.Fprintf(w, "          <td>"+formatDateTime(pbxDateTimeAdded)+"</td>")
 		if pbxActive == "1" {
 			fmt.Fprintf(w, "          <td>YES</td>")
 		} else {
@@ -2271,9 +2293,9 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.inputID = "pbx-resource-input-pbx-id"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for date in the PBX resource table
-		filterTableJSArgument.funcNameJS = "pbxResourceSearchDate"
-		filterTableJSArgument.inputID = "pbx-resource-input-date"
+		// Call JS filter function for date and time in the PBX resource table
+		filterTableJSArgument.funcNameJS = "pbxResourceSearchDateTime"
+		filterTableJSArgument.inputID = "pbx-resource-input-date-time"
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for active status in the PBX resource table
@@ -2817,7 +2839,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 		customerUKVATNumber          string
 		invoiceItemTag               string
 		invoiceItemSellPrice         string
-		invoiceItemDateAdded         string
+		invoiceItemDateTimeAdded     string
 		invoiceItemSalesTaxRate      string
 		invoiceItemSalesTaxStatus    string
 		invoiceBillItemOnce          string
@@ -2945,7 +2967,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
                                                         customer_uk_vat_number,
 							invoice_item_tag,
 							invoice_item_sell_price,
-							invoice_item_date_added,
+							invoice_item_date_time_added,
 							invoice_item_sales_tax_rate,
 							invoice_item_sales_tax_status,
 							invoice_bill_item_once,
@@ -2977,7 +2999,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 			&customerUKVATNumber,
 			&invoiceItemTag,
 			&invoiceItemSellPrice,
-			&invoiceItemDateAdded,
+			&invoiceItemDateTimeAdded,
 			&invoiceItemSalesTaxRate,
 			&invoiceItemSalesTaxStatus,
 			&invoiceBillItemOnce,
@@ -3003,7 +3025,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 			if invoiceItemContractLength == "n/a" {
 				fmt.Fprintf(w, "          <b>Contract Start Date:</b> n/a<br><b>Contract Length:</b> n/a")
 			} else {
-				fmt.Fprintf(w, "          <b>Contract Start Date:</b> "+invoiceItemContractStartDate+"<br><b>Contract Length:</b> "+invoiceItemContractLength)
+				fmt.Fprintf(w, "          <b>Contract Start Date:</b> "+formatDate(invoiceItemContractStartDate)+"<br><b>Contract Length:</b> "+invoiceItemContractLength)
 			}
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
@@ -3033,7 +3055,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 			if userTypeID == "100" {
 				fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
 				fmt.Fprintf(w, "            <b><u>Item Details</u></b><br><br>")
-				fmt.Fprintf(w, " 	    <b>Item Added Date: </b>"+invoiceItemDateAdded+"<br>")
+				fmt.Fprintf(w, " 	    <b>Item Added Date & Time: </b>"+formatDateTime(invoiceItemDateTimeAdded)+"<br>")
 				fmt.Fprintf(w, "            <b>Sale VAT Status: </b>"+invoiceItemSalesTaxStatus+"<br>")
 				fmt.Fprintf(w, "            <b>Bill Item Once: </b>"+invoiceBillItemOnce+"<br>")
 				fmt.Fprintf(w, "            <b>Item on Hold: </b>"+invoiceItemOnHold+"<br>")
