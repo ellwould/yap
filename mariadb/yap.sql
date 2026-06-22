@@ -463,7 +463,7 @@ SELECT
   `customer`.`consumer_type` AS 'customer_consumer_type',
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
   `customer`.`uk_vat_number` AS 'customer_uk_vat_number',
-  `customer`.`reselling_miniutes` AS 'customer_reselling_miniutes',
+  `customer`.`reselling_minutes` AS 'customer_reselling_miniutes',
   `customer`.`pbx_limit` AS 'customer_pbx_limit',
   `customer_site_address`.`address_line_1` AS 'customer_site_address_line_1',
   `customer_site_address`.`address_line_2` AS 'customer_site_address_line_2',
@@ -646,7 +646,7 @@ VALUES
   ('24 Months'),
   ('n/a');
 
-INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_miniutes`, `pbx_limit`)
+INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_minutes`, `pbx_limit`)
 VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
