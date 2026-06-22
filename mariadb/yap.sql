@@ -6,7 +6,7 @@ CREATE TABLE `customer`
   `name` VARCHAR(255) NOT NULL,
   `active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
-  `reselling_miniutes` ENUM('no', 'yes', 'n/a') NOT NULL,
+  `reselling_minutes` ENUM('no', 'yes', 'n/a') NOT NULL,
   `consumer_type` VARCHAR(255) NOT NULL,
   `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
   `uk_vat_number` VARCHAR(20) DEFAULT 'n/a' NOT NULL,
