@@ -580,7 +580,7 @@ SELECT DISTINCT
   `customer`.`name` AS 'customer_name',
   `customer`.`id` AS 'customer_id',
   `customer`.`uk_based` AS 'customer_uk_based',
-  `customer`.`reselling_miniutes` AS 'customer_reselling_miniutes',
+  `customer`.`reselling_minutes` AS 'customer_reselling_miniutes',
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
   `customer`.`uk_vat_number` AS 'customer_uk_vat_number',
   IFNULL(`invoice_item`.`tag`, ' ') AS 'invoice_item_tag',
