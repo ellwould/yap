@@ -155,6 +155,42 @@ func formatDateTime(dateTime string) string {
 
 //----------------------------------------------------------------------------------------------------
 
+// Pure embedded HTML Go functions
+
+func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string, inputType string) {
+	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter "+labelMessage+"</b>")
+	fmt.Fprintf(w, "  </label><br>")
+	fmt.Fprintf(w, "  <input type=\""+inputType+"\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
+	fmt.Fprintf(w, "<br>")
+}
+
+func selectHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue [][]string) {
+	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+"</b>")
+	fmt.Fprintf(w, "  </label><br>")
+	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
+	fmt.Fprintf(w, "<option value></option>")
+	for _, value := range optionValue {
+		fmt.Fprintf(w, "<option value=\""+string(value[0:][0])+"\">"+labelMessage+" ID :"+string(value[0:][0])+" | "+labelMessage+" Name: "+string(value[1:][0])+"</option>")
+	}
+	fmt.Fprintf(w, "  </select>")
+}
+
+// Function to create warning message
+func messageHTML(w http.ResponseWriter, message string, messageType string) {
+	if messageType == "warning" || messageType == "success" {
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "  <table>")
+		fmt.Fprintf(w, "    <tr>")
+		fmt.Fprintf(w, "      <th class=\"table-"+messageType+"-message\">"+message+"</th>")
+		fmt.Fprintf(w, "    </tr>")
+		fmt.Fprintf(w, "  </table>")
+	} else {
+		panic("Message type must be either warning or success")
+	}
+}
+
+// Embedded JavaScript and associated HTML functions
+
 type jsFunctionParameter struct {
 	funcNameJS   string
 	inputID      string
@@ -167,8 +203,6 @@ type jsFunctionParameter struct {
 	fileName     string
 	pathURL      string
 }
-
-// Embedded JavaScript and associated HTML functions
 
 // JavaScript toggle function
 func toggleDivJS(w http.ResponseWriter, parameter jsFunctionParameter) {
@@ -431,6 +465,46 @@ func userAccountData(dbUserAccountData databaseFunctionParameter, data string) s
 
 //----------------------------------------------------------------------------------------------------
 
+// Function to validate user input utlising the Go Validator package
+
+func validateInput(value string, valueType string) (validation bool) {
+	validateInput := validator.New()
+	// Conditional statments are used for each type of value inputted from a user
+	if valueType == "email" {
+		validateInputErr := validateInput.Var(value, "email,required,min=6,max=200,excludes=0x2C")
+		if validateInputErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
+	} else if valueType == "alpha" {
+		validateInputErr := validateInput.Var(value, "alpha,min=1,max=30")
+		if validateInputErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
+	} else if valueType == "punctuation" {
+		validateInputErr := validateInput.Var(value, "containsany= -")
+		if validateInputErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
+	} else {
+		validation = false
+		return
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
 // Main menu page functions
 
 func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
@@ -453,10 +527,10 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "    <th>Total SIP Extensions</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	dbTotalTableCount.table = "customer"
+	dbTotalTableCount.table = "view___customer_detail"
 	dbTotalTableCount.countMinusOne = true
 	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
-	dbTotalTableCount.table = "pbx"
+	dbTotalTableCount.table = "view___pbx_detail"
 	dbTotalTableCount.countMinusOne = true
 	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
 	dbTotalTableCount.table = "view___sip_extension_detail"
@@ -1285,65 +1359,269 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	}
 }
 
-// Function to add HTML input fields
-func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string, inputType string) {
-	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter "+labelMessage+"</b>")
-	fmt.Fprintf(w, "  </label><br>")
-	fmt.Fprintf(w, "  <input type=\""+inputType+"\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
-	fmt.Fprintf(w, "<br>")
-}
+// Function to add new user account
+func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
 
-func selectHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue []string) {
-	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+"</b>")
-	fmt.Fprintf(w, "  </label><br>")
-	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
-	for i := 0; i < len(optionValue); i++ {
-		fmt.Fprintf(w, "<option value="+optionValue[i]+">"+optionValue[i]+"</option>")
+	// Get account type ID and name from the database and append to slice
+	var userAccountTypeIDNameList [][]string
+	var userAccountTypeIDList []string
+
+	var userAccountTypeID string
+	var userAccountTypeName string
+
+	userAccountTypeIDNameSQL, err := dbDetail.connection.Query(`SELECT
+	                                                                    id,
+	                                                                    type
+	                                                                FROM
+	                                                                    yap.user_account_type`)
+
+	// Error
+	if err != nil {
+		panic(err)
 	}
-	fmt.Fprintf(w, "  </select>")
-}
 
-func userAccountAdd(w http.ResponseWriter) {
+	for userAccountTypeIDNameSQL.Next() {
 
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
-	fmt.Fprintf(w, "  <form method=\"POST\" action=\"/user-account\">")
+		err = userAccountTypeIDNameSQL.Scan(
+			&userAccountTypeID,
+			&userAccountTypeName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var userAccountTypeIDAndName []string
+		userAccountTypeIDAndName = append([]string{userAccountTypeID}, []string{userAccountTypeName}...)
+		userAccountTypeIDNameList = append(userAccountTypeIDNameList, userAccountTypeIDAndName)
+		userAccountTypeIDList = append(userAccountTypeIDList, userAccountTypeID)
+	}
+
+	// Get customer ID and name from the database and append to slice
+	var customerIDNameList [][]string
+	var customerIDList []string
+
+	var customerID string
+	var customerName string
+
+	customerIDNameSQL, err := dbDetail.connection.Query(`SELECT
+	   						                    customer_id,
+	                                                                    customer_name
+	                                                                FROM
+	                                                                    yap.view___customer_detail`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for customerIDNameSQL.Next() {
+
+		err = customerIDNameSQL.Scan(
+			&customerID,
+			&customerName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var customerIDAndName []string
+		if customerID != "1" {
+			customerIDAndName = append([]string{customerID}, []string{customerName}...)
+			customerIDNameList = append(customerIDNameList, customerIDAndName)
+			customerIDList = append(customerIDList, customerID)
+		}
+
+	}
+
+	// Get PBX name and ID from the database and append to slice
+	var pbxIDNameList [][]string
+	var pbxIDList []string
+
+	var pbxID string
+	var pbxName string
+
+	pbxIDNameSQL, err := dbDetail.connection.Query(`SELECT
+	   							    pbx_id,
+	   						            pbx_name
+	   					         	FROM
+	   					                    yap.view___pbx_detail`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for pbxIDNameSQL.Next() {
+
+		err = pbxIDNameSQL.Scan(
+			&pbxID,
+			&pbxName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var pbxIDAndName []string
+		if pbxID != "1" {
+			pbxIDAndName = append([]string{pbxID}, []string{pbxName}...)
+			pbxIDNameList = append(pbxIDNameList, pbxIDAndName)
+			pbxIDList = append(pbxIDList, pbxID)
+		}
+
+	}
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
+	fmt.Fprintf(w, "<table class=\"table-user-account\">")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th class=\"table-title\";>Add New User:<br>(May need to update /etc/oauth2-proxy/email.txt)</th>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Add New User Account<br><br></th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\" style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "firstName", "First Name:<br>(Cannot Be Blank)", "text")
-	fmt.Fprintf(w, "	  </td>")
-	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "lastName", "Last Name:<br>(Cannot Be Blank)", "text")
+	inputHTML(w, "add_account_input_first_name", "Last Name:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "email", "Email Address:<br>(Must Be a Valid Email Address)", "text")
+	inputHTML(w, "add_account_input_last_name", "Last Name:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_account_input_email", "Email Address:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	var accountTypeList = []string{"100 - YAP Admin", "200 - Group Admin", "201 - Group Regular", "300 - PBX Admin", "301 - PBX Regular", "302 - PBX Read Only"}
-	selectHTML(w, "accountType", "Account Type:<br>(100, 200, 201, 300, 301, 302)", accountTypeList)
+	selectHTML(w, "add_account_select_account_type", "Account Type", userAccountTypeIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "pbxID", "PBX ID:<br>(Blank if Account Type is 100, 200 or 201)", "text")
+	selectHTML(w, "add_account_select_pbx_id", "PBX", pbxIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "groupID", "Group ID:<br>(Blank if Account Type is 100)", "text")
+	selectHTML(w, "add_account_select_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Create User Account\"></th>")
+	fmt.Fprintf(w, "    <th><input type=\"Submit\" value=\"submit\"></th>")
 	fmt.Fprintf(w, "  </tr>")
-	fmt.Fprintf(w, "  </form>")
 	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	addAccountInputFirstName := r.FormValue("add_account_input_first_name")
+	addAccountInputLastName := r.FormValue("add_account_input_last_name")
+	addAccountInputEmail := r.FormValue("add_account_input_email")
+	addAccountSelectAccountType := r.FormValue("add_account_select_account_type")
+	addAccountSelectPBXID := r.FormValue("add_account_select_pbx_id")
+	addAccountSelectCustomerID := r.FormValue("add_account_select_customer_id")
+
+	// Validate the first name string
+	validateFirstNameAlpha := validateInput(addAccountInputFirstName, "alpha")
+	validateFirstNamePunctuation := validateInput(addAccountInputFirstName, "punctuation")
+
+	// Validate the last name string
+	validateLastNameAlpha := validateInput(addAccountInputLastName, "alpha")
+	validateLastNamePunctuation := validateInput(addAccountInputLastName, "punctuation")
+
+	// Validate the email address string
+	validateEmail := validateInput(addAccountInputEmail, "email")
+
+	// Check user type ID is contained in the slice
+	validateUserAccountTypeID := slices.Contains(userAccountTypeIDList, addAccountSelectAccountType)
+
+	// Check PBX ID is contained in the slice
+	pbxIDList = append(pbxIDList, "")
+	validatePBXID := slices.Contains(pbxIDList, addAccountSelectPBXID)
+
+	// Check customer ID is contained in the slice
+	customerIDList = append(customerIDList, "")
+	validateCustomerID := slices.Contains(customerIDList, addAccountSelectCustomerID)
+
+	if addAccountInputFirstName == "" {
+	} else if validateFirstNameAlpha == false || validateLastNameAlpha == false {
+		if validateFirstNamePunctuation == false || validateLastNamePunctuation == false {
+			messageHTML(w, "Name length must be 1 to 30 characters and must only contain characters: a-z A-Z or -", "warning")
+		}
+	} else if validateEmail == false {
+		messageHTML(w, "A valid email address must be entered", "warning")
+	} else if validateUserAccountTypeID == false {
+		messageHTML(w, "User account type must be either 100, 200, 201, 300, 301, 302 or 400", "warning")
+	} else if validatePBXID == false {
+		messageHTML(w, "PBX ID invalid", "warning")
+	} else if validateCustomerID == false {
+		messageHTML(w, "Customer ID invalid", "warning")
+	} else {
+		var customerID string
+		if addAccountSelectAccountType == "100" {
+			addAccountSelectCustomerID = "1"
+			addAccountSelectPBXID = "1"
+		} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" {
+			if addAccountSelectCustomerID == "" {
+				messageHTML(w, "A customer ID must be selected when creating a 200, 201 or 400 type account", "warning")
+			} else {
+				addAccountSelectPBXID = "1"
+			}
+		} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" {
+			if addAccountSelectPBXID == "" {
+				messageHTML(w, "A PBX ID must be selected when creating a 300, 301 or 302 type account", "warning")
+			} else {
+				customerIDSQL, err := dbDetail.connection.Query(`SELECT
+                                                                    customer_id
+                                                                FROM
+                                                                    yap.view___pbx_detail
+                                                                WHERE pbx_id = ?`, addAccountSelectPBXID)
+
+				// Error
+				if err != nil {
+					panic(err)
+				}
+
+				for customerIDSQL.Next() {
+
+					err = customerIDSQL.Scan(
+						&customerID,
+					)
+
+					// Error
+					if err != nil {
+						panic(err)
+					}
+					addAccountSelectCustomerID = customerID
+
+				}
+				// Close connection
+				defer dbDetail.connection.Close()
+			}
+		}
+
+		dbDetail.connection.Query(`INSERT 
+         		                   INTO
+	         		       user_account (
+				           email,
+				           first_name,
+				           last_name,
+				           user_account_type_id,
+				           customer_id,
+				           pbx_id,
+				           account_active)
+				       VALUES(?, ?, ?, ?, ?, ?, ?);`,
+			addAccountInputEmail,
+			addAccountInputFirstName,
+			addAccountInputLastName,
+			addAccountSelectAccountType,
+			addAccountSelectCustomerID,
+			addAccountSelectPBXID,
+			"1")
+
+		messageHTML(w, "Account "+addAccountInputEmail+" Created", "success")
+	}
 
 }
 
@@ -1393,8 +1671,8 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	var dbTableCountUserCustomer databaseFunctionParameter
 	dbTableCountUserCustomer.connection = dbDetail.connection
 	dbTableCountUserCustomer.database = dbDetail.database
-	dbTableCountUserCustomer.table = "customer"
-	dbTableCountUserCustomer.columnWhere = "active"
+	dbTableCountUserCustomer.table = "view___customer_detail"
+	dbTableCountUserCustomer.columnWhere = "customer_active"
 
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
@@ -1409,7 +1687,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "        <tr>")
 		dbTableCountUserCustomer.countMinusOne = true
 		fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserCustomer)+"</td>")
-		dbTableCountUserCustomer.columnWhere = "active"
+		dbTableCountUserCustomer.columnWhere = "customer_active"
 		dbTableCountUserCustomer.countMinusOne = false
 		dbTableCountUserCustomer.columnWhereValue = "1"
 		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserCustomer)+"</td>")
@@ -1842,7 +2120,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	var dbTableCountUserPBX databaseFunctionParameter
 	dbTableCountUserPBX.connection = dbDetail.connection
 	dbTableCountUserPBX.database = dbDetail.database
-	dbTableCountUserPBX.table = "pbx"
+	dbTableCountUserPBX.table = "view___pbx_detail"
 
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
@@ -1860,7 +2138,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		if userTypeID == "100" {
 			dbTableCountUserPBX.countMinusOne = true
 			fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserPBX)+"</td>")
-			dbTableCountUserPBX.columnWhere = "active"
+			dbTableCountUserPBX.columnWhere = "pbx_active"
 			dbTableCountUserPBX.countMinusOne = false
 			dbTableCountUserPBX.columnWhereValue = "1"
 			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
@@ -1870,7 +2148,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		} else if userTypeID == "200" || userTypeID == "201" {
 			dbTableCountUserPBX.columnWhere = "customer_id"
 			dbTableCountUserPBX.columnWhereValue = userCustomerID
-			dbTableCountUserPBX.columnWhereAnd = "active"
+			dbTableCountUserPBX.columnWhereAnd = "pbx_active"
 			dbTableCountUserPBX.columnWhereValueAnd = "1"
 			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBX)+"</td>")
 			dbTableCountUserPBX.columnWhereValueAnd = "0"
@@ -3360,7 +3638,11 @@ func main() {
 	})
 
 	// User Account Page
-	go http.HandleFunc("/user-account", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/user-account", func(w http.ResponseWriter, r *http.Request) {
+
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
@@ -3397,7 +3679,7 @@ func main() {
 				header(w, "YAP Admin Account<br>All User Accounts on YAP", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				fmt.Fprint(w, "<br>")
-				userAccountAdd(w)
+				userAccountAdd(w, dbDetail, r)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "200" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All User Accounts for the Customer", "header-user-account", extraButtonName, extraButtonURL)
