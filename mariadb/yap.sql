@@ -394,6 +394,7 @@ REFERENCES `contract_length_lookup` (`contract_length`);
 
 CREATE VIEW `view___account_detail` AS
 SELECT
+  `user_account`.`id` AS 'user_account_id',
   `user_account`.`user_account_type_id`,
   `user_account`.`first_name` AS 'user_account_first_name',
   `user_account`.`last_name` AS 'user_account_last_name',
