@@ -685,10 +685,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 Create a YAP Admin (100) User Account<br>
-      &#9989 View a YAP Admin (100) User Account<br>
-      &#9989 Update a YAP Admin (100) User Account<br>
-      &#10060 Delete a YAP Admin (100) User Account<br>
+      &#9989* Create a YAP Admin (100) User Account<br>
+      &#9989* View a YAP Admin (100) User Account<br>
+      &#9989* Update a YAP Admin (100) User Account<br>
+      &#9989* Delete a YAP Admin (100) User Account<br>
     </td>
     <td>
       &#9989 Create a Customer Admin (200) User Account<br>
@@ -735,8 +735,8 @@ VALUES
     <td>
       Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
-      Billed to a Customer.
-      <div class="main-menu-space"></div>
+      Billed to a Customer.<br>
+      *Only the YAP Admin with Account ID 1<br>
     </td>
   </tr>
   <tr>
