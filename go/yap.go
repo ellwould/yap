@@ -170,7 +170,7 @@ func selectHTML(w http.ResponseWriter, selectValue string, labelMessage string, 
 	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
 	fmt.Fprintf(w, "<option value></option>")
 	for _, value := range optionValue {
-		fmt.Fprintf(w, "<option value=\""+string(value[0:][0])+"\">"+labelMessage+" ID :"+string(value[0:][0])+" | "+labelMessage+" Name: "+string(value[1:][0])+"</option>")
+		fmt.Fprintf(w, "<option value=\""+string(value[0:][0])+"\">&nbsp "+labelMessage+" ID :"+string(value[0:][0])+" | "+labelMessage+" Name: "+string(value[1:][0])+"</option>")
 	}
 	fmt.Fprintf(w, "  </select>")
 }
@@ -444,7 +444,9 @@ func userAccountData(dbUserAccountData databaseFunctionParameter, data string) s
 	dbSelectWhere.connection = dbUserAccountData.connection
 	dbSelectWhere.database = dbUserAccountData.database
 	dbSelectWhere.table = "view___account_detail"
-	if data == "type_id" {
+	if data == "id" {
+		dbSelectWhere.column = "user_account_id"
+	} else if data == "type_id" {
 		dbSelectWhere.column = "user_account_type_id"
 	} else if data == "customer_id" {
 		dbSelectWhere.column = "customer_id"
@@ -827,6 +829,7 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFunctionParameter, userTypeID string) {
 
 	result, err := dbUserInformation.connection.Query(`SELECT
+							     user_account_id,
 					                     user_account_first_name,
 					                     user_account_last_name,
 					                     user_account_email,
@@ -845,6 +848,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 
 	for result.Next() {
 		var (
+			userAccountID             string
 			userAccountFirstName      string
 			userAccountLastName       string
 			userAccountEmail          string
@@ -854,6 +858,7 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		)
 
 		err = result.Scan(
+			&userAccountID,
 			&userAccountFirstName,
 			&userAccountLastName,
 			&userAccountEmail,
@@ -873,12 +878,14 @@ func mainMenuUserInformation(w http.ResponseWriter, dbUserInformation databaseFu
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Account ID</th>")
 		fmt.Fprintf(w, "          <th>Name</th>")
 		fmt.Fprintf(w, "          <th>Email</th>")
 		fmt.Fprintf(w, "          <th>Account Type</th>")
 		fmt.Fprintf(w, "          <th>Account Created</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>"+userAccountID+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
@@ -952,6 +959,7 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string) {
 
 	var (
+		userAccountID            string
 		userAccountFirstName     string
 		userAccountLastName      string
 		userAccountEmail         string
@@ -964,6 +972,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	)
 
 	ownUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+							       user_account_id,
 							       user_account_first_name,
 							       user_account_last_name,
 							       user_account_email,
@@ -984,6 +993,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 	for ownUserAccountSQL.Next() {
 
 		err = ownUserAccountSQL.Scan(
+			&userAccountID,
 			&userAccountFirstName,
 			&userAccountLastName,
 			&userAccountEmail,
@@ -1086,12 +1096,14 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Account ID</th>")
 		fmt.Fprintf(w, "          <th>Name</th>")
 		fmt.Fprintf(w, "          <th>Email</th>")
 		fmt.Fprintf(w, "          <th>Account Type</th>")
 		fmt.Fprintf(w, "          <th>Account Created</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>"+userAccountID+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountFirstName+"<br>"+userAccountLastName+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
@@ -1134,6 +1146,11 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		var inputTableHTMLArgument jsFunctionParameter
+		inputTableHTMLArgument.inputID = "other-account-input-id"
+		inputTableHTMLArgument.funcNameJS = "otherAccountSearchID"
+		inputTableHTMLArgument.placeholder = "ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "other-account-input-name"
 		inputTableHTMLArgument.funcNameJS = "otherAccountSearchName"
 		inputTableHTMLArgument.placeholder = "Name"
@@ -1149,15 +1166,15 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		inputTableHTMLArgument.placeholder = "Account Type"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "other-account-input-date-time"
 		inputTableHTMLArgument.funcNameJS = "otherAccountSearchDateTime"
 		inputTableHTMLArgument.placeholder = "Date & Time Created"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "    <br>")
-			fmt.Fprintf(w, "    <br>")
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "other-account-input-pbx-name"
 			inputTableHTMLArgument.funcNameJS = "otherAccountSearchPBXName"
 			inputTableHTMLArgument.placeholder = "PBX Name"
@@ -1167,19 +1184,20 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			inputTableHTMLArgument.funcNameJS = "otherAccountSearchPBXID"
 			inputTableHTMLArgument.placeholder = "PBX ID"
 			inputTableHTML(w, inputTableHTMLArgument)
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		}
 		if userTypeID == "100" {
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "other-account-input-customer-name"
 			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerName"
 			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    <br>")
 			inputTableHTMLArgument.inputID = "other-account-input-customer-id"
 			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerID"
 			inputTableHTMLArgument.placeholder = "Customer ID"
 			inputTableHTML(w, inputTableHTMLArgument)
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		}
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
@@ -1197,6 +1215,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"other-account-table\" class=\"table-user-account\">")
 		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Account ID</th>")
 		fmt.Fprintf(w, "          <th>Name</th>")
 		fmt.Fprintf(w, "          <th>Email</th>")
 		fmt.Fprintf(w, "          <th>Account Type</th>")
@@ -1226,6 +1245,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		}
 
 		otherUserAccountSQL, err := dbDetail.connection.Query(`SELECT
+									 user_account_id,
 						     			 user_account_first_name,
 						     			 user_account_last_name,  
 						     			 user_account_email,                                                   
@@ -1247,6 +1267,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		for otherUserAccountSQL.Next() {
 
 			err = otherUserAccountSQL.Scan(
+				&userAccountID,
 				&userAccountFirstName,
 				&userAccountLastName,
 				&userAccountEmail,
@@ -1264,10 +1285,12 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			}
 
 			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+userAccountID+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
 			fmt.Fprintf(w, "          <td>"+formatDateTime(userAccountDateTimeAdded)+"</td>")
+
 			if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 				if pbxName != "system" {
 					fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
@@ -1296,50 +1319,56 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		}
 
 		fmt.Fprintf(w, "      </table>")
+
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "other-account-table"
+		// JS filter function for account ID in the other account table
+		filterTableJSArgument.funcNameJS = "otherAccountSearchID"
+		filterTableJSArgument.inputID = "other-account-input-id"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
 		// JS filter function for name in the other account table
 		filterTableJSArgument.funcNameJS = "otherAccountSearchName"
 		filterTableJSArgument.inputID = "other-account-input-name"
-		filterTableJSArgument.columnNumber = 0
+		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
 		// JS filter function for email in the other account table
 		filterTableJSArgument.funcNameJS = "otherAccountSearchEmail"
 		filterTableJSArgument.inputID = "other-account-input-email"
-		filterTableJSArgument.columnNumber = 1
+		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
 		// JS filter function for type in the other account table
 		filterTableJSArgument.funcNameJS = "otherAccountSearchType"
 		filterTableJSArgument.inputID = "other-account-input-type"
-		filterTableJSArgument.columnNumber = 2
+		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 		// JS filter function for date and time in the other account table
 		filterTableJSArgument.funcNameJS = "otherAccountSearchDateTime"
 		filterTableJSArgument.inputID = "other-account-input-date-time"
-		filterTableJSArgument.columnNumber = 3
+		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 			// JS filter function for PBX name in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchPBXName"
 			filterTableJSArgument.inputID = "other-account-input-pbx-name"
-			filterTableJSArgument.columnNumber = 4
+			filterTableJSArgument.columnNumber = 5
 			filterTableJS(w, filterTableJSArgument)
 			// JS filter function for PBX ID in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchPBXID"
 			filterTableJSArgument.inputID = "other-account-input-pbx-id"
-			filterTableJSArgument.columnNumber = 5
+			filterTableJSArgument.columnNumber = 6
 			filterTableJS(w, filterTableJSArgument)
 		}
 		if userTypeID == "100" {
 			// JS filter function for the customer name in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerName"
 			filterTableJSArgument.inputID = "other-account-input-customer-name"
-			filterTableJSArgument.columnNumber = 6
+			filterTableJSArgument.columnNumber = 7
 			filterTableJS(w, filterTableJSArgument)
 			// JS filter function for the customer ID in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerID"
 			filterTableJSArgument.inputID = "other-account-input-customer-id"
-			filterTableJSArgument.columnNumber = 7
+			filterTableJSArgument.columnNumber = 8
 			filterTableJS(w, filterTableJSArgument)
 		}
 		var exportCSVJSArgument jsFunctionParameter
@@ -1360,7 +1389,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 }
 
 // Function to add new user account
-func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
+func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, userID string, r *http.Request) {
 
 	// Get account type ID and name from the database and append to slice
 	var userAccountTypeIDNameList [][]string
@@ -1479,14 +1508,14 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 	fmt.Fprintf(w, "<table class=\"table-user-account\">")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th class=\"table-title\";>Add New User Account<br><br></th>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Add New User Account</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_account_input_first_name", "Last Name:", "text")
+	inputHTML(w, "add_account_input_first_name", "First Name:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	inputHTML(w, "add_account_input_last_name", "Last Name:", "text")
@@ -1557,61 +1586,70 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r
 		messageHTML(w, "PBX ID invalid", "warning")
 	} else if validateCustomerID == false {
 		messageHTML(w, "Customer ID invalid", "warning")
+	} else if addAccountSelectAccountType == "100" && userID != "1" {
+		messageHTML(w, "Must be logged in as the orginal YAP admin (ID 1) to create a YAP Admin (100) account", "warning")
+	} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" && addAccountSelectCustomerID == " " {
+		messageHTML(w, "A customer ID must be selected when creating a 200, 201 or 400 type account", "warning")
+	} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" && addAccountSelectPBXID == " " {
+		messageHTML(w, "A PBX ID must be selected when creating a 300, 301 or 302 type account", "warning")
 	} else {
-		var customerID string
 		if addAccountSelectAccountType == "100" {
 			addAccountSelectCustomerID = "1"
 			addAccountSelectPBXID = "1"
+			messageHTML(w, "YAP Admin (100) Account: "+addAccountInputEmail+" Created", "success")
 		} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" {
-			if addAccountSelectCustomerID == "" {
-				messageHTML(w, "A customer ID must be selected when creating a 200, 201 or 400 type account", "warning")
-			} else {
-				addAccountSelectPBXID = "1"
+			addAccountSelectPBXID = "1"
+			if addAccountSelectAccountType == "200" {
+				messageHTML(w, "Customer Admin (200) Account: "+addAccountInputEmail+" Created", "success")
+			} else if addAccountSelectAccountType == "201" {
+				messageHTML(w, "Customer Regular (201) Account: "+addAccountInputEmail+" Created", "success")
+			} else if addAccountSelectAccountType == "400" {
+				messageHTML(w, "Customer Invoice (400) Account: "+addAccountInputEmail+" Created", "success")
 			}
 		} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" {
-			if addAccountSelectPBXID == "" {
-				messageHTML(w, "A PBX ID must be selected when creating a 300, 301 or 302 type account", "warning")
-			} else {
-				customerIDSQL, err := dbDetail.connection.Query(`SELECT
+			var customerID string
+			customerIDSQL, err := dbDetail.connection.Query(`SELECT
                                                                     customer_id
                                                                 FROM
                                                                     yap.view___pbx_detail
                                                                 WHERE pbx_id = ?`, addAccountSelectPBXID)
 
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			for customerIDSQL.Next() {
+
+				err = customerIDSQL.Scan(
+					&customerID,
+				)
+
 				// Error
 				if err != nil {
 					panic(err)
 				}
+				addAccountSelectCustomerID = customerID
 
-				for customerIDSQL.Next() {
-
-					err = customerIDSQL.Scan(
-						&customerID,
-					)
-
-					// Error
-					if err != nil {
-						panic(err)
-					}
-					addAccountSelectCustomerID = customerID
-
-				}
-				// Close connection
-				defer dbDetail.connection.Close()
 			}
+
+			// Close connection
+			defer dbDetail.connection.Close()
+
+			messageHTML(w, "Account "+addAccountInputEmail+" Created", "success")
 		}
 
 		dbDetail.connection.Query(`INSERT 
-         		                   INTO
-	         		       user_account (
-				           email,
-				           first_name,
-				           last_name,
-				           user_account_type_id,
-				           customer_id,
-				           pbx_id,
-				           account_active)
-				       VALUES(?, ?, ?, ?, ?, ?, ?);`,
+        	                   INTO
+	       		       user_account (
+			           email,
+			           first_name,
+			           last_name,
+			           user_account_type_id,
+			           customer_id,
+			           pbx_id,
+			           account_active)
+			       VALUES(?, ?, ?, ?, ?, ?, ?);`,
 			addAccountInputEmail,
 			addAccountInputFirstName,
 			addAccountInputLastName,
@@ -1619,10 +1657,7 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r
 			addAccountSelectCustomerID,
 			addAccountSelectPBXID,
 			"1")
-
-		messageHTML(w, "Account "+addAccountInputEmail+" Created", "success")
 	}
-
 }
 
 func userAccountEdit() {
@@ -3666,6 +3701,7 @@ func main() {
 		dbDetail.database = dbName
 		dbDetail.columnWhereValue = email
 
+		userID := userAccountData(dbDetail, "id")
 		userTypeID := userAccountData(dbDetail, "type_id")
 		userCustomerID := userAccountData(dbDetail, "customer_id")
 		userCustomerName := userAccountData(dbDetail, "customer_name")
@@ -3679,7 +3715,7 @@ func main() {
 				header(w, "YAP Admin Account<br>All User Accounts on YAP", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				fmt.Fprint(w, "<br>")
-				userAccountAdd(w, dbDetail, r)
+				userAccountAdd(w, dbDetail, userID, r)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "200" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All User Accounts for the Customer", "header-user-account", extraButtonName, extraButtonURL)
