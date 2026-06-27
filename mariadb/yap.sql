@@ -678,8 +678,8 @@ VALUES
     </td>
     <td>
       &#9989 View Own User Account<br>
-      &#9989 Update Own User Account<br>
-      &#9989 Delete Own User Account<br>
+      &#9989* Update Own User Account<br>
+      &#9989* Delete Own User Account<br>
       <div class="main-menu-space"></div>
     </td>
   </tr>
@@ -733,10 +733,10 @@ VALUES
       &#9989 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td>
-      Note: Customer Invoice Accounts Are Read Only<br>
-      Accounts for Viewing Services and Goods<br>
-      Billed to a Customer.<br>
-      *Only the YAP Admin with Account ID 1<br>
+      *Only the YAP Admin (100) account with account ID 1<br>
+       can create and delete other YAP Admin (100) accounts<br>
+      *The YAP Admin (100) account with account ID 1<br>
+       cannot be deleted or edited<br>
     </td>
   </tr>
   <tr>
