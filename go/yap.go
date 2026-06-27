@@ -954,6 +954,22 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 
 //----------------------------------------------------------------------------------------------------
 
+//
+
+func userAccountListTdHTML(w http.ResponseWriter, userAccountID string, userAccountTypeID string, tagContent string) {
+	if userAccountID == "1" && userAccountTypeID == "100" {
+		fmt.Fprintf(w, "          <td class=\"td-yap-admin-id-1\"><b>"+tagContent+"</b></td>")
+	} else if userAccountTypeID == "100" {
+		fmt.Fprintf(w, "          <td class=\"td-yap-admin\"><b>"+tagContent+"</b></td>")
+	} else if userAccountTypeID == "200" || userAccountTypeID == "201" {
+		fmt.Fprintf(w, "	  <td class=\"td-customer\"><b>"+tagContent+"</b></td>")
+	} else if userAccountTypeID == "300" || userAccountTypeID == "301" || userAccountTypeID == "302" {
+		fmt.Fprintf(w, "          <td class=\"td-pbx\"><b>"+tagContent+"</b></td>")
+	} else if userAccountTypeID == "400" {
+		fmt.Fprintf(w, "          <td class=\"td-invoice\"><b>"+tagContent+"</b></td>")
+	}
+}
+
 // User account page functions
 
 func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string) {
@@ -964,6 +980,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		userAccountLastName      string
 		userAccountEmail         string
 		userAccountType          string
+		userAccountTypeID        string
 		userAccountDateTimeAdded string
 		customerID               string
 		customerName             string
@@ -1250,6 +1267,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						     			 user_account_last_name,  
 						     			 user_account_email,                                                   
 						     			 user_account_type,  
+						     			 user_account_type_id,
 						     			 user_account_date_time_added, 
 						     			 customer_id,
 						     			 customer_name,
@@ -1272,6 +1290,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				&userAccountLastName,
 				&userAccountEmail,
 				&userAccountType,
+				&userAccountTypeID,
 				&userAccountDateTimeAdded,
 				&customerID,
 				&customerName,
@@ -1285,34 +1304,34 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			}
 
 			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <td>"+userAccountID+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAccountFirstName+" "+userAccountLastName+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-			fmt.Fprintf(w, "          <td>"+userAccountType+"</td>")
-			fmt.Fprintf(w, "          <td>"+formatDateTime(userAccountDateTimeAdded)+"</td>")
+			userAccountListTdHTML(w, userAccountID, userAccountTypeID, userAccountID)
+			userAccountListTdHTML(w, userAccountID, userAccountTypeID, userAccountFirstName+" "+userAccountLastName)
+			userAccountListTdHTML(w, userAccountID, userAccountTypeID, userAccountEmail)
+			userAccountListTdHTML(w, userAccountID, userAccountTypeID, userAccountType)
+			userAccountListTdHTML(w, userAccountID, userAccountTypeID, formatDateTime(userAccountDateTimeAdded))
 
 			if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 				if pbxName != "system" {
-					fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, pbxName)
 				} else {
-					fmt.Fprintf(w, "          <td>-</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
 				}
 				if pbxID != "1" {
-					fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, pbxID)
 				} else {
-					fmt.Fprintf(w, "          <td>-</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
 				}
 			}
 			if userTypeID == "100" {
 				if customerName != "system" {
-					fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, customerName)
 				} else {
-					fmt.Fprintf(w, "          <td>-</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
 				}
 				if customerID != "1" {
-					fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, customerID)
 				} else {
-					fmt.Fprintf(w, "          <td>-</td>")
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
 				}
 			}
 			fmt.Fprintf(w, "        </tr>")
@@ -1539,7 +1558,7 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th><input type=\"Submit\" value=\"submit\"></th>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Create Account\"></th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</form>")
@@ -1758,6 +1777,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-contact-input-customer-name"
 		inputTableHTMLArgument.funcNameJS = "customerContactSearchCustomerName"
 		inputTableHTMLArgument.placeholder = "Customer Name"
@@ -1777,8 +1797,10 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		inputTableHTMLArgument.funcNameJS = "customerContactSearchSiteEmail"
 		inputTableHTMLArgument.placeholder = "Customer Site Email Address"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-contact-input-site-phone"
 		inputTableHTMLArgument.funcNameJS = "customerContactSearchSitePhone"
 		inputTableHTMLArgument.placeholder = "Customer Site Phone Number"
@@ -1798,6 +1820,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		inputTableHTMLArgument.funcNameJS = "customerContactSearchInvoicePhone"
 		inputTableHTMLArgument.placeholder = "Customer Invoice Phone Number"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    </th>")
@@ -1972,6 +1995,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-resource-input-customer-name"
 		inputTableHTMLArgument.funcNameJS = "customerResourceSearchCustomerName"
 		inputTableHTMLArgument.placeholder = "Customer Name"
@@ -1991,6 +2015,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		inputTableHTMLArgument.funcNameJS = "customerResourceSearchActive"
 		inputTableHTMLArgument.placeholder = "Customer Active Status"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    </th>")
@@ -2218,6 +2243,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-contact-input-pbx-name"
 		inputTableHTMLArgument.funcNameJS = "pbxContactSearchPBXName"
 		inputTableHTMLArgument.placeholder = "PBX Name"
@@ -2237,8 +2263,10 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		inputTableHTMLArgument.funcNameJS = "pbxContactSearchSiteEmail"
 		inputTableHTMLArgument.placeholder = "PBX Site Email Address"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-contact-input-site-phone"
 		inputTableHTMLArgument.funcNameJS = "pbxContactSearchSitePhone"
 		inputTableHTMLArgument.placeholder = "PBX Site Phone Number"
@@ -2258,9 +2286,11 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		inputTableHTMLArgument.funcNameJS = "pbxContactSearchInvoicePhone"
 		inputTableHTMLArgument.placeholder = "PBX Invoice Phone Number"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "pbx-contact-input-customer-name"
 			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerName"
 			inputTableHTMLArgument.placeholder = "Customer Name"
@@ -2270,6 +2300,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerID"
 			inputTableHTMLArgument.placeholder = "Customer ID"
 			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
 		}
@@ -2478,6 +2509,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-resource-input-pbx-name"
 		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchPBXName"
 		inputTableHTMLArgument.placeholder = "PBX Name"
@@ -2497,9 +2529,11 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchActive"
 		inputTableHTMLArgument.placeholder = "PBX Active Status"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "pbx-resource-input-customer-name"
 			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerName"
 			inputTableHTMLArgument.placeholder = "Customer Name"
@@ -2509,6 +2543,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerID"
 			inputTableHTMLArgument.placeholder = "Customer ID"
 			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
 		}
@@ -3210,6 +3245,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	fmt.Fprintf(w, "    <br>")
 
 	var inputTableHTMLArgument jsFunctionParameter
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	inputTableHTMLArgument.inputID = "invoice-input-name-information"
 	inputTableHTMLArgument.funcNameJS = "invoiceSearchNameInformation"
 	inputTableHTMLArgument.placeholder = "Service/Product Name & Information"
@@ -3219,8 +3255,8 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	inputTableHTMLArgument.funcNameJS = "invoiceSearchSalePrice"
 	inputTableHTMLArgument.placeholder = "Service/Product Sale Price"
 	inputTableHTML(w, inputTableHTMLArgument)
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "invoice-input-detail"
 		inputTableHTMLArgument.funcNameJS = "invoiceSearchDetail"
 		inputTableHTMLArgument.placeholder = "Invoice Item Details"
@@ -3230,11 +3266,14 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerName"
 		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br><br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "invoice-input-customer-id"
 		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 
 	fmt.Fprintf(w, "    <br>")
@@ -3961,6 +4000,7 @@ func main() {
 
 		fmt.Fprintf(w, startHTML)
 		header(w, "Server Logs", "header-server-log", extraButtonName, extraButtonURL)
+
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-log")
 
@@ -3973,6 +4013,7 @@ func main() {
 
 		fmt.Fprintf(w, startHTML)
 		header(w, "Server Information", "header-server-information", extraButtonName, extraButtonURL)
+
 		// Wallpaper
 		wallpaper(w, "wallpaper-server-information")
 
