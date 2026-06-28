@@ -954,7 +954,7 @@ func mainMenuButton(mainMenu mainMenuParameter) {
 
 //----------------------------------------------------------------------------------------------------
 
-//
+// Function uses different CSS class for table td depending on tag content
 
 func userAccountListTdHTML(w http.ResponseWriter, userAccountID string, userAccountTypeID string, tagContent string) {
 	if userAccountID == "1" && userAccountTypeID == "100" {
@@ -1418,10 +1418,10 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	var userAccountTypeName string
 
 	userAccountTypeIDNameSQL, err := dbDetail.connection.Query(`SELECT
-	                                                                    id,
-	                                                                    type
-	                                                                FROM
-	                                                                    yap.user_account_type`)
+							              id,
+                                                                      type
+                                                                    FROM
+                                                                      yap.user_account_type`)
 
 	// Error
 	if err != nil {
@@ -1606,11 +1606,19 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	} else if validateCustomerID == false {
 		messageHTML(w, "Customer ID invalid", "warning")
 	} else if addAccountSelectAccountType == "100" && userID != "1" {
-		messageHTML(w, "Must be logged in as the orginal YAP admin (ID 1) to create a YAP Admin (100) account", "warning")
-	} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" && addAccountSelectCustomerID == " " {
-		messageHTML(w, "A customer ID must be selected when creating a 200, 201 or 400 type account", "warning")
-	} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" && addAccountSelectPBXID == " " {
-		messageHTML(w, "A PBX ID must be selected when creating a 300, 301 or 302 type account", "warning")
+		messageHTML(w, "Must be a YAP Admin (100) account with account ID 1 to create other YAP Admin (100) accounts", "warning")
+	} else if addAccountSelectAccountType == "200" && addAccountSelectCustomerID == "" {
+		messageHTML(w, "A customer ID must be selected when creating a 200 type account", "warning")
+	} else if addAccountSelectAccountType == "201" && addAccountSelectCustomerID == "" {
+		messageHTML(w, "A customer ID must be selected when creating a 201 type account", "warning")
+	} else if addAccountSelectAccountType == "400" && addAccountSelectCustomerID == "" {
+		messageHTML(w, "A customer ID must be selected when creating a 400 type account", "warning")
+	} else if addAccountSelectAccountType == "300" && addAccountSelectPBXID == "" {
+		messageHTML(w, "A PBX ID must be selected when creating a 300 type account", "warning")
+	} else if addAccountSelectAccountType == "301" && addAccountSelectPBXID == "" {
+		messageHTML(w, "A PBX ID must be selected when creating a 301 type account", "warning")
+	} else if addAccountSelectAccountType == "302" && addAccountSelectPBXID == "" {
+		messageHTML(w, "A PBX ID must be selected when creating a 302 type account", "warning")
 	} else {
 		if addAccountSelectAccountType == "100" {
 			addAccountSelectCustomerID = "1"
@@ -1652,9 +1660,6 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 
 			}
 
-			// Close connection
-			defer dbDetail.connection.Close()
-
 			messageHTML(w, "Account "+addAccountInputEmail+" Created", "success")
 		}
 
@@ -1679,12 +1684,172 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	}
 }
 
-func userAccountEdit() {
+func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, userID string, r *http.Request) {
 
-}
+	// Get account type ID and email from the database and append to slice
+	var userAccountIDList []string
+	var userAccountID string
 
-func userAccountDelete() {
+	var userAccountEmailList []string
+	var userAccountEmail string
 
+	userAccountIDEmailSQL, err := dbDetail.connection.Query(`SELECT
+	                                                             user_account_id,
+	                                                             user_account_email
+	                                                         FROM
+	                                                             yap.view___account_detail`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for userAccountIDEmailSQL.Next() {
+
+		err = userAccountIDEmailSQL.Scan(
+			&userAccountID,
+			&userAccountEmail,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		userAccountIDList = append(userAccountIDList, userAccountID)
+		userAccountEmailList = append(userAccountEmailList, userAccountEmail)
+	}
+
+	// Get account type ID and name from the database and append to slice
+	var userAccountTypeIDNameList [][]string
+	var userAccountTypeIDList []string
+
+	var userAccountTypeID string
+	var userAccountTypeName string
+
+	userAccountTypeIDNameSQL, err := dbDetail.connection.Query(`SELECT
+								      id,
+                                                                      type
+                                                                    FROM
+                                                                      yap.user_account_type`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for userAccountTypeIDNameSQL.Next() {
+
+		err = userAccountTypeIDNameSQL.Scan(
+			&userAccountTypeID,
+			&userAccountTypeName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var userAccountTypeIDAndName []string
+		userAccountTypeIDAndName = append([]string{userAccountTypeID}, []string{userAccountTypeName}...)
+		userAccountTypeIDNameList = append(userAccountTypeIDNameList, userAccountTypeIDAndName)
+		userAccountTypeIDList = append(userAccountTypeIDList, userAccountTypeID)
+	}
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
+	fmt.Fprintf(w, "<table class=\"table-delete\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete User Account</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "delete_account_input_account_id", "Account ID:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "delete_account_input_account_email", "Account Email:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectHTML(w, "delete_account_select_account_type", "Account Type", userAccountTypeIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Delete Account\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	deleteUserAccountInputAccountID := r.FormValue("delete_account_input_account_id")
+	deleteUserAccountInputEmail := r.FormValue("delete_account_input_account_email")
+	deleteUserAccountSelectAccountType := r.FormValue("delete_account_select_account_type")
+
+	// Check user account ID is contained in the slice
+	validateUserAccountID := slices.Contains(userAccountIDList, deleteUserAccountInputAccountID)
+
+	// Check user email is contained in the slice
+	validateUserAccountEmail := slices.Contains(userAccountEmailList, deleteUserAccountInputEmail)
+
+	// Check user type ID is contained in the slice
+	validateUserAccountTypeID := slices.Contains(userAccountTypeIDList, deleteUserAccountSelectAccountType)
+
+	if deleteUserAccountInputAccountID == "" {
+		// Do nothing
+	} else if validateUserAccountID == false {
+		messageHTML(w, "Account ID does not exist", "warning")
+	} else if validateUserAccountEmail == false {
+		messageHTML(w, "Account email address does not exist", "warning")
+	} else if validateUserAccountTypeID == false {
+		messageHTML(w, "User account type must be either 100, 200, 201, 300, 301, 302 or 400", "warning")
+	} else if deleteUserAccountInputAccountID == "1" {
+		messageHTML(w, "YAP Admin account with ID 1 cannot be deleted", "warning")
+	} else if deleteUserAccountSelectAccountType == "100" && userID != "1" {
+		messageHTML(w, "Must be a YAP Admin (100) account with account ID 1 to delete other YAP Admin (100) accounts", "warning")
+	} else {
+		dbDetail.connection.Query(`DELETE FROM user_account WHERE id = ? AND user_account_type_id = ?;`, deleteUserAccountInputAccountID, deleteUserAccountSelectAccountType)
+
+		// Close connection
+		defer dbDetail.connection.Close()
+
+		var checkUserAccountDeleted string
+
+		checkUserAccountDeletedSQL, err := dbDetail.connection.Query(`SELECT
+									        user_account_id
+									      FROM view___account_detail
+									      WHERE user_account_id = ?;`,
+			deleteUserAccountInputAccountID)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		for checkUserAccountDeletedSQL.Next() {
+
+			err = checkUserAccountDeletedSQL.Scan(
+				&checkUserAccountDeleted,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+		}
+
+		// Close connection
+		defer dbDetail.connection.Close()
+
+		if checkUserAccountDeleted == "" {
+			messageHTML(w, "Account "+deleteUserAccountInputEmail+" deleted", "success")
+		} else {
+			messageHTML(w, "Wrong account type ("+deleteUserAccountSelectAccountType+") selected for "+deleteUserAccountInputEmail, "warning")
+		}
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -3755,6 +3920,8 @@ func main() {
 				userAccountList(w, dbDetail, userTypeID)
 				fmt.Fprint(w, "<br>")
 				userAccountAdd(w, dbDetail, userID, r)
+				fmt.Fprint(w, "<br>")
+				userAccountDelete(w, dbDetail, userID, r)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "200" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All User Accounts for the Customer", "header-user-account", extraButtonName, extraButtonURL)
