@@ -299,6 +299,8 @@ func exportCSVJS(w http.ResponseWriter, parameter jsFunctionParameter) {
 
 //----------------------------------------------------------------------------------------------------
 
+// Database functions
+
 type databaseFunctionParameter struct {
 	connection          *sql.DB
 	database            string
@@ -463,6 +465,131 @@ func userAccountData(dbUserAccountData databaseFunctionParameter, data string) s
 	dbSelectWhere.columnWhereValue = dbUserAccountData.columnWhereValue
 
 	return selectWhere(dbSelectWhere)
+}
+
+// Function to retrive account type name  and ID or just the account type ID
+func userAccountTypeSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
+	// Get account type ID and name from the database and append to slice
+	var userAccountTypeIDNameList [][]string
+	var userAccountTypeIDList []string
+
+	var userAccountTypeID string
+	var userAccountTypeName string
+
+	userAccountTypeIDNameSQL, err := dbDetail.connection.Query(`SELECT
+                                                                      id,
+                                                                      type
+                                                                    FROM
+                                                                      yap.user_account_type`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for userAccountTypeIDNameSQL.Next() {
+
+		err = userAccountTypeIDNameSQL.Scan(
+			&userAccountTypeID,
+			&userAccountTypeName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var userAccountTypeIDAndName []string
+		userAccountTypeIDAndName = append([]string{userAccountTypeID}, []string{userAccountTypeName}...)
+		userAccountTypeIDNameList = append(userAccountTypeIDNameList, userAccountTypeIDAndName)
+		userAccountTypeIDList = append(userAccountTypeIDList, userAccountTypeID)
+	}
+	return userAccountTypeIDNameList, userAccountTypeIDList
+}
+
+// Function to retrive customer name and ID or just the customer ID
+func customerSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
+	// Get customer ID and name from the database and append to slice
+	var customerIDNameList [][]string
+	var customerIDList []string
+
+	var customerID string
+	var customerName string
+
+	customerIDNameSQL, err := dbDetail.connection.Query(`SELECT
+                                                               customer_id,
+                                                               customer_name
+                                                             FROM
+                                                               yap.view___customer_detail`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for customerIDNameSQL.Next() {
+
+		err = customerIDNameSQL.Scan(
+			&customerID,
+			&customerName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var customerIDAndName []string
+		if customerID != "1" {
+			customerIDAndName = append([]string{customerID}, []string{customerName}...)
+			customerIDNameList = append(customerIDNameList, customerIDAndName)
+			customerIDList = append(customerIDList, customerID)
+		}
+
+	}
+	return customerIDNameList, customerIDList
+}
+
+func pbxSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
+	// Get PBX name and ID from the database and append to slice
+	var pbxIDNameList [][]string
+	var pbxIDList []string
+
+	var pbxID string
+	var pbxName string
+
+	pbxIDNameSQL, err := dbDetail.connection.Query(`SELECT
+						          pbx_id,
+                                                          pbx_name
+                                                        FROM
+                                                          yap.view___pbx_detail`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for pbxIDNameSQL.Next() {
+
+		err = pbxIDNameSQL.Scan(
+			&pbxID,
+			&pbxName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var pbxIDAndName []string
+		if pbxID != "1" {
+			pbxIDAndName = append([]string{pbxID}, []string{pbxName}...)
+			pbxIDNameList = append(pbxIDNameList, pbxIDAndName)
+			pbxIDList = append(pbxIDList, pbxID)
+		}
+
+	}
+	return pbxIDNameList, pbxIDList
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1410,120 +1537,6 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 // Function to add new user account
 func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, userID string, r *http.Request) {
 
-	// Get account type ID and name from the database and append to slice
-	var userAccountTypeIDNameList [][]string
-	var userAccountTypeIDList []string
-
-	var userAccountTypeID string
-	var userAccountTypeName string
-
-	userAccountTypeIDNameSQL, err := dbDetail.connection.Query(`SELECT
-							              id,
-                                                                      type
-                                                                    FROM
-                                                                      yap.user_account_type`)
-
-	// Error
-	if err != nil {
-		panic(err)
-	}
-
-	for userAccountTypeIDNameSQL.Next() {
-
-		err = userAccountTypeIDNameSQL.Scan(
-			&userAccountTypeID,
-			&userAccountTypeName,
-		)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		var userAccountTypeIDAndName []string
-		userAccountTypeIDAndName = append([]string{userAccountTypeID}, []string{userAccountTypeName}...)
-		userAccountTypeIDNameList = append(userAccountTypeIDNameList, userAccountTypeIDAndName)
-		userAccountTypeIDList = append(userAccountTypeIDList, userAccountTypeID)
-	}
-
-	// Get customer ID and name from the database and append to slice
-	var customerIDNameList [][]string
-	var customerIDList []string
-
-	var customerID string
-	var customerName string
-
-	customerIDNameSQL, err := dbDetail.connection.Query(`SELECT
-	   						                    customer_id,
-	                                                                    customer_name
-	                                                                FROM
-	                                                                    yap.view___customer_detail`)
-
-	// Error
-	if err != nil {
-		panic(err)
-	}
-
-	for customerIDNameSQL.Next() {
-
-		err = customerIDNameSQL.Scan(
-			&customerID,
-			&customerName,
-		)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		var customerIDAndName []string
-		if customerID != "1" {
-			customerIDAndName = append([]string{customerID}, []string{customerName}...)
-			customerIDNameList = append(customerIDNameList, customerIDAndName)
-			customerIDList = append(customerIDList, customerID)
-		}
-
-	}
-
-	// Get PBX name and ID from the database and append to slice
-	var pbxIDNameList [][]string
-	var pbxIDList []string
-
-	var pbxID string
-	var pbxName string
-
-	pbxIDNameSQL, err := dbDetail.connection.Query(`SELECT
-	   							    pbx_id,
-	   						            pbx_name
-	   					         	FROM
-	   					                    yap.view___pbx_detail`)
-
-	// Error
-	if err != nil {
-		panic(err)
-	}
-
-	for pbxIDNameSQL.Next() {
-
-		err = pbxIDNameSQL.Scan(
-			&pbxID,
-			&pbxName,
-		)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		var pbxIDAndName []string
-		if pbxID != "1" {
-			pbxIDAndName = append([]string{pbxID}, []string{pbxName}...)
-			pbxIDNameList = append(pbxIDNameList, pbxIDAndName)
-			pbxIDList = append(pbxIDList, pbxID)
-		}
-
-	}
-
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 	fmt.Fprintf(w, "<table class=\"table-user-account\">")
 	fmt.Fprintf(w, "  <tr>")
@@ -1545,12 +1558,15 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
+	userAccountTypeIDNameList, _ := userAccountTypeSlice(dbDetail)
 	selectHTML(w, "add_account_select_account_type", "Account Type", userAccountTypeIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
+	pbxIDNameList, _ := pbxSlice(dbDetail)
 	selectHTML(w, "add_account_select_pbx_id", "PBX", pbxIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
+	customerIDNameList, _ := customerSlice(dbDetail)
 	selectHTML(w, "add_account_select_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -1582,13 +1598,16 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	validateEmail := validateInput(addAccountInputEmail, "email")
 
 	// Check user type ID is contained in the slice
+	_, userAccountTypeIDList := userAccountTypeSlice(dbDetail)
 	validateUserAccountTypeID := slices.Contains(userAccountTypeIDList, addAccountSelectAccountType)
 
 	// Check PBX ID is contained in the slice
+	_, pbxIDList := pbxSlice(dbDetail)
 	pbxIDList = append(pbxIDList, "")
 	validatePBXID := slices.Contains(pbxIDList, addAccountSelectPBXID)
 
 	// Check customer ID is contained in the slice
+	_, customerIDList := customerSlice(dbDetail)
 	customerIDList = append(customerIDList, "")
 	validateCustomerID := slices.Contains(customerIDList, addAccountSelectCustomerID)
 
@@ -1720,42 +1739,6 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 		userAccountEmailList = append(userAccountEmailList, userAccountEmail)
 	}
 
-	// Get account type ID and name from the database and append to slice
-	var userAccountTypeIDNameList [][]string
-	var userAccountTypeIDList []string
-
-	var userAccountTypeID string
-	var userAccountTypeName string
-
-	userAccountTypeIDNameSQL, err := dbDetail.connection.Query(`SELECT
-								      id,
-                                                                      type
-                                                                    FROM
-                                                                      yap.user_account_type`)
-
-	// Error
-	if err != nil {
-		panic(err)
-	}
-
-	for userAccountTypeIDNameSQL.Next() {
-
-		err = userAccountTypeIDNameSQL.Scan(
-			&userAccountTypeID,
-			&userAccountTypeName,
-		)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		var userAccountTypeIDAndName []string
-		userAccountTypeIDAndName = append([]string{userAccountTypeID}, []string{userAccountTypeName}...)
-		userAccountTypeIDNameList = append(userAccountTypeIDNameList, userAccountTypeIDAndName)
-		userAccountTypeIDList = append(userAccountTypeIDList, userAccountTypeID)
-	}
-
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 	fmt.Fprintf(w, "<table class=\"table-delete\">")
 	fmt.Fprintf(w, "  <tr>")
@@ -1772,6 +1755,7 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	inputHTML(w, "delete_account_input_account_email", "Account Email:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
+	userAccountTypeIDNameList, _ := userAccountTypeSlice(dbDetail)
 	selectHTML(w, "delete_account_select_account_type", "Account Type", userAccountTypeIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -1795,6 +1779,7 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	validateUserAccountEmail := slices.Contains(userAccountEmailList, deleteUserAccountInputEmail)
 
 	// Check user type ID is contained in the slice
+	_, userAccountTypeIDList := userAccountTypeSlice(dbDetail)
 	validateUserAccountTypeID := slices.Contains(userAccountTypeIDList, deleteUserAccountSelectAccountType)
 
 	if deleteUserAccountInputAccountID == "" {
