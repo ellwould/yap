@@ -4,7 +4,6 @@ CREATE TABLE `customer`
 (
   `id` VARCHAR(255) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `active` BOOLEAN NOT NULL,
   `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
   `reselling_minutes` ENUM('no', 'yes', 'n/a') NOT NULL,
   `consumer_type` VARCHAR(255) NOT NULL,
@@ -57,7 +56,6 @@ CREATE TABLE `pbx`
   `id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
-  `active` BOOLEAN NOT NULL,
   `sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
@@ -103,7 +101,6 @@ CREATE TABLE `user_account`
   `user_account_type_id` SMALLINT UNSIGNED NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
-  `account_active` BOOLEAN NOT NULL,
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 UNIQUE (`email`),
 PRIMARY KEY(`id`)
@@ -459,7 +456,6 @@ SELECT
   `customer`.`id` AS 'customer_id',
   `customer`.`name` AS 'customer_name',
   `customer`.`date_time_added` AS 'customer_date_time_added',
-  `customer`.`active` AS 'customer_active',
   `customer`.`uk_based` AS 'customer_uk_based',
   `customer`.`consumer_type` AS 'customer_consumer_type',
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
@@ -495,7 +491,6 @@ SELECT
   `pbx`.`customer_id`,
   `customer`.`name` AS 'customer_name',
   `pbx`.`date_time_added` AS 'pbx_date_time_added',
-  `pbx`.`active` AS 'pbx_active',
   `pbx`.`sip_extension_limit` AS 'pbx_sip_extension_limit',
   `pbx_site_address`.`address_line_1` AS 'pbx_site_address_line_1',
   `pbx_site_address`.`address_line_2` AS 'pbx_site_address_line_2',
@@ -647,8 +642,8 @@ VALUES
   ('24 Months'),
   ('n/a');
 
-INSERT INTO `customer` (`id`, `name`, `active`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_minutes`, `pbx_limit`)
-VALUES (1, 'system', 0, 'n/a', 'n/a', 'n/a', 'n/a', 0);
+INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_minutes`, `pbx_limit`)
+VALUES (1, 'system', 'n/a', 'n/a', 'n/a', 'n/a', 0);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
@@ -656,8 +651,8 @@ VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system',
 INSERT INTO `customer_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
 
-INSERT INTO `pbx` (`id`, `name`, `customer_id`, `active`, `sip_extension_limit`)
-VALUES (1, 'system', 1, 0, 0);
+INSERT INTO `pbx` (`id`, `name`, `customer_id`, `sip_extension_limit`)
+VALUES (1, 'system', 1, 0);
   
 INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, 'system', 'system', 'system', 'system', 'system', 'system', 'system', 'system');
