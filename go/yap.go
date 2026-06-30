@@ -164,7 +164,18 @@ func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string, in
 	fmt.Fprintf(w, "<br>")
 }
 
-func selectHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue [][]string) {
+func selectSingleHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue []string) {
+	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+"</b>")
+	fmt.Fprintf(w, "  </label><br>")
+	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
+	fmt.Fprintf(w, "<option value></option>")
+	for _, value := range optionValue {
+		fmt.Fprintf(w, "<option value=\""+string(value)+"\">"+string(value)+"</option>")
+	}
+	fmt.Fprintf(w, "  </select>")
+}
+
+func selectDoubleHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue [][]string) {
 	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+"</b>")
 	fmt.Fprintf(w, "  </label><br>")
 	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
@@ -608,24 +619,29 @@ func validateInput(value string, valueType string) (validation bool) {
 			validation = true
 			return
 		}
+
 	} else if valueType == "alpha" {
-		validateInputErr := validateInput.Var(value, "alpha,min=1,max=30")
-		if validateInputErr != nil {
+		validateInputAlphaspaceErr := validateInput.Var(value, "alphaspace,min=1,max=30")
+		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()_=+{}[];:@'#~\\<>/?")
+		if validateInputAlphaspaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
 		} else {
 			validation = true
 			return
 		}
-	} else if valueType == "punctuation" {
-		validateInputErr := validateInput.Var(value, "containsany= -")
-		if validateInputErr != nil {
+
+	} else if valueType == "alphanum" {
+		validateInputAlphanumspaceErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
+		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()_=+{}[];:@'#~\\<>/?")
+		if validateInputAlphanumspaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
 		} else {
 			validation = true
 			return
 		}
+
 	} else {
 		validation = false
 		return
@@ -1559,15 +1575,15 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
 	userAccountTypeIDNameList, _ := userAccountTypeSlice(dbDetail)
-	selectHTML(w, "add_account_select_account_type", "Account Type", userAccountTypeIDNameList)
+	selectDoubleHTML(w, "add_account_select_account_type", "Account Type", userAccountTypeIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	pbxIDNameList, _ := pbxSlice(dbDetail)
-	selectHTML(w, "add_account_select_pbx_id", "PBX", pbxIDNameList)
+	selectDoubleHTML(w, "add_account_select_pbx_id", "PBX", pbxIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	customerIDNameList, _ := customerSlice(dbDetail)
-	selectHTML(w, "add_account_select_customer_id", "Customer", customerIDNameList)
+	selectDoubleHTML(w, "add_account_select_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -1588,11 +1604,9 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 
 	// Validate the first name string
 	validateFirstNameAlpha := validateInput(addAccountInputFirstName, "alpha")
-	validateFirstNamePunctuation := validateInput(addAccountInputFirstName, "punctuation")
 
 	// Validate the last name string
 	validateLastNameAlpha := validateInput(addAccountInputLastName, "alpha")
-	validateLastNamePunctuation := validateInput(addAccountInputLastName, "punctuation")
 
 	// Validate the email address string
 	validateEmail := validateInput(addAccountInputEmail, "email")
@@ -1613,9 +1627,7 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 
 	if addAccountInputFirstName == "" {
 	} else if validateFirstNameAlpha == false || validateLastNameAlpha == false {
-		if validateFirstNamePunctuation == false || validateLastNamePunctuation == false {
-			messageHTML(w, "Name length must be 1 to 30 characters and must only contain characters: a-z A-Z or -", "warning")
-		}
+		messageHTML(w, "Name length must be 1 to 30 characters and must only contain characters: a-z A-Z or -", "warning")
 	} else if validateEmail == false {
 		messageHTML(w, "A valid email address must be entered", "warning")
 	} else if validateUserAccountTypeID == false {
@@ -1756,7 +1768,7 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	userAccountTypeIDNameList, _ := userAccountTypeSlice(dbDetail)
-	selectHTML(w, "delete_account_select_account_type", "Account Type", userAccountTypeIDNameList)
+	selectDoubleHTML(w, "delete_account_select_account_type", "Account Type", userAccountTypeIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -1847,7 +1859,6 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		customerName                     string
 		customerID                       string
 		customerDateTimeAdded            string
-		customerActive                   string
 		customerUKBased                  string
 		customerConsumerType             string
 		customerUKVATRegistered          string
@@ -1876,7 +1887,6 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	dbTableCountUserCustomer.connection = dbDetail.connection
 	dbTableCountUserCustomer.database = dbDetail.database
 	dbTableCountUserCustomer.table = "view___customer_detail"
-	dbTableCountUserCustomer.columnWhere = "customer_active"
 
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
@@ -1885,19 +1895,10 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-customer\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <th>Total Customers On YAP</th>")
-		fmt.Fprintf(w, "          <th>Total Active Customers</th>")
-		fmt.Fprintf(w, "          <th>Total Inactive Customers</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		dbTableCountUserCustomer.countMinusOne = true
-		fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserCustomer)+"</td>")
-		dbTableCountUserCustomer.columnWhere = "customer_active"
-		dbTableCountUserCustomer.countMinusOne = false
-		dbTableCountUserCustomer.columnWhereValue = "1"
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserCustomer)+"</td>")
-		dbTableCountUserCustomer.countMinusOne = true
-		dbTableCountUserCustomer.columnWhereValue = "0"
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserCustomer)+"</td>")
+		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserCustomer)+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
@@ -1928,14 +1929,14 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "customer-contact-input-customer-name"
-		inputTableHTMLArgument.funcNameJS = "customerContactSearchCustomerName"
-		inputTableHTMLArgument.placeholder = "Customer Name"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-contact-input-customer-id"
 		inputTableHTMLArgument.funcNameJS = "customerContactSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "customer-contact-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "customerContactSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-contact-input-site-address"
@@ -1988,8 +1989,8 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "      <table id=\"customer-contact-table\" class=\"table-customer\">")
 	fmt.Fprintf(w, "        <tr>")
-	fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
 	fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
+	fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
 	fmt.Fprintf(w, "          <th>Customer Site<br>Address</th>")
 	fmt.Fprintf(w, "          <th>Customer Site<br>Email Address</th>")
 	fmt.Fprintf(w, "          <th>Customer Site<br>Phone Number</th>")
@@ -2008,8 +2009,8 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	}
 
 	customerContactSQL, err := dbDetail.connection.Query(`SELECT
-							customer_name,
 							customer_id,
+							customer_name,
 							customer_site_address_line_1,
 					                customer_site_address_line_2,
 					                customer_site_city_town_village,
@@ -2039,8 +2040,8 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	for customerContactSQL.Next() {
 
 		err = customerContactSQL.Scan(
-			&customerName,
 			&customerID,
+			&customerName,
 			&customerSiteAddressLine1,
 			&customerSiteAddressLine2,
 			&customerSiteCityTownVillage,
@@ -2064,8 +2065,8 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 			panic(err)
 		}
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+customerSiteAddressLine1+"&nbsp<br>"+customerSiteAddressLine2+"&nbsp<br>"+customerSiteCityTownVillage+"&nbsp<br>"+customerSiteCountyStateRegion+"&nbsp<br><br>"+customerSitePostcodeZipCode+"&nbsp<br><br>"+customerSiteCountry+"&nbsp</td>")
 		fmt.Fprintf(w, "          <td><a href=\"mailto:"+customerSiteContactEmail+"\">"+customerSiteContactEmail+"</a></td>")
 		fmt.Fprintf(w, "          <td><a href=\"tel:"+customerSiteContactNumber+"\">"+customerSiteContactNumber+"</a></td>")
@@ -2079,14 +2080,14 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	if userTypeID == "100" {
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "customer-contact-table"
-		// JS filter function for the customer name in the customer contact table
-		filterTableJSArgument.funcNameJS = "customerContactSearchCustomerName"
-		filterTableJSArgument.inputID = "customer-contact-input-customer-name"
-		filterTableJSArgument.columnNumber = 0
-		filterTableJS(w, filterTableJSArgument)
 		// JS filter function for the customer ID in the customer contact table
 		filterTableJSArgument.funcNameJS = "customerContactSearchCustomerID"
 		filterTableJSArgument.inputID = "customer-contact-input-customer-id"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// JS filter function for the customer name in the customer contact table
+		filterTableJSArgument.funcNameJS = "customerContactSearchCustomerName"
+		filterTableJSArgument.inputID = "customer-contact-input-customer-name"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
 		// JS filter function for site address in the customer contact table
@@ -2146,24 +2147,19 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "customer-resource-input-customer-name"
-		inputTableHTMLArgument.funcNameJS = "customerResourceSearchCustomerName"
-		inputTableHTMLArgument.placeholder = "Customer Name"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-resource-input-customer-id"
 		inputTableHTMLArgument.funcNameJS = "customerResourceSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "customer-resource-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "customerResourceSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "customer-resource-input-date-time"
 		inputTableHTMLArgument.funcNameJS = "customerResourceSearchDateTime"
 		inputTableHTMLArgument.placeholder = "Date & Time Created"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "customer-resource-input-active"
-		inputTableHTMLArgument.funcNameJS = "customerResourceSearchActive"
-		inputTableHTMLArgument.placeholder = "Customer Active Status"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
@@ -2182,10 +2178,9 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "      <table id=\"customer-resource-table\" class=\"table-customer\">")
 	fmt.Fprintf(w, "        <tr>")
-	fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
 	fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
+	fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
 	fmt.Fprintf(w, "          <th>Date & Time Customer<br>Added</th>")
-	fmt.Fprintf(w, "          <th>Customer<br>Active</th>")
 	fmt.Fprintf(w, "          <th>UK Based</th>")
 	fmt.Fprintf(w, "          <th>Consumer<br>Type</th>")
 	fmt.Fprintf(w, "          <th>UK VAT Registered</th>")
@@ -2195,10 +2190,9 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	fmt.Fprintf(w, "        </tr>")
 
 	customerResourceSQL, err := dbDetail.connection.Query(`SELECT
-							customer_name,
 							customer_id,
+							customer_name,
 							customer_date_time_added,
-							customer_active,
 							customer_uk_based,
 							customer_consumer_type,
 							customer_uk_vat_registered,
@@ -2218,10 +2212,9 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 	for customerResourceSQL.Next() {
 
 		err = customerResourceSQL.Scan(
-			&customerName,
 			&customerID,
+			&customerName,
 			&customerDateTimeAdded,
-			&customerActive,
 			&customerUKBased,
 			&customerConsumerType,
 			&customerUKVATRegistered,
@@ -2235,14 +2228,9 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 			panic(err)
 		}
 		fmt.Fprintf(w, "        <tr>")
-		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "          <td>"+formatDateTime(customerDateTimeAdded)+"</td>")
-		if customerActive == "1" {
-			fmt.Fprintf(w, "          <td>yes</td>")
-		} else {
-			fmt.Fprintf(w, "	  <td>no</td>")
-		}
 		fmt.Fprintf(w, "          <td>"+customerUKBased+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerConsumerType+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerUKVATRegistered+"</td>")
@@ -2257,24 +2245,19 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "customer-resource-table"
 		// Call JS filter function for the customer name in the customer resource table
-		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerName"
-		filterTableJSArgument.inputID = "customer-resource-input-customer-name"
+		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerID"
+		filterTableJSArgument.inputID = "customer-resource-input-customer-id"
 		filterTableJSArgument.columnNumber = 0
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for the customer ID in the customer resource table
-		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerID"
-		filterTableJSArgument.inputID = "customer-resource-input-customer-id"
+		filterTableJSArgument.funcNameJS = "customerResourceSearchCustomerName"
+		filterTableJSArgument.inputID = "customer-resource-input-customer-name"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for date and time in the customer resource table
 		filterTableJSArgument.funcNameJS = "customerResourceSearchDateTime"
 		filterTableJSArgument.inputID = "customer-resource-input-date-time"
 		filterTableJSArgument.columnNumber = 2
-		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for active status in the customer resource table
-		filterTableJSArgument.funcNameJS = "customerResourceSearchActive"
-		filterTableJSArgument.inputID = "customer-resource-input-active"
-		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 	}
 	exportCSVJSArgument.funcNameJS = "customerResource"
@@ -2295,6 +2278,216 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 
 }
 
+// Add customer function
+
+func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
+	fmt.Fprintf(w, "<table class=\"table-customer\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Add New Customer</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_id", "Customer ID:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_name", "Customer Name:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	ukBasedList := []string{"yes", "no"}
+	selectSingleHTML(w, "add_customer_select_uk_based", "Customer UK Based:", ukBasedList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	resellingMinutesList := []string{"yes", "no"}
+	selectSingleHTML(w, "add_customer_select_reselling_minutes", "Reselling Minutes:", resellingMinutesList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	consumerTypeList := []string{"Residentail", "Sole Trader", "Partnership", "Limited Liability Partnership (LLP)", "Private Limited Company (LTD)", "Public Limited Company (PLC)", "Community Interest Company (CIC)"}
+	selectSingleHTML(w, "add_customer_select_consumer_type", "Consumer Type:", consumerTypeList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	ukVATRegisteredList := []string{"yes", "no"}
+	selectSingleHTML(w, "add_customer_select_uk_vat_registered", "UK VAT Registered:", ukVATRegisteredList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	pbxLimitList := []string{"1", "2", "3", "4", "5", "10", "25", "50", "75", "100"}
+	selectSingleHTML(w, "add_customer_select_pbx_limit", "PBX Limit:", pbxLimitList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </tr>")
+	fmt.Fprintf(w, "        <td style=\"border: none;\">")
+	fmt.Fprintf(w, "          <br>")
+	fmt.Fprintf(w, "          <br>")
+	fmt.Fprintf(w, "        </td>")
+	fmt.Fprintf(w, "      <tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_address_line_1", "Site Address Line One:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_address_line_2", "Site Address Line Two:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_city_town_village", "Site City/Town/Village:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_county_state_region", "Site County/State/Region:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_postcode_zip_code", "Site Postcode/Zip Code:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_country", "Site Country:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_contact_email", "Site Contact Email Address:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_site_contact_number", "Site Contact Phone Number:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </tr>")
+	fmt.Fprintf(w, "        <td style=\"border: none;\">")
+	fmt.Fprintf(w, "          <br>")
+	fmt.Fprintf(w, "          <br>")
+	fmt.Fprintf(w, "        </td>")
+	fmt.Fprintf(w, "      <tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_address_line_1", "Invoice Address Line One:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_address_line_2", "Invoice Address Line Two:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_city_town_village", "Invoice City/Town/Village:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_county_state_region", "Invoice County/State/Region:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_postcode_zip_code", "Invoice Postcode/Zip Code:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_country", "Invoice Country:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_contact_email", "Invoice Contact Email Address:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_customer_input_invoice_contact_number", "Invoice Contact Phone Number:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Create Customer\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+	/*
+	           addCustomerInputID := r.FormValue("add_customer_input_id")
+	           addCustomerInputName := r.FormValue("add_customer_input_name")
+	           addCustomerSelectUKBased := r.FormValue("add_customer_select_uk_based")
+	           addCustomerSelectResellingMinutes := r.FormValue("add_customer_select_reselling_minutes")
+	           addCustomerSelectConsumerType := r.FormValue("add_customer_select_consumer_type")
+	           addCustomerSelectUKVATRegistered := r.FormValue("add_customer_select_uk_vat_registered")
+	           addCustomerInputUKVATNumber := r.FormValue("add_customer_input_uk_vat_number")
+	           addCustomerSelectPBXLimit := r.FormValue("add_customer_select_pbx_limit")
+
+	           addCustomerInputSiteAddressLine1 := r.FormValue("add_customer_input_site_address_line_1")
+	           addCustomerInputSiteAddressLine2 := r.FormValue("add_customer_input_site_address_line_2")
+	           addCustomerInputSiteCityTownVillage := r.FormValue("add_customer_input_site_city_town_village")
+	           addCustomerInputSiteCountyStateRegion := r.FormValue("add_customer_input_site_county_state_region")
+	           addCustomerInputSitePostcodeZipCode := r.FormValue("add_customer_input_site_postcode_zip_code")
+	           addCustomerInputSiteCountry := r.FormValue("add_customer_input_site_country")
+	           addCustomerInputSiteContactEmail := r.FormValue("add_customer_input_site_contact_email")
+	           addCustomerInputSiteContactNumber := r.FormValue("add_customer_input_site_contact_number")
+
+	           addCustomerInputInvoiceAddressLine1 := r.FormValue("add_customer_input_invoice_address_line_1")
+	           addCustomerInputInvoiceAddressLine2 := r.FormValue("add_customer_input_invoice_address_line_2")
+	           addCustomerInputInvoiceCityTownVillage := r.FormValue("add_customer_input_invoice_city_town_village")
+	           addCustomerInputInvoiceCountyStateRegion := r.FormValue("add_customer_input_invoice_county_state_region")
+	           addCustomerInputInvoicePostcodeZipCode := r.FormValue("add_customer_input_invoice_postcode_zip_code")
+	           addCustomerInputInvoiceCountry := r.FormValue("add_customer_input_invoice_country")
+	           addCustomerInputInvoiceContactEmail := r.FormValue("add_customer_input_invoice_contact_email")
+	           addCustomerInputInvoiceContactNumber := r.FormValue("add_customer_input_invoice_contact_number")
+
+	           // Validate the ID
+	           validateIDAlphaNumeric := validateInput(addCustomerInputID, "alphanumeric")
+	           // Validate the name
+	           validateNameAlphaNumeric := validateInput(addCustomerInputName, "alphanumeric")
+	           // Validate UK based
+	   	validateUKBased := slices.Contains(ukBasedList, addCustomerSelectUKBased)
+	   	// Validate reselling minutes
+	   	validateResellingMinutes := slices.Contains(resellingMinutesList, addCustomerSelectResellingMinutes)
+	   	// Validate consumer type
+	   	validateConsumerType := slices.Contains(consumerTypeList, addCustomerSelectConsumerType)
+	   	// Validate UK VAT registered status
+	   	validateUKVATRegistered := slices.Contains(ukVATRegisteredList, addCustomerSelectUKVATRegistered)
+	   	// Validate UK VAT number
+	           validateUKVATNumber := validateInput(addCustomerInputUKVATNumber, "alphanumeric")
+	           // Validate PBX limit
+	           validatePBXLimit := slices.Contains(pbxLimitList, addCustomerSelectPBXLimit)
+
+	           // Validate site address line one
+	           validateSiteAddressLine1 := validateInput(addCustomerInputSiteAddressLine1, "alphanumeric")
+	           // Validate site address line two
+	           validateSiteAddressLine2 := validateInput(addCustomerInputSiteAddressLine2, "alphanumeric")
+	           // Validate site city/town/village
+	           validateSiteCityTownVillage := validateInput(addCustomerInputSiteCityTownVillage, "alphanumeric")
+	           // Validate site county/state/region
+	           validateSiteCountyStateRegion := validateInput(addCustomerInputSiteCountyStateRegion, "alphanumeric")
+	           // Validate site postcode/zip code
+	           validateSitePostcodeZipCode := validateInput(addCustomerInputSitePostcodeZipCode, "alphanumeric")
+	           // Validate site country
+	           validateSiteCountry := validateInput(addCustomerInputSiteCountry, "alphanumeric")
+	           // Validate site contact emial
+	           validateSiteContactEmail := validateInput(addCustomerInputSiteContactEmail, "alphanumeric")
+	           // Validate Site contact phone number
+	           validateSiteContactNumber := validateInput(addCustomerInputSiteContactNumber, "alphanumeric")
+
+	   	// Validate invoice address line one
+	           validateInvoiceAddressLine1 := validateInput(addCustomerInputInvoiceAddressLine1, "alphanumeric")
+	           // Validate invoice address line two
+	           validateInvoiceAddressLine2 := validateInput(addCustomerInputInvoiceAddressLine2, "alphanumeric")
+	           // Validate invoice city/town/village
+	           validateInvoiceCityTownVillage := validateInput(addCustomerInputInvoiceCityTownVillage, "alphanumeric")
+	           // Validate invoice county/state/region
+	           validateInvoiceCountyStateRegion := validateInput(addCustomerInputInvoiceCountyStateRegion, "alphanumeric")
+	           // Validate invoice postcode/zip code
+	           validateInvoicePostcodeZipCode := validateInput(addCustomerInputInvoicePostcodeZipCode, "alphanumeric")
+	           // Validate invoice country
+	           validateInvoiceCountry := validateInput(addCustomerInputInvoiceCountry, "alphanumeric")
+	           // Validate invoice contact emial
+	           validateInvoiceContactEmail := validateInput(addCustomerInputInvoiceContactEmail, "alphanumeric")
+	           // Validate invoice contact phone number
+	           validateInvoiceContactNumber := validateInput(addCustomerInputInvoiceContactNumber, "alphanumeric")
+
+	           if addCustomerInputID == "" {
+	           	// Do Nothing
+	           } else if validateIDAlphaNumeric == false {
+	   		messageHTML(w, "ID length must be 1 to 30 characters and must only contain characters: a-z A-Z or numbers", "warning")
+	   	} else if validateName == false {
+	                   messageHTML(w, "A valid email address must be entered", "warning")
+
+	*/
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // PBX page functions
@@ -2302,10 +2495,9 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, userPBXID string) {
 
 	var (
-		pbxName                     string
 		pbxID                       string
+		pbxName                     string
 		pbxDateTimeAdded            string
-		pbxActive                   string
 		pbxSIPExtensionLimit        string
 		pbxSiteAddressLine1         string
 		pbxSiteAddressLine2         string
@@ -2323,8 +2515,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		pbxInvoiceCountry           string
 		pbxInvoiceContactEmail      string
 		pbxInvoiceContactNumber     string
-		customerName                string
 		customerID                  string
+		customerName                string
 	)
 
 	var dbTableCountUserPBX databaseFunctionParameter
@@ -2341,28 +2533,11 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "          <th>Total PBXs On YAP</th>")
 		}
-		fmt.Fprintf(w, "          <th>Total Active PBXs</th>")
-		fmt.Fprintf(w, "          <th>Total Inactive PBXs</th>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		if userTypeID == "100" {
 			dbTableCountUserPBX.countMinusOne = true
 			fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserPBX)+"</td>")
-			dbTableCountUserPBX.columnWhere = "pbx_active"
-			dbTableCountUserPBX.countMinusOne = false
-			dbTableCountUserPBX.columnWhereValue = "1"
-			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
-			dbTableCountUserPBX.countMinusOne = true
-			dbTableCountUserPBX.columnWhereValue = "0"
-			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
-		} else if userTypeID == "200" || userTypeID == "201" {
-			dbTableCountUserPBX.columnWhere = "customer_id"
-			dbTableCountUserPBX.columnWhereValue = userCustomerID
-			dbTableCountUserPBX.columnWhereAnd = "pbx_active"
-			dbTableCountUserPBX.columnWhereValueAnd = "1"
-			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBX)+"</td>")
-			dbTableCountUserPBX.columnWhereValueAnd = "0"
-			fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTableCountUserPBX)+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -2394,14 +2569,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "pbx-contact-input-pbx-name"
-		inputTableHTMLArgument.funcNameJS = "pbxContactSearchPBXName"
-		inputTableHTMLArgument.placeholder = "PBX Name"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-contact-input-pbx-id"
 		inputTableHTMLArgument.funcNameJS = "pbxContactSearchPBXID"
 		inputTableHTMLArgument.placeholder = "PBX ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "pbx-contact-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "pbxContactSearchPBXName"
+		inputTableHTMLArgument.placeholder = "PBX Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-contact-input-site-address"
@@ -2441,14 +2616,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTMLArgument.inputID = "pbx-contact-input-customer-name"
-			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerName"
-			inputTableHTMLArgument.placeholder = "Customer Name"
-			inputTableHTML(w, inputTableHTMLArgument)
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "pbx-contact-input-customer-id"
 			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerID"
 			inputTableHTMLArgument.placeholder = "Customer ID"
+			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTMLArgument.inputID = "pbx-contact-input-customer-name"
+			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerName"
+			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
@@ -2470,8 +2645,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "      <table id=\"pbx-contact-table\" class=\"table-pbx\">")
 	fmt.Fprintf(w, "        <tr>")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "          <th>PBX Name</th>")
 		fmt.Fprintf(w, "          <th>PBX ID</th>")
+		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
 	fmt.Fprintf(w, "          <th>PBX Site<br> Address</th>")
 	fmt.Fprintf(w, "          <th>PBX Site<br> Email Address</th>")
@@ -2480,8 +2655,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "          <th>PBX Invoice<br> Email Address</th>")
 	fmt.Fprintf(w, "          <th>PBX Invoice<br> Phone Number</th>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Customer Name</th>")
 		fmt.Fprintf(w, "          <th>Customer ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -2500,8 +2675,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	}
 
 	pbxContactSQL, err := dbDetail.connection.Query(`SELECT
-							pbx_name,
 							pbx_id,
+							pbx_name,
 							pbx_site_address_line_1,
 					                pbx_site_address_line_2,
 					                pbx_site_city_town_village,
@@ -2518,8 +2693,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 					                pbx_invoice_country,
 					                pbx_invoice_contact_email,
 					                pbx_invoice_contact_number,
-					                customer_name,
-					                customer_id
+					                customer_id,
+					                customer_name
 					              FROM
 					  	        yap.view___pbx_detail
 						      `+whereClause, userWhereID)
@@ -2533,8 +2708,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	for pbxContactSQL.Next() {
 
 		err = pbxContactSQL.Scan(
-			&pbxName,
 			&pbxID,
+			&pbxName,
 			&pbxSiteAddressLine1,
 			&pbxSiteAddressLine2,
 			&pbxSiteCityTownVillage,
@@ -2551,8 +2726,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			&pbxInvoiceCountry,
 			&pbxInvoiceContactEmail,
 			&pbxInvoiceContactNumber,
-			&customerName,
 			&customerID,
+			&customerName,
 		)
 
 		// Error
@@ -2561,8 +2736,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		}
 		fmt.Fprintf(w, "        <tr>")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 		}
 		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+pbxSiteAddressLine1+"&nbsp<br>"+pbxSiteAddressLine2+"&nbsp<br>"+pbxSiteCityTownVillage+"&nbsp<br>"+pbxSiteCountyStateRegion+"&nbsp<br><br>"+pbxSitePostcodeZipCode+"&nbsp<br><br>"+pbxSiteCountry+"&nbsp</td>")
 		fmt.Fprintf(w, "          <td><a href=\"mailto:"+pbxSiteContactEmail+"\">"+pbxSiteContactEmail+"</a></td>")
@@ -2571,8 +2746,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+pbxInvoiceContactEmail+"\">"+pbxInvoiceContactEmail+"</a></td>")
 		fmt.Fprintf(w, "          <td><a href=\"tel:"+pbxInvoiceContactNumber+"\">"+pbxInvoiceContactNumber+"</a></td>")
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -2581,14 +2756,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "pbx-contact-table"
-		// Call JS filter function for PBX name in the PBX contact table
-		filterTableJSArgument.funcNameJS = "pbxContactSearchPBXName"
-		filterTableJSArgument.inputID = "pbx-contact-input-pbx-name"
-		filterTableJSArgument.columnNumber = 0
-		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for PBX ID in the PBX contact table
 		filterTableJSArgument.funcNameJS = "pbxContactSearchPBXID"
 		filterTableJSArgument.inputID = "pbx-contact-input-pbx-id"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for PBX name in the PBX contact table
+		filterTableJSArgument.funcNameJS = "pbxContactSearchPBXName"
+		filterTableJSArgument.inputID = "pbx-contact-input-pbx-name"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for site address in the PBX contact table
@@ -2622,14 +2797,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.columnNumber = 7
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			// Call JS filter function for the customer name in the PBX contact table
-			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerName"
-			filterTableJSArgument.inputID = "pbx-contact-input-customer-name"
-			filterTableJSArgument.columnNumber = 8
-			filterTableJS(w, filterTableJSArgument)
 			// Call JS filter function for the customer ID in the PBX contact table
 			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerID"
 			filterTableJSArgument.inputID = "pbx-contact-input-customer-id"
+			filterTableJSArgument.columnNumber = 8
+			filterTableJS(w, filterTableJSArgument)
+			// Call JS filter function for the customer name in the PBX contact table
+			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerName"
+			filterTableJSArgument.inputID = "pbx-contact-input-customer-name"
 			filterTableJSArgument.columnNumber = 9
 			filterTableJS(w, filterTableJSArgument)
 		}
@@ -2660,14 +2835,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "pbx-resource-input-pbx-name"
-		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchPBXName"
-		inputTableHTMLArgument.placeholder = "PBX Name"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-resource-input-pbx-id"
 		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchPBXID"
 		inputTableHTMLArgument.placeholder = "PBX ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "pbx-resource-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchPBXName"
+		inputTableHTMLArgument.placeholder = "PBX Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-resource-input-date-time"
@@ -2675,23 +2850,17 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		inputTableHTMLArgument.placeholder = "Date & Time Created"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "pbx-resource-input-active"
-		inputTableHTMLArgument.funcNameJS = "pbxResourceSearchActive"
-		inputTableHTMLArgument.placeholder = "PBX Active Status"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		fmt.Fprintf(w, "    <br>")
-		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTMLArgument.inputID = "pbx-resource-input-customer-name"
-			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerName"
-			inputTableHTMLArgument.placeholder = "Customer Name"
-			inputTableHTML(w, inputTableHTMLArgument)
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "pbx-resource-input-customer-id"
 			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerID"
 			inputTableHTMLArgument.placeholder = "Customer ID"
+			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    <br>")
+			inputTableHTMLArgument.inputID = "pbx-resource-input-customer-name"
+			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerName"
+			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
@@ -2712,26 +2881,24 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "      <table id=\"pbx-resource-table\" class=\"table-pbx\">")
 	fmt.Fprintf(w, "        <tr>")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "          <th>PBX Name</th>")
 		fmt.Fprintf(w, "          <th>PBX ID</th>")
+		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
 	fmt.Fprintf(w, "          <th>PBX Date & Time</th>")
-	fmt.Fprintf(w, "          <th>PBX Active<br>Status</th>")
 	fmt.Fprintf(w, "          <th>SIP Extension<br>Limit for PBX</th>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Customer Name</th>")
 		fmt.Fprintf(w, "          <th>Customer ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
 	pbxResourceSQL, err := dbDetail.connection.Query(`SELECT
-							pbx_name,
 							pbx_id,
+							pbx_name,
 							pbx_date_time_added,
-							pbx_active,
 							pbx_sip_extension_limit,
-							customer_name,
-							customer_id
+							customer_id,
+							customer_name
 					              FROM
 					  	        yap.view___pbx_detail
 						      `+whereClause, userWhereID)
@@ -2745,13 +2912,12 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	for pbxResourceSQL.Next() {
 
 		err = pbxResourceSQL.Scan(
-			&pbxName,
 			&pbxID,
+			&pbxName,
 			&pbxDateTimeAdded,
-			&pbxActive,
 			&pbxSIPExtensionLimit,
-			&customerName,
 			&customerID,
+			&customerName,
 		)
 
 		// Error
@@ -2760,19 +2926,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		}
 		fmt.Fprintf(w, "        <tr>")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 			fmt.Fprintf(w, "          <td>"+pbxID+"</td>")
+			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 		}
 		fmt.Fprintf(w, "          <td>"+formatDateTime(pbxDateTimeAdded)+"</td>")
-		if pbxActive == "1" {
-			fmt.Fprintf(w, "          <td>YES</td>")
-		} else {
-			fmt.Fprintf(w, "          <td>NO</td>")
-		}
 		fmt.Fprintf(w, "          <td>"+pbxSIPExtensionLimit+"</td>")
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -2781,14 +2942,14 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "pbx-resource-table"
-		// Call JS filter function for PBX name in the PBX resource table
-		filterTableJSArgument.funcNameJS = "pbxResourceSearchPBXName"
-		filterTableJSArgument.inputID = "pbx-resource-input-pbx-name"
-		filterTableJSArgument.columnNumber = 0
-		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for PBX ID in the PBX resource table
 		filterTableJSArgument.funcNameJS = "pbxResourceSearchPBXID"
 		filterTableJSArgument.inputID = "pbx-resource-input-pbx-id"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for PBX name in the PBX resource table
+		filterTableJSArgument.funcNameJS = "pbxResourceSearchPBXName"
+		filterTableJSArgument.inputID = "pbx-resource-input-pbx-name"
 		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for date and time in the PBX resource table
@@ -2796,21 +2957,16 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.inputID = "pbx-resource-input-date-time"
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for active status in the PBX resource table
-		filterTableJSArgument.funcNameJS = "pbxResourceSearchActive"
-		filterTableJSArgument.inputID = "pbx-resource-input-active"
-		filterTableJSArgument.columnNumber = 3
-		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
-			// Call JS filter function for the customer name in the PBX resource table
-			filterTableJSArgument.funcNameJS = "pbxResourceSearchCustomerName"
-			filterTableJSArgument.inputID = "pbx-resource-input-customer-name"
-			filterTableJSArgument.columnNumber = 10
-			filterTableJS(w, filterTableJSArgument)
 			// Call JS filter function for the customer ID in the PBX resource table
 			filterTableJSArgument.funcNameJS = "pbxResourceSearchCustomerID"
 			filterTableJSArgument.inputID = "pbx-resource-input-customer-id"
-			filterTableJSArgument.columnNumber = 11
+			filterTableJSArgument.columnNumber = 4
+			filterTableJS(w, filterTableJSArgument)
+			// Call JS filter function for the customer name in the PBX resource table
+			filterTableJSArgument.funcNameJS = "pbxResourceSearchCustomerName"
+			filterTableJSArgument.inputID = "pbx-resource-input-customer-name"
+			filterTableJSArgument.columnNumber = 5
 			filterTableJS(w, filterTableJSArgument)
 		}
 	}
@@ -2831,6 +2987,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	}
 
 }
+
+//----------------------------------------------------------------------------------------------------
 
 // Function to create a PBX dialplan table in MariaDB
 func createDailplanTable(dbDetail databaseFunctionParameter) {
@@ -2873,10 +3031,10 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		stirShakenEnabled      string
 		stirShakenProfile      string
 		registered             string
-		pbxName                string
 		pbxID                  string
-		customerName           string
+		pbxName                string
 		customerID             string
+		customerName           string
 	)
 
 	// Registered table
@@ -2969,17 +3127,17 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	if userTypeID == "100" {
-		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
-		inputTableHTMLArgument.placeholder = "Customer Name"
+		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-id"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerID"
+		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-id"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerID"
-		inputTableHTMLArgument.placeholder = "Customer ID"
+		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
@@ -2999,8 +3157,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Customer Name</th>")
 		fmt.Fprintf(w, "          <th>Customer ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -3037,10 +3195,10 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 					                stir_shaken_enabled,
 					                stir_shaken_profile,
 					                registered,
-					                pbx_name,
 					                pbx_id,
-					                customer_name,
-					                customer_id
+					                pbx_name,
+					                customer_id,
+					                customer_name
 					              FROM
 					                 yap.view___sip_extension_detail
 						      `+whereClause, userWhereID)
@@ -3072,10 +3230,10 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 			&stirShakenEnabled,
 			&stirShakenProfile,
 			&registered,
-			&pbxName,
 			&pbxID,
-			&customerName,
+			&pbxName,
 			&customerID,
+			&customerName,
 		)
 
 		// Error
@@ -3119,8 +3277,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 			fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
 		}
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -3146,14 +3304,14 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		// Call JS filter function for the customer name in the SIP extension detail table
-		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
-		filterTableJSArgument.inputID = "sip-extension-detail-input-customer-name"
-		filterTableJSArgument.columnNumber = 5
-		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for the customer ID in the SIP extension detail table
 		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCustomerID"
 		filterTableJSArgument.inputID = "sip-extension-detail-input-customer-id"
+		filterTableJSArgument.columnNumber = 5
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for the customer name in the SIP extension detail table
+		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
+		filterTableJSArgument.inputID = "sip-extension-detail-input-customer-name"
 		filterTableJSArgument.columnNumber = 6
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -3203,14 +3361,14 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-reg-input-customer-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
-		inputTableHTMLArgument.placeholder = "Customer Name"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "sip-extension-reg-input-customer-id"
 		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "sip-extension-reg-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
@@ -3229,8 +3387,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Customer Name</th>")
 		fmt.Fprintf(w, "          <th>Customer ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -3239,8 +3397,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 							uri,
 							user_agent,
 					                pbx_name,
-					                customer_name,
-					                customer_id
+					                customer_id,
+					                customer_name
 					              FROM
 					  	        yap.view___sip_extension_registered
 					  	      `+whereClause, userWhereID)
@@ -3258,8 +3416,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 			&uri,
 			&userAgent,
 			&pbxName,
-			&customerName,
 			&customerID,
+			&customerName,
 		)
 
 		// Error
@@ -3271,8 +3429,8 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "          <td>"+uri+"</td>")
 		fmt.Fprintf(w, "          <td>"+userAgent+"</td>")
 		fmt.Fprintf(w, "          <td>"+pbxName+"</td>")
-		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 	}
 
@@ -3301,14 +3459,14 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
-		// Call JS filter function for the customer name in the SIP extension registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
-		filterTableJSArgument.inputID = "sip-extension-reg-input-customer-name"
-		filterTableJSArgument.columnNumber = 4
-		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for the customer ID in the SIP extension registration (reg) table
 		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchCustomerID"
 		filterTableJSArgument.inputID = "sip-extension-reg-input-customer-id"
+		filterTableJSArgument.columnNumber = 4
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function for the customer name in the SIP extension registration (reg) table
+		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
+		filterTableJSArgument.inputID = "sip-extension-reg-input-customer-name"
 		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -3974,6 +4132,8 @@ func main() {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All Customers on YAP", "header-customer", extraButtonName, extraButtonURL)
 				customerList(w, dbDetail, userTypeID, userCustomerID)
+				fmt.Fprint(w, "<br>")
+				customerAdd(w, dbDetail, r)
 				footer(w, "header-customer", "button-customer")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Own Customer Information", "header-customer", extraButtonName, extraButtonURL)
