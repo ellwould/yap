@@ -96,8 +96,8 @@ CREATE TABLE `user_account`
 (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `email` VARCHAR(255) NOT NULL,
-  `first_name` VARCHAR(255),
-  `last_name` VARCHAR(255),
+  `first_name` VARCHAR(255) NOT NULL,
+  `last_name` VARCHAR(255) NOT NULL,
   `user_account_type_id` SMALLINT UNSIGNED NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED NOT NULL,
@@ -393,8 +393,8 @@ CREATE VIEW `view___account_detail` AS
 SELECT
   `user_account`.`id` AS 'user_account_id',
   `user_account`.`user_account_type_id`,
-  IFNULL(`user_account`.`first_name`, '') AS 'user_account_first_name',
-  IFNULL(`user_account`.`last_name`, '') AS 'user_account_last_name',
+  `user_account`.`first_name` AS 'user_account_first_name',
+  `user_account`.`last_name` AS 'user_account_last_name',
   `user_account`.`email` AS 'user_account_email',
   `user_account_type`.`type` AS 'user_account_type',
   `user_account`.`date_time_added` AS 'user_account_date_time_added',
