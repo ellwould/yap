@@ -168,7 +168,6 @@ func selectSingleHTML(w http.ResponseWriter, selectValue string, labelMessage st
 	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+"</b>")
 	fmt.Fprintf(w, "  </label><br>")
 	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
-	fmt.Fprintf(w, "<option value></option>")
 	for _, value := range optionValue {
 		fmt.Fprintf(w, "<option value=\""+string(value)+"\">"+string(value)+"</option>")
 	}
@@ -322,6 +321,17 @@ type databaseFunctionParameter struct {
 	columnWhereAnd      string
 	columnWhereValueAnd string
 	countMinusOne       bool
+}
+
+// Function to insert NULL value into database
+func nullSQL(value string) sql.NullString {
+	if len(value) == 0 {
+		return sql.NullString{}
+	}
+	return sql.NullString{
+		String: value,
+		Valid:  true,
+	}
 }
 
 func selectWhere(dbSelectWhere databaseFunctionParameter) string {
@@ -605,13 +615,19 @@ func pbxSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 
 //----------------------------------------------------------------------------------------------------
 
-// Function to validate user input utlising the Go Validator package
+// Constants for validation failure messages
+const validationMessageEmail string = "A valid email address with a maxamium of 200 characters must be used"
+const validationMessagePhone string = "A valid phone number in e.164 format with a maxamium of 16 characters must be used"
+const validationMessageAlphaNum string = " must be 1 to 30 characters and must only contain characters: a-z, A-Z or numbers"
+const validationMessageAlphaNumEmpty string = " can be empty or must be a maxamium of 30 characters and must only contain characters: a-z, A-Z or numbers"
+const validationMessageBoolean string = " must be yes or no"
 
+// Function to validate user input utlising the Go Validator package
 func validateInput(value string, valueType string) (validation bool) {
 	validateInput := validator.New()
 	// Conditional statments are used for each type of value inputted from a user
 	if valueType == "email" {
-		validateInputErr := validateInput.Var(value, "email,required,min=6,max=200,excludes=0x2C")
+		validateInputErr := validateInput.Var(value, "email,max=200,excludes=0x2C")
 		if validateInputErr != nil {
 			validation = false
 			return
@@ -620,9 +636,19 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 
-	} else if valueType == "alpha" {
-		validateInputAlphaspaceErr := validateInput.Var(value, "alphaspace,min=1,max=30")
-		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()_=+{}[];:@'#~\\<>/?")
+	} else if valueType == "phoneNumber" {
+		validateInputErr := validateInput.Var(value, "e164,max=16")
+		if validateInputErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
+
+	} else if valueType == "alphaNum" {
+		validateInputAlphaspaceErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
+		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\<>/?")
 		if validateInputAlphaspaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
@@ -631,9 +657,9 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 
-	} else if valueType == "alphanum" {
-		validateInputAlphanumspaceErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
-		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()_=+{}[];:@'#~\\<>/?")
+	} else if valueType == "alphaNumEmpty" {
+		validateInputAlphanumspaceErr := validateInput.Var(value, "ascii,max=30")
+		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\<>/?")
 		if validateInputAlphanumspaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
@@ -643,8 +669,7 @@ func validateInput(value string, valueType string) (validation bool) {
 		}
 
 	} else {
-		validation = false
-		return
+		panic("The validateInput function can only take the following arguments: email, alphaNum or alphaNumEmpty")
 	}
 }
 
@@ -1603,10 +1628,10 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	addAccountSelectCustomerID := r.FormValue("add_account_select_customer_id")
 
 	// Validate the first name string
-	validateFirstNameAlpha := validateInput(addAccountInputFirstName, "alpha")
+	validateFirstName := validateInput(addAccountInputFirstName, "alphaNum")
 
 	// Validate the last name string
-	validateLastNameAlpha := validateInput(addAccountInputLastName, "alpha")
+	validateLastName := validateInput(addAccountInputLastName, "alphaNum")
 
 	// Validate the email address string
 	validateEmail := validateInput(addAccountInputEmail, "email")
@@ -1626,10 +1651,13 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	validateCustomerID := slices.Contains(customerIDList, addAccountSelectCustomerID)
 
 	if addAccountInputFirstName == "" {
-	} else if validateFirstNameAlpha == false || validateLastNameAlpha == false {
-		messageHTML(w, "Name length must be 1 to 30 characters and must only contain characters: a-z A-Z or -", "warning")
+		// Do Nothing
+	} else if validateFirstName == false {
+		messageHTML(w, "First name "+validationMessageAlphaNum, "warning")
+	} else if validateLastName == false {
+		messageHTML(w, "Last name "+validationMessageAlphaNum, "warning")
 	} else if validateEmail == false {
-		messageHTML(w, "A valid email address must be entered", "warning")
+		messageHTML(w, validationMessageEmail, "warning")
 	} else if validateUserAccountTypeID == false {
 		messageHTML(w, "User account type must be either 100, 200, 201, 300, 301, 302 or 400", "warning")
 	} else if validatePBXID == false {
@@ -1702,16 +1730,15 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 			           last_name,
 			           user_account_type_id,
 			           customer_id,
-			           pbx_id,
-			           account_active)
-			       VALUES(?, ?, ?, ?, ?, ?, ?);`,
+			           pbx_id
+			       )
+			       VALUES(?, ?, ?, ?, ?, ?);`,
 			addAccountInputEmail,
-			addAccountInputFirstName,
-			addAccountInputLastName,
+			nullSQL(addAccountInputFirstName),
+			nullSQL(addAccountInputLastName),
 			addAccountSelectAccountType,
 			addAccountSelectCustomerID,
-			addAccountSelectPBXID,
-			"1")
+			addAccountSelectPBXID)
 	}
 }
 
@@ -1803,7 +1830,7 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	} else if validateUserAccountTypeID == false {
 		messageHTML(w, "User account type must be either 100, 200, 201, 300, 301, 302 or 400", "warning")
 	} else if deleteUserAccountInputAccountID == "1" {
-		messageHTML(w, "YAP Admin account with ID 1 cannot be deleted", "warning")
+		messageHTML(w, "YAP Admin (100) account with account ID 1 cannot be deleted", "warning")
 	} else if deleteUserAccountSelectAccountType == "100" && userID != "1" {
 		messageHTML(w, "Must be a YAP Admin (100) account with account ID 1 to delete other YAP Admin (100) accounts", "warning")
 	} else {
@@ -2260,7 +2287,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
 	}
-	exportCSVJSArgument.funcNameJS = "customerResource"
+	exportCSVJSArgument.funcNameJS = "CustomerResource"
 	exportCSVJSArgument.tableID = "customer-resource-table"
 	exportCSVJSArgument.fileName = "YAP_customer_resource_details"
 	exportCSVJSArgument.pathURL = "customer"
@@ -2292,35 +2319,35 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_id", "Customer ID:", "text")
+	inputHTML(w, "add_customer_input_id", "Customer ID (Cannot Be Blank):", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_name", "Customer Name:", "text")
+	inputHTML(w, "add_customer_input_name", "Customer Name (Cannot Be Blank):", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	ukBasedList := []string{"yes", "no"}
+	ukBasedList := []string{"", "yes", "no"}
 	selectSingleHTML(w, "add_customer_select_uk_based", "Customer UK Based:", ukBasedList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	resellingMinutesList := []string{"yes", "no"}
+	resellingMinutesList := []string{"", "yes", "no"}
 	selectSingleHTML(w, "add_customer_select_reselling_minutes", "Reselling Minutes:", resellingMinutesList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	consumerTypeList := []string{"Residentail", "Sole Trader", "Partnership", "Limited Liability Partnership (LLP)", "Private Limited Company (LTD)", "Public Limited Company (PLC)", "Community Interest Company (CIC)"}
+	consumerTypeList := []string{"", "Residentail", "Sole Trader", "Partnership", "Limited Liability Partnership (LLP)", "Private Limited Company (LTD)", "Public Limited Company (PLC)", "Community Interest Company (CIC)"}
 	selectSingleHTML(w, "add_customer_select_consumer_type", "Consumer Type:", consumerTypeList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	ukVATRegisteredList := []string{"yes", "no"}
+	ukVATRegisteredList := []string{"", "yes", "no"}
 	selectSingleHTML(w, "add_customer_select_uk_vat_registered", "UK VAT Registered:", ukVATRegisteredList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	pbxLimitList := []string{"1", "2", "3", "4", "5", "10", "25", "50", "75", "100"}
-	selectSingleHTML(w, "add_customer_select_pbx_limit", "PBX Limit:", pbxLimitList)
+	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100"}
+	selectSingleHTML(w, "add_customer_select_pbx_limit", "PBX Limit (Cannot Be Blank):", pbxLimitList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </tr>")
@@ -2351,10 +2378,10 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	inputHTML(w, "add_customer_input_site_country", "Site Country:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_site_contact_email", "Site Contact Email Address:", "text")
+	inputHTML(w, "add_customer_input_site_contact_email", "Site Email (Cannot Be Blank):", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_site_contact_number", "Site Contact Phone Number:", "text")
+	inputHTML(w, "add_customer_input_site_contact_number", "Site Phone (Cannot Be Blank):", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </tr>")
@@ -2385,10 +2412,10 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	inputHTML(w, "add_customer_input_invoice_country", "Invoice Country:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_invoice_contact_email", "Invoice Contact Email Address:", "text")
+	inputHTML(w, "add_customer_input_invoice_contact_email", "Invoice Email (Cannot Be Blank)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_invoice_contact_number", "Invoice Contact Phone Number:", "text")
+	inputHTML(w, "add_customer_input_invoice_contact_number", "Invoice Phone (Cannot Be Blank):", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -2399,93 +2426,208 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</form>")
-	/*
-	           addCustomerInputID := r.FormValue("add_customer_input_id")
-	           addCustomerInputName := r.FormValue("add_customer_input_name")
-	           addCustomerSelectUKBased := r.FormValue("add_customer_select_uk_based")
-	           addCustomerSelectResellingMinutes := r.FormValue("add_customer_select_reselling_minutes")
-	           addCustomerSelectConsumerType := r.FormValue("add_customer_select_consumer_type")
-	           addCustomerSelectUKVATRegistered := r.FormValue("add_customer_select_uk_vat_registered")
-	           addCustomerInputUKVATNumber := r.FormValue("add_customer_input_uk_vat_number")
-	           addCustomerSelectPBXLimit := r.FormValue("add_customer_select_pbx_limit")
 
-	           addCustomerInputSiteAddressLine1 := r.FormValue("add_customer_input_site_address_line_1")
-	           addCustomerInputSiteAddressLine2 := r.FormValue("add_customer_input_site_address_line_2")
-	           addCustomerInputSiteCityTownVillage := r.FormValue("add_customer_input_site_city_town_village")
-	           addCustomerInputSiteCountyStateRegion := r.FormValue("add_customer_input_site_county_state_region")
-	           addCustomerInputSitePostcodeZipCode := r.FormValue("add_customer_input_site_postcode_zip_code")
-	           addCustomerInputSiteCountry := r.FormValue("add_customer_input_site_country")
-	           addCustomerInputSiteContactEmail := r.FormValue("add_customer_input_site_contact_email")
-	           addCustomerInputSiteContactNumber := r.FormValue("add_customer_input_site_contact_number")
+	addCustomerInputID := r.FormValue("add_customer_input_id")
+	addCustomerInputName := r.FormValue("add_customer_input_name")
+	addCustomerSelectUKBased := r.FormValue("add_customer_select_uk_based")
+	addCustomerSelectResellingMinutes := r.FormValue("add_customer_select_reselling_minutes")
+	addCustomerSelectConsumerType := r.FormValue("add_customer_select_consumer_type")
+	addCustomerSelectUKVATRegistered := r.FormValue("add_customer_select_uk_vat_registered")
+	addCustomerInputUKVATNumber := r.FormValue("add_customer_input_uk_vat_number")
+	addCustomerSelectPBXLimit := r.FormValue("add_customer_select_pbx_limit")
 
-	           addCustomerInputInvoiceAddressLine1 := r.FormValue("add_customer_input_invoice_address_line_1")
-	           addCustomerInputInvoiceAddressLine2 := r.FormValue("add_customer_input_invoice_address_line_2")
-	           addCustomerInputInvoiceCityTownVillage := r.FormValue("add_customer_input_invoice_city_town_village")
-	           addCustomerInputInvoiceCountyStateRegion := r.FormValue("add_customer_input_invoice_county_state_region")
-	           addCustomerInputInvoicePostcodeZipCode := r.FormValue("add_customer_input_invoice_postcode_zip_code")
-	           addCustomerInputInvoiceCountry := r.FormValue("add_customer_input_invoice_country")
-	           addCustomerInputInvoiceContactEmail := r.FormValue("add_customer_input_invoice_contact_email")
-	           addCustomerInputInvoiceContactNumber := r.FormValue("add_customer_input_invoice_contact_number")
+	addCustomerInputSiteAddressLine1 := r.FormValue("add_customer_input_site_address_line_1")
+	addCustomerInputSiteAddressLine2 := r.FormValue("add_customer_input_site_address_line_2")
+	addCustomerInputSiteCityTownVillage := r.FormValue("add_customer_input_site_city_town_village")
+	addCustomerInputSiteCountyStateRegion := r.FormValue("add_customer_input_site_county_state_region")
+	addCustomerInputSitePostcodeZipCode := r.FormValue("add_customer_input_site_postcode_zip_code")
+	addCustomerInputSiteCountry := r.FormValue("add_customer_input_site_country")
+	addCustomerInputSiteContactEmail := r.FormValue("add_customer_input_site_contact_email")
+	addCustomerInputSiteContactNumber := r.FormValue("add_customer_input_site_contact_number")
 
-	           // Validate the ID
-	           validateIDAlphaNumeric := validateInput(addCustomerInputID, "alphanumeric")
-	           // Validate the name
-	           validateNameAlphaNumeric := validateInput(addCustomerInputName, "alphanumeric")
-	           // Validate UK based
-	   	validateUKBased := slices.Contains(ukBasedList, addCustomerSelectUKBased)
-	   	// Validate reselling minutes
-	   	validateResellingMinutes := slices.Contains(resellingMinutesList, addCustomerSelectResellingMinutes)
-	   	// Validate consumer type
-	   	validateConsumerType := slices.Contains(consumerTypeList, addCustomerSelectConsumerType)
-	   	// Validate UK VAT registered status
-	   	validateUKVATRegistered := slices.Contains(ukVATRegisteredList, addCustomerSelectUKVATRegistered)
-	   	// Validate UK VAT number
-	           validateUKVATNumber := validateInput(addCustomerInputUKVATNumber, "alphanumeric")
-	           // Validate PBX limit
-	           validatePBXLimit := slices.Contains(pbxLimitList, addCustomerSelectPBXLimit)
+	addCustomerInputInvoiceAddressLine1 := r.FormValue("add_customer_input_invoice_address_line_1")
+	addCustomerInputInvoiceAddressLine2 := r.FormValue("add_customer_input_invoice_address_line_2")
+	addCustomerInputInvoiceCityTownVillage := r.FormValue("add_customer_input_invoice_city_town_village")
+	addCustomerInputInvoiceCountyStateRegion := r.FormValue("add_customer_input_invoice_county_state_region")
+	addCustomerInputInvoicePostcodeZipCode := r.FormValue("add_customer_input_invoice_postcode_zip_code")
+	addCustomerInputInvoiceCountry := r.FormValue("add_customer_input_invoice_country")
+	addCustomerInputInvoiceContactEmail := r.FormValue("add_customer_input_invoice_contact_email")
+	addCustomerInputInvoiceContactNumber := r.FormValue("add_customer_input_invoice_contact_number")
 
-	           // Validate site address line one
-	           validateSiteAddressLine1 := validateInput(addCustomerInputSiteAddressLine1, "alphanumeric")
-	           // Validate site address line two
-	           validateSiteAddressLine2 := validateInput(addCustomerInputSiteAddressLine2, "alphanumeric")
-	           // Validate site city/town/village
-	           validateSiteCityTownVillage := validateInput(addCustomerInputSiteCityTownVillage, "alphanumeric")
-	           // Validate site county/state/region
-	           validateSiteCountyStateRegion := validateInput(addCustomerInputSiteCountyStateRegion, "alphanumeric")
-	           // Validate site postcode/zip code
-	           validateSitePostcodeZipCode := validateInput(addCustomerInputSitePostcodeZipCode, "alphanumeric")
-	           // Validate site country
-	           validateSiteCountry := validateInput(addCustomerInputSiteCountry, "alphanumeric")
-	           // Validate site contact emial
-	           validateSiteContactEmail := validateInput(addCustomerInputSiteContactEmail, "alphanumeric")
-	           // Validate Site contact phone number
-	           validateSiteContactNumber := validateInput(addCustomerInputSiteContactNumber, "alphanumeric")
+	// Validate the ID
+	validateID := validateInput(addCustomerInputID, "alphaNum")
+	// Validate the name
+	validateName := validateInput(addCustomerInputName, "alphaNum")
+	// Validate UK based
+	validateUKBased := slices.Contains(ukBasedList, addCustomerSelectUKBased)
+	// Validate reselling minutes
+	validateResellingMinutes := slices.Contains(resellingMinutesList, addCustomerSelectResellingMinutes)
+	// Validate consumer type
+	validateConsumerType := slices.Contains(consumerTypeList, addCustomerSelectConsumerType)
+	// Validate UK VAT registered status
+	validateUKVATRegistered := slices.Contains(ukVATRegisteredList, addCustomerSelectUKVATRegistered)
+	// Validate UK VAT number
+	validateUKVATNumber := validateInput(addCustomerInputUKVATNumber, "alphaNumEmpty")
+	// Validate PBX limit
+	validatePBXLimit := slices.Contains(pbxLimitList, addCustomerSelectPBXLimit)
 
-	   	// Validate invoice address line one
-	           validateInvoiceAddressLine1 := validateInput(addCustomerInputInvoiceAddressLine1, "alphanumeric")
-	           // Validate invoice address line two
-	           validateInvoiceAddressLine2 := validateInput(addCustomerInputInvoiceAddressLine2, "alphanumeric")
-	           // Validate invoice city/town/village
-	           validateInvoiceCityTownVillage := validateInput(addCustomerInputInvoiceCityTownVillage, "alphanumeric")
-	           // Validate invoice county/state/region
-	           validateInvoiceCountyStateRegion := validateInput(addCustomerInputInvoiceCountyStateRegion, "alphanumeric")
-	           // Validate invoice postcode/zip code
-	           validateInvoicePostcodeZipCode := validateInput(addCustomerInputInvoicePostcodeZipCode, "alphanumeric")
-	           // Validate invoice country
-	           validateInvoiceCountry := validateInput(addCustomerInputInvoiceCountry, "alphanumeric")
-	           // Validate invoice contact emial
-	           validateInvoiceContactEmail := validateInput(addCustomerInputInvoiceContactEmail, "alphanumeric")
-	           // Validate invoice contact phone number
-	           validateInvoiceContactNumber := validateInput(addCustomerInputInvoiceContactNumber, "alphanumeric")
+	// Validate site address line one
+	validateSiteAddressLine1 := validateInput(addCustomerInputSiteAddressLine1, "alphaNumEmpty")
+	// Validate site address line two
+	validateSiteAddressLine2 := validateInput(addCustomerInputSiteAddressLine2, "alphaNumEmpty")
+	// Validate site city/town/village
+	validateSiteCityTownVillage := validateInput(addCustomerInputSiteCityTownVillage, "alphaNumEmpty")
+	// Validate site county/state/region
+	validateSiteCountyStateRegion := validateInput(addCustomerInputSiteCountyStateRegion, "alphaNumEmpty")
+	// Validate site postcode/zip code
+	validateSitePostcodeZipCode := validateInput(addCustomerInputSitePostcodeZipCode, "alphaNumEmpty")
+	// Validate site country
+	validateSiteCountry := validateInput(addCustomerInputSiteCountry, "alphaNumEmpty")
+	// Validate site contact emial
+	validateSiteContactEmail := validateInput(addCustomerInputSiteContactEmail, "email")
+	// Validate Site contact phone number
+	validateSiteContactNumber := validateInput(addCustomerInputSiteContactNumber, "phoneNumber")
 
-	           if addCustomerInputID == "" {
-	           	// Do Nothing
-	           } else if validateIDAlphaNumeric == false {
-	   		messageHTML(w, "ID length must be 1 to 30 characters and must only contain characters: a-z A-Z or numbers", "warning")
-	   	} else if validateName == false {
-	                   messageHTML(w, "A valid email address must be entered", "warning")
+	// Validate invoice address line one
+	validateInvoiceAddressLine1 := validateInput(addCustomerInputInvoiceAddressLine1, "alphaNumEmpty")
+	// Validate invoice address line two
+	validateInvoiceAddressLine2 := validateInput(addCustomerInputInvoiceAddressLine2, "alphaNumEmpty")
+	// Validate invoice city/town/village
+	validateInvoiceCityTownVillage := validateInput(addCustomerInputInvoiceCityTownVillage, "alphaNumEmpty")
+	// Validate invoice county/state/region
+	validateInvoiceCountyStateRegion := validateInput(addCustomerInputInvoiceCountyStateRegion, "alphaNumEmpty")
+	// Validate invoice postcode/zip code
+	validateInvoicePostcodeZipCode := validateInput(addCustomerInputInvoicePostcodeZipCode, "alphaNumEmpty")
+	// Validate invoice country
+	validateInvoiceCountry := validateInput(addCustomerInputInvoiceCountry, "alphaNumEmpty")
+	// Validate invoice contact emial
+	validateInvoiceContactEmail := validateInput(addCustomerInputInvoiceContactEmail, "email")
+	// Validate invoice contact phone number
+	validateInvoiceContactNumber := validateInput(addCustomerInputInvoiceContactNumber, "phoneNumber")
 
-	*/
+	if addCustomerInputID == "" {
+		// Do Nothing
+	} else if validateID == false {
+		messageHTML(w, "Customer ID "+validationMessageAlphaNum, "warning")
+	} else if validateName == false {
+		messageHTML(w, "Customer Name "+validationMessageAlphaNum, "warning")
+	} else if validateUKBased == false {
+		messageHTML(w, "UK based option "+validationMessageBoolean, "warning")
+	} else if validateResellingMinutes == false {
+		messageHTML(w, "Invalid option for reselling minutes", "warning")
+	} else if validateConsumerType == false {
+		messageHTML(w, "Invalid option for consumer type", "warning")
+	} else if validateUKVATRegistered == false {
+		messageHTML(w, "UK VAT Registered "+validationMessageBoolean, "warning")
+	} else if validateUKVATNumber == false {
+		messageHTML(w, "UK VAT Number "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validatePBXLimit == false {
+		messageHTML(w, "Invalid option for PBX limit", "warning")
+	} else if validateSiteAddressLine1 == false {
+		messageHTML(w, "Site address line one "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateSiteAddressLine2 == false {
+		messageHTML(w, "Site address line two "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateSiteCityTownVillage == false {
+		messageHTML(w, "Site city/town/village "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateSiteCountyStateRegion == false {
+		messageHTML(w, "Site county/state/region "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateSitePostcodeZipCode == false {
+		messageHTML(w, "Site postcode/zip code "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateSiteCountry == false {
+		messageHTML(w, "Site country "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateSiteContactEmail == false {
+		messageHTML(w, validationMessageEmail+" for the site address", "warning")
+	} else if validateSiteContactNumber == false {
+		messageHTML(w, "Site contact phone number "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateInvoiceAddressLine1 == false {
+		messageHTML(w, "Invoice address line one "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateInvoiceAddressLine2 == false {
+		messageHTML(w, "Invoice address line two "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateInvoiceCityTownVillage == false {
+		messageHTML(w, "Invoice city/town/village "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateInvoiceCountyStateRegion == false {
+		messageHTML(w, "Invoice county/state/region "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateInvoicePostcodeZipCode == false {
+		messageHTML(w, "Invoice postcode/zip code "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateInvoiceCountry == false {
+		messageHTML(w, "Invoice country "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else if validateInvoiceContactEmail == false {
+		messageHTML(w, validationMessageEmail+" for the invoice address", "warning")
+	} else if validateInvoiceContactNumber == false {
+		messageHTML(w, "Invoice contact phone number "+validationMessageAlphaNumEmpty+" or blank", "warning")
+	} else {
+		dbDetail.connection.Query(`INSERT 
+                                   INTO
+                                 customer (
+                                   id,
+                                   name,
+                                   uk_based,
+                                   reselling_minutes,
+                                   consumer_type,
+                                   uk_vat_registered,
+                                   uk_vat_number,
+                                   pbx_limit
+                                 )
+                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?);`,
+			addCustomerInputID,
+			addCustomerInputName,
+			nullSQL(addCustomerSelectUKBased),
+			nullSQL(addCustomerSelectResellingMinutes),
+			nullSQL(addCustomerSelectConsumerType),
+			nullSQL(addCustomerSelectUKVATRegistered),
+			nullSQL(addCustomerInputUKVATNumber),
+			addCustomerSelectPBXLimit)
+
+		dbDetail.connection.Query(`INSERT 
+                                   INTO
+                                 customer_site_address (
+                                   id,
+                                   address_line_1,
+                                   address_line_2,
+                                   city_town_village,
+                                   county_state_region,
+                                   postcode_zip_code,
+                                   country,
+                                   contact_email,
+                                   contact_number 
+                                 )
+                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+			addCustomerInputID,
+			nullSQL(addCustomerInputSiteAddressLine1),
+			nullSQL(addCustomerInputSiteAddressLine2),
+			nullSQL(addCustomerInputSiteCityTownVillage),
+			nullSQL(addCustomerInputSiteCountyStateRegion),
+			nullSQL(addCustomerInputSitePostcodeZipCode),
+			nullSQL(addCustomerInputSiteCountry),
+			nullSQL(addCustomerInputSiteContactEmail),
+			nullSQL(addCustomerInputSiteContactNumber))
+
+		dbDetail.connection.Query(`INSERT 
+                                   INTO
+                                 customer_invoice_address (
+                                   id,
+                                   address_line_1,
+                                   address_line_2,
+                                   city_town_village,
+                                   county_state_region,
+                                   postcode_zip_code,
+                                   country,
+                                   contact_email,
+                                   contact_number 
+                                 )
+                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+			addCustomerInputID,
+			nullSQL(addCustomerInputInvoiceAddressLine1),
+			nullSQL(addCustomerInputInvoiceAddressLine2),
+			nullSQL(addCustomerInputInvoiceCityTownVillage),
+			nullSQL(addCustomerInputInvoiceCountyStateRegion),
+			nullSQL(addCustomerInputInvoicePostcodeZipCode),
+			nullSQL(addCustomerInputInvoiceCountry),
+			nullSQL(addCustomerInputInvoiceContactEmail),
+			nullSQL(addCustomerInputInvoiceContactNumber))
+
+		messageHTML(w, "Customer account "+addCustomerInputName+" ("+addCustomerInputID+") created", "success")
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -2522,7 +2664,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	var dbTableCountUserPBX databaseFunctionParameter
 	dbTableCountUserPBX.connection = dbDetail.connection
 	dbTableCountUserPBX.database = dbDetail.database
-	dbTableCountUserPBX.table = "view___pbx_detail"
+	dbTableCountUserPBX.table = "pbx"
 
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
@@ -2532,12 +2674,18 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "        <tr>")
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "          <th>Total PBXs On YAP</th>")
+		} else if userTypeID == "200" || userTypeID == "201" {
+			fmt.Fprintf(w, "          <th>Customers Total PBXs</th>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		if userTypeID == "100" {
 			dbTableCountUserPBX.countMinusOne = true
 			fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserPBX)+"</td>")
+		} else if userTypeID == "200" || userTypeID == "201" {
+			dbTableCountUserPBX.columnWhere = "customer_id"
+			dbTableCountUserPBX.columnWhereValue = userCustomerID
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -3910,18 +4058,33 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "All<br>Customers<br>&#128101", hyperlink: "/customer", headerCSS: "header-customer", buttonCSS: "button-customer"}
 				mainMenuButton(mainMenuButtonTwo)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "All<br>PBXs<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All Customer<br>Invoicing<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonFive)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "YAP Server<br>Information<br>&#128421", hyperlink: "/server-information", headerCSS: "header-server-information", buttonCSS: "button-server-information"}
 				mainMenuButton(mainMenuButtonSeven)
 				fmt.Fprintf(w, "</div>")
@@ -3933,14 +4096,23 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Information<br>&#128101", hyperlink: "/customer", headerCSS: "header-customer", buttonCSS: "button-customer"}
 				mainMenuButton(mainMenuButtonTwo)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBXs for the<br>Customer<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
@@ -3956,20 +4128,25 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Own & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Information<br>&#128101", hyperlink: "/customer", headerCSS: "header-customer", buttonCSS: "button-customer"}
 				mainMenuButton(mainMenuButtonTwo)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBXs for the<br>Customer<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonFour)
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonFive)
-				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
-				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "300" {
@@ -3979,10 +4156,19 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Own & PBX<br>User Accounts<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Information<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonTwo)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
@@ -3994,8 +4180,14 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Own<br>User Account<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonOne)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Information<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonTwo)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
@@ -4007,6 +4199,9 @@ func main() {
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonTwo := mainMenuParameter{writeHTTP: w, buttonName: "Own<br>User Account<br>&#128100", hyperlink: "/user-account", headerCSS: "header-user-account", buttonCSS: "button-user-account"}
 				mainMenuButton(mainMenuButtonTwo)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonOne := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonOne)
 				fmt.Fprintf(w, "</div>")
@@ -4099,6 +4294,10 @@ func main() {
 
 	// Customer Page
 	go http.HandleFunc("/customer", func(w http.ResponseWriter, r *http.Request) {
+
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTls)
