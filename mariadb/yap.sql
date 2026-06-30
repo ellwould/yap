@@ -587,7 +587,7 @@ SELECT DISTINCT
   `invoice_item`.`bill_item_once` AS 'invoice_bill_item_once',
   `invoice_item`.`item_on_hold` AS 'invoice_item_on_hold',
   `invoice_item`.`contract_length` AS 'invoice_item_contract_length',
-  IFNULL(`invoice_item`.`contract_start_date` 'n/a') AS 'invoice_item_contract_start_date',
+  IFNULL(`invoice_item`.`contract_start_date`, '') AS 'invoice_item_contract_start_date',
   `good_service`.`name` AS 'good_service_name',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
@@ -640,7 +640,7 @@ VALUES
   ('12 Months'),
   ('18 Months'),
   ('24 Months'),
-  ('n/a');
+  ('');
 
 INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_minutes`, `pbx_limit`)
 VALUES (1, 'system', 'n/a', 'n/a', 'n/a', 'n/a', 0);
