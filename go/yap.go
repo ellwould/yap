@@ -1679,50 +1679,81 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	} else if addAccountSelectAccountType == "302" && addAccountSelectPBXID == "" {
 		messageHTML(w, "A PBX ID must be selected when creating a 302 type account", "warning")
 	} else {
-		if addAccountSelectAccountType == "100" {
-			addAccountSelectCustomerID = "1"
-			addAccountSelectPBXID = "1"
-			messageHTML(w, "YAP Admin (100) Account: "+addAccountInputEmail+" Created", "success")
-		} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" {
-			addAccountSelectPBXID = "1"
-			if addAccountSelectAccountType == "200" {
-				messageHTML(w, "Customer Admin (200) Account: "+addAccountInputEmail+" Created", "success")
-			} else if addAccountSelectAccountType == "201" {
-				messageHTML(w, "Customer Regular (201) Account: "+addAccountInputEmail+" Created", "success")
-			} else if addAccountSelectAccountType == "400" {
-				messageHTML(w, "Customer Invoice (400) Account: "+addAccountInputEmail+" Created", "success")
-			}
-		} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" {
-			var customerID string
-			customerIDSQL, err := dbDetail.connection.Query(`SELECT
-                                                                    customer_id
-                                                                FROM
-                                                                    yap.view___pbx_detail
-                                                                WHERE pbx_id = ?`, addAccountSelectPBXID)
+
+		var checkAccountEmailExist string
+
+		checkAccountEmailExistSQL, err := dbDetail.connection.Query(`SELECT
+				    					       user_account_email
+									     FROM view___account_detail
+									     WHERE user_account_email = ?;`,
+			addAccountInputEmail)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		for checkAccountEmailExistSQL.Next() {
+
+			err = checkAccountEmailExistSQL.Scan(
+				&checkAccountEmailExist,
+			)
 
 			// Error
 			if err != nil {
 				panic(err)
 			}
 
-			for customerIDSQL.Next() {
+		}
 
-				err = customerIDSQL.Scan(
-					&customerID,
-				)
+		if checkAccountEmailExist == addAccountInputEmail {
+			messageHTML(w, "Email address "+addAccountInputEmail+" already exists", "warning")
+		} else {
+
+			if addAccountSelectAccountType == "100" {
+				addAccountSelectCustomerID = "1"
+				addAccountSelectPBXID = "1"
+				messageHTML(w, "YAP Admin (100) Account: "+addAccountInputEmail+" Created", "success")
+			} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" {
+				addAccountSelectPBXID = "1"
+				if addAccountSelectAccountType == "200" {
+					messageHTML(w, "Customer Admin (200) Account: "+addAccountInputEmail+" Created", "success")
+				} else if addAccountSelectAccountType == "201" {
+					messageHTML(w, "Customer Regular (201) Account: "+addAccountInputEmail+" Created", "success")
+				} else if addAccountSelectAccountType == "400" {
+					messageHTML(w, "Customer Invoice (400) Account: "+addAccountInputEmail+" Created", "success")
+				}
+			} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" {
+				var customerID string
+				customerIDSQL, err := dbDetail.connection.Query(`SELECT
+                                                                    customer_id
+                                                                FROM
+                                                                    yap.view___pbx_detail
+                                                                WHERE pbx_id = ?`, addAccountSelectPBXID)
 
 				// Error
 				if err != nil {
 					panic(err)
 				}
-				addAccountSelectCustomerID = customerID
 
+				for customerIDSQL.Next() {
+
+					err = customerIDSQL.Scan(
+						&customerID,
+					)
+
+					// Error
+					if err != nil {
+						panic(err)
+					}
+					addAccountSelectCustomerID = customerID
+
+				}
+
+				messageHTML(w, "Account "+addAccountInputEmail+" Created", "success")
 			}
 
-			messageHTML(w, "Account "+addAccountInputEmail+" Created", "success")
-		}
-
-		dbDetail.connection.Query(`INSERT 
+			dbDetail.connection.Query(`INSERT 
         	                   INTO
 	       		       user_account (
 			           email,
@@ -1733,12 +1764,13 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 			           pbx_id
 			       )
 			       VALUES(?, ?, ?, ?, ?, ?);`,
-			addAccountInputEmail,
-			nullSQL(addAccountInputFirstName),
-			nullSQL(addAccountInputLastName),
-			addAccountSelectAccountType,
-			addAccountSelectCustomerID,
-			addAccountSelectPBXID)
+				addAccountInputEmail,
+				nullSQL(addAccountInputFirstName),
+				nullSQL(addAccountInputLastName),
+				addAccountSelectAccountType,
+				addAccountSelectCustomerID,
+				addAccountSelectPBXID)
+		}
 	}
 }
 
