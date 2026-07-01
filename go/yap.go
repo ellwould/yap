@@ -2630,6 +2630,127 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	}
 }
 
+// Customer delete function
+
+func customerDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
+
+	// Get customer ID and name from the database and append to slice
+	var customerIDList []string
+	var customerID string
+
+	var customerNameList []string
+	var customerName string
+
+	customerIDNameSQL, err := dbDetail.connection.Query(`SELECT
+	                                                             customer_id,
+	                                                             customer_name
+	                                                         FROM
+	                                                             yap.view___customer_detail`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for customerIDNameSQL.Next() {
+
+		err = customerIDNameSQL.Scan(
+			&customerID,
+			&customerName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		customerIDList = append(customerIDList, customerID)
+		customerNameList = append(customerNameList, customerName)
+	}
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
+	fmt.Fprintf(w, "<table class=\"table-delete\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete Customer</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "delete_customer_input_id", "Customer ID:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "delete_customer_input_name", "Customer Name:", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Delete Customer\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	deleteCustomerInputID := r.FormValue("delete_customer_input_id")
+	deleteCustomerInputName := r.FormValue("delete_customer_input_name")
+
+	// Check if customer ID is contained in the slice
+	validateCustomerID := slices.Contains(customerIDList, deleteCustomerInputID)
+
+	// Check if customer name is contained in the slice
+	validateCustomerName := slices.Contains(customerNameList, deleteCustomerInputName)
+
+	if deleteCustomerInputID == "" {
+		// Do nothing
+	} else if validateCustomerID == false {
+		messageHTML(w, "Customer ID does not exist", "warning")
+	} else if validateCustomerName == false {
+		messageHTML(w, "Customer name does not exist", "warning")
+	} else {
+		dbDetail.connection.Query(`DELETE FROM customer WHERE id = ? AND name = ?;`, deleteCustomerInputID, deleteCustomerInputName)
+
+		// Close connection
+		defer dbDetail.connection.Close()
+
+		var checkCustomerDeleted string
+
+		checkCustomerDeletedSQL, err := dbDetail.connection.Query(`SELECT
+									     customer_id
+									   FROM view___customer_detail
+									   WHERE customer_id = ?;`,
+			deleteCustomerInputID)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		for checkCustomerDeletedSQL.Next() {
+
+			err = checkCustomerDeletedSQL.Scan(
+				&checkCustomerDeleted,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+		}
+
+		// Close connection
+		defer dbDetail.connection.Close()
+
+		if checkCustomerDeleted == "" {
+			messageHTML(w, "Customer "+deleteCustomerInputName+" ("+deleteCustomerInputID+") deleted", "success")
+		} else {
+			messageHTML(w, "Customer "+deleteCustomerInputName+" ("+deleteCustomerInputID+") not deleted", "warning")
+		}
+	}
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // PBX page functions
@@ -4333,6 +4454,8 @@ func main() {
 				customerList(w, dbDetail, userTypeID, userCustomerID)
 				fmt.Fprint(w, "<br>")
 				customerAdd(w, dbDetail, r)
+				fmt.Fprint(w, "<br>")
+				customerDelete(w, dbDetail, r)
 				footer(w, "header-customer", "button-customer")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Own Customer Information", "header-customer", extraButtonName, extraButtonURL)
