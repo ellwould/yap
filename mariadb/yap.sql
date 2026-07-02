@@ -9,7 +9,7 @@ CREATE TABLE `customer`
   `consumer_type` VARCHAR(255),
   `uk_vat_registered` ENUM('yes', 'no'),
   `uk_vat_number` VARCHAR(20),
-  `pbx_limit` SMALLINT UNSIGNED DEFAULT 20 NOT NULL,
+  `pbx_limit` SMALLINT UNSIGNED NOT NULL,
   `pbx_setup_price` DECIMAL(8,2),
   `pbx_rental_price` DECIMAL(8,2),
   `pbx_cease_price` DECIMAL(8,2),
@@ -62,7 +62,7 @@ CREATE TABLE `pbx`
   `id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
-  `sip_extension_limit` SMALLINT UNSIGNED DEFAULT 100 NOT NULL,
+  `sip_extension_limit` SMALLINT UNSIGNED NOT NULL,
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
