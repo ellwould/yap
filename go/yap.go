@@ -165,7 +165,7 @@ func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string, in
 }
 
 func selectSingleHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue []string) {
-	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+"</b>")
+	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
 	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
 	for _, value := range optionValue {
@@ -175,7 +175,7 @@ func selectSingleHTML(w http.ResponseWriter, selectValue string, labelMessage st
 }
 
 func selectDoubleHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue [][]string) {
-	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+"</b>")
+	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+" (Cannot Be Blank):</b>")
 	fmt.Fprintf(w, "  </label><br>")
 	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
 	fmt.Fprintf(w, "<option value></option>")
@@ -488,7 +488,7 @@ func userAccountData(dbUserAccountData databaseFunctionParameter, data string) s
 	return selectWhere(dbSelectWhere)
 }
 
-// Function to retrive account type name  and ID or just the account type ID
+// Function to retrive account type name(s) and ID(s) or just the account type ID(s) from the user_account_type table
 func userAccountTypeSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 	// Get account type ID and name from the database and append to slice
 	var userAccountTypeIDNameList [][]string
@@ -528,7 +528,7 @@ func userAccountTypeSlice(dbDetail databaseFunctionParameter) ([][]string, []str
 	return userAccountTypeIDNameList, userAccountTypeIDList
 }
 
-// Function to retrive customer name and ID or just the customer ID
+// Function to retrive customer name(s) and ID(s) or just the customer ID(s) from the view___customer_detail view
 func customerSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 	// Get customer ID and name from the database and append to slice
 	var customerIDNameList [][]string
@@ -571,6 +571,7 @@ func customerSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 	return customerIDNameList, customerIDList
 }
 
+// Function to retrive PBX name(s) and ID(s) or just the PBX ID(s) from the view___pbx_detail view
 func pbxSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 	// Get PBX name and ID from the database and append to slice
 	var pbxIDNameList [][]string
@@ -1650,7 +1651,7 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	customerIDList = append(customerIDList, "")
 	validateCustomerID := slices.Contains(customerIDList, addAccountSelectCustomerID)
 
-	if addAccountInputFirstName == "" {
+	if addAccountInputFirstName == "" && addAccountInputLastName == "" && addAccountInputEmail == "" && addAccountSelectAccountType == "" && addAccountSelectPBXID == "" && addAccountSelectCustomerID == "" {
 		// Do Nothing
 	} else if validateFirstName == false {
 		messageHTML(w, "First name "+validationMessageAlphaNum, "warning")
@@ -1813,21 +1814,21 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 	fmt.Fprintf(w, "<table class=\"table-delete\">")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete User Account</th>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a Individual User Account</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "delete_account_input_account_id", "Account ID:", "text")
+	inputHTML(w, "delete_individual_user_account_input_account_id", "Account ID:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "delete_account_input_account_email", "Account Email:", "text")
+	inputHTML(w, "delete_individual_user_account_input_account_email", "Account Email:", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	userAccountTypeIDNameList, _ := userAccountTypeSlice(dbDetail)
-	selectDoubleHTML(w, "delete_account_select_account_type", "Account Type", userAccountTypeIDNameList)
+	selectDoubleHTML(w, "delete_individual_user_account_select_account_type", "Account Type", userAccountTypeIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -1839,73 +1840,203 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</form>")
 
-	deleteUserAccountInputAccountID := r.FormValue("delete_account_input_account_id")
-	deleteUserAccountInputEmail := r.FormValue("delete_account_input_account_email")
-	deleteUserAccountSelectAccountType := r.FormValue("delete_account_select_account_type")
+	deleteIndividualUserAccountInputAccountID := r.FormValue("delete_individual_user_account_input_account_id")
+	deleteIndividualUserAccountInputEmail := r.FormValue("delete_individual_user_account_input_account_email")
+	deleteIndividualUserAccountSelectAccountType := r.FormValue("delete_individual_user_account_select_account_type")
 
 	// Check user account ID is contained in the slice
-	validateUserAccountID := slices.Contains(userAccountIDList, deleteUserAccountInputAccountID)
+	validateIndividualUserAccountID := slices.Contains(userAccountIDList, deleteIndividualUserAccountInputAccountID)
 
 	// Check user email is contained in the slice
-	validateUserAccountEmail := slices.Contains(userAccountEmailList, deleteUserAccountInputEmail)
+	validateIndividualUserAccountEmail := slices.Contains(userAccountEmailList, deleteIndividualUserAccountInputEmail)
 
 	// Check user type ID is contained in the slice
 	_, userAccountTypeIDList := userAccountTypeSlice(dbDetail)
-	validateUserAccountTypeID := slices.Contains(userAccountTypeIDList, deleteUserAccountSelectAccountType)
+	validateIndividualUserAccountTypeID := slices.Contains(userAccountTypeIDList, deleteIndividualUserAccountSelectAccountType)
 
-	if deleteUserAccountInputAccountID == "" {
+	if deleteIndividualUserAccountInputAccountID == "" && deleteIndividualUserAccountInputEmail == "" && deleteIndividualUserAccountSelectAccountType == "" {
 		// Do nothing
-	} else if validateUserAccountID == false {
+	} else if validateIndividualUserAccountID == false || deleteIndividualUserAccountInputAccountID == "" {
 		messageHTML(w, "Account ID does not exist", "warning")
-	} else if validateUserAccountEmail == false {
+	} else if validateIndividualUserAccountEmail == false || deleteIndividualUserAccountInputEmail == "" {
 		messageHTML(w, "Account email address does not exist", "warning")
-	} else if validateUserAccountTypeID == false {
+	} else if validateIndividualUserAccountTypeID == false || deleteIndividualUserAccountSelectAccountType == "" {
 		messageHTML(w, "User account type must be either 100, 200, 201, 300, 301, 302 or 400", "warning")
-	} else if deleteUserAccountInputAccountID == "1" {
+	} else if deleteIndividualUserAccountInputAccountID == "1" {
 		messageHTML(w, "YAP Admin (100) account with account ID 1 cannot be deleted", "warning")
-	} else if deleteUserAccountSelectAccountType == "100" && userID != "1" {
+	} else if deleteIndividualUserAccountSelectAccountType == "100" && userID != "1" {
 		messageHTML(w, "Must be a YAP Admin (100) account with account ID 1 to delete other YAP Admin (100) accounts", "warning")
 	} else {
-		dbDetail.connection.Query(`DELETE FROM user_account WHERE id = ? AND user_account_type_id = ?;`, deleteUserAccountInputAccountID, deleteUserAccountSelectAccountType)
+		dbDetail.table = "view___account_detail"
+		dbDetail.column = "user_account_id"
+		dbDetail.columnWhere = "user_account_id"
+		dbDetail.columnWhereValue = deleteIndividualUserAccountInputAccountID
+
+		dbDetail.connection.Query(`DELETE FROM user_account WHERE id = ? AND user_account_type_id = ?;`, deleteIndividualUserAccountInputAccountID, deleteIndividualUserAccountSelectAccountType)
 
 		// Close connection
 		defer dbDetail.connection.Close()
 
-		var checkUserAccountDeleted string
+		checkIndividualUserAccountDeleted := selectWhere(dbDetail)
 
-		checkUserAccountDeletedSQL, err := dbDetail.connection.Query(`SELECT
-									        user_account_id
-									      FROM view___account_detail
-									      WHERE user_account_id = ?;`,
-			deleteUserAccountInputAccountID)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		for checkUserAccountDeletedSQL.Next() {
-
-			err = checkUserAccountDeletedSQL.Scan(
-				&checkUserAccountDeleted,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-
-		}
-
-		// Close connection
-		defer dbDetail.connection.Close()
-
-		if checkUserAccountDeleted == "" {
-			messageHTML(w, "Account "+deleteUserAccountInputEmail+" deleted", "success")
+		if checkIndividualUserAccountDeleted == "" {
+			messageHTML(w, "Accounts with account ID "+deleteIndividualUserAccountInputAccountID+" removed", "success")
 		} else {
-			messageHTML(w, "Wrong account type ("+deleteUserAccountSelectAccountType+") selected for "+deleteUserAccountInputEmail, "warning")
+			messageHTML(w, "Wrong account type ("+deleteIndividualUserAccountSelectAccountType+") selected for "+deleteIndividualUserAccountInputEmail, "warning")
 		}
 	}
+
+	confirmList := []string{"", "yes"}
+
+	// Delete all user accounts for a PBX
+
+	fmt.Fprintf(w, "<br>")
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
+	fmt.Fprintf(w, "<table class=\"table-delete\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete All User Accounts for a PBX</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	pbxIDNameList, _ := pbxSlice(dbDetail)
+	selectDoubleHTML(w, "delete_pbx_user_account_input_account_pbx_id", "PBX", pbxIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectSingleHTML(w, "delete_pbx_user_account_input_confirm", "yes to Confirm (Cannot Be Blank)", confirmList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Delete PBX Accounts\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	deletePBXUserAccountInputPBXID := r.FormValue("delete_pbx_user_account_input_account_pbx_id")
+	deletePBXUserAccountInputConfirm := r.FormValue("delete_pbx_user_account_input_confirm")
+
+	// Validate PBX List
+	_, pbxIDList := pbxSlice(dbDetail)
+	validatePBXID := slices.Contains(pbxIDList, deletePBXUserAccountInputPBXID)
+
+	if deletePBXUserAccountInputPBXID == "" && deletePBXUserAccountInputConfirm == "" {
+		// Do Nothing
+	} else if validatePBXID == false && deletePBXUserAccountInputConfirm == "yes" {
+		messageHTML(w, "A PBX must be selected", "warning")
+	} else if validatePBXID == true && deletePBXUserAccountInputConfirm != "yes" {
+		messageHTML(w, "Confirmation must be yes to remove all user accounts for the PBX", "warning")
+	} else if deletePBXUserAccountInputPBXID == "1" {
+		messageHTML(w, "User account with PBX ID 1 cannot be deleted", "warning")
+	} else if validatePBXID == true && deletePBXUserAccountInputConfirm == "yes" {
+
+		dbDetail.table = "view___account_detail"
+		dbDetail.column = "user_account_id"
+		dbDetail.columnWhere = "pbx_id"
+		dbDetail.columnWhereValue = deletePBXUserAccountInputPBXID
+
+		checkPBXUserAccountExist := selectWhere(dbDetail)
+
+		if checkPBXUserAccountExist == "" {
+			messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountInputPBXID+" do not exist", "success")
+		} else {
+
+			dbDetail.connection.Query(`DELETE FROM user_account WHERE pbx_id = ?`, deletePBXUserAccountInputPBXID)
+
+			// Close connection
+			defer dbDetail.connection.Close()
+
+			checkPBXUserAccountDeleted := selectWhere(dbDetail)
+
+			if checkPBXUserAccountDeleted == "" {
+				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountInputPBXID+" removed", "success")
+			} else {
+				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountInputPBXID+" not removed", "warning")
+			}
+		}
+	} else {
+		messageHTML(w, "Invalid Input", "warning")
+	}
+
+	// Delete all user accounts for a Customer
+
+	fmt.Fprintf(w, "<br>")
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
+	fmt.Fprintf(w, "<table class=\"table-delete\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete All User Accounts for a Customer</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	customerIDNameList, _ := customerSlice(dbDetail)
+	selectDoubleHTML(w, "delete_customer_user_account_input_account_customer_id", "Customer", customerIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectSingleHTML(w, "delete_customer_user_account_input_confirm", "yes to Confirm (Cannot Be Blank)", confirmList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Delete Customer Accounts\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	deleteCustomerUserAccountInputCustomerID := r.FormValue("delete_customer_user_account_input_account_customer_id")
+	deleteCustomerUserAccountInputConfirm := r.FormValue("delete_customer_user_account_input_confirm")
+
+	// Validate Customer List
+	_, customerIDList := customerSlice(dbDetail)
+	validateCustomerID := slices.Contains(customerIDList, deleteCustomerUserAccountInputCustomerID)
+
+	if deleteCustomerUserAccountInputCustomerID == "" && deleteCustomerUserAccountInputConfirm == "" {
+		// Do Nothing
+	} else if validateCustomerID == false && deleteCustomerUserAccountInputConfirm == "yes" {
+		messageHTML(w, "A customer must be selected", "warning")
+	} else if validateCustomerID == true && deleteCustomerUserAccountInputConfirm != "yes" {
+		messageHTML(w, "Confirmation must be yes to remove all user accounts for the customer", "warning")
+	} else if deleteCustomerUserAccountInputCustomerID == "1" {
+		messageHTML(w, "User account with customer ID 1 cannot be deleted", "warning")
+	} else if validateCustomerID == true && deleteCustomerUserAccountInputConfirm == "yes" {
+
+		dbDetail.table = "view___account_detail"
+		dbDetail.column = "user_account_id"
+		dbDetail.columnWhere = "customer_id"
+		dbDetail.columnWhereValue = deleteCustomerUserAccountInputCustomerID
+
+		checkCustomerUserAccountExist := selectWhere(dbDetail)
+
+		if checkCustomerUserAccountExist == "" {
+			messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountInputCustomerID+" do not exist", "success")
+		} else {
+
+			dbDetail.connection.Query(`DELETE FROM user_account WHERE customer_id = ?`, deleteCustomerUserAccountInputCustomerID)
+
+			// Close connection
+			defer dbDetail.connection.Close()
+
+			checkCustomerUserAccountDeleted := selectWhere(dbDetail)
+
+			if checkCustomerUserAccountDeleted == "" {
+				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountInputCustomerID+" removed", "success")
+			} else {
+				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountInputCustomerID+" not removed", "warning")
+			}
+		}
+
+	} else {
+		messageHTML(w, "Invalid Input", "warning")
+	}
+
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -2557,7 +2688,7 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	// Validate invoice contact phone number
 	validateInvoiceContactNumber := validateInput(addCustomerInputInvoiceContactNumber, "phoneNumber")
 
-	if addCustomerInputID == "" {
+	if addCustomerInputID == "" && addCustomerInputName == "" && addCustomerSelectPBXLimit == "" && addCustomerInputSiteContactEmail == "" && addCustomerInputSiteContactNumber == "" && addCustomerInputInvoiceContactEmail == "" && addCustomerInputInvoiceContactNumber == "" {
 		// Do Nothing
 	} else if validateID == false {
 		messageHTML(w, "Customer ID "+validationMessageAlphaNum, "warning")
@@ -2612,34 +2743,15 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 			addCustomerInputID = genID()
 		}
 
-		var checkCustomerIDExist string
+		dbDetail.table = "view___customer_detail"
+		dbDetail.column = "customer_id"
+		dbDetail.columnWhere = "customer_id"
+		dbDetail.columnWhereValue = addCustomerInputID
 
-		checkCustomerIDExistSQL, err := dbDetail.connection.Query(`SELECT
-									   customer_id
-									 FROM view___customer_detail
-									 WHERE customer_id = ?;`,
-			addCustomerInputID)
+		checkCustomerExist := selectWhere(dbDetail)
 
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		for checkCustomerIDExistSQL.Next() {
-
-			err = checkCustomerIDExistSQL.Scan(
-				&checkCustomerIDExist,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-
-		}
-
-		if checkCustomerIDExist == addCustomerInputID {
-			messageHTML(w, "Customer "+addCustomerInputName+" ("+addCustomerInputID+") already exists", "warning")
+		if checkCustomerExist == addCustomerInputID {
+			messageHTML(w, "Account with customer ID "+addCustomerInputID+" already exists", "success")
 		} else {
 
 			dbDetail.connection.Query(`INSERT 
@@ -2712,7 +2824,13 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 				nullSQL(addCustomerInputInvoiceContactEmail),
 				nullSQL(addCustomerInputInvoiceContactNumber))
 
-			messageHTML(w, "Customer account "+addCustomerInputName+" ("+addCustomerInputID+") created", "success")
+			checkCustomerCreated := selectWhere(dbDetail)
+
+			if checkCustomerCreated == addCustomerInputID {
+				messageHTML(w, "Customer account "+addCustomerInputName+" ("+addCustomerInputID+") created", "success")
+			} else {
+				messageHTML(w, "Customer account "+addCustomerInputName+" ("+addCustomerInputID+") not created", "success")
+			}
 		}
 	}
 }
@@ -2789,12 +2907,14 @@ func customerDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, r
 	// Check if customer name is contained in the slice
 	validateCustomerName := slices.Contains(customerNameList, deleteCustomerInputName)
 
-	if deleteCustomerInputID == "" {
+	if deleteCustomerInputID == "" && deleteCustomerInputName == "" {
 		// Do nothing
 	} else if validateCustomerID == false {
 		messageHTML(w, "Customer ID does not exist", "warning")
 	} else if validateCustomerName == false {
 		messageHTML(w, "Customer name does not exist", "warning")
+	} else if deleteCustomerInputID == "1" {
+		messageHTML(w, "Customer account with customer ID 1 cannot be deleted", "warning")
 	} else {
 		dbDetail.connection.Query(`DELETE FROM customer WHERE id = ? AND name = ?;`, deleteCustomerInputID, deleteCustomerInputName)
 
