@@ -1680,78 +1680,80 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	} else if addAccountSelectAccountType == "302" && addAccountSelectPBXID == "" {
 		messageHTML(w, "A PBX ID must be selected when creating a 302 type account", "warning")
 	} else {
+		dbDetail.table = "view___account_detail"
+		dbDetail.column = "user_account_email"
+		dbDetail.columnWhere = "user_account_email"
+		dbDetail.columnWhereValue = addAccountInputEmail
 
-		var checkAccountEmailExist string
-
-		checkAccountEmailExistSQL, err := dbDetail.connection.Query(`SELECT
-				    					       user_account_email
-									     FROM view___account_detail
-									     WHERE user_account_email = ?;`,
-			addAccountInputEmail)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		for checkAccountEmailExistSQL.Next() {
-
-			err = checkAccountEmailExistSQL.Scan(
-				&checkAccountEmailExist,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-
-		}
+		checkAccountEmailExist := selectWhere(dbDetail)
 
 		if checkAccountEmailExist == addAccountInputEmail {
-			messageHTML(w, "Email address "+addAccountInputEmail+" already exists", "warning")
+			messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
 		} else {
-
+			// The database is designed not to allow two or more records with the same email address
+			// The conditional statements are mostly used to inform the user with messages in HTML
 			if addAccountSelectAccountType == "100" {
 				addAccountSelectCustomerID = "1"
 				addAccountSelectPBXID = "1"
-				messageHTML(w, "YAP Admin (100) Account: "+addAccountInputEmail+" Created", "success")
+				checkAccountType100Created := selectWhere(dbDetail)
+				if checkAccountType100Created == addAccountInputEmail {
+					messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+				} else {
+					messageHTML(w, "YAP Admin (100) account with email address "+addAccountInputEmail+" created", "success")
+				}
 			} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" {
 				addAccountSelectPBXID = "1"
 				if addAccountSelectAccountType == "200" {
-					messageHTML(w, "Customer Admin (200) Account: "+addAccountInputEmail+" Created", "success")
+					checkAccountType200Created := selectWhere(dbDetail)
+					if checkAccountType200Created == addAccountInputEmail {
+						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+					} else {
+						messageHTML(w, "Customer Admin (200) account with email address "+addAccountInputEmail+" created", "success")
+					}
 				} else if addAccountSelectAccountType == "201" {
-					messageHTML(w, "Customer Regular (201) Account: "+addAccountInputEmail+" Created", "success")
+					checkAccountType201Created := selectWhere(dbDetail)
+					if checkAccountType201Created == addAccountInputEmail {
+						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+					} else {
+						messageHTML(w, "Customer Regular (201) account with email address "+addAccountInputEmail+" created", "success")
+					}
 				} else if addAccountSelectAccountType == "400" {
-					messageHTML(w, "Customer Invoice (400) Account: "+addAccountInputEmail+" Created", "success")
+					checkAccountType400Created := selectWhere(dbDetail)
+					if checkAccountType400Created == addAccountInputEmail {
+						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+					} else {
+						messageHTML(w, "Customer Invoice (400) account with email address "+addAccountInputEmail+" created", "success")
+					}
 				}
 			} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" {
-				var customerID string
-				customerIDSQL, err := dbDetail.connection.Query(`SELECT
-                                                                    customer_id
-                                                                FROM
-                                                                    yap.view___pbx_detail
-                                                                WHERE pbx_id = ?`, addAccountSelectPBXID)
-
-				// Error
-				if err != nil {
-					panic(err)
-				}
-
-				for customerIDSQL.Next() {
-
-					err = customerIDSQL.Scan(
-						&customerID,
-					)
-
-					// Error
-					if err != nil {
-						panic(err)
+				if addAccountSelectAccountType == "300" {
+					checkAccountType300Created := selectWhere(dbDetail)
+					if checkAccountType300Created == addAccountInputEmail {
+						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+					} else {
+						messageHTML(w, "PBX Admin (300) account with email address "+addAccountInputEmail+" Created", "success")
 					}
-					addAccountSelectCustomerID = customerID
-
+				} else if addAccountSelectAccountType == "301" {
+					checkAccountType301Created := selectWhere(dbDetail)
+					if checkAccountType301Created == addAccountInputEmail {
+						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+					} else {
+						messageHTML(w, "PBX Regular (301) account with email address "+addAccountInputEmail+" Created", "success")
+					}
+				} else if addAccountSelectAccountType == "302" {
+					checkAccountType302Created := selectWhere(dbDetail)
+					if checkAccountType302Created == addAccountInputEmail {
+						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+					} else {
+						messageHTML(w, "PBX Read Only (302) account with email address "+addAccountInputEmail+" Created", "success")
+					}
 				}
+				dbDetail.table = "view___pbx_detail"
+				dbDetail.column = "customer_id"
+				dbDetail.columnWhere = "pbx_id"
+				dbDetail.columnWhereValue = addAccountSelectPBXID
 
-				messageHTML(w, "Account "+addAccountInputEmail+" Created", "success")
+				addAccountSelectCustomerID = selectWhere(dbDetail)
 			}
 
 			dbDetail.connection.Query(`INSERT 
