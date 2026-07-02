@@ -10,12 +10,14 @@ CREATE TABLE `customer`
   `uk_vat_registered` ENUM('yes', 'no'),
   `uk_vat_number` VARCHAR(20),
   `pbx_limit` SMALLINT UNSIGNED NOT NULL,
-  `pbx_setup_price` DECIMAL(8,2),
-  `pbx_rental_price` DECIMAL(8,2),
-  `pbx_cease_price` DECIMAL(8,2),
-  `sip_ext_setup_price` DECIMAL(8,2),
-  `sip_ext_rental_price` DECIMAL(8,2),
-  `sip_ext_cease_price` DECIMAL(8,2),
+  `pbx_setup_price` DECIMAL(8,2) NOT NULL,
+  `pbx_rental_price` DECIMAL(8,2) NOT NULL,
+  `pbx_cease_price` DECIMAL(8,2) NOT NULL,
+  `pbx_contract_length` VARCHAR(255),
+  `sip_ext_setup_price` DECIMAL(8,2) NOT NULL,
+  `sip_ext_rental_price` DECIMAL(8,2) NOT NULL,
+  `sip_ext_cease_price` DECIMAL(8,2) NOT NULL,
+  `sip_ext_contract_length` VARCHAR(255),
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -215,6 +217,12 @@ MODIFY COLUMN `id` varchar(255) NOT NULL;
 ALTER TABLE `customer`
 ADD INDEX `index___customer__consumer_type` (`consumer_type`);
 
+ALTER TABLE `customer`
+ADD INDEX `index___customer__pbx_contract_length` (`pbx_contract_length`);
+
+ALTER TABLE `customer`
+ADD INDEX `index___customer__sip_ext_contract_length` (`sip_ext_contract_length`);
+
 ALTER TABLE `pbx`
 ADD INDEX `index___pbx__customer_id` (`customer_id`);
 
@@ -274,6 +282,16 @@ ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer___consumer_type_lookup
 FOREIGN KEY (`consumer_type`)
 REFERENCES `consumer_type_lookup` (`consumer_type`);
+
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer__pbx_contract_length___contract_length_lookup
+FOREIGN KEY (`pbx_contract_length`)
+REFERENCES `contract_length_lookup` (`contract_length`);
+
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer__sip_ext_contract_length___contract_length_lookup
+FOREIGN KEY (`sip_ext_contract_length`)
+REFERENCES `contract_length_lookup` (`contract_length`);
 
 ALTER TABLE `pbx`
 ADD CONSTRAINT fk___pbx___customer
@@ -654,8 +672,8 @@ VALUES
   ('48 Months'),
   ('60 Months');
 
-INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_minutes`, `pbx_limit`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`)
-VALUES (1, 'system', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_minutes`, `pbx_limit`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`, `sip_ext_contract_length`)
+VALUES (1, 'system', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
