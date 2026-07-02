@@ -775,10 +775,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 Create a SIP Endpoint<br>
-      &#9989 View a SIP Endpoint<br>
-      &#9989 Update a SIP Endpoint<br>
-      &#9989 Delete a SIP Endpoint<br>
+      &#9989 Create a SIP Extension<br>
+      &#9989 View a SIP Extension<br>
+      &#9989 Update a SIP Extension<br>
+      &#9989 Delete a SIP Extension<br>
     </td>
     <td>
       &#9989 Create a Customer Invoice<br>
@@ -904,10 +904,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 Create a SIP Endpoint<br>
-      &#9989 View a SIP Endpoint<br>
-      &#9989 Update a SIP Endpoint<br>
-      &#9989 Delete a SIP Endpoint<br>
+      &#9989 Create a SIP Extension<br>
+      &#9989 View a SIP Extension<br>
+      &#9989 Update a SIP Extension<br>
+      &#9989 Delete a SIP Extension<br>
     </td>
     <td>
       &#10060 Create a Customer Invoice<br>
@@ -1033,10 +1033,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 Create a SIP Endpoint<br>
-      &#9989 View a SIP Endpoint<br>
-      &#9989 Update a SIP Endpoint<br>
-      &#9989 Delete a SIP Endpoint<br>
+      &#9989 Create a SIP Extension<br>
+      &#9989 View a SIP Extension<br>
+      &#9989 Update a SIP Extension<br>
+      &#9989 Delete a SIP Extension<br>
     </td>
     <td>
       &#10060 Create a Customer Invoice<br>
@@ -1162,10 +1162,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 Create a SIP Endpoint<br>
-      &#9989 View a SIP Endpoint<br>
-      &#9989 Update a SIP Endpoint<br>
-      &#9989 Delete a SIP Endpoint<br>
+      &#9989 Create a SIP Extension<br>
+      &#9989 View a SIP Extension<br>
+      &#9989 Update a SIP Extension<br>
+      &#9989 Delete a SIP Extension<br>
     </td>
     <td>
       &#10060 Create a Customer Invoice<br>
@@ -1291,10 +1291,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#9989 Create a SIP Endpoint<br>
-      &#9989 View a SIP Endpoint<br>
-      &#9989 Update a SIP Endpoint<br>
-      &#9989 Delete a SIP Endpoint<br>
+      &#9989 Create a SIP Extension<br>
+      &#9989 View a SIP Extension<br>
+      &#9989 Update a SIP Extension<br>
+      &#9989 Delete a SIP Extension<br>
     </td>
     <td>
       &#10060 Create a Customer Invoice<br>
@@ -1420,10 +1420,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a SIP Endpoint<br>
-      &#9989 View a SIP Endpoint<br>
-      &#10060 Update a SIP Endpoint<br>
-      &#10060 Delete a SIP Endpoint<br>
+      &#10060 Create a SIP Extension<br>
+      &#9989 View a SIP Extension<br>
+      &#10060 Update a SIP Extension<br>
+      &#10060 Delete a SIP Extension<br>
     </td>
     <td>
       &#10060 Create a Customer Invoice<br>
@@ -1549,10 +1549,10 @@ VALUES
   </tr>
   <tr>
     <td>
-      &#10060 Create a SIP Endpoint<br>
-      &#10060 View a SIP Endpoint<br>
-      &#10060 Update a SIP Endpoint<br>
-      &#10060 Delete a SIP Endpoint<br>
+      &#10060 Create a SIP Extension<br>
+      &#10060 View a SIP Extension<br>
+      &#10060 Update a SIP Extension<br>
+      &#10060 Delete a SIP Extension<br>
     </td>
     <td>
       &#10060 Create a Customer Invoice<br>
