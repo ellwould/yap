@@ -422,10 +422,10 @@ SELECT
   `user_account`.`email` AS 'user_account_email',
   `user_account_type`.`type` AS 'user_account_type',
   `user_account`.`date_time_added` AS 'user_account_date_time_added',
-  `customer`.`name` AS 'customer_name',
   `user_account`.`customer_id`,
-  `pbx`.`name` AS 'pbx_name',
+  `customer`.`name` AS 'customer_name',
   `user_account`.`pbx_id`,
+   `pbx`.`name` AS 'pbx_name',
   `user_account_type`.`permission` AS 'user_account_type_permission',
   IFNULL(`customer_site_address`.`address_line_1`, '') AS 'customer_site_address_line_1',
   IFNULL(`customer_site_address`.`address_line_2`, '') AS 'customer_site_address_line_2',
@@ -568,10 +568,10 @@ SELECT DISTINCT
   IFNULL(`ps_endpoints`.`stir_shaken`, 'no (DEFAULT)') AS 'stir_shaken_enabled',
   IFNULL(`ps_endpoints`.`stir_shaken_profile`, '(NOT SET)') AS 'stir_shaken_profile',
   `ps_contacts`.`endpoint` IS NOT NULL AS 'registered',
-  `pbx`.`name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
-  `customer`.`name` AS 'customer_name',
-  `customer`.`id` AS 'customer_id'
+  `pbx`.`name` AS 'pbx_name',
+  `customer`.`id` AS 'customer_id',
+  `customer`.`name` AS 'customer_name'
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
@@ -590,8 +590,8 @@ SELECT
   `ps_contacts`.`user_agent`,
   `pbx`.`name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
-  `customer`.`name` AS 'customer_name',
-  `customer`.`id` AS 'customer_id'
+  `customer`.`id` AS 'customer_id',
+  `customer`.`name` AS 'customer_name'
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
@@ -605,12 +605,13 @@ WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 CREATE VIEW `view___invoice_item` AS
 SELECT DISTINCT
-  `customer`.`name` AS 'customer_name',
   `customer`.`id` AS 'customer_id',
+  `customer`.`name` AS 'customer_name',
   `customer`.`uk_based` AS 'customer_uk_based',
   `customer`.`reselling_minutes` AS 'customer_reselling_minutes',
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
   IFNULL(`customer`.`uk_vat_number`, '') AS 'customer_uk_vat_number',
+  `invoice_item`.`id` AS 'invoice_item_id',
   IFNULL(`invoice_item`.`tag`, '') AS 'invoice_item_tag',
   `invoice_item`.`sell_price` AS 'invoice_item_sell_price',
   `invoice_item`.`date_time_added` AS 'invoice_item_date_time_added',
