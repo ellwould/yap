@@ -609,7 +609,7 @@ SELECT DISTINCT
   `customer`.`name` AS 'customer_name',
   `customer`.`uk_based` AS 'customer_uk_based',
   `customer`.`reselling_minutes` AS 'customer_reselling_minutes',
-  `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
+  IFNULL(`customer`.`uk_vat_registered`, '') AS 'customer_uk_vat_registered',
   IFNULL(`customer`.`uk_vat_number`, '') AS 'customer_uk_vat_number',
   `invoice_item`.`id` AS 'invoice_item_id',
   IFNULL(`invoice_item`.`tag`, '') AS 'invoice_item_tag',
