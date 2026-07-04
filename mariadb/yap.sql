@@ -588,8 +588,8 @@ SELECT
   `ps_auths`.`username` AS 'sip_username',
   `ps_contacts`.`uri`,
   `ps_contacts`.`user_agent`,
-  `pbx`.`name` AS 'pbx_name',
   `pbx`.`id` AS 'pbx_id',
+  `pbx`.`name` AS 'pbx_name',
   `customer`.`id` AS 'customer_id',
   `customer`.`name` AS 'customer_name'
 FROM `ps_endpoints`
