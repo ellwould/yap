@@ -4,10 +4,10 @@ CREATE TABLE `customer`
 (
   `id` VARCHAR(255) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `uk_based` ENUM('yes', 'no') NOT NULL,
-  `reselling_minutes` ENUM('no', 'yes') NOT NULL,
-  `consumer_type` VARCHAR(255),
-  `uk_vat_registered` ENUM('yes', 'no'),
+  `uk_based` ENUM('yes', 'no', 'n/a') NOT NULL,
+  `reselling_minutes` ENUM('no', 'yes', 'n/a') NOT NULL,
+  `consumer_type` VARCHAR(255) NOT NULL,
+  `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
   `uk_vat_number` VARCHAR(20),
   `pbx_limit` SMALLINT UNSIGNED NOT NULL,
   `pbx_setup_price` DECIMAL(8,2) NOT NULL,
@@ -481,11 +481,11 @@ SELECT
   `customer`.`name` AS 'customer_name',
   `customer`.`date_time_added` AS 'customer_date_time_added',
   `customer`.`uk_based` AS 'customer_uk_based',
-  IFNULL(`customer`.`consumer_type`, '') AS 'customer_consumer_type',
-  IFNULL(`customer`.`uk_vat_registered`, '') AS 'customer_uk_vat_registered',
+  `customer`.`consumer_type` AS 'customer_consumer_type',
+  `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
   IFNULL(`customer`.`uk_vat_number`, '') AS 'customer_uk_vat_number',
   `customer`.`reselling_minutes` AS 'customer_reselling_minutes',
-  IFNULL(`customer`.`pbx_limit`, '') AS 'customer_pbx_limit',
+  `customer`.`pbx_limit` AS 'customer_pbx_limit',
   `customer`.`pbx_setup_price` AS 'customer_pbx_setup_price',
   `customer`.`pbx_rental_price` AS 'customer_pbx_rental_price',
   `customer`.`pbx_cease_price` AS 'customer_pbx_cease_price',
@@ -609,7 +609,7 @@ SELECT DISTINCT
   `customer`.`name` AS 'customer_name',
   `customer`.`uk_based` AS 'customer_uk_based',
   `customer`.`reselling_minutes` AS 'customer_reselling_minutes',
-  IFNULL(`customer`.`uk_vat_registered`, '') AS 'customer_uk_vat_registered',
+  `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
   IFNULL(`customer`.`uk_vat_number`, '') AS 'customer_uk_vat_number',
   `invoice_item`.`id` AS 'invoice_item_id',
   IFNULL(`invoice_item`.`tag`, '') AS 'invoice_item_tag',
@@ -654,7 +654,8 @@ VALUES
   ('Limited Liability Partnership (LLP)'),
   ('Private Limited Company (LTD)'),
   ('Public Limited Company (PLC)'),
-  ('Community Interest Company (CIC)');
+  ('Community Interest Company (CIC)'),
+  ('n/a');
 
 INSERT INTO `good_service_type_lookup` (`good_service_type`)
 VALUES
@@ -675,8 +676,8 @@ VALUES
   ('48 Months'),
   ('60 Months');
 
-INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `reselling_minutes`, `pbx_limit`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`, `sip_ext_contract_length`)
-VALUES (1, 'system', NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, 0, 0, 0, NULL);
+INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`, `sip_ext_contract_length`)
+VALUES (1, 'system', 'n/a', 'n/a', 'n/a', 'n/a', NULL, 0, 0, 0, 0, NULL, 0, 0, 0, NULL);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
