@@ -677,7 +677,7 @@ VALUES
   ('60 Months');
 
 INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`, `sip_ext_contract_length`)
-VALUES (1, 'system', 'n/a', 'n/a', 'n/a', 'n/a', NULL, 0, 0, 0, 0, NULL, 0, 0, 0, NULL);
+VALUES (1, 'system', 'n/a', 'n/a', 'n/a', NULL, 'N/a', 0, 0, 0, 0, NULL, 0, 0, 0, NULL);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
