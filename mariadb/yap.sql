@@ -157,7 +157,7 @@ CREATE TABLE `good_service` (
   `name` VARCHAR(255) NOT NULL,
   `good_service_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
-  `contract_length` VARCHAR(255) NOT NULL,
+  `contract_length` VARCHAR(255),
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`name`)
 )
