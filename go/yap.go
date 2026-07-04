@@ -184,13 +184,26 @@ func selectSingleHTML(w http.ResponseWriter, selectValue string, labelMessage st
 	fmt.Fprintf(w, "  </select>")
 }
 
+// Function to put nested slice elements into HTML select options via a loop; shows the option value in the option tags and prepends with ID: and Name:
 func selectDoubleHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue [][]string) {
 	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+" (Cannot Be Empty):</b>")
 	fmt.Fprintf(w, "  </label><br>")
 	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
 	fmt.Fprintf(w, "<option value></option>")
 	for _, value := range optionValue {
-		fmt.Fprintf(w, "<option value=\""+string(value[0:][0])+"\">&nbsp "+labelMessage+" ID :"+string(value[0:][0])+" | "+labelMessage+" Name: "+string(value[1:][0])+"</option>")
+		fmt.Fprintf(w, "<option value=\""+string(value[0:][0])+"\">&nbsp "+labelMessage+" ID: "+string(value[0:][0])+" | "+labelMessage+" Name: "+string(value[1:][0])+"</option>")
+	}
+	fmt.Fprintf(w, "  </select>")
+}
+
+// Function to put nested slice elements into HTML select options via a loop; shows one element in the option tags, does not show the option value in the option tags
+func selectDoubleHiddenHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue [][]string) {
+	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+":</b>")
+	fmt.Fprintf(w, "  </label><br>")
+	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
+	fmt.Fprintf(w, "<option value></option>")
+	for _, value := range optionValue {
+		fmt.Fprintf(w, "<option value=\""+string(value[0:][0])+"\">&nbsp "+string(value[1:][0])+"</option>")
 	}
 	fmt.Fprintf(w, "  </select>")
 }
@@ -627,8 +640,8 @@ func pbxSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 //----------------------------------------------------------------------------------------------------
 
 // Constants for validation failure messages
-const validationMessageEmail string = "A valid email address with a maxamium of 200 characters must be used"
-const validationMessagePhone string = "A valid phone number in e.164 format with a maxamium of 16 characters must be used"
+const validationMessageEmail string = "A valid email address with a maxamium of 30 characters must be used"
+const validationMessagePhoneNumber string = "A valid phone number in e.164 format with a maxamium of 16 characters must be used"
 const validationMessageAlphaNum string = " must be 1 to 30 characters and must only contain characters: a-z, A-Z or numbers"
 const validationMessageAlphaNumEmpty string = " can be empty or must be a maxamium of 30 characters and must only contain characters: a-z, A-Z or numbers"
 const validationMessageBoolean string = " must be yes or no"
@@ -639,7 +652,7 @@ func validateInput(value string, valueType string) (validation bool) {
 	validateInput := validator.New()
 	// Conditional statments are used for each type of value inputted from a user
 	if valueType == "email" {
-		validateInputErr := validateInput.Var(value, "email,max=200,excludes=0x2C")
+		validateInputErr := validateInput.Var(value, "email,max=200")
 		if validateInputErr != nil {
 			validation = false
 			return
@@ -660,7 +673,7 @@ func validateInput(value string, valueType string) (validation bool) {
 
 	} else if valueType == "alphaNum" {
 		validateInputAlphaspaceErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
-		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\<>/?")
+		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\.<>/?")
 		if validateInputAlphaspaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
@@ -671,7 +684,7 @@ func validateInput(value string, valueType string) (validation bool) {
 
 	} else if valueType == "alphaNumEmpty" {
 		validateInputAlphanumspaceErr := validateInput.Var(value, "ascii,max=30")
-		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\<>/?")
+		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\.<>/?")
 		if validateInputAlphanumspaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
@@ -1926,10 +1939,10 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
 	pbxIDNameList, _ := pbxSlice(dbDetail)
-	selectDoubleHTML(w, "delete_pbx_user_account_input_account_pbx_id", "PBX", pbxIDNameList)
+	selectDoubleHTML(w, "delete_pbx_user_account_select_account_pbx_id", "PBX", pbxIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	selectSingleHTML(w, "delete_pbx_user_account_input_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
+	selectSingleHTML(w, "delete_pbx_user_account_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -1941,35 +1954,35 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</form>")
 
-	deletePBXUserAccountInputPBXID := r.FormValue("delete_pbx_user_account_input_account_pbx_id")
-	deletePBXUserAccountInputConfirm := r.FormValue("delete_pbx_user_account_input_confirm")
+	deletePBXUserAccountSelectPBXID := r.FormValue("delete_pbx_user_account_select_account_pbx_id")
+	deletePBXUserAccountSelectConfirm := r.FormValue("delete_pbx_user_account_select_confirm")
 
 	// Validate PBX List
 	_, pbxIDList := pbxSlice(dbDetail)
-	validatePBXID := slices.Contains(pbxIDList, deletePBXUserAccountInputPBXID)
+	validatePBXID := slices.Contains(pbxIDList, deletePBXUserAccountSelectPBXID)
 
-	if deletePBXUserAccountInputPBXID == "" && deletePBXUserAccountInputConfirm == "" {
+	if deletePBXUserAccountSelectPBXID == "" && deletePBXUserAccountSelectConfirm == "" {
 		// Do Nothing
-	} else if validatePBXID == false && deletePBXUserAccountInputConfirm == "yes" {
+	} else if validatePBXID == false && deletePBXUserAccountSelectConfirm == "yes" {
 		messageHTML(w, "A PBX must be selected", "warning")
-	} else if validatePBXID == true && deletePBXUserAccountInputConfirm != "yes" {
+	} else if validatePBXID == true && deletePBXUserAccountSelectConfirm != "yes" {
 		messageHTML(w, "Confirmation must be yes to remove all user accounts for the PBX", "warning")
-	} else if deletePBXUserAccountInputPBXID == "1" {
+	} else if deletePBXUserAccountSelectPBXID == "1" {
 		messageHTML(w, "User account with PBX ID 1 cannot be deleted", "warning")
-	} else if validatePBXID == true && deletePBXUserAccountInputConfirm == "yes" {
+	} else if validatePBXID == true && deletePBXUserAccountSelectConfirm == "yes" {
 
 		dbDetail.table = "view___account_detail"
 		dbDetail.column = "user_account_id"
 		dbDetail.columnWhere = "pbx_id"
-		dbDetail.columnWhereValue = deletePBXUserAccountInputPBXID
+		dbDetail.columnWhereValue = deletePBXUserAccountSelectPBXID
 
 		checkPBXUserAccountExist := selectWhere(dbDetail)
 
 		if checkPBXUserAccountExist == "" {
-			messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountInputPBXID+" do not exist", "success")
+			messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountSelectPBXID+" do not exist", "warning")
 		} else {
 
-			dbDetail.connection.Query(`DELETE FROM user_account WHERE pbx_id = ?`, deletePBXUserAccountInputPBXID)
+			dbDetail.connection.Query(`DELETE FROM user_account WHERE pbx_id = ?`, deletePBXUserAccountSelectPBXID)
 
 			// Close connection
 			defer dbDetail.connection.Close()
@@ -1977,9 +1990,9 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 			checkPBXUserAccountDeleted := selectWhere(dbDetail)
 
 			if checkPBXUserAccountDeleted == "" {
-				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountInputPBXID+" removed", "success")
+				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountSelectPBXID+" removed", "success")
 			} else {
-				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountInputPBXID+" not removed", "warning")
+				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountSelectPBXID+" not removed", "warning")
 			}
 		}
 	} else {
@@ -2000,10 +2013,10 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
 	customerIDNameList, _ := customerSlice(dbDetail)
-	selectDoubleHTML(w, "delete_customer_user_account_input_account_customer_id", "Customer", customerIDNameList)
+	selectDoubleHTML(w, "delete_customer_user_account_select_account_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	selectSingleHTML(w, "delete_customer_user_account_input_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
+	selectSingleHTML(w, "delete_customer_user_account_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -2015,35 +2028,35 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</form>")
 
-	deleteCustomerUserAccountInputCustomerID := r.FormValue("delete_customer_user_account_input_account_customer_id")
-	deleteCustomerUserAccountInputConfirm := r.FormValue("delete_customer_user_account_input_confirm")
+	deleteCustomerUserAccountSelectCustomerID := r.FormValue("delete_customer_user_account_select_account_customer_id")
+	deleteCustomerUserAccountSelectConfirm := r.FormValue("delete_customer_user_account_select_confirm")
 
 	// Validate Customer List
 	_, customerIDList := customerSlice(dbDetail)
-	validateCustomerID := slices.Contains(customerIDList, deleteCustomerUserAccountInputCustomerID)
+	validateCustomerID := slices.Contains(customerIDList, deleteCustomerUserAccountSelectCustomerID)
 
-	if deleteCustomerUserAccountInputCustomerID == "" && deleteCustomerUserAccountInputConfirm == "" {
+	if deleteCustomerUserAccountSelectCustomerID == "" && deleteCustomerUserAccountSelectConfirm == "" {
 		// Do Nothing
-	} else if validateCustomerID == false && deleteCustomerUserAccountInputConfirm == "yes" {
+	} else if validateCustomerID == false && deleteCustomerUserAccountSelectConfirm == "yes" {
 		messageHTML(w, "A customer must be selected", "warning")
-	} else if validateCustomerID == true && deleteCustomerUserAccountInputConfirm != "yes" {
+	} else if validateCustomerID == true && deleteCustomerUserAccountSelectConfirm != "yes" {
 		messageHTML(w, "Confirmation must be yes to remove all user accounts for the customer", "warning")
-	} else if deleteCustomerUserAccountInputCustomerID == "1" {
+	} else if deleteCustomerUserAccountSelectCustomerID == "1" {
 		messageHTML(w, "User account with customer ID 1 cannot be deleted", "warning")
-	} else if validateCustomerID == true && deleteCustomerUserAccountInputConfirm == "yes" {
+	} else if validateCustomerID == true && deleteCustomerUserAccountSelectConfirm == "yes" {
 
 		dbDetail.table = "view___account_detail"
 		dbDetail.column = "user_account_id"
 		dbDetail.columnWhere = "customer_id"
-		dbDetail.columnWhereValue = deleteCustomerUserAccountInputCustomerID
+		dbDetail.columnWhereValue = deleteCustomerUserAccountSelectCustomerID
 
 		checkCustomerUserAccountExist := selectWhere(dbDetail)
 
 		if checkCustomerUserAccountExist == "" {
-			messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountInputCustomerID+" do not exist", "success")
+			messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountSelectCustomerID+" do not exist", "success")
 		} else {
 
-			dbDetail.connection.Query(`DELETE FROM user_account WHERE customer_id = ?`, deleteCustomerUserAccountInputCustomerID)
+			dbDetail.connection.Query(`DELETE FROM user_account WHERE customer_id = ?`, deleteCustomerUserAccountSelectCustomerID)
 
 			// Close connection
 			defer dbDetail.connection.Close()
@@ -2051,9 +2064,9 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 			checkCustomerUserAccountDeleted := selectWhere(dbDetail)
 
 			if checkCustomerUserAccountDeleted == "" {
-				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountInputCustomerID+" removed", "success")
+				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountSelectCustomerID+" removed", "success")
 			} else {
-				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountInputCustomerID+" not removed", "warning")
+				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountSelectCustomerID+" not removed", "warning")
 			}
 		}
 
@@ -2566,7 +2579,7 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100"}
+	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
 	selectSingleHTML(w, "add_customer_select_pbx_limit", "PBX Limit (Cannot Be Empty)", pbxLimitList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -2835,7 +2848,7 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	} else if validateSiteContactEmail == false {
 		messageHTML(w, validationMessageEmail+" for the site address", "warning")
 	} else if validateSiteContactNumber == false {
-		messageHTML(w, "Site contact phone number "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, validationMessagePhoneNumber+" for the site address", "warning")
 	} else if validateInvoiceAddressLine1 == false {
 		messageHTML(w, "Invoice address line one "+validationMessageAlphaNumEmpty+" or blank", "warning")
 	} else if validateInvoiceAddressLine2 == false {
@@ -2851,7 +2864,7 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	} else if validateInvoiceContactEmail == false {
 		messageHTML(w, validationMessageEmail+" for the invoice address", "warning")
 	} else if validateInvoiceContactNumber == false {
-		messageHTML(w, "Invoice contact phone number "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, validationMessagePhoneNumber+" for the invoice address", "warning")
 	} else {
 		if addCustomerInputID == "Gen" || addCustomerInputID == "GEN" || addCustomerInputID == "gen" || addCustomerInputID == "Generate" || addCustomerInputID == "GENERATE" || addCustomerInputID == "generate" {
 			addCustomerInputID = genID()
@@ -2973,58 +2986,334 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	}
 }
 
-// Customer delete function
+// Customer edit function
+func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
 
-func customerDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
-
-	// Get customer ID and name from the database and append to slice
-	var customerIDList []string
-	var customerID string
-
-	var customerNameList []string
-	var customerName string
-
-	customerIDNameSQL, err := dbDetail.connection.Query(`SELECT
-	                                                             customer_id,
-	                                                             customer_name
-	                                                         FROM
-	                                                             yap.view___customer_detail`)
-
-	// Error
-	if err != nil {
-		panic(err)
-	}
-
-	for customerIDNameSQL.Next() {
-
-		err = customerIDNameSQL.Scan(
-			&customerID,
-			&customerName,
-		)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		customerIDList = append(customerIDList, customerID)
-		customerNameList = append(customerNameList, customerName)
+	// List of all column names from the customer table
+	customerColumnList := [][]string{
+		{"name", "Name"},
+		{"uk_based", "UK Based"},
+		{"reselling_minutes", "Rselling Minutes"},
+		{"consumer_type", "Consumer Type"},
+		{"uk_vat_registered", "UK VAT Registered"},
+		{"uk_vat_number", "UK VAT Number"},
+		{"pbx_limit", "PBX Limit"},
+		{"pbx_setup_price", "PBX Setup Price"},
+		{"pbx_rental_price", "PBX Rental Price"},
+		{"pbx_cease_price", "PBX Cease Price"},
+		{"pbx_contract_length", "PBX Contract Length"},
+		{"sip_ext_setup_price", "SIP EXT Setup Price"},
+		{"sip_ext_rental_price", "SIP EXT Rental Price"},
+		{"sip_ext_cease_price", "SIP EXT Cease Price"},
+		{"sip_ext_contract_length", "SIP EXT Contract Length"},
 	}
 
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
-	fmt.Fprintf(w, "<table class=\"table-delete\">")
+	fmt.Fprintf(w, "<table class=\"table-customer\">")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a Customer</th>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Edit Customer Details</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
+	fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+	fmt.Fprintf(w, "      <b>Name:</b> text<br>")
+	fmt.Fprintf(w, "      <b>UK Based:</b> yes, no or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>Reselling Minutes:</b> yes, no or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>Consumer Type:</b> Community Interest Company (CIC), Limited Liability Partnership (LLP), Partnership, Private Limited Company (LTD), Public Limited Company (PLC), Residentail, Sole Trader or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>UK VAT Registered:</b> yes, no or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>UK VAT Number:</b> text or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>PBX Limit:</b> 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500 or 5000<br>")
+	fmt.Fprintf(w, "      <b>PBX Setup Price:</b> decimal number<br>")
+	fmt.Fprintf(w, "      <b>PBX Rental Price:</b> decimal number<br>")
+	fmt.Fprintf(w, "      <b>PBX Cease Pricce:</b> decimal number<br> ")
+	fmt.Fprintf(w, "      <b>PBX Contract Length:</b> 1 Week, 1 Month, 3 Months, 6 Months, 12 Months, 18 Months, 24 Months, 36 Months, 48 Months, 60 Months or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>EXT Setup Price:</b> decimal number<br>")
+	fmt.Fprintf(w, "      <b>EXT Rental Price:</b> decimal number<br>")
+	fmt.Fprintf(w, "      <b>EXT Cease Pricce:</b> decimal number<br> ")
+	fmt.Fprintf(w, "      <b>EXT Contract Length:</b> 1 Week, 1 Month, 3 Months, 6 Months, 12 Months, 18 Months, 24 Months, 36 Months, 48 Months, 60 Months or EMPTY<br>")
+	fmt.Fprintf(w, "    </td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "delete_customer_input_id", "Customer ID (Cannot Be Empty)", "text")
+	customerIDNameList, _ := customerSlice(dbDetail)
+	selectDoubleHTML(w, "edit_customer_select_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "delete_customer_input_name", "Customer Name (Cannot Be Empty)", "text")
+	selectDoubleHiddenHTML(w, "edit_customer_select_column", "Column to Edit (Cannot Be Empty)", customerColumnList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "edit_customer_input_new_value", "New Value", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update Customer\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	editCustomerSelectCustomerID := r.FormValue("edit_customer_select_customer_id")
+	editCustomerSelectColumn := r.FormValue("edit_customer_select_column")
+	editCustomerInputNewValue := r.FormValue("edit_customer_input_new_value")
+
+	// Validate Customer List
+	_, customerIDList := customerSlice(dbDetail)
+	validateCustomerID := slices.Contains(customerIDList, editCustomerSelectCustomerID)
+
+	if editCustomerSelectCustomerID == "" && editCustomerSelectColumn == "" && editCustomerInputNewValue == "" {
+		// Do Nothing
+	} else if validateCustomerID == false {
+		messageHTML(w, "Customer does not exist", "warning")
+	} else if editCustomerSelectColumn == "" {
+		messageHTML(w, "A column must be selected", "warning")
+	} else if editCustomerSelectColumn == "name" || editCustomerSelectColumn == "uk_based" || editCustomerSelectColumn == "reselling_minutes" || editCustomerSelectColumn == "uk_vat_registered" || editCustomerSelectColumn == "uk_vat_number" || editCustomerSelectColumn == "pbx_contract_length" || editCustomerSelectColumn == "sip_ext_contract_length" {
+		// Validate editCustomerInputNewValue is a string
+		validateNewValue := validateInput(editCustomerInputNewValue, "alphaNumEmpty")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?", editCustomerInputNewValue, editCustomerSelectCustomerID)
+		} else {
+			messageHTML(w, "Input "+validationMessageAlphaNumEmpty, "warning")
+		}
+	} else if editCustomerSelectColumn == "pbx_setup_price" || editCustomerSelectColumn == "pbx_rental_price" || editCustomerSelectColumn == "pbx_cease_price" || editCustomerSelectColumn == "sip_ext_setup_price" || editCustomerSelectColumn == "sip_ext_rental_price" || editCustomerSelectColumn == "sip_ext_cease_price" {
+		// Validate editCustomerSelectColumn is a decimal
+		validateNewValue := validateInput(editCustomerInputNewValue, "price")
+		if validateNewValue == true {
+			// Convert string values to a float64 to use the math package to round to the nearest two decimal places
+			editCustomerInputNewValueFloat64 := stringToFloat64(editCustomerInputNewValue)
+			dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?", math.Round(editCustomerInputNewValueFloat64*100)/100, editCustomerSelectCustomerID)
+		} else {
+			messageHTML(w, "Input "+validationMessagePrice, "warning")
+		}
+	} else if editCustomerSelectColumn == "pbx_limit" {
+		pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+		// Validate editCustomerInputNewValue is in the pbxLimitList slice
+		validateNewValue := slices.Contains(pbxLimitList, editCustomerInputNewValue)
+		if validateNewValue {
+			dbDetail.connection.Query("UPDATE `customer` SET `"+editCustomerSelectColumn+"` = ? WHERE `id` = '"+editCustomerSelectCustomerID+"'", editCustomerInputNewValue)
+		} else {
+			messageHTML(w, "Input must be a valid PBX limit", "warning")
+		}
+	} else {
+		messageHTML(w, "Column does not exist", "warning")
+	}
+
+	// List of all column names from the customer table
+	customerSiteColumnList := [][]string{
+		{"address_line_1", "Site Address Line One"},
+		{"address_line_2", "Site Address Line Two"},
+		{"city_town_village", "Site City Town Village"},
+		{"county_state_region", "Site County/State/Region"},
+		{"postcode_zip_code", "Site Postcode/Zip Code"},
+		{"country", "Site Country"},
+		{"contact_email", "Site Contact Email"},
+		{"contact_number", "Site Contact Number"},
+	}
+
+	fmt.Fprintf(w, "<br>")
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
+	fmt.Fprintf(w, "<table class=\"table-customer\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Edit Customer Site Details</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
+	fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+	fmt.Fprintf(w, "      <b>Site Address Line One:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Address Line Two:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site City Town Village:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site County State Region:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Postcode Zip Code:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Country:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Contact Email:</b> valid email address<br>")
+	fmt.Fprintf(w, "      <b>Site Contact Number:</b> phone number in e.164 format<br>")
+	fmt.Fprintf(w, "    </td>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	selectDoubleHTML(w, "edit_customer_site_select_customer_id", "Customer", customerIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectDoubleHiddenHTML(w, "edit_customer_site_select_column", "Column to Edit (Cannot Be Empty)", customerSiteColumnList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "edit_customer_site_input_new_value", "New Value", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update Customer\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	editCustomerSiteSelectCustomerID := r.FormValue("edit_customer_site_select_customer_id")
+	editCustomerSiteSelectColumn := r.FormValue("edit_customer_site_select_column")
+	editCustomerSiteInputNewValue := r.FormValue("edit_customer_site_input_new_value")
+
+	// Validate Customer List
+	_, customerSiteIDList := customerSlice(dbDetail)
+	validateSiteCustomerID := slices.Contains(customerSiteIDList, editCustomerSiteSelectCustomerID)
+
+	if editCustomerSiteSelectCustomerID == "" && editCustomerSiteSelectColumn == "" && editCustomerSiteInputNewValue == "" {
+		// Do Nothing
+	} else if validateSiteCustomerID == false {
+		messageHTML(w, "Customer does not exist", "warning")
+	} else if editCustomerSiteSelectColumn == "" {
+		messageHTML(w, "A column must be selected", "warning")
+	} else if editCustomerSiteSelectColumn == "address_line_1" || editCustomerSiteSelectColumn == "address_line_2" || editCustomerSiteSelectColumn == "city_town_village" || editCustomerSiteSelectColumn == "county_state_region" || editCustomerSiteSelectColumn == "postcode_zip_code" || editCustomerSiteSelectColumn == "country" {
+		// Validate editCustomerSiteInputNewValue is a string
+		validateNewValue := validateInput(editCustomerSiteInputNewValue, "alphaNumEmpty")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
+		} else {
+			messageHTML(w, "Input "+validationMessageAlphaNumEmpty, "warning")
+		}
+	} else if editCustomerSiteSelectColumn == "contact_email" {
+		// Validate editCustomerSiteInputNewValue is a email
+		validateNewValue := validateInput(editCustomerSiteInputNewValue, "email")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
+		} else {
+			messageHTML(w, validationMessageEmail, "warning")
+		}
+	} else if editCustomerSiteSelectColumn == "contact_number" {
+		// Validate editCustomerSiteInputNewValue is a phone number
+		validateNewValue := validateInput(editCustomerSiteInputNewValue, "phoneNumber")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
+		} else {
+			messageHTML(w, validationMessagePhoneNumber, "warning")
+		}
+	} else {
+		messageHTML(w, "Column does not exist", "warning")
+	}
+
+	customerInvoiceColumnList := [][]string{
+		{"address_line_1", "Invoice Address Line One"},
+		{"address_line_2", "Invoice Address Line Two"},
+		{"city_town_village", "Invoice City Town Village"},
+		{"county_state_region", "Invoice County/State/Region"},
+		{"postcode_zip_code", "Invoice Postcode/Zip Code"},
+		{"country", "Invoice Country"},
+		{"contact_email", "Invoice Contact Email"},
+		{"contact_number", "Invoice Contact Number"},
+	}
+
+	fmt.Fprintf(w, "<br>")
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
+	fmt.Fprintf(w, "<table class=\"table-customer\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Edit Customer Invoice Details</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
+	fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+	fmt.Fprintf(w, "      <b>Invoice Address Line One:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Invoice Address Line Two:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Invoice City Town Village:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Invoice County State Region:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Invoice Postcode Zip Code:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Invoice Country:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Invoice Contact Email:</b> valid email address<br>")
+	fmt.Fprintf(w, "      <b>Invoice Contact Number:</b> phone number in e.164 format<br>")
+	fmt.Fprintf(w, "    </td>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	selectDoubleHTML(w, "edit_customer_invoice_select_customer_id", "Customer", customerIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectDoubleHiddenHTML(w, "edit_customer_invoice_select_column", "Column to Edit (Cannot Be Empty)", customerInvoiceColumnList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "edit_customer_invoice_input_new_value", "New Value", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update Customer\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	editCustomerInvoiceSelectCustomerID := r.FormValue("edit_customer_invoice_select_customer_id")
+	editCustomerInvoiceSelectColumn := r.FormValue("edit_customer_invoice_select_column")
+	editCustomerInvoiceInputNewValue := r.FormValue("edit_customer_invoice_input_new_value")
+
+	// Validate Customer List
+	_, customerInvoiceIDList := customerSlice(dbDetail)
+	validateInvoiceCustomerID := slices.Contains(customerInvoiceIDList, editCustomerInvoiceSelectCustomerID)
+
+	if editCustomerInvoiceSelectCustomerID == "" && editCustomerInvoiceSelectColumn == "" && editCustomerInvoiceInputNewValue == "" {
+		// Do Nothing
+	} else if validateInvoiceCustomerID == false {
+		messageHTML(w, "Customer does not exist", "warning")
+	} else if editCustomerInvoiceSelectColumn == "" {
+		messageHTML(w, "A column must be selected", "warning")
+	} else if editCustomerInvoiceSelectColumn == "address_line_1" || editCustomerInvoiceSelectColumn == "address_line_2" || editCustomerInvoiceSelectColumn == "city_town_village" || editCustomerInvoiceSelectColumn == "county_state_region" || editCustomerInvoiceSelectColumn == "postcode_zip_code" || editCustomerInvoiceSelectColumn == "country" {
+		// Validate editCustomerInvoiceInputNewValue is a string
+		validateNewValue := validateInput(editCustomerInvoiceInputNewValue, "alphaNumEmpty")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
+		} else {
+			messageHTML(w, "Input "+validationMessageAlphaNumEmpty, "warning")
+		}
+	} else if editCustomerInvoiceSelectColumn == "contact_email" {
+		// Validate editCustomerInvoiceInputNewValue is a email
+		validateNewValue := validateInput(editCustomerInvoiceInputNewValue, "email")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
+		} else {
+			messageHTML(w, validationMessageEmail, "warning")
+		}
+	} else if editCustomerInvoiceSelectColumn == "contact_number" {
+		// Validate editCustomerInvoiceInputNewValue is a phone number
+		validateNewValue := validateInput(editCustomerInvoiceInputNewValue, "phoneNumber")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
+		} else {
+			messageHTML(w, validationMessagePhoneNumber, "warning")
+		}
+	} else {
+		messageHTML(w, "Column does not exist", "warning")
+	}
+}
+
+// Customer delete function
+func customerDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
+
+	// Delete a Customer
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
+	fmt.Fprintf(w, "<table class=\"table-delete\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a Customer<br>(Customers With User Accounts Associated With Them Cannot be Deleted)</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	customerIDNameList, _ := customerSlice(dbDetail)
+	selectDoubleHTML(w, "delete_customer_select_customer_id", "Customer", customerIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	confirmList := []string{"", "yes"}
+	selectSingleHTML(w, "delete_customer_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -3036,63 +3325,50 @@ func customerDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, r
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</form>")
 
-	deleteCustomerInputID := r.FormValue("delete_customer_input_id")
-	deleteCustomerInputName := r.FormValue("delete_customer_input_name")
+	deleteCustomerSelectCustomerID := r.FormValue("delete_customer_select_customer_id")
+	deleteCustomerSelectConfirm := r.FormValue("delete_customer_select_confirm")
 
-	// Check if customer ID is contained in the slice
-	validateCustomerID := slices.Contains(customerIDList, deleteCustomerInputID)
+	// Validate Customer List
+	_, customerIDList := customerSlice(dbDetail)
+	validateCustomerID := slices.Contains(customerIDList, deleteCustomerSelectCustomerID)
 
-	// Check if customer name is contained in the slice
-	validateCustomerName := slices.Contains(customerNameList, deleteCustomerInputName)
+	if deleteCustomerSelectCustomerID == "" && deleteCustomerSelectConfirm == "" {
+		// Do Nothing
+	} else if validateCustomerID == false && deleteCustomerSelectConfirm == "yes" {
+		messageHTML(w, "A customer must be selected", "warning")
+	} else if validateCustomerID == true && deleteCustomerSelectConfirm != "yes" {
+		messageHTML(w, "Confirmation must be yes to remove a customer", "warning")
+	} else if deleteCustomerSelectCustomerID == "1" {
+		messageHTML(w, "Customer with customer ID 1 cannot be deleted", "warning")
+	} else if validateCustomerID == true && deleteCustomerSelectConfirm == "yes" {
 
-	if deleteCustomerInputID == "" && deleteCustomerInputName == "" {
-		// Do nothing
-	} else if validateCustomerID == false {
-		messageHTML(w, "Customer ID does not exist", "warning")
-	} else if validateCustomerName == false {
-		messageHTML(w, "Customer name does not exist", "warning")
-	} else if deleteCustomerInputID == "1" {
-		messageHTML(w, "Customer account with customer ID 1 cannot be deleted", "warning")
-	} else {
-		dbDetail.connection.Query(`DELETE FROM customer WHERE id = ? AND name = ?;`, deleteCustomerInputID, deleteCustomerInputName)
+		dbDetail.table = "view___customer_detail"
+		dbDetail.column = "customer_id"
+		dbDetail.columnWhere = "customer_id"
+		dbDetail.columnWhereValue = deleteCustomerSelectCustomerID
 
-		// Close connection
-		defer dbDetail.connection.Close()
+		checkCustomerExist := selectWhere(dbDetail)
 
-		var checkCustomerDeleted string
-
-		checkCustomerDeletedSQL, err := dbDetail.connection.Query(`SELECT
-									     customer_id
-									   FROM view___customer_detail
-									   WHERE customer_id = ?;`,
-			deleteCustomerInputID)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		for checkCustomerDeletedSQL.Next() {
-
-			err = checkCustomerDeletedSQL.Scan(
-				&checkCustomerDeleted,
-			)
-
-			// Error
-			if err != nil {
-				panic(err)
-			}
-
-		}
-
-		// Close connection
-		defer dbDetail.connection.Close()
-
-		if checkCustomerDeleted == "" {
-			messageHTML(w, "Customer "+deleteCustomerInputName+" ("+deleteCustomerInputID+") deleted", "success")
+		if checkCustomerExist == "" {
+			messageHTML(w, "Customer with customer ID "+deleteCustomerSelectCustomerID+" do not exist", "success")
 		} else {
-			messageHTML(w, "Customer "+deleteCustomerInputName+" ("+deleteCustomerInputID+") not deleted", "warning")
+
+			dbDetail.connection.Query(`DELETE FROM customer WHERE id = ?`, deleteCustomerSelectCustomerID)
+
+			// Close connection
+			defer dbDetail.connection.Close()
+
+			checkCustomerDeleted := selectWhere(dbDetail)
+
+			if checkCustomerDeleted == "" {
+				messageHTML(w, "Customer with customer ID "+deleteCustomerSelectCustomerID+" removed", "success")
+			} else {
+				messageHTML(w, "Customer with customer ID "+deleteCustomerSelectCustomerID+" not removed", "warning")
+			}
 		}
+
+	} else {
+		messageHTML(w, "Invalid Input", "warning")
 	}
 }
 
@@ -4815,6 +5091,8 @@ func main() {
 				customerList(w, dbDetail, userTypeID, userCustomerID, defaultSIPExtLimit, currencySymbol)
 				fmt.Fprint(w, "<br>")
 				customerAdd(w, dbDetail, r)
+				fmt.Fprint(w, "<br>")
+				customerEdit(w, dbDetail, r)
 				fmt.Fprint(w, "<br>")
 				customerDelete(w, dbDetail, r)
 				footer(w, "header-customer", "button-customer")
