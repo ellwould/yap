@@ -624,7 +624,7 @@ SELECT DISTINCT
   `good_service`.`name` AS 'good_service_name',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
-  `good_service`.`contract_length` AS 'good_service_contract_length'
+  IFNULL(`good_service`.`contract_length`, '') AS 'good_service_contract_length'
 FROM `customer`
 INNER JOIN `invoice_item`
 ON `invoice_item`.`customer_id` = `customer`.`id`
