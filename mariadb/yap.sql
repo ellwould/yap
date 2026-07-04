@@ -619,7 +619,7 @@ SELECT DISTINCT
   `invoice_item`.`sales_tax_status` AS 'invoice_item_sales_tax_status',
   `invoice_item`.`bill_item_once` AS 'invoice_bill_item_once',
   `invoice_item`.`item_on_hold` AS 'invoice_item_on_hold',
-  `invoice_item`.`contract_length` AS 'invoice_item_contract_length',
+  IFNULL(`invoice_item`.`contract_length`, '') AS 'invoice_item_contract_length',
   IFNULL(`invoice_item`.`contract_start_date`, '') AS 'invoice_item_contract_start_date',
   `good_service`.`name` AS 'good_service_name',
   `good_service`.`good_service_type`,
