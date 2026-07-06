@@ -288,7 +288,7 @@ ALTER TABLE `good_service`
 ADD INDEX `index___good_service__supplier_name` (`supplier_name`);
 
 ALTER TABLE `good_service`
-ADD INDEX `index___good_service__supplier_contract_length` (`contract_length`);
+ADD INDEX `index___good_service__supplier_contract_length` (`supplier_contract_length`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -305,7 +305,7 @@ FOREIGN KEY (`pbx_contract_length`)
 REFERENCES `contract_length_lookup` (`contract_length`);
 
 ALTER TABLE `customer`
-ADD CONSTRAINT fk___customer__sip_ext_contract_length___contract_length_lookup
+ADD CONSTRAINT fk___customer__ext_contract_length___contract_length_lookup
 FOREIGN KEY (`sip_ext_contract_length`)
 REFERENCES `contract_length_lookup` (`contract_length`);
 
