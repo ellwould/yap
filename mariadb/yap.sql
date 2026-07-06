@@ -225,7 +225,7 @@ ALTER TABLE `customer`
 ADD INDEX `index___customer__pbx_contract_length` (`pbx_contract_length`);
 
 ALTER TABLE `customer`
-ADD INDEX `index___customer__sip_ext_contract_length` (`sip_ext_contract_length`);
+ADD INDEX `index___customer__ext_contract_length` (`sip_ext_contract_length`);
 
 ALTER TABLE `customer`
 ADD INDEX `index___customer__pbx_sales_tax_rate` (`pbx_sales_tax_rate`);
