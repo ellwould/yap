@@ -12,16 +12,16 @@ CREATE TABLE `customer`
   `pbx_limit` SMALLINT UNSIGNED NOT NULL,
   `pbx_sales_tax_rate` DECIMAL(5,2) NOT NULL,
   `pbx_sales_tax_status` VARCHAR(255) NOT NULL,
-  `sip_ext_sales_tax_rate` DECIMAL(5,2) NOT NULL,
-  `sip_ext_sales_tax_status` VARCHAR(255) NOT NULL,
+  `ext_sales_tax_rate` DECIMAL(5,2) NOT NULL,
+  `ext_sales_tax_status` VARCHAR(255) NOT NULL,
   `pbx_setup_price` DECIMAL(8,2) NOT NULL,
   `pbx_rental_price` DECIMAL(8,2) NOT NULL,
   `pbx_cease_price` DECIMAL(8,2) NOT NULL,
   `pbx_contract_length` VARCHAR(255),
-  `sip_ext_setup_price` DECIMAL(8,2) NOT NULL,
-  `sip_ext_rental_price` DECIMAL(8,2) NOT NULL,
-  `sip_ext_cease_price` DECIMAL(8,2) NOT NULL,
-  `sip_ext_contract_length` VARCHAR(255),
+  `ext_setup_price` DECIMAL(8,2) NOT NULL,
+  `ext_rental_price` DECIMAL(8,2) NOT NULL,
+  `ext_cease_price` DECIMAL(8,2) NOT NULL,
+  `ext_contract_length` VARCHAR(255),
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
@@ -225,7 +225,7 @@ ALTER TABLE `customer`
 ADD INDEX `index___customer__pbx_contract_length` (`pbx_contract_length`);
 
 ALTER TABLE `customer`
-ADD INDEX `index___customer__ext_contract_length` (`sip_ext_contract_length`);
+ADD INDEX `index___customer__ext_contract_length` (`ext_contract_length`);
 
 ALTER TABLE `customer`
 ADD INDEX `index___customer__pbx_sales_tax_rate` (`pbx_sales_tax_rate`);
@@ -234,10 +234,10 @@ ALTER TABLE `customer`
 ADD INDEX `index___customer__pbx_sales_tax_status` (`pbx_sales_tax_status`);
 
 ALTER TABLE `customer`
-ADD INDEX `index___customer__sip_ext_sales_tax_rate` (`sip_ext_sales_tax_rate`);
+ADD INDEX `index___customer__ext_sales_tax_rate` (`ext_sales_tax_rate`);
 
 ALTER TABLE `customer`
-ADD INDEX `index___customer__sip_ext_sales_tax_status` (`sip_ext_sales_tax_status`);
+ADD INDEX `index___customer__ext_sales_tax_status` (`ext_sales_tax_status`);
 
 ALTER TABLE `pbx`
 ADD INDEX `index___pbx__customer_id` (`customer_id`);
@@ -306,7 +306,7 @@ REFERENCES `contract_length_lookup` (`contract_length`);
 
 ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer__ext_contract_length___contract_length_lookup
-FOREIGN KEY (`sip_ext_contract_length`)
+FOREIGN KEY (`ext_contract_length`)
 REFERENCES `contract_length_lookup` (`contract_length`);
 
 ALTER TABLE `customer`
@@ -320,13 +320,13 @@ FOREIGN KEY (`pbx_sales_tax_status`)
 REFERENCES `sales_tax_status_lookup` (`sales_tax_status`);
 
 ALTER TABLE `customer`
-ADD CONSTRAINT fk___customer__sip_ext_sales_tax_rate___sales_tax_rate_lookup
-FOREIGN KEY (`sip_ext_sales_tax_rate`)
+ADD CONSTRAINT fk___customer__ext_sales_tax_rate___sales_tax_rate_lookup
+FOREIGN KEY (`ext_sales_tax_rate`)
 REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`);
 
 ALTER TABLE `customer`
-ADD CONSTRAINT fk___customer__sip_ext_sales_tax_status___sales_tax_status_lookup
-FOREIGN KEY (`sip_ext_sales_tax_status`)
+ADD CONSTRAINT fk___customer__ext_sales_tax_status___sales_tax_status_lookup
+FOREIGN KEY (`ext_sales_tax_status`)
 REFERENCES `sales_tax_status_lookup` (`sales_tax_status`);
 
 ALTER TABLE `pbx`
@@ -524,16 +524,16 @@ SELECT
   `customer`.`pbx_limit` AS 'customer_pbx_limit',
   `customer`.`pbx_sales_tax_rate` AS 'customer_pbx_sales_tax_rate',
   `customer`.`pbx_sales_tax_status` AS 'customer_pbx_sales_tax_status',
-  `customer`.`sip_ext_sales_tax_rate` AS 'customer_sip_ext_sales_tax_rate',
-  `customer`.`sip_ext_sales_tax_status` AS 'customer_sip_ext_sales_tax_status',
+  `customer`.`ext_sales_tax_rate` AS 'customer_ext_sales_tax_rate',
+  `customer`.`ext_sales_tax_status` AS 'customer_ext_sales_tax_status',
   `customer`.`pbx_setup_price` AS 'customer_pbx_setup_price',
   `customer`.`pbx_rental_price` AS 'customer_pbx_rental_price',
   `customer`.`pbx_cease_price` AS 'customer_pbx_cease_price',
   IFNULL(`customer`.`pbx_contract_length`, '') AS 'customer_pbx_contract_length',
-  `customer`.`sip_ext_setup_price` AS 'customer_sip_ext_setup_price',
-  `customer`.`sip_ext_rental_price` AS 'customer_sip_ext_rental_price',
-  `customer`.`sip_ext_cease_price` AS 'customer_sip_ext_cease_price',
-  IFNULL(`customer`.`sip_ext_contract_length`, '') AS 'customer_sip_ext_contract_length',
+  `customer`.`ext_setup_price` AS 'customer_ext_setup_price',
+  `customer`.`ext_rental_price` AS 'customer_ext_rental_price',
+  `customer`.`ext_cease_price` AS 'customer_ext_cease_price',
+  IFNULL(`customer`.`ext_contract_length`, '') AS 'customer_ext_contract_length',
   IFNULL(`customer_site_address`.`address_line_1`, '') AS 'customer_site_address_line_1',
   IFNULL(`customer_site_address`.`address_line_2`, '') AS 'customer_site_address_line_2',
   IFNULL(`customer_site_address`.`city_town_village`, '') AS 'customer_site_city_town_village',
@@ -717,7 +717,7 @@ VALUES
   ('48 Months'),
   ('60 Months');
 
-INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_sales_tax_rate`, `pbx_sales_tax_status`, `sip_ext_sales_tax_rate`, `sip_ext_sales_tax_status`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`, `sip_ext_contract_length`)
+INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_sales_tax_rate`, `pbx_sales_tax_status`, `ext_sales_tax_rate`, `ext_sales_tax_status`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `ext_setup_price`, `ext_rental_price`, `ext_cease_price`, `ext_contract_length`)
 VALUES (1, 'system', 'n/a', 'n/a', 'n/a', NULL, 'n/a', 0, 0, 'n/a', 0, 'n/a', 0, 0, 0, NULL, 0, 0, 0, NULL);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
