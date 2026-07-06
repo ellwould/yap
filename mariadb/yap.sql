@@ -10,6 +10,10 @@ CREATE TABLE `customer`
   `uk_vat_registered` ENUM('yes', 'no', 'n/a') NOT NULL,
   `uk_vat_number` VARCHAR(20),
   `pbx_limit` SMALLINT UNSIGNED NOT NULL,
+  `pbx_sales_tax_rate` DECIMAL(5,2) NOT NULL,
+  `pbx_sales_tax_status` VARCHAR(255) NOT NULL,
+  `sip_ext_sales_tax_rate` DECIMAL(5,2) NOT NULL,
+  `sip_ext_sales_tax_status` VARCHAR(255) NOT NULL,
   `pbx_setup_price` DECIMAL(8,2) NOT NULL,
   `pbx_rental_price` DECIMAL(8,2) NOT NULL,
   `pbx_cease_price` DECIMAL(8,2) NOT NULL,
@@ -157,7 +161,7 @@ CREATE TABLE `good_service` (
   `name` VARCHAR(255) NOT NULL,
   `good_service_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
-  `contract_length` VARCHAR(255),
+  `supplier_contract_length` VARCHAR(255),
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`name`)
 )
@@ -223,6 +227,18 @@ ADD INDEX `index___customer__pbx_contract_length` (`pbx_contract_length`);
 ALTER TABLE `customer`
 ADD INDEX `index___customer__sip_ext_contract_length` (`sip_ext_contract_length`);
 
+ALTER TABLE `customer`
+ADD INDEX `index___customer__pbx_sales_tax_rate` (`pbx_sales_tax_rate`);
+
+ALTER TABLE `customer`
+ADD INDEX `index___customer__pbx_sales_tax_status` (`pbx_sales_tax_status`);
+
+ALTER TABLE `customer`
+ADD INDEX `index___customer__sip_ext_sales_tax_rate` (`sip_ext_sales_tax_rate`);
+
+ALTER TABLE `customer`
+ADD INDEX `index___customer__sip_ext_sales_tax_status` (`sip_ext_sales_tax_status`);
+
 ALTER TABLE `pbx`
 ADD INDEX `index___pbx__customer_id` (`customer_id`);
 
@@ -272,7 +288,7 @@ ALTER TABLE `good_service`
 ADD INDEX `index___good_service__supplier_name` (`supplier_name`);
 
 ALTER TABLE `good_service`
-ADD INDEX `index___good_service__contract_length` (`contract_length`);
+ADD INDEX `index___good_service__supplier_contract_length` (`contract_length`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -292,6 +308,26 @@ ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer__sip_ext_contract_length___contract_length_lookup
 FOREIGN KEY (`sip_ext_contract_length`)
 REFERENCES `contract_length_lookup` (`contract_length`);
+
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer__pbx_sales_tax_rate___sales_tax_rate_lookup
+FOREIGN KEY (`pbx_sales_tax_rate`)
+REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`);
+
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer__pbx_sales_tax_status___sales_tax_status_lookup
+FOREIGN KEY (`pbx_sales_tax_status`)
+REFERENCES `sales_tax_status_lookup` (`sales_tax_status`);
+
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer__sip_ext_sales_tax_rate___sales_tax_rate_lookup
+FOREIGN KEY (`sip_ext_sales_tax_rate`)
+REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`);
+
+ALTER TABLE `customer`
+ADD CONSTRAINT fk___customer__sip_ext_sales_tax_status___sales_tax_status_lookup
+FOREIGN KEY (`sip_ext_sales_tax_status`)
+REFERENCES `sales_tax_status_lookup` (`sales_tax_status`);
 
 ALTER TABLE `pbx`
 ADD CONSTRAINT fk___pbx___customer
@@ -406,7 +442,7 @@ REFERENCES `supplier` (`name`);
 
 ALTER TABLE `good_service`
 ADD CONSTRAINT fk___good_service___contract_length_lookup
-FOREIGN KEY (`contract_length`)
+FOREIGN KEY (`supplier_contract_length`)
 REFERENCES `contract_length_lookup` (`contract_length`);
 
 ----------------------------------------------------------------------------------------------------
@@ -425,7 +461,7 @@ SELECT
   `user_account`.`customer_id`,
   `customer`.`name` AS 'customer_name',
   `user_account`.`pbx_id`,
-   `pbx`.`name` AS 'pbx_name',
+  `pbx`.`name` AS 'pbx_name',
   `user_account_type`.`permission` AS 'user_account_type_permission',
   IFNULL(`customer_site_address`.`address_line_1`, '') AS 'customer_site_address_line_1',
   IFNULL(`customer_site_address`.`address_line_2`, '') AS 'customer_site_address_line_2',
@@ -486,6 +522,10 @@ SELECT
   IFNULL(`customer`.`uk_vat_number`, '') AS 'customer_uk_vat_number',
   `customer`.`reselling_minutes` AS 'customer_reselling_minutes',
   `customer`.`pbx_limit` AS 'customer_pbx_limit',
+  `customer`.`pbx_sales_tax_rate` AS 'customer_pbx_sales_tax_rate',
+  `customer`.`pbx_sales_tax_status` AS 'customer_pbx_sales_tax_status',
+  `customer`.`sip_ext_sales_tax_rate` AS 'customer_sip_ext_sales_tax_rate',
+  `customer`.`sip_ext_sales_tax_status` AS 'customer_sip_ext_sales_tax_status',
   `customer`.`pbx_setup_price` AS 'customer_pbx_setup_price',
   `customer`.`pbx_rental_price` AS 'customer_pbx_rental_price',
   `customer`.`pbx_cease_price` AS 'customer_pbx_cease_price',
@@ -624,7 +664,7 @@ SELECT DISTINCT
   `good_service`.`name` AS 'good_service_name',
   `good_service`.`good_service_type`,
   `good_service`.`supplier_name` AS 'good_service_supplier_name',
-  IFNULL(`good_service`.`contract_length`, '') AS 'good_service_contract_length'
+  IFNULL(`good_service`.`supplier_contract_length`, '') AS 'good_service_supplier_contract_length'
 FROM `customer`
 INNER JOIN `invoice_item`
 ON `invoice_item`.`customer_id` = `customer`.`id`
@@ -644,7 +684,8 @@ VALUES
 INSERT INTO `sales_tax_status_lookup` (`sales_tax_status`)
 VALUES
   ('TAXABLE'),
-  ('EXEMPT');
+  ('EXEMPT'),
+  ('n/a');
 
 INSERT INTO `consumer_type_lookup` (`consumer_type`)
 VALUES
@@ -676,8 +717,8 @@ VALUES
   ('48 Months'),
   ('60 Months');
 
-INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`, `sip_ext_contract_length`)
-VALUES (1, 'system', 'n/a', 'n/a', 'n/a', NULL, 'N/a', 0, 0, 0, 0, NULL, 0, 0, 0, NULL);
+INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_sales_tax_rate`, `pbx_sales_tax_status`, `sip_ext_sales_tax_rate`, `sip_ext_sales_tax_status`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `sip_ext_setup_price`, `sip_ext_rental_price`, `sip_ext_cease_price`, `sip_ext_contract_length`)
+VALUES (1, 'system', 'n/a', 'n/a', 'n/a', NULL, 'n/a', 0, 0, 'n/a', 0, 'n/a', 0, 0, 0, NULL, 0, 0, 0, NULL);
 
 INSERT INTO `customer_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
