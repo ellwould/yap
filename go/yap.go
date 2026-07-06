@@ -179,7 +179,7 @@ func selectSingleHTML(w http.ResponseWriter, selectValue string, labelMessage st
 	fmt.Fprintf(w, "  </label><br>")
 	fmt.Fprintf(w, "  <select id=\""+selectValue+"\" name=\""+selectValue+"\">")
 	for _, value := range optionValue {
-		fmt.Fprintf(w, "<option value=\""+string(value)+"\">"+string(value)+"</option>")
+		fmt.Fprintf(w, "<option value=\""+string(value)+"\">&nbsp "+string(value)+"</option>")
 	}
 	fmt.Fprintf(w, "  </select>")
 }
@@ -637,6 +637,38 @@ func pbxSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 	return pbxIDNameList, pbxIDList
 }
 
+// Function to retrive values from a single column from inside a database table, the data is appended to a slice
+func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
+	// Get values from the database and append to a slice
+	var singleColumnList []string
+	var singleColumn string
+
+	singleColumnSQL, err := dbDetail.connection.Query(`SELECT
+                                                                ` + dbDetail.column + `
+                                                              FROM
+                                                                yap.` + dbDetail.table + ``)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for singleColumnSQL.Next() {
+
+		err = singleColumnSQL.Scan(
+			&singleColumn,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		singleColumnList = append(singleColumnList, singleColumn)
+	}
+	return singleColumnList
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // Constants for validation failure messages
@@ -703,7 +735,15 @@ func validateInput(value string, valueType string) (validation bool) {
 			validation = true
 			return
 		}
-
+	} else if valueType == "date" {
+		validateInputDateErr := validateInput.Var(value, "datetime")
+		if validateInputDateErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
 	} else {
 		panic("The validateInput function can only take the following arguments: email, alphaNum or alphaNumEmpty")
 	}
@@ -1396,28 +1436,28 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			inputTableHTMLArgument.inputID = "other-account-input-pbx-name"
-			inputTableHTMLArgument.funcNameJS = "otherAccountSearchPBXName"
-			inputTableHTMLArgument.placeholder = "PBX Name"
-			inputTableHTML(w, inputTableHTMLArgument)
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "other-account-input-pbx-id"
 			inputTableHTMLArgument.funcNameJS = "otherAccountSearchPBXID"
 			inputTableHTMLArgument.placeholder = "PBX ID"
 			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTMLArgument.inputID = "other-account-input-pbx-name"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchPBXName"
+			inputTableHTMLArgument.placeholder = "PBX Name"
+			inputTableHTML(w, inputTableHTMLArgument)
 		}
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-			inputTableHTMLArgument.inputID = "other-account-input-customer-name"
-			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerName"
-			inputTableHTMLArgument.placeholder = "Customer Name"
+			inputTableHTMLArgument.inputID = "other-account-input-customer-id"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerID"
+			inputTableHTMLArgument.placeholder = "Customer ID"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
-			inputTableHTMLArgument.inputID = "other-account-input-customer-id"
-			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerID"
-			inputTableHTMLArgument.placeholder = "Customer ID"
+			inputTableHTMLArgument.inputID = "other-account-input-customer-name"
+			inputTableHTMLArgument.funcNameJS = "otherAccountSearchCustomerName"
+			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
 		}
 		fmt.Fprintf(w, "    <br>")
@@ -1442,12 +1482,12 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		fmt.Fprintf(w, "          <th>Account Type</th>")
 		fmt.Fprintf(w, "          <th>Account Created</th>")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			fmt.Fprintf(w, "          <th>PBX Name</th>")
 			fmt.Fprintf(w, "          <th>PBX ID</th>")
+			fmt.Fprintf(w, "          <th>PBX Name</th>")
 		}
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "          <th>Customer Name</th>")
 			fmt.Fprintf(w, "          <th>Customer ID</th>")
+			fmt.Fprintf(w, "          <th>Customer Name</th>")
 		}
 
 		fmt.Fprintf(w, "        </tr>")
@@ -1473,10 +1513,10 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						     			 user_account_type,  
 						     			 user_account_type_id,
 						     			 user_account_date_time_added, 
-						     			 customer_id,
 						     			 customer_name,
-						     			 pbx_id,
-						     			 pbx_name						     
+						     			 customer_id,
+						     			 pbx_name,
+						     			 pbx_id						     
 								       FROM
 								         yap.view___account_detail
 								       `+whereClause, userCustomerID, userPBXID)
@@ -1496,10 +1536,10 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				&userAccountType,
 				&userAccountTypeID,
 				&userAccountDateTimeAdded,
-				&customerID,
 				&customerName,
-				&pbxID,
+				&customerID,
 				&pbxName,
+				&pbxID,
 			)
 
 			// Error
@@ -1515,25 +1555,25 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			userAccountListTdHTML(w, userAccountID, userAccountTypeID, formatDateTime(userAccountDateTimeAdded))
 
 			if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-				if pbxName != "system" {
-					userAccountListTdHTML(w, userAccountID, userAccountTypeID, pbxName)
-				} else {
-					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
-				}
 				if pbxID != "1" {
 					userAccountListTdHTML(w, userAccountID, userAccountTypeID, pbxID)
 				} else {
 					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
 				}
-			}
-			if userTypeID == "100" {
-				if customerName != "system" {
-					userAccountListTdHTML(w, userAccountID, userAccountTypeID, customerName)
+				if pbxName != "system" {
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, pbxName)
 				} else {
 					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
 				}
+			}
+			if userTypeID == "100" {
 				if customerID != "1" {
 					userAccountListTdHTML(w, userAccountID, userAccountTypeID, customerID)
+				} else {
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
+				}
+				if customerName != "system" {
+					userAccountListTdHTML(w, userAccountID, userAccountTypeID, customerName)
 				} else {
 					userAccountListTdHTML(w, userAccountID, userAccountTypeID, "-")
 				}
@@ -1571,26 +1611,26 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-			// JS filter function for PBX name in the other account table
-			filterTableJSArgument.funcNameJS = "otherAccountSearchPBXName"
-			filterTableJSArgument.inputID = "other-account-input-pbx-name"
-			filterTableJSArgument.columnNumber = 5
-			filterTableJS(w, filterTableJSArgument)
 			// JS filter function for PBX ID in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchPBXID"
 			filterTableJSArgument.inputID = "other-account-input-pbx-id"
+			filterTableJSArgument.columnNumber = 5
+			filterTableJS(w, filterTableJSArgument)
+			// JS filter function for PBX name in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchPBXName"
+			filterTableJSArgument.inputID = "other-account-input-pbx-name"
 			filterTableJSArgument.columnNumber = 6
 			filterTableJS(w, filterTableJSArgument)
 		}
 		if userTypeID == "100" {
-			// JS filter function for the customer name in the other account table
-			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerName"
-			filterTableJSArgument.inputID = "other-account-input-customer-name"
-			filterTableJSArgument.columnNumber = 7
-			filterTableJS(w, filterTableJSArgument)
 			// JS filter function for the customer ID in the other account table
 			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerID"
 			filterTableJSArgument.inputID = "other-account-input-customer-id"
+			filterTableJSArgument.columnNumber = 7
+			filterTableJS(w, filterTableJSArgument)
+			// JS filter function for the customer name in the other account table
+			filterTableJSArgument.funcNameJS = "otherAccountSearchCustomerName"
+			filterTableJSArgument.inputID = "other-account-input-customer-name"
 			filterTableJSArgument.columnNumber = 8
 			filterTableJS(w, filterTableJSArgument)
 		}
@@ -1612,7 +1652,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 }
 
 // Function to add new user account
-func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, userID string, r *http.Request) {
+func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, userID string) {
 
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 	fmt.Fprintf(w, "<table class=\"table-user-account\">")
@@ -1812,7 +1852,7 @@ func userAccountAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, u
 	}
 }
 
-func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, userID string, r *http.Request) {
+func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, userID string) {
 
 	// Get account type ID and email from the database and append to slice
 	var userAccountIDList []string
@@ -2080,7 +2120,7 @@ func userAccountDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter
 
 // Customer page functions
 
-func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, defaultSIPExtLimit string, currencySymbol string) {
+func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, defaultExtLimit string, currencySymbol string) {
 
 	var (
 		customerName                     string
@@ -2092,14 +2132,18 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		customerUKVATNumber              string
 		customerResellingMinutes         string
 		customerPBXLimit                 string
+		customerPBXSalesTaxRate          string
+		customerPBXSalesTaxStatus        string
+		customerExtSalesTaxRate          string
+		customerExtSalesTaxStatus        string
 		customerPBXSetupPrice            string
 		customerPBXRentalPrice           string
 		customerPBXCeasePrice            string
 		customerPBXContractLength        string
-		customerSIPExtSetupPrice         string
-		customerSIPExtRentalPrice        string
-		customerSIPExtCeasePrice         string
-		customerSIPExtContractLength     string
+		customerExtSetupPrice            string
+		customerExtRentalPrice           string
+		customerExtCeasePrice            string
+		customerExtContractLength        string
 		customerSiteAddressLine1         string
 		customerSiteAddressLine2         string
 		customerSiteCityTownVillage      string
@@ -2430,14 +2474,18 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 							customer_uk_vat_number,
 							customer_reselling_minutes,
 							customer_pbx_limit,
+							customer_pbx_sales_tax_rate,
+							customer_pbx_sales_tax_status,
+                        				customer_ext_sales_tax_rate,
+                        				customer_ext_sales_tax_status,
 							customer_pbx_setup_price,
 							customer_pbx_rental_price,
 							customer_pbx_cease_price,
 							customer_pbx_contract_length,
-							customer_sip_ext_setup_price,
-							customer_sip_ext_rental_price,
-							customer_sip_ext_cease_price,
-							customer_sip_ext_contract_length					              
+							customer_ext_setup_price,
+							customer_ext_rental_price,
+							customer_ext_cease_price,
+							customer_ext_contract_length					              
 					              FROM
 					  	        yap.view___customer_detail
 						      `+whereClause, userCustomerID)
@@ -2460,14 +2508,18 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 			&customerUKVATNumber,
 			&customerResellingMinutes,
 			&customerPBXLimit,
+			&customerPBXSalesTaxRate,
+			&customerPBXSalesTaxStatus,
+			&customerExtSalesTaxRate,
+			&customerExtSalesTaxStatus,
 			&customerPBXSetupPrice,
 			&customerPBXRentalPrice,
 			&customerPBXCeasePrice,
 			&customerPBXContractLength,
-			&customerSIPExtSetupPrice,
-			&customerSIPExtRentalPrice,
-			&customerSIPExtCeasePrice,
-			&customerSIPExtContractLength,
+			&customerExtSetupPrice,
+			&customerExtRentalPrice,
+			&customerExtCeasePrice,
+			&customerExtContractLength,
 		)
 
 		// Error
@@ -2485,17 +2537,21 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "            <b>UK VAT Number:</b> "+customerUKVATNumber+"<br>")
 		fmt.Fprintf(w, "            <b>Reselling Minutes:</b> "+customerResellingMinutes+"<br>")
 		fmt.Fprintf(w, "            <b>PBX Limit:</b> "+customerPBXLimit+"<br>")
-		fmt.Fprintf(w, "            <b>EXT Default Limit:</b> "+defaultSIPExtLimit)
+		fmt.Fprintf(w, "            <b>EXT Default Limit:</b> "+defaultExtLimit+"<br>")
+		fmt.Fprintf(w, "            <b>PBX Sales Tax Rate &#37:</b> "+customerPBXSalesTaxRate+"<br>")
+		fmt.Fprintf(w, "            <b>PBX Sales Tax Status:</b> "+customerPBXSalesTaxStatus+"<br>")
+		fmt.Fprintf(w, "            <b>EXT Sales Tax Rate &#37:</b> "+customerExtSalesTaxRate+"<br>")
+		fmt.Fprintf(w, "            <b>EXT Sales Tax Status:</b> "+customerExtSalesTaxStatus)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
 		fmt.Fprintf(w, "            <b>PBX Setup Price:</b> "+currencySymbol+customerPBXSetupPrice+"<br>")
 		fmt.Fprintf(w, "            <b>PBX Rental Price:</b> "+currencySymbol+customerPBXRentalPrice+"<br>")
 		fmt.Fprintf(w, "            <b>PBX Cease Price:</b> "+currencySymbol+customerPBXCeasePrice+"<br>")
 		fmt.Fprintf(w, "            <b>PBX Contract Length:</b> "+customerPBXContractLength+"<br>")
-		fmt.Fprintf(w, "            <b>SIP EXT Setup Price:</b> "+currencySymbol+customerSIPExtSetupPrice+"<br>")
-		fmt.Fprintf(w, "            <b>SIP EXT Rental Price:</b> "+currencySymbol+customerSIPExtRentalPrice+"<br>")
-		fmt.Fprintf(w, "            <b>SIP EXT Cease Price:</b> "+currencySymbol+customerSIPExtCeasePrice+"<br>")
-		fmt.Fprintf(w, "            <b>SIP EXT Contract Length:</b> "+customerSIPExtContractLength+"<br>")
+		fmt.Fprintf(w, "            <b>SIP EXT Setup Price:</b> "+currencySymbol+customerExtSetupPrice+"<br>")
+		fmt.Fprintf(w, "            <b>SIP EXT Rental Price:</b> "+currencySymbol+customerExtRentalPrice+"<br>")
+		fmt.Fprintf(w, "            <b>SIP EXT Cease Price:</b> "+currencySymbol+customerExtCeasePrice+"<br>")
+		fmt.Fprintf(w, "            <b>SIP EXT Contract Length:</b> "+customerExtContractLength+"<br>")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 	}
@@ -2540,7 +2596,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 
 // Add customer function
 
-func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
+func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter) {
 
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 	fmt.Fprintf(w, "<table class=\"table-customer\">")
@@ -2552,35 +2608,57 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_id", "Customer ID (Cannot Be Empty)", "text")
+	inputHTML(w, "add_customer_input_id", "Customer ID<br>(Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_name", "Customer Name (Cannot Be Empty)", "text")
+	inputHTML(w, "add_customer_input_name", "Customer Name<br>(Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	ukBasedList := []string{"", "yes", "no"}
-	selectSingleHTML(w, "add_customer_select_uk_based", "Customer UK Based", ukBasedList)
+	selectSingleHTML(w, "add_customer_select_uk_based", "Customer UK Based<br>(Cannot Be Empty)", ukBasedList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	resellingMinutesList := []string{"", "yes", "no"}
-	selectSingleHTML(w, "add_customer_select_reselling_minutes", "Reselling Minutes", resellingMinutesList)
+	selectSingleHTML(w, "add_customer_select_reselling_minutes", "Customer Reselling Minutes<br>(Cannot Be Empty)", resellingMinutesList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	consumerTypeList := []string{"", "Residentail", "Sole Trader", "Partnership", "Limited Liability Partnership (LLP)", "Private Limited Company (LTD)", "Public Limited Company (PLC)", "Community Interest Company (CIC)"}
-	selectSingleHTML(w, "add_customer_select_consumer_type", "Consumer Type", consumerTypeList)
+	dbDetail.table = "consumer_type_lookup"
+	dbDetail.column = "consumer_type"
+	consumerTypeList := singleColumnSlice(dbDetail)
+	consumerTypeList = append([]string{""}, consumerTypeList...)
+	selectSingleHTML(w, "add_customer_select_consumer_type", "Consumer Type<br>(Cannot Be Empty)", consumerTypeList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	ukVATRegisteredList := []string{"", "yes", "no"}
-	selectSingleHTML(w, "add_customer_select_uk_vat_registered", "UK VAT Registered", ukVATRegisteredList)
+	selectSingleHTML(w, "add_customer_select_uk_vat_registered", "UK VAT Registered<br>(Cannot Be Empty)", ukVATRegisteredList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number", "text")
+	inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number<br>(Cannot Be Empty if UK VAT Registered yes)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
-	selectSingleHTML(w, "add_customer_select_pbx_limit", "PBX Limit (Cannot Be Empty)", pbxLimitList)
+	selectSingleHTML(w, "add_customer_select_pbx_limit", "PBX Limt<br>(Cannot Be Empty)", pbxLimitList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	dbDetail.table = "sales_tax_rate_lookup"
+	dbDetail.column = "sales_tax_rate"
+	salesTaxRateList := singleColumnSlice(dbDetail)
+	salesTaxRateList = append([]string{""}, salesTaxRateList...)
+	selectSingleHTML(w, "add_customer_select_pbx_sales_tax_rate", "PBX Sales Tax Rate &#37<br>(Cannot Be Empty)", salesTaxRateList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	salesTaxStatusList := []string{"", "TAXABLE", "EXEMPT"}
+	selectSingleHTML(w, "add_customer_select_pbx_sales_tax_status", "PBX Sales Tax Status<br>(Cannot Be Empty)", salesTaxStatusList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectSingleHTML(w, "add_customer_select_ext_sales_tax_rate", "EXT Sales Tax Rate &#37<br>(Cannot Be Empty)", salesTaxRateList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectSingleHTML(w, "add_customer_select_ext_sales_tax_status", "EXT Sales Tax Status<br>(Cannot Be Empty)", salesTaxStatusList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
@@ -2600,22 +2678,25 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	inputHTML(w, "add_customer_input_pbx_cease_price", "PBX Cease Price (Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	contractLengthList := []string{"", "1 Day", "1 Week", "1 Month", "3 Months", "6 Months", "12 Months", "18 Months", "24 Months", "36 Months", "48 Months", "60 Months"}
+	dbDetail.table = "contract_length_lookup"
+	dbDetail.column = "contract_length"
+	contractLengthList := singleColumnSlice(dbDetail)
+	contractLengthList = append([]string{""}, contractLengthList...)
 	selectSingleHTML(w, "add_customer_select_pbx_contract_length", "PBX Contract Length", contractLengthList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_sip_ext_setup_price", "EXT Setup Price (Cannot Be Empty)", "text")
+	inputHTML(w, "add_customer_input_ext_setup_price", "EXT Setup Price (Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_sip_ext_rental_price", "EXT Rental Price (Cannot Be Empty)", "text")
+	inputHTML(w, "add_customer_input_ext_rental_price", "EXT Rental Price (Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_sip_ext_cease_price", "EXT Cease Price (Cannot Be Empty)", "text")
+	inputHTML(w, "add_customer_input_ext_cease_price", "EXT Cease Price (Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	selectSingleHTML(w, "add_customer_select_sip_ext_contract_length", "EXT Contract Length", contractLengthList)
+	selectSingleHTML(w, "add_customer_select_ext_contract_length", "EXT Contract Length", contractLengthList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
@@ -2703,15 +2784,19 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	addCustomerSelectUKVATRegistered := r.FormValue("add_customer_select_uk_vat_registered")
 	addCustomerInputUKVATNumber := r.FormValue("add_customer_input_uk_vat_number")
 	addCustomerSelectPBXLimit := r.FormValue("add_customer_select_pbx_limit")
+	addCustomerSelectPBXSalesTaxRate := r.FormValue("add_customer_select_pbx_sales_tax_rate")
+	addCustomerSelectPBXSalesTaxStatus := r.FormValue("add_customer_select_pbx_sales_tax_status")
+	addCustomerSelectExtSalesTaxRate := r.FormValue("add_customer_select_ext_sales_tax_rate")
+	addCustomerSelectExtSalesTaxStatus := r.FormValue("add_customer_select_ext_sales_tax_status")
 
 	addCustomerInputPBXSetupPrice := r.FormValue("add_customer_input_pbx_setup_price")
 	addCustomerInputPBXRentalPrice := r.FormValue("add_customer_input_pbx_rental_price")
 	addCustomerInputPBXCeasePrice := r.FormValue("add_customer_input_pbx_cease_price")
 	addCustomerSelectPBXContractLength := r.FormValue("add_customer_select_pbx_contract_length")
-	addCustomerInputSIPExtSetupPrice := r.FormValue("add_customer_input_sip_ext_setup_price")
-	addCustomerInputSIPExtRentalPrice := r.FormValue("add_customer_input_sip_ext_rental_price")
-	addCustomerInputSIPExtCeasePrice := r.FormValue("add_customer_input_sip_ext_cease_price")
-	addCustomerSelectSIPExtContractLength := r.FormValue("add_customer_select_sip_ext_contract_length")
+	addCustomerInputExtSetupPrice := r.FormValue("add_customer_input_ext_setup_price")
+	addCustomerInputExtRentalPrice := r.FormValue("add_customer_input_ext_rental_price")
+	addCustomerInputExtCeasePrice := r.FormValue("add_customer_input_ext_cease_price")
+	addCustomerSelectExtContractLength := r.FormValue("add_customer_select_ext_contract_length")
 
 	addCustomerInputSiteAddressLine1 := r.FormValue("add_customer_input_site_address_line_1")
 	addCustomerInputSiteAddressLine2 := r.FormValue("add_customer_input_site_address_line_2")
@@ -2747,6 +2832,14 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	validateUKVATNumber := validateInput(addCustomerInputUKVATNumber, "alphaNumEmpty")
 	// Validate PBX limit
 	validatePBXLimit := slices.Contains(pbxLimitList, addCustomerSelectPBXLimit)
+	// Validate PBX sales tax rate
+	validatePBXSalesTaxRate := slices.Contains(salesTaxRateList, addCustomerSelectPBXSalesTaxRate)
+	// Validate PBX sales tax status
+	validatePBXSalesTaxStatus := slices.Contains(salesTaxStatusList, addCustomerSelectPBXSalesTaxStatus)
+	// Validate ext sales tax rate
+	validateExtSalesTaxRate := slices.Contains(salesTaxRateList, addCustomerSelectExtSalesTaxRate)
+	// Validate ext sales tax status
+	validateExtSalesTaxStatus := slices.Contains(salesTaxStatusList, addCustomerSelectExtSalesTaxStatus)
 
 	// Validate the PBX setup price
 	validatePBXSetupPrice := validateInput(addCustomerInputPBXSetupPrice, "price")
@@ -2756,14 +2849,14 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	validatePBXCeasePrice := validateInput(addCustomerInputPBXCeasePrice, "price")
 	// Validate the PBX contract length
 	validatePBXContractLength := slices.Contains(contractLengthList, addCustomerSelectPBXContractLength)
-	// Validate the SIP ext setup price
-	validateSIPExtSetupPrice := validateInput(addCustomerInputSIPExtSetupPrice, "price")
-	// Validate the SIP ext rental price
-	validateSIPExtRentalPrice := validateInput(addCustomerInputSIPExtRentalPrice, "price")
-	// Validate the SIP ext cease price
-	validateSIPExtCeasePrice := validateInput(addCustomerInputSIPExtCeasePrice, "price")
-	// Validate the SIP ext contract length
-	validateSIPExtContractLength := slices.Contains(contractLengthList, addCustomerSelectSIPExtContractLength)
+	// Validate the ext setup price
+	validateExtSetupPrice := validateInput(addCustomerInputExtSetupPrice, "price")
+	// Validate the ext rental price
+	validateExtRentalPrice := validateInput(addCustomerInputExtRentalPrice, "price")
+	// Validate the ext cease price
+	validateExtCeasePrice := validateInput(addCustomerInputExtCeasePrice, "price")
+	// Validate the ext contract length
+	validateExtContractLength := slices.Contains(contractLengthList, addCustomerSelectExtContractLength)
 
 	// Validate site address line one
 	validateSiteAddressLine1 := validateInput(addCustomerInputSiteAddressLine1, "alphaNumEmpty")
@@ -2799,24 +2892,34 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 	// Validate invoice contact phone number
 	validateInvoiceContactNumber := validateInput(addCustomerInputInvoiceContactNumber, "phoneNumber")
 
-	if addCustomerInputID == "" && addCustomerInputName == "" && addCustomerSelectPBXLimit == "" && addCustomerInputSiteContactEmail == "" && addCustomerInputSiteContactNumber == "" && addCustomerInputInvoiceContactEmail == "" && addCustomerInputInvoiceContactNumber == "" && addCustomerInputPBXSetupPrice == "" && addCustomerInputPBXRentalPrice == "" && addCustomerInputPBXCeasePrice == "" && addCustomerInputSIPExtSetupPrice == "" && addCustomerInputSIPExtRentalPrice == "" && addCustomerInputSIPExtCeasePrice == "" {
+	if addCustomerInputID == "" && addCustomerInputName == "" && addCustomerSelectUKBased == "" && addCustomerSelectResellingMinutes == "" && addCustomerSelectConsumerType == "" && addCustomerSelectUKVATRegistered == "" && addCustomerSelectPBXLimit == "" && addCustomerSelectPBXSalesTaxRate == "" && addCustomerSelectPBXSalesTaxStatus == "" && addCustomerSelectExtSalesTaxRate == "" && addCustomerSelectExtSalesTaxStatus == "" && addCustomerInputPBXSetupPrice == "" && addCustomerInputPBXRentalPrice == "" && addCustomerInputPBXCeasePrice == "" && addCustomerInputExtSetupPrice == "" && addCustomerInputExtRentalPrice == "" && addCustomerInputExtCeasePrice == "" && addCustomerInputSiteContactEmail == "" && addCustomerInputSiteContactNumber == "" && addCustomerInputInvoiceContactEmail == "" && addCustomerInputInvoiceContactNumber == "" {
 		// Do Nothing
 	} else if validateID == false {
 		messageHTML(w, "Customer ID "+validationMessageAlphaNum, "warning")
 	} else if validateName == false {
 		messageHTML(w, "Customer Name "+validationMessageAlphaNum, "warning")
-	} else if validateUKBased == false {
+	} else if validateUKBased == false || addCustomerSelectUKBased == "" {
 		messageHTML(w, "UK based option "+validationMessageBoolean, "warning")
-	} else if validateResellingMinutes == false {
+	} else if validateResellingMinutes == false || addCustomerSelectResellingMinutes == "" {
 		messageHTML(w, "Reselling minutes "+validationMessageBoolean, "warning")
-	} else if validateConsumerType == false {
+	} else if validateConsumerType == false || addCustomerSelectConsumerType == "" {
 		messageHTML(w, "Invalid option for consumer type", "warning")
-	} else if validateUKVATRegistered == false {
-		messageHTML(w, "UK VAT Registered "+validationMessageBoolean, "warning")
+	} else if validateUKVATRegistered == false || addCustomerSelectUKVATRegistered == "" {
+		messageHTML(w, "UK VAT registered "+validationMessageBoolean, "warning")
+	} else if addCustomerSelectUKVATRegistered == "yes" && addCustomerInputUKVATNumber == "" {
+		messageHTML(w, "When UK VAT Registered is set to yes the UK VAT Number cannot be empty", "warning")
 	} else if validateUKVATNumber == false {
-		messageHTML(w, "UK VAT Number "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "UK VAT number "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validatePBXLimit == false || addCustomerSelectPBXLimit == "" {
 		messageHTML(w, "Invalid option for PBX limit", "warning")
+	} else if validatePBXSalesTaxRate == false || addCustomerSelectPBXSalesTaxRate == "" {
+		messageHTML(w, "Invalid option for PBX sales tax rate", "warning")
+	} else if validatePBXSalesTaxStatus == false || addCustomerSelectPBXSalesTaxStatus == "" {
+		messageHTML(w, "Invalid option for PBX sales tax status", "warning")
+	} else if validateExtSalesTaxRate == false || addCustomerSelectExtSalesTaxRate == "" {
+		messageHTML(w, "Invalid option for Ext sales tax rate", "warning")
+	} else if validateExtSalesTaxStatus == false || addCustomerSelectExtSalesTaxStatus == "" {
+		messageHTML(w, "Invalid option for Ext sales tax status", "warning")
 	} else if validatePBXSetupPrice == false {
 		messageHTML(w, "PBX setup price "+validationMessagePrice, "warning")
 	} else if validatePBXRentalPrice == false {
@@ -2825,42 +2928,42 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 		messageHTML(w, "PBX cease price "+validationMessagePrice, "warning")
 	} else if validatePBXContractLength == false {
 		messageHTML(w, "Invalid option for PBX contract length", "warning")
-	} else if validateSIPExtSetupPrice == false {
+	} else if validateExtSetupPrice == false {
 		messageHTML(w, "Site setup price "+validationMessagePrice, "warning")
-	} else if validateSIPExtRentalPrice == false {
+	} else if validateExtRentalPrice == false {
 		messageHTML(w, "Site rental price "+validationMessagePrice, "warning")
-	} else if validateSIPExtCeasePrice == false {
+	} else if validateExtCeasePrice == false {
 		messageHTML(w, "Site cease price "+validationMessagePrice, "warning")
-	} else if validateSIPExtContractLength == false {
+	} else if validateExtContractLength == false {
 		messageHTML(w, "Invalid option for SIP extension contract length", "warning")
 	} else if validateSiteAddressLine1 == false {
-		messageHTML(w, "Site address line one "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Site address line one "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateSiteAddressLine2 == false {
-		messageHTML(w, "Site address line two "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Site address line two "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateSiteCityTownVillage == false {
-		messageHTML(w, "Site city/town/village "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Site city/town/village "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateSiteCountyStateRegion == false {
-		messageHTML(w, "Site county/state/region "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Site county/state/region "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateSitePostcodeZipCode == false {
-		messageHTML(w, "Site postcode/zip code "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Site postcode/zip code "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateSiteCountry == false {
-		messageHTML(w, "Site country "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Site country "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateSiteContactEmail == false {
 		messageHTML(w, validationMessageEmail+" for the site address", "warning")
 	} else if validateSiteContactNumber == false {
 		messageHTML(w, validationMessagePhoneNumber+" for the site address", "warning")
 	} else if validateInvoiceAddressLine1 == false {
-		messageHTML(w, "Invoice address line one "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Invoice address line one "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateInvoiceAddressLine2 == false {
-		messageHTML(w, "Invoice address line two "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Invoice address line two "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateInvoiceCityTownVillage == false {
-		messageHTML(w, "Invoice city/town/village "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Invoice city/town/village "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateInvoiceCountyStateRegion == false {
-		messageHTML(w, "Invoice county/state/region "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Invoice county/state/region "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateInvoicePostcodeZipCode == false {
-		messageHTML(w, "Invoice postcode/zip code "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Invoice postcode/zip code "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateInvoiceCountry == false {
-		messageHTML(w, "Invoice country "+validationMessageAlphaNumEmpty+" or blank", "warning")
+		messageHTML(w, "Invoice country "+validationMessageAlphaNumEmpty+" or empty", "warning")
 	} else if validateInvoiceContactEmail == false {
 		messageHTML(w, validationMessageEmail+" for the invoice address", "warning")
 	} else if validateInvoiceContactNumber == false {
@@ -2885,9 +2988,9 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 			addCustomerInputPBXSetupPriceFloat64 := stringToFloat64(addCustomerInputPBXSetupPrice)
 			addCustomerInputPBXRentalPriceFloat64 := stringToFloat64(addCustomerInputPBXRentalPrice)
 			addCustomerInputPBXCeasePriceFloat64 := stringToFloat64(addCustomerInputPBXCeasePrice)
-			addCustomerInputSIPExtSetupPriceFloat64 := stringToFloat64(addCustomerInputSIPExtSetupPrice)
-			addCustomerInputSIPExtRentalPriceFloat64 := stringToFloat64(addCustomerInputSIPExtRentalPrice)
-			addCustomerInputSIPExtCeasePriceFloat64 := stringToFloat64(addCustomerInputSIPExtCeasePrice)
+			addCustomerInputExtSetupPriceFloat64 := stringToFloat64(addCustomerInputExtSetupPrice)
+			addCustomerInputExtRentalPriceFloat64 := stringToFloat64(addCustomerInputExtRentalPrice)
+			addCustomerInputExtCeasePriceFloat64 := stringToFloat64(addCustomerInputExtCeasePrice)
 
 			dbDetail.connection.Query(`INSERT 
                                    INTO
@@ -2900,32 +3003,40 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
                                    uk_vat_registered,
                                    uk_vat_number,
                                    pbx_limit,
+                                   pbx_sales_tax_rate,
+                                   pbx_sales_tax_status,
+                                   ext_sales_tax_rate,
+                                   ext_sales_tax_status,
                                    pbx_setup_price,
                                    pbx_rental_price,
                                    pbx_cease_price,
                                    pbx_contract_length,  
-                                   sip_ext_setup_price,
-                                   sip_ext_rental_price,
-                                   sip_ext_cease_price,
-                                   sip_ext_contract_length
+                                   ext_setup_price,
+                                   ext_rental_price,
+                                   ext_cease_price,
+                                   ext_contract_length
                                  )
-                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
 				addCustomerInputID,
 				addCustomerInputName,
-				nullSQL(addCustomerSelectUKBased),
-				nullSQL(addCustomerSelectResellingMinutes),
-				nullSQL(addCustomerSelectConsumerType),
-				nullSQL(addCustomerSelectUKVATRegistered),
+				addCustomerSelectUKBased,
+				addCustomerSelectResellingMinutes,
+				addCustomerSelectConsumerType,
+				addCustomerSelectUKVATRegistered,
 				nullSQL(addCustomerInputUKVATNumber),
 				addCustomerSelectPBXLimit,
+				addCustomerSelectPBXSalesTaxRate,
+				addCustomerSelectPBXSalesTaxStatus,
+				addCustomerSelectExtSalesTaxRate,
+				addCustomerSelectExtSalesTaxStatus,
 				math.Round(addCustomerInputPBXSetupPriceFloat64*100)/100,
 				math.Round(addCustomerInputPBXRentalPriceFloat64*100)/100,
 				math.Round(addCustomerInputPBXCeasePriceFloat64*100)/100,
 				nullSQL(addCustomerSelectPBXContractLength),
-				math.Round(addCustomerInputSIPExtSetupPriceFloat64*100)/100,
-				math.Round(addCustomerInputSIPExtRentalPriceFloat64*100)/100,
-				math.Round(addCustomerInputSIPExtCeasePriceFloat64*100)/100,
-				nullSQL(addCustomerSelectSIPExtContractLength))
+				math.Round(addCustomerInputExtSetupPriceFloat64*100)/100,
+				math.Round(addCustomerInputExtRentalPriceFloat64*100)/100,
+				math.Round(addCustomerInputExtCeasePriceFloat64*100)/100,
+				nullSQL(addCustomerSelectExtContractLength))
 
 			dbDetail.connection.Query(`INSERT 
                                    INTO
@@ -2987,7 +3098,7 @@ func customerAdd(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *h
 }
 
 // Customer edit function
-func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
+func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter) {
 
 	// List of all column names from the customer table
 	customerColumnList := [][]string{
@@ -2998,14 +3109,18 @@ func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *
 		{"uk_vat_registered", "UK VAT Registered"},
 		{"uk_vat_number", "UK VAT Number"},
 		{"pbx_limit", "PBX Limit"},
+		{"pbx_sales_tax_rate", "PBX Sales Tax Rate"},
+		{"pbx_sales_tax_status", "PBX Sales Tax Status"},
+		{"ext_sales_tax_rate", "EXT Sales Tax Rate"},
+		{"ext_sales_tax_status", "EXT Sales Tax Status"},
 		{"pbx_setup_price", "PBX Setup Price"},
 		{"pbx_rental_price", "PBX Rental Price"},
 		{"pbx_cease_price", "PBX Cease Price"},
 		{"pbx_contract_length", "PBX Contract Length"},
-		{"sip_ext_setup_price", "SIP EXT Setup Price"},
-		{"sip_ext_rental_price", "SIP EXT Rental Price"},
-		{"sip_ext_cease_price", "SIP EXT Cease Price"},
-		{"sip_ext_contract_length", "SIP EXT Contract Length"},
+		{"ext_setup_price", "SIP EXT Setup Price"},
+		{"ext_rental_price", "SIP EXT Rental Price"},
+		{"ext_cease_price", "SIP EXT Cease Price"},
+		{"ext_contract_length", "SIP EXT Contract Length"},
 	}
 
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
@@ -3017,20 +3132,42 @@ func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *
 	fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
 	fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
 	fmt.Fprintf(w, "      <b>Name:</b> text<br>")
-	fmt.Fprintf(w, "      <b>UK Based:</b> yes, no or EMPTY<br>")
-	fmt.Fprintf(w, "      <b>Reselling Minutes:</b> yes, no or EMPTY<br>")
-	fmt.Fprintf(w, "      <b>Consumer Type:</b> Community Interest Company (CIC), Limited Liability Partnership (LLP), Partnership, Private Limited Company (LTD), Public Limited Company (PLC), Residentail, Sole Trader or EMPTY<br>")
-	fmt.Fprintf(w, "      <b>UK VAT Registered:</b> yes, no or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>UK Based:</b> yes, no<br>")
+	fmt.Fprintf(w, "      <b>Resell Minutes:</b> yes, no<br>")
+	dbDetail.table = "consumer_type_lookup"
+	dbDetail.column = "consumer_type"
+	consumerTypeList := singleColumnSlice(dbDetail)
+	fmt.Fprintf(w, "      <b>Consumer Type: </b>")
+	fmt.Fprintf(w, strings.Join(consumerTypeList, ", "))
+	fmt.Fprintf(w, "      <br>")
+	fmt.Fprintf(w, "      <b>UK VAT Registered:</b> yes or no<br>")
 	fmt.Fprintf(w, "      <b>UK VAT Number:</b> text or EMPTY<br>")
-	fmt.Fprintf(w, "      <b>PBX Limit:</b> 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500 or 5000<br>")
+	fmt.Fprintf(w, "      <b>PBX Limit:</b> 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000<br>")
+	dbDetail.table = "sales_tax_rate_lookup"
+	dbDetail.column = "sales_tax_rate"
+	salesTaxRateList := singleColumnSlice(dbDetail)
+	fmt.Fprintf(w, "      <b>PBX Sales Tax Rate &#37:</b> ")
+	fmt.Fprintf(w, strings.Join(salesTaxRateList, ", "))
+	fmt.Fprintf(w, "      <br>")
+	fmt.Fprintf(w, "      <b>PBX Sales Tax Status:</b> TAXABLE, EXEMPT<br>")
+	fmt.Fprintf(w, "      <b>EXT Sales Tax Rate &#37:</b> ")
+	fmt.Fprintf(w, strings.Join(salesTaxRateList, ", "))
+	fmt.Fprintf(w, "      <br>")
+	fmt.Fprintf(w, "      <b>EXT Sales Tax Status:</b> TAXABLE, EXEMPT<br>")
 	fmt.Fprintf(w, "      <b>PBX Setup Price:</b> decimal number<br>")
 	fmt.Fprintf(w, "      <b>PBX Rental Price:</b> decimal number<br>")
 	fmt.Fprintf(w, "      <b>PBX Cease Price:</b> decimal number<br> ")
-	fmt.Fprintf(w, "      <b>PBX Contract Length:</b> 1 Week, 1 Month, 3 Months, 6 Months, 12 Months, 18 Months, 24 Months, 36 Months, 48 Months, 60 Months or EMPTY<br>")
+	dbDetail.table = "contract_length_lookup"
+	dbDetail.column = "contract_length"
+	contractLengthList := singleColumnSlice(dbDetail)
+	fmt.Fprintf(w, "      <b>PBX Contract Length: </b>EMPTY, ")
+	fmt.Fprintf(w, strings.Join(contractLengthList, ", "))
+	fmt.Fprintf(w, "      <br>")
 	fmt.Fprintf(w, "      <b>EXT Setup Price:</b> decimal number<br>")
 	fmt.Fprintf(w, "      <b>EXT Rental Price:</b> decimal number<br>")
 	fmt.Fprintf(w, "      <b>EXT Cease Pricce:</b> decimal number<br> ")
-	fmt.Fprintf(w, "      <b>EXT Contract Length:</b> 1 Week, 1 Month, 3 Months, 6 Months, 12 Months, 18 Months, 24 Months, 36 Months, 48 Months, 60 Months or EMPTY<br>")
+	fmt.Fprintf(w, "      <b>EXT Contract Length: </b>EMPTY, ")
+	fmt.Fprintf(w, strings.Join(contractLengthList, ", "))
 	fmt.Fprintf(w, "    </td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -3071,7 +3208,7 @@ func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *
 		messageHTML(w, "Customer does not exist", "warning")
 	} else if editCustomerSelectColumn == "" {
 		messageHTML(w, "A column must be selected", "warning")
-	} else if editCustomerSelectColumn == "name" || editCustomerSelectColumn == "uk_based" || editCustomerSelectColumn == "reselling_minutes" || editCustomerSelectColumn == "uk_vat_registered" || editCustomerSelectColumn == "uk_vat_number" || editCustomerSelectColumn == "pbx_contract_length" || editCustomerSelectColumn == "sip_ext_contract_length" {
+	} else if editCustomerSelectColumn == "name" || editCustomerSelectColumn == "uk_based" || editCustomerSelectColumn == "reselling_minutes" || editCustomerSelectColumn == "consumer_type" || editCustomerSelectColumn == "uk_vat_registered" || editCustomerSelectColumn == "uk_vat_number" || editCustomerSelectColumn == "pbx_contract_length" || editCustomerSelectColumn == "ext_contract_length" {
 		// Validate editCustomerInputNewValue is a string
 		validateNewValue := validateInput(editCustomerInputNewValue, "alphaNumEmpty")
 		if validateNewValue == true {
@@ -3079,7 +3216,7 @@ func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *
 		} else {
 			messageHTML(w, "Input "+validationMessageAlphaNumEmpty, "warning")
 		}
-	} else if editCustomerSelectColumn == "pbx_setup_price" || editCustomerSelectColumn == "pbx_rental_price" || editCustomerSelectColumn == "pbx_cease_price" || editCustomerSelectColumn == "sip_ext_setup_price" || editCustomerSelectColumn == "sip_ext_rental_price" || editCustomerSelectColumn == "sip_ext_cease_price" {
+	} else if editCustomerSelectColumn == "pbx_setup_price" || editCustomerSelectColumn == "pbx_rental_price" || editCustomerSelectColumn == "pbx_cease_price" || editCustomerSelectColumn == "ext_setup_price" || editCustomerSelectColumn == "ext_rental_price" || editCustomerSelectColumn == "ext_cease_price" {
 		// Validate editCustomerSelectColumn is a decimal
 		validateNewValue := validateInput(editCustomerInputNewValue, "price")
 		if validateNewValue == true {
@@ -3093,10 +3230,28 @@ func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *
 		pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
 		// Validate editCustomerInputNewValue is in the pbxLimitList slice
 		validateNewValue := slices.Contains(pbxLimitList, editCustomerInputNewValue)
-		if validateNewValue {
+		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE `customer` SET `"+editCustomerSelectColumn+"` = ? WHERE `id` = '"+editCustomerSelectCustomerID+"'", editCustomerInputNewValue)
 		} else {
 			messageHTML(w, "Input must be a valid PBX limit", "warning")
+		}
+	} else if editCustomerSelectColumn == "pbx_sales_tax_rate" || editCustomerSelectColumn == "ext_sales_tax_rate" {
+		salesTaxRateList := singleColumnSlice(dbDetail)
+		// Validate editCustomerSelectColumn is in the salesTaxRateList Slice
+		validateNewValue := slices.Contains(salesTaxRateList, editCustomerInputNewValue)
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE `customer` SET `"+editCustomerSelectColumn+"` = ? WHERE `id` = '"+editCustomerSelectCustomerID+"'", editCustomerInputNewValue)
+		} else {
+			messageHTML(w, "Input must be a valid sales tax rate", "warning")
+		}
+	} else if editCustomerSelectColumn == "pbx_sales_tax_status" || editCustomerSelectColumn == "ext_sales_tax_status" {
+		salesTaxStatusList := []string{"TAXABLE", "EXEMPT"}
+		// Validate editCustomerSelectColumn is in the salesTaxStatusList Slice
+		validateNewValue := slices.Contains(salesTaxStatusList, editCustomerInputNewValue)
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE `customer` SET `"+editCustomerSelectColumn+"` = ? WHERE `id` = '"+editCustomerSelectCustomerID+"'", editCustomerInputNewValue)
+		} else {
+			messageHTML(w, "Input must be a valid sales tax status", "warning")
 		}
 	} else {
 		messageHTML(w, "Column does not exist", "warning")
@@ -3295,7 +3450,7 @@ func customerEdit(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *
 }
 
 // Customer delete function
-func customerDelete(w http.ResponseWriter, dbDetail databaseFunctionParameter, r *http.Request) {
+func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter) {
 
 	// Delete a Customer
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
@@ -4374,28 +4529,29 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 // Invoice page functions
 
-func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, yapAdminUKVATRegistered string) {
+func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, currencySymbol string, yapAdminUKVATRegistered string) {
 
 	var (
-		customerName                 string
-		customerID                   string
-		customerUKBased              string
-		customerResellingMinutes     string
-		customerUKVATRegistered      string
-		customerUKVATNumber          string
-		invoiceItemTag               string
-		invoiceItemSellPrice         string
-		invoiceItemDateTimeAdded     string
-		invoiceItemSalesTaxRate      string
-		invoiceItemSalesTaxStatus    string
-		invoiceBillItemOnce          string
-		invoiceItemOnHold            string
-		invoiceItemContractLength    string
-		invoiceItemContractStartDate string
-		goodServiceName              string
-		goodServiceType              string
-		goodServiceSupplierName      string
-		goodServiceContractLength    string
+		invoiceItemID                     string
+		customerName                      string
+		customerID                        string
+		customerUKBased                   string
+		customerResellingMinutes          string
+		customerUKVATRegistered           string
+		customerUKVATNumber               string
+		invoiceItemTag                    string
+		invoiceItemSellPrice              string
+		invoiceItemDateTimeAdded          string
+		invoiceItemSalesTaxRate           string
+		invoiceItemSalesTaxStatus         string
+		invoiceBillItemOnce               string
+		invoiceItemOnHold                 string
+		invoiceItemContractLength         string
+		invoiceItemContractStartDate      string
+		goodServiceName                   string
+		goodServiceType                   string
+		goodServiceSupplierName           string
+		goodServiceSupplierContractLength string
 	)
 
 	var dbTableCountInvoice databaseFunctionParameter
@@ -4444,6 +4600,11 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 
 	var inputTableHTMLArgument jsFunctionParameter
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+	inputTableHTMLArgument.inputID = "invoice-input-item-id"
+	inputTableHTMLArgument.funcNameJS = "invoiceSearchItemID"
+	inputTableHTMLArgument.placeholder = "Item ID"
+	inputTableHTML(w, inputTableHTMLArgument)
+	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	inputTableHTMLArgument.inputID = "invoice-input-name-information"
 	inputTableHTMLArgument.funcNameJS = "invoiceSearchNameInformation"
 	inputTableHTMLArgument.placeholder = "Service/Product Name & Information"
@@ -4460,16 +4621,16 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 		inputTableHTMLArgument.placeholder = "Invoice Item Details"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "invoice-input-customer-name"
-		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerName"
-		inputTableHTMLArgument.placeholder = "Customer Name"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br><br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "invoice-input-customer-id"
 		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "invoice-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "invoiceSearchCustomerName"
+		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
@@ -4490,12 +4651,13 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "      <table id=\"invoice-table\" class=\"table-invoice\">")
 	fmt.Fprintf(w, "        <tr>")
-	fmt.Fprintf(w, "          <th>Service/Product<br>Name & Information</th>")
-	fmt.Fprintf(w, "          <th>Service/Product<br>Sale Price</th>")
+	fmt.Fprintf(w, "          <th>Item ID</th>")
+	fmt.Fprintf(w, "          <th>Name & Information</th>")
+	fmt.Fprintf(w, "          <th>Sale Price</th>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Service/Product<br>Details</th>")
-		fmt.Fprintf(w, "          <th>Customer<br>Name</th>")
-		fmt.Fprintf(w, "          <th>Customer<br>ID</th>")
+		fmt.Fprintf(w, "          <th>Details</th>")
+		fmt.Fprintf(w, "          <th>Customer ID</th>")
+		fmt.Fprintf(w, "          <th>Customer Name</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 
@@ -4509,8 +4671,9 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	}
 
 	invoiceSQL, err := dbDetail.connection.Query(`SELECT
-			                                customer_name,
-                                                        customer_id,
+			                     		invoice_item_id,
+			                                customer_id,
+                                                        customer_name,
                                                         customer_uk_based,
                                                         customer_reselling_minutes,
                                                         customer_uk_vat_registered,
@@ -4527,7 +4690,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 							good_service_name,
 							good_service_type,
 							good_service_supplier_name,
-							good_service_contract_length
+							good_service_supplier_contract_length
 					              FROM
 					  	        yap.view___invoice_item
 						      `+whereClause, userCustomerID)
@@ -4541,8 +4704,9 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	for invoiceSQL.Next() {
 
 		err = invoiceSQL.Scan(
-			&customerName,
+			&invoiceItemID,
 			&customerID,
+			&customerName,
 			&customerUKBased,
 			&customerResellingMinutes,
 			&customerUKVATRegistered,
@@ -4559,21 +4723,23 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 			&goodServiceName,
 			&goodServiceType,
 			&goodServiceSupplierName,
-			&goodServiceContractLength,
+			&goodServiceSupplierContractLength,
 		)
 
 		// Error
 		if err != nil {
 			panic(err)
 		}
+
 		if userTypeID != "100" && invoiceItemOnHold == "yes" {
 		} else {
 			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+invoiceItemID+"</td>")
 			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
 			fmt.Fprintf(w, "            "+goodServiceName+"<br><br>")
 			fmt.Fprintf(w, "            <b>Service/Product Tag:</b> "+invoiceItemTag+"<br>")
-			if invoiceItemContractLength == "n/a" {
-				fmt.Fprintf(w, "          <b>Contract Start Date:</b> n/a<br><b>Contract Length:</b> n/a")
+			if invoiceItemContractLength == "" {
+				// Do Nothing
 			} else {
 				fmt.Fprintf(w, "          <b>Contract Start Date:</b> "+formatDate(invoiceItemContractStartDate)+"<br><b>Contract Length:</b> "+invoiceItemContractLength)
 			}
@@ -4581,7 +4747,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
 			//If the YAP Admin is UK VAT registered and the service/product is taxable
 			if yapAdminUKVATRegistered == "yes" && invoiceItemSalesTaxStatus == "TAXABLE" {
-				fmt.Fprintf(w, "            <b>Price (exVAT):</b> £"+invoiceItemSellPrice+"<br>")
+				fmt.Fprintf(w, "            <b>Price (exVAT):</b> "+currencySymbol+invoiceItemSellPrice+"<br>")
 				// Convert UK sales VAT rate to float64
 				invoiceItemSalesTaxRateFloat64 := stringToFloat64(invoiceItemSalesTaxRate)
 				fmt.Fprintf(w, "            <b>VAT Rate:</b> "+strconv.FormatFloat(invoiceItemSalesTaxRateFloat64, 'f', -1, 64)+"&#37;<br>")
@@ -4589,17 +4755,17 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 				invoiceItemSellPriceExVATFloat64 := stringToFloat64(invoiceItemSellPrice)
 				var invoiceItemSellPriceIncVATFloat64 float64 = invoiceItemSellPriceExVATFloat64 * (invoiceItemSalesTaxRateFloat64/100 + 1)
 				var invoiceItemSellVATFloat64 float64 = invoiceItemSellPriceIncVATFloat64 - invoiceItemSellPriceExVATFloat64
-				fmt.Fprintf(w, "            <b>VAT:</b> £"+strconv.FormatFloat(invoiceItemSellVATFloat64, 'f', 2, 64)+"<br>")
-				fmt.Fprintf(w, "            <b>Total Price (incVAT):</b> £"+strconv.FormatFloat(invoiceItemSellPriceIncVATFloat64, 'f', 2, 64)+"<br>")
+				fmt.Fprintf(w, "            <b>VAT:</b> "+currencySymbol+strconv.FormatFloat(invoiceItemSellVATFloat64, 'f', 2, 64)+"<br>")
+				fmt.Fprintf(w, "            <b>Total Price (incVAT):</b> "+currencySymbol+strconv.FormatFloat(invoiceItemSellPriceIncVATFloat64, 'f', 2, 64)+"<br>")
 				//If the YAP Admin is UK VAT registered and the service/product is exempt
 			} else if yapAdminUKVATRegistered == "yes" && invoiceItemSalesTaxStatus == "EXEMPT" {
-				fmt.Fprintf(w, "            <b>Price (exVAT):</b> £"+invoiceItemSellPrice+"<br>")
+				fmt.Fprintf(w, "            <b>Price (exVAT):</b> "+currencySymbol+invoiceItemSellPrice+"<br>")
 				fmt.Fprintf(w, "            <b>VAT Rate:</b> Exempt<br>")
-				fmt.Fprintf(w, "            <b>VAT:</b> £0.00</b><br>")
-				fmt.Fprintf(w, "            <b>Total Price (incVAT):</b> £"+invoiceItemSellPrice)
+				fmt.Fprintf(w, "            <b>VAT:</b> "+currencySymbol+"0.00</b><br>")
+				fmt.Fprintf(w, "            <b>Total Price (incVAT):</b> "+currencySymbol+invoiceItemSellPrice)
 				//If the YAP Admin is not UK VAT registered
 			} else if yapAdminUKVATRegistered == "no" {
-				fmt.Fprintf(w, "            £"+invoiceItemSellPrice+"<br>")
+				fmt.Fprintf(w, "            "+currencySymbol+invoiceItemSellPrice+"<br>")
 			}
 			fmt.Fprintf(w, "          </td>")
 			if userTypeID == "100" {
@@ -4619,10 +4785,10 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 				fmt.Fprintf(w, "            <hr class=\"line-table\"></h>")
 				fmt.Fprintf(w, "            <b><u>Supplier Details</u></b><br><br>")
 				fmt.Fprintf(w, "            <b>Name: </b>"+goodServiceSupplierName+"<br>")
-				fmt.Fprintf(w, "            <b>Supplier Contract Length: </b>"+goodServiceContractLength)
+				fmt.Fprintf(w, "            <b>Supplier Contract Length: </b>"+goodServiceSupplierContractLength)
 				fmt.Fprintf(w, "          </td>")
-				fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 				fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+				fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 			}
 			fmt.Fprintf(w, "        </tr>")
 		}
@@ -4632,30 +4798,35 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	var filterTableJSArgument jsFunctionParameter
 	filterTableJSArgument.tableID = "invoice-table"
 
+	filterTableJSArgument.funcNameJS = "invoiceSearchItemID"
+	filterTableJSArgument.inputID = "invoice-input-item-id"
+	filterTableJSArgument.columnNumber = 0
+	filterTableJS(w, filterTableJSArgument)
+
 	filterTableJSArgument.funcNameJS = "invoiceSearchNameInformation"
 	filterTableJSArgument.inputID = "invoice-input-name-information"
-	filterTableJSArgument.columnNumber = 0
+	filterTableJSArgument.columnNumber = 1
 	filterTableJS(w, filterTableJSArgument)
 
 	filterTableJSArgument.funcNameJS = "invoiceSearchSalePrice"
 	filterTableJSArgument.inputID = "invoice-input-sale-price"
-	filterTableJSArgument.columnNumber = 1
+	filterTableJSArgument.columnNumber = 2
 	filterTableJS(w, filterTableJSArgument)
 
 	if userTypeID == "100" {
 		filterTableJSArgument.funcNameJS = "invoiceSearchDetail"
 		filterTableJSArgument.inputID = "invoice-input-detail"
-		filterTableJSArgument.columnNumber = 2
-		filterTableJS(w, filterTableJSArgument)
-
-		filterTableJSArgument.funcNameJS = "invoiceSearchCustomerName"
-		filterTableJSArgument.inputID = "invoice-input-customer-name"
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 
 		filterTableJSArgument.funcNameJS = "invoiceSearchCustomerID"
 		filterTableJSArgument.inputID = "invoice-input-customer-id"
 		filterTableJSArgument.columnNumber = 4
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "invoiceSearchCustomerName"
+		filterTableJSArgument.inputID = "invoice-input-customer-name"
+		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
 	}
 	var exportCSVJSArgument jsFunctionParameter
@@ -4672,6 +4843,185 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 	toggleDivJSArgument.funcNameJS = "toggleInvoice"
 	toggleDivJSArgument.divID = "invoice-div"
 	toggleDivJS(w, toggleDivJSArgument)
+}
+
+// Invoice add function
+func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string) {
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/invoice\">")
+	fmt.Fprintf(w, "<table class=\"table-invoice\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Invoice Item</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	customerIDNameList, _ := customerSlice(dbDetail)
+	selectDoubleHTML(w, "add_invoice_select_customer_id", "Customer", customerIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	dbDetail.table = "good_service"
+	dbDetail.column = "name"
+	goodServiceList := singleColumnSlice(dbDetail)
+	goodServiceList = append([]string{""}, goodServiceList...)
+	selectSingleHTML(w, "add_invoice_select_good_service", "Service/Product (Cannot Be Empty)", goodServiceList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_invoice_input_tag", "Item Tag (Cannot Be Empty)", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_invoice_input_price", "Item Price (Cannot Be Empty)", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	dbDetail.table = "sales_tax_rate_lookup"
+	dbDetail.column = "sales_tax_rate"
+	salesTaxRateList := singleColumnSlice(dbDetail)
+	salesTaxRateList = append([]string{""}, salesTaxRateList...)
+	selectSingleHTML(w, "add_invoice_select_sales_tax_rate", "Sales Tax Rate &#37; (Cannot Be Empty)", salesTaxRateList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	salesTaxStatusList := []string{"", "TAXABLE", "EXEMPT"}
+	selectSingleHTML(w, "add_invoice_select_sales_tax_status", "Sales Tax Status (Cannot Be Empty)", salesTaxStatusList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	billItemOnceList := []string{"", "yes", "no"}
+	selectSingleHTML(w, "add_invoice_select_bill_item_once", "Bill Item Once (Cannot Be Empty)", billItemOnceList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	itemOnHoldList := []string{"", "yes", "no"}
+	selectSingleHTML(w, "add_invoice_select_item_on_hold", "Item On Hold (Cannot Be Empty)", itemOnHoldList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	dbDetail.table = "contract_length_lookup"
+	dbDetail.column = "contract_length"
+	contractLengthList := singleColumnSlice(dbDetail)
+	contractLengthList = append([]string{""}, contractLengthList...)
+	selectSingleHTML(w, "add_invoice_select_contract_length", "Contract Length", contractLengthList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_invoice_input_contract_start_date", "Contract Start Date", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Add Invoice item\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	addInvoiceSelectCustomerID := r.FormValue("add_invoice_select_customer_id")
+	addInvoiceSelectGoodService := r.FormValue("add_invoice_select_good_service")
+	addInvoiceInputTag := r.FormValue("add_invoice_input_tag")
+	addInvoiceInputSellPrice := r.FormValue("add_invoice_input_price")
+	addInvoiceSelectSalesTaxRate := r.FormValue("add_invoice_select_sales_tax_rate")
+	addInvoiceSelectSalesTaxStatus := r.FormValue("add_invoice_select_sales_tax_status")
+	addInvoiceSelectBillItemOnce := r.FormValue("add_invoice_select_bill_item_once")
+	addInvoiceSelectItemOnHold := r.FormValue("add_invoice_select_item_on_hold")
+	addInvoiceSelectContractLength := r.FormValue("add_invoice_select_contract_length")
+	addInvoiceInputContractStartDate := r.FormValue("add_invoice_input_contract_start_date")
+
+	// Check customer ID is contained in the slice
+	_, customerIDList := customerSlice(dbDetail)
+	customerIDList = append(customerIDList, "")
+	validateCustomerID := slices.Contains(customerIDList, addInvoiceSelectCustomerID)
+
+	// Validate good/service is contained in the slice
+	validateGoodService := slices.Contains(goodServiceList, addInvoiceSelectGoodService)
+
+	// Validate the good/service tag
+	validateTag := validateInput(addInvoiceInputTag, "alphaNumEmpty")
+
+	// Validate the invoice item price
+	validateSellPrice := validateInput(addInvoiceInputSellPrice, "price")
+
+	// Check sales tax rate is contained in the slice
+	validateSalesTaxRate := slices.Contains(salesTaxRateList, addInvoiceSelectSalesTaxRate)
+
+	// Check sales tax status is contained in the slice
+	validateSalesTaxStatus := slices.Contains(salesTaxStatusList, addInvoiceSelectSalesTaxStatus)
+
+	// Check bill item once is contained in the slice
+	validateBillItemOnce := slices.Contains(billItemOnceList, addInvoiceSelectBillItemOnce)
+
+	// Check item on hold is contained in the slice
+	validateItemOnHold := slices.Contains(itemOnHoldList, addInvoiceSelectItemOnHold)
+
+	// Check contract length is contained in the slice
+	validateContractLength := slices.Contains(contractLengthList, addInvoiceSelectContractLength)
+
+	// Validate the contract start date
+	validateStartDate := validateInput(addInvoiceInputContractStartDate, "date")
+
+	if addInvoiceSelectCustomerID == "" && addInvoiceSelectGoodService == "" && addInvoiceInputTag == "" && addInvoiceInputSellPrice == "" && addInvoiceSelectSalesTaxRate == "" && addInvoiceSelectSalesTaxStatus == "" && addInvoiceSelectBillItemOnce == "" && addInvoiceSelectItemOnHold == "" && addInvoiceSelectContractLength == "" && addInvoiceInputContractStartDate == "" {
+		// Do Nothing
+	} else if validateCustomerID == false || addInvoiceSelectCustomerID == "" {
+		messageHTML(w, "Customer ID invalid", "warning")
+	} else if validateGoodService == false || addInvoiceSelectGoodService == "" {
+		messageHTML(w, "Invalid option for good/service", "warning")
+	} else if validateTag == false {
+		messageHTML(w, "Tag "+validationMessageAlphaNumEmpty, "warning")
+	} else if validateSellPrice == false || addInvoiceInputSellPrice == "" {
+		messageHTML(w, "Item price "+validationMessagePrice, "warning")
+	} else if validateSalesTaxRate == false || addInvoiceSelectSalesTaxRate == "" {
+		messageHTML(w, "Invalid input for sales tax rate", "warning")
+	} else if validateSalesTaxStatus == false || addInvoiceSelectSalesTaxStatus == "" {
+		messageHTML(w, "Invalid input for sales tax status", "warning")
+	} else if validateBillItemOnce == false || addInvoiceSelectBillItemOnce == "" {
+		messageHTML(w, "Invalid option for bill item once", "warning")
+	} else if validateItemOnHold == false || addInvoiceSelectItemOnHold == "" {
+		messageHTML(w, "Invalid option for item on hold", "warning")
+	} else if validateContractLength == false {
+		messageHTML(w, "Invalid option for contract length", "warning")
+	} else if addInvoiceSelectContractLength != "" && addInvoiceInputContractStartDate == "" {
+		messageHTML(w, "If contract length is not empty then contract start date must have a value", "warning")
+	} else if validateStartDate == false {
+		messageHTML(w, "Invalid option for start date", "warning")
+	} else {
+
+		// Convert string values to a float64 to use the math package to round to the nearest two decimal places
+		addInvoiceInputSellPriceFloat64 := stringToFloat64(addInvoiceInputSellPrice)
+
+		dbDetail.connection.Query(`INSERT 
+        	              		     INTO
+        	              		   invoice_item (
+					     customer_id,
+					     good_service_name,
+					     tag,
+					     sell_price,
+					     sales_tax_rate,
+					     sales_tax_status,
+					     bill_item_once,
+					     item_on_hold,
+					     contract_length,
+					     contract_start_date
+					   )
+					   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+			addInvoiceSelectCustomerID,
+			addInvoiceSelectGoodService,
+			nullSQL(addInvoiceInputTag),
+			math.Round(addInvoiceInputSellPriceFloat64*100)/100,
+			addInvoiceSelectSalesTaxRate,
+			addInvoiceSelectSalesTaxStatus,
+			addInvoiceSelectBillItemOnce,
+			addInvoiceSelectItemOnHold,
+			nullSQL(addInvoiceSelectContractLength),
+			nullSQL(addInvoiceInputContractStartDate),
+		)
+
+		fmt.Println("works")
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -4700,7 +5050,7 @@ func main() {
 	dbAddress := os.Getenv("dbAddress")
 	dbPort := os.Getenv("dbPort")
 	dbTLS := os.Getenv("dbTLS")
-	defaultSIPExtLimit := os.Getenv("defaultSIPExtLimit")
+	defaultExtLimit := os.Getenv("defaultExtLimit")
 	currencySymbol := os.Getenv("currencySymbol")
 	yapAdminUKVATRegistered := os.Getenv("yapAdminUKVATRegistered")
 	extraButtonName := os.Getenv("extraButtonName")
@@ -4722,9 +5072,9 @@ func main() {
 	var dbTLSList = []string{"false", "true"}
 	validDbTLS := slices.Contains(dbTLSList, dbTLS)
 
-	// Values allowed for defaultSIPExtLimit Variable
-	var defaultSIPExtLimitList = []string{"1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
-	validDefaultSIPExtLimit := slices.Contains(defaultSIPExtLimitList, defaultSIPExtLimit)
+	// Values allowed for defaultExtLimit Variable
+	var defaultExtLimitList = []string{"1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+	validDefaultExtLimit := slices.Contains(defaultExtLimitList, defaultExtLimit)
 
 	// Values allowed for currencySymbol Variable
 	var currencySymbolList = []string{"", "£", "€", "$"}
@@ -4756,9 +5106,9 @@ func main() {
 		panic("DATABASE TLS OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
 	} else if validDbTLS == false {
 		panic("DATABASE TRANSPORT OPTION MUST BE false OR true IN /etc/yap/yap.env")
-	} else if defaultSIPExtLimit == "" {
+	} else if defaultExtLimit == "" {
 		panic("DEFAULT SIP EXT OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
-	} else if validDefaultSIPExtLimit == false {
+	} else if validDefaultExtLimit == false {
 		panic(" DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN /etc/yap/yap.env\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
 	} else if validCurrencySymbol == false {
 		panic(" CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $ OR EMPTY IN /etc/yap/yap.env")
@@ -5015,9 +5365,9 @@ func main() {
 				header(w, "YAP Admin Account<br>All User Accounts on YAP", "header-user-account", extraButtonName, extraButtonURL)
 				userAccountList(w, dbDetail, userTypeID)
 				fmt.Fprint(w, "<br>")
-				userAccountAdd(w, dbDetail, userID, r)
+				userAccountAdd(w, r, dbDetail, userID)
 				fmt.Fprint(w, "<br>")
-				userAccountDelete(w, dbDetail, userID, r)
+				userAccountDelete(w, r, dbDetail, userID)
 				footer(w, "header-user-account", "button-user-account")
 			} else if userTypeID == "200" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All User Accounts for the Customer", "header-user-account", extraButtonName, extraButtonURL)
@@ -5088,17 +5438,17 @@ func main() {
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All Customers on YAP", "header-customer", extraButtonName, extraButtonURL)
-				customerList(w, dbDetail, userTypeID, userCustomerID, defaultSIPExtLimit, currencySymbol)
+				customerList(w, dbDetail, userTypeID, userCustomerID, defaultExtLimit, currencySymbol)
 				fmt.Fprint(w, "<br>")
-				customerAdd(w, dbDetail, r)
+				customerAdd(w, r, dbDetail)
 				fmt.Fprint(w, "<br>")
-				customerEdit(w, dbDetail, r)
+				customerEdit(w, r, dbDetail)
 				fmt.Fprint(w, "<br>")
-				customerDelete(w, dbDetail, r)
+				customerDelete(w, r, dbDetail)
 				footer(w, "header-customer", "button-customer")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Own Customer Information", "header-customer", extraButtonName, extraButtonURL)
-				customerList(w, dbDetail, userTypeID, userCustomerID, defaultSIPExtLimit, currencySymbol)
+				customerList(w, dbDetail, userTypeID, userCustomerID, defaultExtLimit, currencySymbol)
 				footer(w, "header-customer", "button-customer")
 			} else {
 				errorBox(w, "account_type_error", "header-customer", "button-customer")
@@ -5218,6 +5568,10 @@ func main() {
 
 	go http.HandleFunc("/invoice", func(w http.ResponseWriter, r *http.Request) {
 
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
+
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
 		defer dbConnection.Close()
@@ -5249,15 +5603,17 @@ func main() {
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All Customer Invoices", "header-invoice", extraButtonName, extraButtonURL)
-				invoiceList(w, dbDetail, userTypeID, userCustomerID, yapAdminUKVATRegistered)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID, currencySymbol, yapAdminUKVATRegistered)
+				fmt.Fprintf(w, "<br>")
+				invoiceAdd(w, r, dbDetail, userTypeID, userCustomerID)
 				footer(w, "header-invoice", "button-invoice")
 			} else if userTypeID == "200" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
-				invoiceList(w, dbDetail, userTypeID, userCustomerID, yapAdminUKVATRegistered)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID, currencySymbol, yapAdminUKVATRegistered)
 				footer(w, "header-invoice", "button-invoice")
 			} else if userTypeID == "400" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
-				invoiceList(w, dbDetail, userTypeID, userCustomerID, yapAdminUKVATRegistered)
+				invoiceList(w, dbDetail, userTypeID, userCustomerID, currencySymbol, yapAdminUKVATRegistered)
 				footer(w, "header-invoice", "button-invoice")
 
 			} else {
