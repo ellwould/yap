@@ -742,6 +742,16 @@ const validationMessageCustomerColumn string = validationMessageInvalidOption + 
 const validationMessageCustomerEmail string = "A customer email" + validationMessageEmail
 const validationMessageCustomerPhoneNumber string = "A customer phone number" + validationMessagePhoneNumber
 
+// PBX page specific HTML messages
+const validationMessagePBXName string = "A PBX name" + validationMessageAlphaNum
+const validationMessageExtLimit string = validationMessageInvalidOption + "ext limit"
+const validationMessagePBXCreated string = "PBX" + validationMessageCreated
+const validationMessagePBXNotCreated string = "PBX" + validationMessageNotCreated
+
+const validationMessagePBXColumn string = validationMessageInvalidOption + "PBX Column"
+const validationMessagePBXDeleted string = "PBX" + validationMessageDeleted
+const validationMessagePBXNotDeleted string = "PBX" + validationMessageNotDeleted
+
 // invoice page specific HTML messages
 const validationMessageServiceProduct string = validationMessageInvalidOption + "service/product"
 const validationMessageServiceProductTag string = "Service/product tag" + validationMessageAlphaNumEmpty
@@ -833,6 +843,22 @@ func validateInput(value string, valueType string) (validation bool) {
 	} else {
 		panic("The validateInput function can only take the following arguments: email, alphaNum or alphaNumEmpty")
 	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
+// Function to return slice of pbxLimitList
+
+func pbxLimitSlice() []string {
+	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+	return pbxLimitList
+}
+
+// Function to return slice of extLimitList
+
+func extLimitSlice() []string {
+	extLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+	return extLimitList
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -2694,10 +2720,10 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_id", "Customer ID<br>(Cannot Be Empty)", "text")
+	inputHTML(w, "add_customer_input_customer_id", "Customer ID<br>(Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	inputHTML(w, "add_customer_input_name", "Customer Name<br>(Cannot Be Empty)", "text")
+	inputHTML(w, "add_customer_input_customer_name", "Customer Name<br>(Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	ukBasedList := []string{"", "yes", "no"}
@@ -2724,7 +2750,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number<br>(Cannot Be Empty if UK VAT Registered yes)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+	pbxLimitList := pbxLimitSlice()
 	selectSingleHTML(w, "add_customer_select_pbx_limit", "PBX Limt<br>(Cannot Be Empty)", pbxLimitList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -2862,8 +2888,8 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</form>")
 
-	addCustomerInputID := r.FormValue("add_customer_input_id")
-	addCustomerInputName := r.FormValue("add_customer_input_name")
+	addCustomerInputCustomerID := r.FormValue("add_customer_input_customer_id")
+	addCustomerInputCustomerName := r.FormValue("add_customer_input_customer_name")
 	addCustomerSelectUKBased := r.FormValue("add_customer_select_uk_based")
 	addCustomerSelectResellingMinutes := r.FormValue("add_customer_select_reselling_minutes")
 	addCustomerSelectConsumerType := r.FormValue("add_customer_select_consumer_type")
@@ -2902,10 +2928,10 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	addCustomerInputInvoiceContactEmail := r.FormValue("add_customer_input_invoice_contact_email")
 	addCustomerInputInvoiceContactNumber := r.FormValue("add_customer_input_invoice_contact_number")
 
-	// Validate the ID
-	validateID := validateInput(addCustomerInputID, "alphaNum")
-	// Validate the name
-	validateName := validateInput(addCustomerInputName, "alphaNum")
+	// Validate the customer ID
+	validateCustomerID := validateInput(addCustomerInputCustomerID, "alphaNum")
+	// Validate the customer name
+	validateCustomerName := validateInput(addCustomerInputCustomerName, "alphaNum")
 	// Validate UK based
 	validateUKBased := slices.Contains(ukBasedList, addCustomerSelectUKBased)
 	// Validate reselling minutes
@@ -2978,11 +3004,11 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	// Validate invoice contact phone number
 	validateInvoiceContactNumber := validateInput(addCustomerInputInvoiceContactNumber, "phoneNumber")
 
-	if addCustomerInputID == "" && addCustomerInputName == "" && addCustomerSelectUKBased == "" && addCustomerSelectResellingMinutes == "" && addCustomerSelectConsumerType == "" && addCustomerSelectUKVATRegistered == "" && addCustomerSelectPBXLimit == "" && addCustomerSelectPBXSalesTaxRate == "" && addCustomerSelectPBXSalesTaxStatus == "" && addCustomerSelectExtSalesTaxRate == "" && addCustomerSelectExtSalesTaxStatus == "" && addCustomerInputPBXSetupPrice == "" && addCustomerInputPBXRentalPrice == "" && addCustomerInputPBXCeasePrice == "" && addCustomerInputExtSetupPrice == "" && addCustomerInputExtRentalPrice == "" && addCustomerInputExtCeasePrice == "" && addCustomerInputSiteContactEmail == "" && addCustomerInputSiteContactNumber == "" && addCustomerInputInvoiceContactEmail == "" && addCustomerInputInvoiceContactNumber == "" {
+	if addCustomerInputCustomerID == "" && addCustomerInputCustomerName == "" && addCustomerSelectUKBased == "" && addCustomerSelectResellingMinutes == "" && addCustomerSelectConsumerType == "" && addCustomerSelectUKVATRegistered == "" && addCustomerSelectPBXLimit == "" && addCustomerSelectPBXSalesTaxRate == "" && addCustomerSelectPBXSalesTaxStatus == "" && addCustomerSelectExtSalesTaxRate == "" && addCustomerSelectExtSalesTaxStatus == "" && addCustomerInputPBXSetupPrice == "" && addCustomerInputPBXRentalPrice == "" && addCustomerInputPBXCeasePrice == "" && addCustomerInputExtSetupPrice == "" && addCustomerInputExtRentalPrice == "" && addCustomerInputExtCeasePrice == "" && addCustomerInputSiteContactEmail == "" && addCustomerInputSiteContactNumber == "" && addCustomerInputInvoiceContactEmail == "" && addCustomerInputInvoiceContactNumber == "" {
 		// Do Nothing
-	} else if validateID == false {
+	} else if validateCustomerID == false {
 		messageHTML(w, validationMessageCustomerID, "warning")
-	} else if validateName == false {
+	} else if validateCustomerName == false {
 		messageHTML(w, validationMessageCustomerName, "warning")
 	} else if validateUKBased == false || addCustomerSelectUKBased == "" {
 		messageHTML(w, validationMessageUKBased, "warning")
@@ -3055,18 +3081,18 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	} else if validateInvoiceContactNumber == false {
 		messageHTML(w, validationMessageInvoicePhoneNumber, "warning")
 	} else {
-		if addCustomerInputID == "Gen" || addCustomerInputID == "GEN" || addCustomerInputID == "gen" || addCustomerInputID == "Generate" || addCustomerInputID == "GENERATE" || addCustomerInputID == "generate" {
-			addCustomerInputID = genID()
+		if addCustomerInputCustomerID == "Gen" || addCustomerInputCustomerID == "GEN" || addCustomerInputCustomerID == "gen" || addCustomerInputCustomerID == "Generate" || addCustomerInputCustomerID == "GENERATE" || addCustomerInputCustomerID == "generate" {
+			addCustomerInputCustomerID = genID()
 		}
 
 		dbDetail.table = "view___customer_detail"
 		dbDetail.column = "customer_id"
 		dbDetail.columnWhere = "customer_id"
-		dbDetail.columnWhereValue = addCustomerInputID
+		dbDetail.columnWhereValue = addCustomerInputCustomerID
 
 		checkCustomerExist := selectWhere(dbDetail)
 
-		if checkCustomerExist == addCustomerInputID {
+		if checkCustomerExist == addCustomerInputCustomerID {
 			messageHTML(w, validationMessageCustomerlAlreadyExist, "warning")
 		} else {
 
@@ -3103,8 +3129,8 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
                                    ext_contract_length
                                  )
                                  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-				addCustomerInputID,
-				addCustomerInputName,
+				addCustomerInputCustomerID,
+				addCustomerInputCustomerName,
 				addCustomerSelectUKBased,
 				addCustomerSelectResellingMinutes,
 				addCustomerSelectConsumerType,
@@ -3138,7 +3164,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
                                    contact_number 
                                  )
                                  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-				addCustomerInputID,
+				addCustomerInputCustomerID,
 				nullSQL(addCustomerInputSiteAddressLine1),
 				nullSQL(addCustomerInputSiteAddressLine2),
 				nullSQL(addCustomerInputSiteCityTownVillage),
@@ -3162,7 +3188,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
                                    contact_number 
                                  )
                                  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-				addCustomerInputID,
+				addCustomerInputCustomerID,
 				nullSQL(addCustomerInputInvoiceAddressLine1),
 				nullSQL(addCustomerInputInvoiceAddressLine2),
 				nullSQL(addCustomerInputInvoiceCityTownVillage),
@@ -3174,7 +3200,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 
 			checkCustomerCreated := selectWhere(dbDetail)
 
-			if checkCustomerCreated == addCustomerInputID {
+			if checkCustomerCreated == addCustomerInputCustomerID {
 				messageHTML(w, validationMessageCustomerCreated, "success")
 			} else {
 				messageHTML(w, validationMessageCustomerNotCreated, "success")
@@ -3313,7 +3339,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			messageHTML(w, validationMessageGenericPrice, "warning")
 		}
 	} else if editCustomerSelectColumn == "pbx_limit" {
-		pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+		pbxLimitList := pbxLimitSlice()
 		// Validate editCustomerInputNewValue is in the pbxLimitList slice
 		validateNewValue := slices.Contains(pbxLimitList, editCustomerInputNewValue)
 		if validateNewValue == true {
@@ -3620,28 +3646,20 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, userPBXID string) {
 
 	var (
-		pbxID                       string
-		pbxName                     string
-		pbxDateTimeAdded            string
-		pbxSIPExtensionLimit        string
-		pbxSiteAddressLine1         string
-		pbxSiteAddressLine2         string
-		pbxSiteCityTownVillage      string
-		pbxSiteCountyStateRegion    string
-		pbxSitePostcodeZipCode      string
-		pbxSiteCountry              string
-		pbxSiteContactEmail         string
-		pbxSiteContactNumber        string
-		pbxInvoiceAddressLine1      string
-		pbxInvoiceAddressLine2      string
-		pbxInvoiceCityTownVillage   string
-		pbxInvoiceCountyStateRegion string
-		pbxInvoicePostcodeZipCode   string
-		pbxInvoiceCountry           string
-		pbxInvoiceContactEmail      string
-		pbxInvoiceContactNumber     string
-		customerID                  string
-		customerName                string
+		pbxID                    string
+		pbxName                  string
+		pbxDateTimeAdded         string
+		pbxSIPExtensionLimit     string
+		pbxSiteAddressLine1      string
+		pbxSiteAddressLine2      string
+		pbxSiteCityTownVillage   string
+		pbxSiteCountyStateRegion string
+		pbxSitePostcodeZipCode   string
+		pbxSiteCountry           string
+		pbxSiteContactEmail      string
+		pbxSiteContactNumber     string
+		customerID               string
+		customerName             string
 	)
 
 	var dbTableCountUserPBX databaseFunctionParameter
@@ -3722,31 +3740,12 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "pbx-contact-input-site-phone"
 		inputTableHTMLArgument.funcNameJS = "pbxContactSearchSitePhone"
 		inputTableHTMLArgument.placeholder = "PBX Site Phone Number"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "pbx-contact-input-invoice-address"
-		inputTableHTMLArgument.funcNameJS = "pbxContactSearchInvoiceAddress"
-		inputTableHTMLArgument.placeholder = "PBX Invoice Address"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "pbx-contact-input-invoice-email"
-		inputTableHTMLArgument.funcNameJS = "pbxContactSearchInvoiceEmail"
-		inputTableHTMLArgument.placeholder = "PBX Invoice Email Address"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "pbx-contact-input-invoice-phone"
-		inputTableHTMLArgument.funcNameJS = "pbxContactSearchInvoicePhone"
-		inputTableHTMLArgument.placeholder = "PBX Invoice Phone Number"
-		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		fmt.Fprintf(w, "    <br>")
-		fmt.Fprintf(w, "    <br>")
 		if userTypeID == "100" {
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "pbx-contact-input-customer-id"
 			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerID"
 			inputTableHTMLArgument.placeholder = "Customer ID"
@@ -3756,7 +3755,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerName"
 			inputTableHTMLArgument.placeholder = "Customer Name"
 			inputTableHTML(w, inputTableHTMLArgument)
-			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
 		}
@@ -3779,12 +3777,9 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "          <th>PBX ID</th>")
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
-	fmt.Fprintf(w, "          <th>PBX Site<br> Address</th>")
-	fmt.Fprintf(w, "          <th>PBX Site<br> Email Address</th>")
-	fmt.Fprintf(w, "          <th>PBX Site<br> Phone Number</th>")
-	fmt.Fprintf(w, "          <th>PBX Invoice<br> Address</th>")
-	fmt.Fprintf(w, "          <th>PBX Invoice<br> Email Address</th>")
-	fmt.Fprintf(w, "          <th>PBX Invoice<br> Phone Number</th>")
+	fmt.Fprintf(w, "          <th>Site Address</th>")
+	fmt.Fprintf(w, "          <th>Site Email Address</th>")
+	fmt.Fprintf(w, "          <th>Site Phone Number</th>")
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "          <th>Customer ID</th>")
 		fmt.Fprintf(w, "          <th>Customer Name</th>")
@@ -3816,14 +3811,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 					                pbx_site_country,
 					                pbx_site_contact_email,
 					                pbx_site_contact_number,
-					                pbx_invoice_address_line_1,
-					                pbx_invoice_address_line_2,
-					                pbx_invoice_city_town_village,
-					                pbx_invoice_county_state_region,
-					                pbx_invoice_postcode_zip_code,
-					                pbx_invoice_country,
-					                pbx_invoice_contact_email,
-					                pbx_invoice_contact_number,
 					                customer_id,
 					                customer_name
 					              FROM
@@ -3849,14 +3836,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			&pbxSiteCountry,
 			&pbxSiteContactEmail,
 			&pbxSiteContactNumber,
-			&pbxInvoiceAddressLine1,
-			&pbxInvoiceAddressLine2,
-			&pbxInvoiceCityTownVillage,
-			&pbxInvoiceCountyStateRegion,
-			&pbxInvoicePostcodeZipCode,
-			&pbxInvoiceCountry,
-			&pbxInvoiceContactEmail,
-			&pbxInvoiceContactNumber,
 			&customerID,
 			&customerName,
 		)
@@ -3873,9 +3852,6 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+pbxSiteAddressLine1+"&nbsp<br>"+pbxSiteAddressLine2+"&nbsp<br>"+pbxSiteCityTownVillage+"&nbsp<br>"+pbxSiteCountyStateRegion+"&nbsp<br><br>"+pbxSitePostcodeZipCode+"&nbsp<br><br>"+pbxSiteCountry+"&nbsp</td>")
 		fmt.Fprintf(w, "          <td><a href=\"mailto:"+pbxSiteContactEmail+"\">"+pbxSiteContactEmail+"</a></td>")
 		fmt.Fprintf(w, "          <td><a href=\"tel:"+pbxSiteContactNumber+"\">"+pbxSiteContactNumber+"</a></td>")
-		fmt.Fprintf(w, "          <td style=\"text-align: left;\">"+pbxInvoiceAddressLine1+"&nbsp<br>"+pbxInvoiceAddressLine2+"&nbsp<br>"+pbxInvoiceCityTownVillage+"&nbsp<br>"+pbxInvoiceCountyStateRegion+"&nbsp<br><br>"+pbxInvoicePostcodeZipCode+"&nbsp<br><br>"+pbxInvoiceCountry+"&nbsp</td>")
-		fmt.Fprintf(w, "          <td>&nbsp<a href=\"mailto:"+pbxInvoiceContactEmail+"\">"+pbxInvoiceContactEmail+"</a></td>")
-		fmt.Fprintf(w, "          <td><a href=\"tel:"+pbxInvoiceContactNumber+"\">"+pbxInvoiceContactNumber+"</a></td>")
 		if userTypeID == "100" {
 			fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 			fmt.Fprintf(w, "          <td>"+customerName+"</td>")
@@ -3912,31 +3888,16 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		filterTableJSArgument.inputID = "pbx-contact-input-site-phone"
 		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for invoice address in the PBX contact table
-		filterTableJSArgument.funcNameJS = "pbxContactSearchInvoiceAddress"
-		filterTableJSArgument.inputID = "pbx-contact-input-invoice-address"
-		filterTableJSArgument.columnNumber = 5
-		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for invoice email in the PBX contact table
-		filterTableJSArgument.funcNameJS = "pbxContactSearchInvoiceEmail"
-		filterTableJSArgument.inputID = "pbx-contact-input-invoice-email"
-		filterTableJSArgument.columnNumber = 6
-		filterTableJS(w, filterTableJSArgument)
-		// Call JS filter function for invoice phone in the PBX contact table
-		filterTableJSArgument.funcNameJS = "pbxContactSearchInvoicePhone"
-		filterTableJSArgument.inputID = "pbx-contact-input-invoice-phone"
-		filterTableJSArgument.columnNumber = 7
-		filterTableJS(w, filterTableJSArgument)
 		if userTypeID == "100" {
 			// Call JS filter function for the customer ID in the PBX contact table
 			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerID"
 			filterTableJSArgument.inputID = "pbx-contact-input-customer-id"
-			filterTableJSArgument.columnNumber = 8
+			filterTableJSArgument.columnNumber = 5
 			filterTableJS(w, filterTableJSArgument)
 			// Call JS filter function for the customer name in the PBX contact table
 			filterTableJSArgument.funcNameJS = "pbxContactSearchCustomerName"
 			filterTableJSArgument.inputID = "pbx-contact-input-customer-name"
-			filterTableJSArgument.columnNumber = 9
+			filterTableJSArgument.columnNumber = 6
 			filterTableJS(w, filterTableJSArgument)
 		}
 	}
@@ -3989,6 +3950,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "pbx-resource-input-customer-name"
 			inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerName"
 			inputTableHTMLArgument.placeholder = "Customer Name"
@@ -4015,8 +3977,8 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "          <th>PBX ID</th>")
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
-	fmt.Fprintf(w, "          <th>PBX Date & Time</th>")
-	fmt.Fprintf(w, "          <th>SIP Extension<br>Limit for PBX</th>")
+	fmt.Fprintf(w, "          <th>Date & Time Added</th>")
+	fmt.Fprintf(w, "          <th>Ext Limit for PBX</th>")
 	if userTypeID == "100" {
 		fmt.Fprintf(w, "          <th>Customer ID</th>")
 		fmt.Fprintf(w, "          <th>Customer Name</th>")
@@ -4117,6 +4079,454 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		toggleDivJS(w, toggleDivJSArgument)
 	}
 
+}
+
+// Add PBX function
+
+func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, defaultExtLimit string) {
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/pbx\">")
+	fmt.Fprintf(w, "<table class=\"table-pbx\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New PBX</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	customerIDNameList, _ := customerSlice(dbDetail)
+	selectDoubleHTML(w, "add_pbx_select_customer_id", "Customer<br>", customerIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_pbx_name", "PBX Name<br>(Cannot Be Empty)", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	extLimitList := extLimitSlice()
+	selectSingleHTML(w, "add_pbx_select_ext_limit", "Ext Limt<br>(Cannot Be Empty)", extLimitList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	fmt.Fprintf(w, "            <label for=\"add_pbx_input_default_ext_limit\"><b>Default Ext Limit for Customers<br>Creating a New PBX:</b><br></label>")
+	fmt.Fprintf(w, "            <input style=\"text-align: center;\" type=\"text\" id=\"add_pbx_input_default_ext_limit\" name=\"add_pbx_input_default_ext_limit\" value=\""+defaultExtLimit+"\" readonly><br>")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td style=\"border: none;\">")
+	fmt.Fprintf(w, "            <br>")
+	fmt.Fprintf(w, "            <br>")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_address_line_1", "Site Address Line One", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_address_line_2", "Site Address Line Two", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_city_town_village", "Site City/Town/Village", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_county_state_region", "Site County/State/Region", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_postcode_zip_code", "Site Postcode/Zip Code", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_country", "Site Country", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_contact_email", "Site Email (Cannot Be Empty)", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_pbx_input_site_contact_number", "Site Phone (Cannot Be Empty)", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Create PBX\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	addPBXSelectCustomerID := r.FormValue("add_pbx_select_customer_id")
+	addPBXInputPBXName := r.FormValue("add_pbx_input_pbx_name")
+	addPBXSelectExtLimit := r.FormValue("add_pbx_select_ext_limit")
+
+	addPBXInputSiteAddressLine1 := r.FormValue("add_pbx_input_site_address_line_1")
+	addPBXInputSiteAddressLine2 := r.FormValue("add_pbx_input_site_address_line_2")
+	addPBXInputSiteCityTownVillage := r.FormValue("add_pbx_input_site_city_town_village")
+	addPBXInputSiteCountyStateRegion := r.FormValue("add_pbx_input_site_county_state_region")
+	addPBXInputSitePostcodeZipCode := r.FormValue("add_pbx_input_site_postcode_zip_code")
+	addPBXInputSiteCountry := r.FormValue("add_pbx_input_site_country")
+	addPBXInputSiteContactEmail := r.FormValue("add_pbx_input_site_contact_email")
+	addPBXInputSiteContactNumber := r.FormValue("add_pbx_input_site_contact_number")
+
+	// Check customer ID is contained in the slice
+	_, customerIDList := customerSlice(dbDetail)
+	customerIDList = append(customerIDList, "")
+	validateCustomerID := slices.Contains(customerIDList, addPBXSelectCustomerID)
+
+	// Validate the PBX name
+	validatePBXName := validateInput(addPBXInputPBXName, "alphaNum")
+
+	// Validate ext limit
+	validateExtLimit := slices.Contains(extLimitList, addPBXSelectExtLimit)
+
+	// Validate site address line one
+	validateSiteAddressLine1 := validateInput(addPBXInputSiteAddressLine1, "alphaNumEmpty")
+	// Validate site address line two
+	validateSiteAddressLine2 := validateInput(addPBXInputSiteAddressLine2, "alphaNumEmpty")
+	// Validate site city/town/village
+	validateSiteCityTownVillage := validateInput(addPBXInputSiteCityTownVillage, "alphaNumEmpty")
+	// Validate site county/state/region
+	validateSiteCountyStateRegion := validateInput(addPBXInputSiteCountyStateRegion, "alphaNumEmpty")
+	// Validate site postcode/zip code
+	validateSitePostcodeZipCode := validateInput(addPBXInputSitePostcodeZipCode, "alphaNumEmpty")
+	// Validate site country
+	validateSiteCountry := validateInput(addPBXInputSiteCountry, "alphaNumEmpty")
+	// Validate site contact emial
+	validateSiteContactEmail := validateInput(addPBXInputSiteContactEmail, "email")
+	// Validate Site contact phone number
+	validateSiteContactNumber := validateInput(addPBXInputSiteContactNumber, "phoneNumber")
+
+	if addPBXSelectCustomerID == "" && addPBXInputPBXName == "" && addPBXSelectExtLimit == "" {
+		// Do Nothing
+	} else if validateCustomerID == false {
+		messageHTML(w, validationMessageCustomer, "warning")
+	} else if validatePBXName == false {
+		messageHTML(w, validationMessagePBXName, "warning")
+	} else if validateExtLimit == false || addPBXSelectExtLimit == "" {
+		messageHTML(w, validationMessageExtLimit, "warning")
+	} else if validateSiteAddressLine1 == false {
+		messageHTML(w, validationMessageAddresslineOne, "warning")
+	} else if validateSiteAddressLine2 == false {
+		messageHTML(w, validationMessageAddresslineTwo, "warning")
+	} else if validateSiteCityTownVillage == false {
+		messageHTML(w, validationMessageCityTownVillage, "warning")
+	} else if validateSiteCountyStateRegion == false {
+		messageHTML(w, validationMessageCountyStateRegion, "warning")
+	} else if validateSitePostcodeZipCode == false {
+		messageHTML(w, validationMessagePostcodeZipCode, "warning")
+	} else if validateSiteCountry == false {
+		messageHTML(w, validationMessageCountry, "warning")
+	} else if validateSiteContactEmail == false {
+		messageHTML(w, validationMessageSiteEmail, "warning")
+	} else if validateSiteContactNumber == false {
+		messageHTML(w, validationMessageSitePhoneNumber, "warning")
+	} else {
+		pbxID := genID()
+
+		dbDetail.connection.Query(`INSERT 
+					     INTO
+					   pbx (
+					     id,
+                                             name,
+                                             customer_id,
+                                             sip_extension_limit
+	                                   )
+                                           VALUES(?, ?, ?, ?);`,
+			pbxID,
+			addPBXInputPBXName,
+			addPBXSelectCustomerID,
+			addPBXSelectExtLimit)
+
+		dbDetail.connection.Query(`INSERT 
+                         	             INTO
+                                           pbx_site_address (
+                                           id,
+                                           address_line_1,
+                                           address_line_2,
+                                           city_town_village,
+                                           county_state_region,
+                                           postcode_zip_code,
+                                           country,
+                                           contact_email,
+                                           contact_number 
+                                           )
+                                           VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+			pbxID,
+			nullSQL(addPBXInputSiteAddressLine1),
+			nullSQL(addPBXInputSiteAddressLine2),
+			nullSQL(addPBXInputSiteCityTownVillage),
+			nullSQL(addPBXInputSiteCountyStateRegion),
+			nullSQL(addPBXInputSitePostcodeZipCode),
+			nullSQL(addPBXInputSiteCountry),
+			nullSQL(addPBXInputSiteContactEmail),
+			nullSQL(addPBXInputSiteContactNumber))
+
+		dbDetail.table = "view___pbx_detail"
+		dbDetail.column = "pbx_id"
+		dbDetail.columnWhere = "pbx_id"
+		dbDetail.columnWhereValue = pbxID
+
+		checkPBXCreated := selectWhere(dbDetail)
+
+		if checkPBXCreated == pbxID {
+			messageHTML(w, validationMessagePBXCreated, "success")
+		} else {
+			messageHTML(w, validationMessagePBXNotCreated, "success")
+		}
+	}
+}
+
+// PBX edit function
+func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter) {
+
+	// List of all column names from the PBX table
+	pbxColumnList := [][]string{
+		{"name", "PBX Name"},
+		{"sip_extension_limit", "Ext Limit"},
+	}
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/pbx\">")
+	fmt.Fprintf(w, "<table class=\"table-pbx\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Edit PBX Details</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
+	fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+	fmt.Fprintf(w, "      <b>PBX Name:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Ext Limit:</b> 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000<br>")
+	fmt.Fprintf(w, "    </td>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	pbxIDNameList, _ := pbxSlice(dbDetail)
+	selectDoubleHTML(w, "edit_pbx_select_pbx_id", "PBX", pbxIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectDoubleHiddenHTML(w, "edit_pbx_select_column", "Column to Edit (Cannot Be Empty)", pbxColumnList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "edit_pbx_input_new_value", "New Value", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update PBX\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	editPBXSelectPBXID := r.FormValue("edit_pbx_select_pbx_id")
+	editPBXSelectColumn := r.FormValue("edit_pbx_select_column")
+	editPBXInputNewValue := r.FormValue("edit_pbx_input_new_value")
+
+	// Validate PBX List
+	_, pbxIDList := pbxSlice(dbDetail)
+	validatePBXID := slices.Contains(pbxIDList, editPBXSelectPBXID)
+
+	if editPBXSelectPBXID == "" && editPBXSelectColumn == "" && editPBXInputNewValue == "" {
+		// Do Nothing
+	} else if validatePBXID == false {
+		messageHTML(w, validationMessagePBX, "warning")
+	} else if editPBXSelectColumn == "" {
+		messageHTML(w, validationMessagePBXColumn, "warning")
+	} else if editPBXSelectColumn == "name" {
+		// Validate editPBXInputNewValue is a string
+		validateNewValue := validateInput(editPBXInputNewValue, "alphaNumEmpty")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ?", editPBXInputNewValue, editPBXSelectPBXID)
+		} else {
+			messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
+		}
+	} else if editPBXSelectColumn == "sip_extension_limit" {
+		extLimitList := extLimitSlice()
+		// Validate editCustomerSelectColumn is in the salesTaxStatusList Slice
+		validateNewValue := slices.Contains(extLimitList, editPBXInputNewValue)
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ?", editPBXInputNewValue, editPBXSelectPBXID)
+		} else {
+			messageHTML(w, validationMessageGenericInvalidOption, "warning")
+		}
+	} else {
+		messageHTML(w, validationMessageCustomerColumn, "warning")
+	}
+
+	// List of all column names from the PBX table
+	pbxSiteColumnList := [][]string{
+		{"address_line_1", "Site Address Line One"},
+		{"address_line_2", "Site Address Line Two"},
+		{"city_town_village", "Site City Town Village"},
+		{"county_state_region", "Site County/State/Region"},
+		{"postcode_zip_code", "Site Postcode/Zip Code"},
+		{"country", "Site Country"},
+		{"contact_email", "Site Contact Email"},
+		{"contact_number", "Site Contact Number"},
+	}
+
+	fmt.Fprintf(w, "<br>")
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/pbx\">")
+	fmt.Fprintf(w, "<table class=\"table-pbx\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Edit PBX Site Details</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
+	fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+	fmt.Fprintf(w, "      <b>Site Address Line One:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Address Line Two:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site City Town Village:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site County State Region:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Postcode Zip Code:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Country:</b> text<br>")
+	fmt.Fprintf(w, "      <b>Site Contact Email:</b> valid email address<br>")
+	fmt.Fprintf(w, "      <b>Site Contact Number:</b> phone number in e.164 format<br>")
+	fmt.Fprintf(w, "    </td>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	selectDoubleHTML(w, "edit_pbx_site_select_pbx_id", "PBX", pbxIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	selectDoubleHiddenHTML(w, "edit_pbx_site_select_column", "Column to Edit (Cannot Be Empty)", pbxSiteColumnList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "edit_pbx_site_input_new_value", "New Value", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update PBX Site\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	editPBXSiteSelectPBXID := r.FormValue("edit_pbx_site_select_pbx_id")
+	editPBXSiteSelectColumn := r.FormValue("edit_pbx_site_select_column")
+	editPBXSiteInputNewValue := r.FormValue("edit_pbx_site_input_new_value")
+
+	// Validate PBX List
+	_, pbxSiteIDList := pbxSlice(dbDetail)
+	validateSitePBXID := slices.Contains(pbxSiteIDList, editPBXSiteSelectPBXID)
+
+	if editPBXSiteSelectPBXID == "" && editPBXSiteSelectColumn == "" && editPBXSiteInputNewValue == "" {
+		// Do Nothing
+	} else if validateSitePBXID == false {
+		messageHTML(w, validationMessageCustomer, "warning")
+	} else if editPBXSiteSelectColumn == "" {
+		messageHTML(w, validationMessagePBXColumn, "warning")
+	} else if editPBXSiteSelectColumn == "address_line_1" || editPBXSiteSelectColumn == "address_line_2" || editPBXSiteSelectColumn == "city_town_village" || editPBXSiteSelectColumn == "county_state_region" || editPBXSiteSelectColumn == "postcode_zip_code" || editPBXSiteSelectColumn == "country" {
+		// Validate editPBXSiteInputNewValue is a string
+		validateNewValue := validateInput(editPBXSiteInputNewValue, "alphaNumEmpty")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
+		} else {
+			messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
+		}
+	} else if editPBXSiteSelectColumn == "contact_email" {
+		// Validate editPBXSiteInputNewValue is a email
+		validateNewValue := validateInput(editPBXSiteInputNewValue, "email")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
+		} else {
+			messageHTML(w, validationMessageCustomerEmail, "warning")
+		}
+	} else if editPBXSiteSelectColumn == "contact_number" {
+		// Validate editPBXSiteInputNewValue is a phone number
+		validateNewValue := validateInput(editPBXSiteInputNewValue, "phoneNumber")
+		if validateNewValue == true {
+			dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
+		} else {
+			messageHTML(w, validationMessageCustomerPhoneNumber, "warning")
+		}
+	} else {
+		messageHTML(w, validationMessageCustomerColumn, "warning")
+	}
+}
+
+// PBX delete function
+func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter) {
+
+	// Delete a Customer
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/pbx\">")
+	fmt.Fprintf(w, "<table class=\"table-delete\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a PBX<br>(PBXs With User Accounts Associated With Them Cannot be Deleted)</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	pbxIDNameList, _ := pbxSlice(dbDetail)
+	selectDoubleHTML(w, "delete_pbx_select_pbx_id", "PBX", pbxIDNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	confirmList := []string{"", "yes"}
+	selectSingleHTML(w, "delete_pbx_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Delete PBX\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	deletePBXSelectPBXID := r.FormValue("delete_pbx_select_pbx_id")
+	deletePBXSelectConfirm := r.FormValue("delete_pbx_select_confirm")
+
+	// Validate PBX List
+	_, pbxIDList := pbxSlice(dbDetail)
+	validatePBXID := slices.Contains(pbxIDList, deletePBXSelectPBXID)
+
+	if deletePBXSelectPBXID == "" && deletePBXSelectConfirm == "" {
+		// Do Nothing
+	} else if validatePBXID == false && deletePBXSelectConfirm == "yes" {
+		messageHTML(w, validationMessagePBX, "warning")
+	} else if validatePBXID == true && deletePBXSelectConfirm != "yes" {
+		messageHTML(w, validationMessageConfirmation, "warning")
+	} else if deletePBXSelectPBXID == "1" {
+		messageHTML(w, validationMessageCustomer, "warning")
+	} else if validatePBXID == true && deletePBXSelectConfirm == "yes" {
+
+		dbDetail.table = "view___pbx_detail"
+		dbDetail.column = "pbx_id"
+		dbDetail.columnWhere = "pbx_id"
+		dbDetail.columnWhereValue = deletePBXSelectPBXID
+
+		checkPBXExist := selectWhere(dbDetail)
+
+		if checkPBXExist == "" {
+			messageHTML(w, validationMessagePBXDoesNotExist, "warning")
+		} else {
+
+			dbDetail.connection.Query(`DELETE FROM pbx WHERE id = ?`, deletePBXSelectPBXID)
+
+			// Close connection
+			defer dbDetail.connection.Close()
+
+			checkPBXDeleted := selectWhere(dbDetail)
+
+			if checkPBXDeleted == "" {
+				messageHTML(w, validationMessagePBXDeleted, "success")
+			} else {
+				messageHTML(w, validationMessagePBXNotDeleted, "warning")
+			}
+		}
+
+	} else {
+		messageHTML(w, "Invalid Input", "warning")
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -5546,6 +5956,10 @@ func main() {
 
 	go http.HandleFunc("/pbx", func(w http.ResponseWriter, r *http.Request) {
 
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
+
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
 		defer dbConnection.Close()
@@ -5580,6 +5994,12 @@ func main() {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All BPXs on YAP", "header-pbx", extraButtonName, extraButtonURL)
 				pbxList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
+				fmt.Fprintf(w, "<br>")
+				pbxAdd(w, r, dbDetail, defaultExtLimit)
+				fmt.Fprintf(w, "<br>")
+				pbxEdit(w, r, dbDetail)
+				fmt.Fprintf(w, "<br>")
+				pbxDelete(w, r, dbDetail)
 				footer(w, "header-pbx", "button-pbx")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All PBXs for the Customer", "header-pbx", extraButtonName, extraButtonURL)
