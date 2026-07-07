@@ -336,6 +336,7 @@ mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_domain_aliases TO 'yap'
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_endpoint_id_ips TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_endpoints TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.user_account TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.invoice_item TO 'yap'@'localhost';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Add the YAP MariaDB user password to the YAP configuration file
