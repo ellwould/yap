@@ -671,13 +671,99 @@ func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
 
 //----------------------------------------------------------------------------------------------------
 
-// Constants for validation failure messages
-const validationMessageEmail string = "A valid email address with a maxamium of 30 characters must be used"
-const validationMessagePhoneNumber string = "A valid phone number in e.164 format with a maxamium of 16 characters must be used"
-const validationMessageAlphaNum string = " must be 1 to 30 characters and must only contain characters: a-z, A-Z or numbers"
-const validationMessageAlphaNumEmpty string = " can be empty or must be a maxamium of 30 characters and must only contain characters: a-z, A-Z or numbers"
-const validationMessageBoolean string = " must be yes or no"
-const validationMessagePrice string = " must be a decimal number with maxamium of 8 numbers"
+// Constants for validation messages
+const validationMessageEmail string = " value must be a valid email address with a maxamium of 30 characters must be used"
+const validationMessagePhoneNumber string = " value must be a valid phone number in e.164 format with a maxamium of 16 characters must be used"
+const validationMessageAlphaNum string = " value must be 1 to 30 characters and must only contain characters: a-z, A-Z or numbers"
+const validationMessageAlphaNumEmpty string = " value can be empty or must be a maxamium of 30 characters and must only contain characters: a-z, A-Z or numbers"
+const validationMessagePrice string = " value must be a decimal number with maxamium of 8 numbers"
+const validationMessageBoolean string = " value must be yes or no"
+const validationMessageDate string = " value must be in the date format DD-MM-YYYY"
+
+const validationMessageAlreadyExist string = " already exists"
+const validationMessageDoesNotExist string = " does not exist"
+const validationMessageCreated string = " created"
+const validationMessageNotCreated string = " not created"
+const validationMessageDeleted string = " deleted"
+const validationMessageNotDeleted string = " not deleted"
+const validationMessageInvalidOption string = "Invalid option selected for "
+
+// user-account page specfic HTML messages
+const validationMessageFirstName string = "A first name" + validationMessageAlphaNumEmpty
+const validationMessageLastName string = "A last name" + validationMessageAlphaNumEmpty
+const validationMessageAccountType string = validationMessageInvalidOption + "account type"
+const validationMessageAccountID string = "A user account ID" + validationMessageAlphaNum
+const validationMessageAccountEmail string = "A user account email" + validationMessageEmail
+const validationMessageAccountCreated string = "User account" + validationMessageCreated
+const validationMessageAccountDeleted string = "User account(s)" + validationMessageDeleted
+const validationMessageAccountNotDeleted string = "User account(s) not" + validationMessageDeleted
+const validationMessageAccountAlreadyExist string = "User account(s)" + validationMessageAlreadyExist
+const validationMessageAccountDoesNotExist string = "User account(s)" + validationMessageDoesNotExist
+const validationMessageYAPAdmin string = "Must be a YAP Admin (100) account with account ID 1"
+const validationMessageAccountIDOne string = "User account with ID 1 cannot be" + validationMessageDeleted
+
+// customer page specific HTML messages
+const validationMessageCustomerID string = "A customer ID" + validationMessageAlphaNum
+const validationMessageCustomerName string = "A customer name" + validationMessageAlphaNum
+const validationMessageUKBased string = "UK based" + validationMessageBoolean
+const validationMessageResellingMinutes string = "Reselling minutes" + validationMessageBoolean
+const validationMessageConsumerType string = validationMessageInvalidOption + "consumer type"
+const validationMessageUKVATRegistered string = "UK VAT registered" + validationMessageBoolean
+const validationMessageUKVATNumber string = "UK VAT number" + validationMessageAlphaNumEmpty
+const validationMessagePBXLimit string = validationMessageInvalidOption + "PBX limit"
+const validationMessagePBXSalesTaxRate string = validationMessageInvalidOption + "PBX sales tax rate"
+const validationMessagePBXSalesTaxStatus string = validationMessageInvalidOption + "PBX sales tax status"
+const validationMessageExtSalesTaxRate string = validationMessageInvalidOption + "ext sales tax rate"
+const validationMessageExtSalesTaxStatus string = validationMessageInvalidOption + "ext sales tax status"
+
+const validationMessageSetupPrice string = "setup price" + validationMessagePrice
+const validationMessageRentalPrice string = "rental price" + validationMessagePrice
+const validationMessageCeasePrice string = "cease price" + validationMessagePrice
+
+const validationMessageAddresslineOne string = "Address line one" + validationMessageAlphaNumEmpty
+const validationMessageAddresslineTwo string = "Address line two" + validationMessageAlphaNumEmpty
+const validationMessageCityTownVillage string = "City/town/village" + validationMessageAlphaNumEmpty
+const validationMessageCountyStateRegion string = "County/state/region" + validationMessageAlphaNumEmpty
+const validationMessagePostcodeZipCode string = "Postcode zip code" + validationMessageAlphaNumEmpty
+const validationMessageCountry string = "Country" + validationMessageAlphaNumEmpty
+const validationMessageSiteEmail string = "A customer site email" + validationMessageEmail
+const validationMessageSitePhoneNumber string = "A customer site phone number" + validationMessagePhoneNumber
+const validationMessageInvoiceEmail string = "A customer invoice email" + validationMessageEmail
+const validationMessageInvoicePhoneNumber string = "A customer invoice phone number" + validationMessagePhoneNumber
+
+const validationMessageCustomerCreated string = "Customer" + validationMessageCreated
+const validationMessageCustomerNotCreated string = "Customer" + validationMessageNotCreated
+const validationMessageCustomerlAlreadyExist string = "Customer" + validationMessageAlreadyExist
+const validationMessageCustomerDoesNotExist string = "Customer" + validationMessageDoesNotExist
+const validationMessageCustomerDeleted string = "Customer" + validationMessageDeleted
+const validationMessageCustomerNotDeleted string = "Customer" + validationMessageNotDeleted
+
+const validationMessageCustomerColumn string = validationMessageInvalidOption + "column"
+const validationMessageCustomerEmail string = "A customer email" + validationMessageEmail
+const validationMessageCustomerPhoneNumber string = "A customer phone number" + validationMessagePhoneNumber
+
+// invoice page specific HTML messages
+const validationMessageServiceProduct string = validationMessageInvalidOption + "service/product"
+const validationMessageServiceProductTag string = "Service/product tag" + validationMessageAlphaNumEmpty
+const validationMessageItemPrice string = "Item price" + validationMessagePrice
+const validationMessageSalesTaxRate string = validationMessageInvalidOption + "sales tax rate"
+const validationMessageSalesTaxStatus string = validationMessageInvalidOption + "sales tax status"
+const validationMessageBillItemOnce string = validationMessageInvalidOption + "bill item once"
+const validationMessageItemOnHold string = validationMessageInvalidOption + "item on hold"
+const validationMessageContractStartDate string = "Contract start date" + validationMessageDate
+
+// General/multi-page HTML messsages
+const validationMessageCustomer string = validationMessageInvalidOption + "customer"
+const validationMessageEmailAlreadyExist string = "Email" + validationMessageAlreadyExist
+const validationMessageEmailDoesNotExist string = "Email" + validationMessageDoesNotExist
+const validationMessagePBX string = validationMessageInvalidOption + "PBX"
+const validationMessagePBXAlreadyExist string = "PBX" + validationMessageAlreadyExist
+const validationMessagePBXDoesNotExist string = "PBX" + validationMessageDoesNotExist
+const validationMessageGenericInvalidOption string = "Invalid option selected"
+const validationMessageGenericAlphaNumEmpty string = "value " + validationMessageAlphaNumEmpty
+const validationMessageGenericPrice string = "Value" + validationMessagePrice
+const validationMessageConfirmation string = "Confirmation must be yes"
+const validationMessageContractLength string = validationMessageInvalidOption + "contract length"
 
 // Function to validate user input utlising the Go Validator package
 func validateInput(value string, valueType string) (validation bool) {
@@ -1729,31 +1815,31 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 	if addAccountInputFirstName == "" && addAccountInputLastName == "" && addAccountInputEmail == "" && addAccountSelectAccountType == "" && addAccountSelectPBXID == "" && addAccountSelectCustomerID == "" {
 		// Do Nothing
 	} else if validateFirstName == false {
-		messageHTML(w, "First name "+validationMessageAlphaNum, "warning")
+		messageHTML(w, validationMessageFirstName, "warning")
 	} else if validateLastName == false {
-		messageHTML(w, "Last name "+validationMessageAlphaNum, "warning")
+		messageHTML(w, validationMessageLastName, "warning")
 	} else if validateEmail == false {
-		messageHTML(w, validationMessageEmail, "warning")
+		messageHTML(w, validationMessageAccountEmail, "warning")
 	} else if validateUserAccountTypeID == false {
-		messageHTML(w, "User account type must be either 100, 200, 201, 300, 301, 302 or 400", "warning")
+		messageHTML(w, validationMessageAccountType, "warning")
 	} else if validatePBXID == false {
-		messageHTML(w, "PBX ID invalid", "warning")
+		messageHTML(w, validationMessagePBX, "warning")
 	} else if validateCustomerID == false {
-		messageHTML(w, "Customer ID invalid", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if addAccountSelectAccountType == "100" && userID != "1" {
-		messageHTML(w, "Must be a YAP Admin (100) account with account ID 1 to create other YAP Admin (100) accounts", "warning")
+		messageHTML(w, validationMessageYAPAdmin, "warning")
 	} else if addAccountSelectAccountType == "200" && addAccountSelectCustomerID == "" {
-		messageHTML(w, "A customer ID must be selected when creating a 200 type account", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if addAccountSelectAccountType == "201" && addAccountSelectCustomerID == "" {
-		messageHTML(w, "A customer ID must be selected when creating a 201 type account", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if addAccountSelectAccountType == "400" && addAccountSelectCustomerID == "" {
-		messageHTML(w, "A customer ID must be selected when creating a 400 type account", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if addAccountSelectAccountType == "300" && addAccountSelectPBXID == "" {
-		messageHTML(w, "A PBX ID must be selected when creating a 300 type account", "warning")
+		messageHTML(w, validationMessagePBX, "warning")
 	} else if addAccountSelectAccountType == "301" && addAccountSelectPBXID == "" {
-		messageHTML(w, "A PBX ID must be selected when creating a 301 type account", "warning")
+		messageHTML(w, validationMessagePBX, "warning")
 	} else if addAccountSelectAccountType == "302" && addAccountSelectPBXID == "" {
-		messageHTML(w, "A PBX ID must be selected when creating a 302 type account", "warning")
+		messageHTML(w, validationMessagePBX, "warning")
 	} else {
 		dbDetail.table = "view___account_detail"
 		dbDetail.column = "user_account_email"
@@ -1763,7 +1849,7 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 		checkAccountEmailExist := selectWhere(dbDetail)
 
 		if checkAccountEmailExist == addAccountInputEmail {
-			messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+			messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 		} else {
 			// The database is designed not to allow two or more records with the same email address
 			// The conditional statements are mostly used to inform the user with messages in HTML
@@ -1772,55 +1858,55 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 				addAccountSelectPBXID = "1"
 				checkAccountType100Created := selectWhere(dbDetail)
 				if checkAccountType100Created == addAccountInputEmail {
-					messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+					messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 				} else {
-					messageHTML(w, "YAP Admin (100) account with email address "+addAccountInputEmail+" created", "success")
+					messageHTML(w, validationMessageAccountCreated, "success")
 				}
 			} else if addAccountSelectAccountType == "200" || addAccountSelectAccountType == "201" || addAccountSelectAccountType == "400" {
 				addAccountSelectPBXID = "1"
 				if addAccountSelectAccountType == "200" {
 					checkAccountType200Created := selectWhere(dbDetail)
 					if checkAccountType200Created == addAccountInputEmail {
-						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+						messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 					} else {
-						messageHTML(w, "Customer Admin (200) account with email address "+addAccountInputEmail+" created", "success")
+						messageHTML(w, validationMessageAccountCreated, "success")
 					}
 				} else if addAccountSelectAccountType == "201" {
 					checkAccountType201Created := selectWhere(dbDetail)
 					if checkAccountType201Created == addAccountInputEmail {
-						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+						messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 					} else {
-						messageHTML(w, "Customer Regular (201) account with email address "+addAccountInputEmail+" created", "success")
+						messageHTML(w, validationMessageAccountCreated, "success")
 					}
 				} else if addAccountSelectAccountType == "400" {
 					checkAccountType400Created := selectWhere(dbDetail)
 					if checkAccountType400Created == addAccountInputEmail {
-						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+						messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 					} else {
-						messageHTML(w, "Customer Invoice (400) account with email address "+addAccountInputEmail+" created", "success")
+						messageHTML(w, validationMessageAccountCreated, "success")
 					}
 				}
 			} else if addAccountSelectAccountType == "300" || addAccountSelectAccountType == "301" || addAccountSelectAccountType == "302" {
 				if addAccountSelectAccountType == "300" {
 					checkAccountType300Created := selectWhere(dbDetail)
 					if checkAccountType300Created == addAccountInputEmail {
-						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+						messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 					} else {
-						messageHTML(w, "PBX Admin (300) account with email address "+addAccountInputEmail+" Created", "success")
+						messageHTML(w, validationMessageAccountCreated, "success")
 					}
 				} else if addAccountSelectAccountType == "301" {
 					checkAccountType301Created := selectWhere(dbDetail)
 					if checkAccountType301Created == addAccountInputEmail {
-						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+						messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 					} else {
-						messageHTML(w, "PBX Regular (301) account with email address "+addAccountInputEmail+" Created", "success")
+						messageHTML(w, validationMessageAccountCreated, "success")
 					}
 				} else if addAccountSelectAccountType == "302" {
 					checkAccountType302Created := selectWhere(dbDetail)
 					if checkAccountType302Created == addAccountInputEmail {
-						messageHTML(w, "Account with email address "+addAccountInputEmail+" already exists", "warning")
+						messageHTML(w, validationMessageEmailAlreadyExist, "warning")
 					} else {
-						messageHTML(w, "PBX Read Only (302) account with email address "+addAccountInputEmail+" Created", "success")
+						messageHTML(w, validationMessageAccountCreated, "success")
 					}
 				}
 				dbDetail.table = "view___pbx_detail"
@@ -1934,15 +2020,15 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 	if deleteIndividualUserAccountInputAccountID == "" && deleteIndividualUserAccountInputEmail == "" && deleteIndividualUserAccountSelectAccountType == "" {
 		// Do nothing
 	} else if validateIndividualUserAccountID == false || deleteIndividualUserAccountInputAccountID == "" {
-		messageHTML(w, "Account ID does not exist", "warning")
+		messageHTML(w, validationMessageAccountID, "warning")
 	} else if validateIndividualUserAccountEmail == false || deleteIndividualUserAccountInputEmail == "" {
-		messageHTML(w, "Account email address does not exist", "warning")
+		messageHTML(w, validationMessageEmailDoesNotExist, "warning")
 	} else if validateIndividualUserAccountTypeID == false || deleteIndividualUserAccountSelectAccountType == "" {
-		messageHTML(w, "User account type must be either 100, 200, 201, 300, 301, 302 or 400", "warning")
+		messageHTML(w, validationMessageAccountType, "warning")
 	} else if deleteIndividualUserAccountInputAccountID == "1" {
-		messageHTML(w, "YAP Admin (100) account with account ID 1 cannot be deleted", "warning")
+		messageHTML(w, validationMessageAccountID, "warning")
 	} else if deleteIndividualUserAccountSelectAccountType == "100" && userID != "1" {
-		messageHTML(w, "Must be a YAP Admin (100) account with account ID 1 to delete other YAP Admin (100) accounts", "warning")
+		messageHTML(w, validationMessageYAPAdmin, "warning")
 	} else {
 		dbDetail.table = "view___account_detail"
 		dbDetail.column = "user_account_id"
@@ -1957,9 +2043,9 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 		checkIndividualUserAccountDeleted := selectWhere(dbDetail)
 
 		if checkIndividualUserAccountDeleted == "" {
-			messageHTML(w, "Accounts with account ID "+deleteIndividualUserAccountInputAccountID+" removed", "success")
+			messageHTML(w, validationMessageAccountDeleted, "success")
 		} else {
-			messageHTML(w, "Wrong account type ("+deleteIndividualUserAccountSelectAccountType+") selected for "+deleteIndividualUserAccountInputEmail, "warning")
+			messageHTML(w, validationMessageAccountType, "warning")
 		}
 	}
 
@@ -2004,11 +2090,11 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 	if deletePBXUserAccountSelectPBXID == "" && deletePBXUserAccountSelectConfirm == "" {
 		// Do Nothing
 	} else if validatePBXID == false && deletePBXUserAccountSelectConfirm == "yes" {
-		messageHTML(w, "A PBX must be selected", "warning")
+		messageHTML(w, validationMessagePBX, "warning")
 	} else if validatePBXID == true && deletePBXUserAccountSelectConfirm != "yes" {
-		messageHTML(w, "Confirmation must be yes to remove all user accounts for the PBX", "warning")
+		messageHTML(w, validationMessageConfirmation, "warning")
 	} else if deletePBXUserAccountSelectPBXID == "1" {
-		messageHTML(w, "User account with PBX ID 1 cannot be deleted", "warning")
+		messageHTML(w, validationMessagePBX, "warning")
 	} else if validatePBXID == true && deletePBXUserAccountSelectConfirm == "yes" {
 
 		dbDetail.table = "view___account_detail"
@@ -2019,7 +2105,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 		checkPBXUserAccountExist := selectWhere(dbDetail)
 
 		if checkPBXUserAccountExist == "" {
-			messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountSelectPBXID+" do not exist", "warning")
+			messageHTML(w, validationMessageAccountDoesNotExist, "warning")
 		} else {
 
 			dbDetail.connection.Query(`DELETE FROM user_account WHERE pbx_id = ?`, deletePBXUserAccountSelectPBXID)
@@ -2030,9 +2116,9 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			checkPBXUserAccountDeleted := selectWhere(dbDetail)
 
 			if checkPBXUserAccountDeleted == "" {
-				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountSelectPBXID+" removed", "success")
+				messageHTML(w, validationMessageAccountDeleted, "success")
 			} else {
-				messageHTML(w, "Accounts with PBX ID "+deletePBXUserAccountSelectPBXID+" not removed", "warning")
+				messageHTML(w, validationMessageAccountCreated, "warning")
 			}
 		}
 	} else {
@@ -2078,11 +2164,11 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 	if deleteCustomerUserAccountSelectCustomerID == "" && deleteCustomerUserAccountSelectConfirm == "" {
 		// Do Nothing
 	} else if validateCustomerID == false && deleteCustomerUserAccountSelectConfirm == "yes" {
-		messageHTML(w, "A customer must be selected", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if validateCustomerID == true && deleteCustomerUserAccountSelectConfirm != "yes" {
-		messageHTML(w, "Confirmation must be yes to remove all user accounts for the customer", "warning")
+		messageHTML(w, validationMessageConfirmation, "warning")
 	} else if deleteCustomerUserAccountSelectCustomerID == "1" {
-		messageHTML(w, "User account with customer ID 1 cannot be deleted", "warning")
+		messageHTML(w, validationMessageAccountIDOne, "warning")
 	} else if validateCustomerID == true && deleteCustomerUserAccountSelectConfirm == "yes" {
 
 		dbDetail.table = "view___account_detail"
@@ -2093,7 +2179,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 		checkCustomerUserAccountExist := selectWhere(dbDetail)
 
 		if checkCustomerUserAccountExist == "" {
-			messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountSelectCustomerID+" do not exist", "success")
+			messageHTML(w, validationMessageAccountDoesNotExist, "warning")
 		} else {
 
 			dbDetail.connection.Query(`DELETE FROM user_account WHERE customer_id = ?`, deleteCustomerUserAccountSelectCustomerID)
@@ -2104,9 +2190,9 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			checkCustomerUserAccountDeleted := selectWhere(dbDetail)
 
 			if checkCustomerUserAccountDeleted == "" {
-				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountSelectCustomerID+" removed", "success")
+				messageHTML(w, validationMessageAccountDeleted, "success")
 			} else {
-				messageHTML(w, "Accounts with customer ID "+deleteCustomerUserAccountSelectCustomerID+" not removed", "warning")
+				messageHTML(w, validationMessageAccountNotDeleted, "warning")
 			}
 		}
 
@@ -2895,79 +2981,79 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	if addCustomerInputID == "" && addCustomerInputName == "" && addCustomerSelectUKBased == "" && addCustomerSelectResellingMinutes == "" && addCustomerSelectConsumerType == "" && addCustomerSelectUKVATRegistered == "" && addCustomerSelectPBXLimit == "" && addCustomerSelectPBXSalesTaxRate == "" && addCustomerSelectPBXSalesTaxStatus == "" && addCustomerSelectExtSalesTaxRate == "" && addCustomerSelectExtSalesTaxStatus == "" && addCustomerInputPBXSetupPrice == "" && addCustomerInputPBXRentalPrice == "" && addCustomerInputPBXCeasePrice == "" && addCustomerInputExtSetupPrice == "" && addCustomerInputExtRentalPrice == "" && addCustomerInputExtCeasePrice == "" && addCustomerInputSiteContactEmail == "" && addCustomerInputSiteContactNumber == "" && addCustomerInputInvoiceContactEmail == "" && addCustomerInputInvoiceContactNumber == "" {
 		// Do Nothing
 	} else if validateID == false {
-		messageHTML(w, "Customer ID "+validationMessageAlphaNum, "warning")
+		messageHTML(w, validationMessageCustomerID, "warning")
 	} else if validateName == false {
-		messageHTML(w, "Customer Name "+validationMessageAlphaNum, "warning")
+		messageHTML(w, validationMessageCustomerName, "warning")
 	} else if validateUKBased == false || addCustomerSelectUKBased == "" {
-		messageHTML(w, "UK based option "+validationMessageBoolean, "warning")
+		messageHTML(w, validationMessageUKBased, "warning")
 	} else if validateResellingMinutes == false || addCustomerSelectResellingMinutes == "" {
-		messageHTML(w, "Reselling minutes "+validationMessageBoolean, "warning")
+		messageHTML(w, validationMessageResellingMinutes, "warning")
 	} else if validateConsumerType == false || addCustomerSelectConsumerType == "" {
-		messageHTML(w, "Invalid option for consumer type", "warning")
+		messageHTML(w, validationMessageConsumerType, "warning")
 	} else if validateUKVATRegistered == false || addCustomerSelectUKVATRegistered == "" {
-		messageHTML(w, "UK VAT registered "+validationMessageBoolean, "warning")
+		messageHTML(w, validationMessageUKVATRegistered, "warning")
 	} else if addCustomerSelectUKVATRegistered == "yes" && addCustomerInputUKVATNumber == "" {
-		messageHTML(w, "When UK VAT Registered is set to yes the UK VAT Number cannot be empty", "warning")
+		messageHTML(w, "When UK VAT registered is set to yes the UK VAT number cannot be empty", "warning")
 	} else if validateUKVATNumber == false {
-		messageHTML(w, "UK VAT number "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageUKVATNumber, "warning")
 	} else if validatePBXLimit == false || addCustomerSelectPBXLimit == "" {
-		messageHTML(w, "Invalid option for PBX limit", "warning")
+		messageHTML(w, validationMessagePBXLimit, "warning")
 	} else if validatePBXSalesTaxRate == false || addCustomerSelectPBXSalesTaxRate == "" {
-		messageHTML(w, "Invalid option for PBX sales tax rate", "warning")
+		messageHTML(w, validationMessagePBXSalesTaxRate, "warning")
 	} else if validatePBXSalesTaxStatus == false || addCustomerSelectPBXSalesTaxStatus == "" {
-		messageHTML(w, "Invalid option for PBX sales tax status", "warning")
+		messageHTML(w, validationMessagePBXSalesTaxStatus, "warning")
 	} else if validateExtSalesTaxRate == false || addCustomerSelectExtSalesTaxRate == "" {
-		messageHTML(w, "Invalid option for Ext sales tax rate", "warning")
+		messageHTML(w, validationMessageExtSalesTaxRate, "warning")
 	} else if validateExtSalesTaxStatus == false || addCustomerSelectExtSalesTaxStatus == "" {
-		messageHTML(w, "Invalid option for Ext sales tax status", "warning")
+		messageHTML(w, validationMessageExtSalesTaxStatus, "warning")
 	} else if validatePBXSetupPrice == false {
-		messageHTML(w, "PBX setup price "+validationMessagePrice, "warning")
+		messageHTML(w, validationMessageSetupPrice, "warning")
 	} else if validatePBXRentalPrice == false {
-		messageHTML(w, "PBX rental price "+validationMessagePrice, "warning")
+		messageHTML(w, validationMessageRentalPrice, "warning")
 	} else if validatePBXCeasePrice == false {
-		messageHTML(w, "PBX cease price "+validationMessagePrice, "warning")
+		messageHTML(w, validationMessageCeasePrice, "warning")
 	} else if validatePBXContractLength == false {
-		messageHTML(w, "Invalid option for PBX contract length", "warning")
+		messageHTML(w, validationMessageContractLength, "warning")
 	} else if validateExtSetupPrice == false {
-		messageHTML(w, "Site setup price "+validationMessagePrice, "warning")
+		messageHTML(w, validationMessageSetupPrice, "warning")
 	} else if validateExtRentalPrice == false {
-		messageHTML(w, "Site rental price "+validationMessagePrice, "warning")
+		messageHTML(w, validationMessageRentalPrice, "warning")
 	} else if validateExtCeasePrice == false {
-		messageHTML(w, "Site cease price "+validationMessagePrice, "warning")
+		messageHTML(w, validationMessageCeasePrice, "warning")
 	} else if validateExtContractLength == false {
-		messageHTML(w, "Invalid option for SIP extension contract length", "warning")
+		messageHTML(w, validationMessageContractLength, "warning")
 	} else if validateSiteAddressLine1 == false {
-		messageHTML(w, "Site address line one "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageAddresslineOne, "warning")
 	} else if validateSiteAddressLine2 == false {
-		messageHTML(w, "Site address line two "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageAddresslineTwo, "warning")
 	} else if validateSiteCityTownVillage == false {
-		messageHTML(w, "Site city/town/village "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageCityTownVillage, "warning")
 	} else if validateSiteCountyStateRegion == false {
-		messageHTML(w, "Site county/state/region "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageCountyStateRegion, "warning")
 	} else if validateSitePostcodeZipCode == false {
-		messageHTML(w, "Site postcode/zip code "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessagePostcodeZipCode, "warning")
 	} else if validateSiteCountry == false {
-		messageHTML(w, "Site country "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageCountry, "warning")
 	} else if validateSiteContactEmail == false {
-		messageHTML(w, validationMessageEmail+" for the site address", "warning")
+		messageHTML(w, validationMessageSiteEmail, "warning")
 	} else if validateSiteContactNumber == false {
-		messageHTML(w, validationMessagePhoneNumber+" for the site address", "warning")
+		messageHTML(w, validationMessageSitePhoneNumber, "warning")
 	} else if validateInvoiceAddressLine1 == false {
-		messageHTML(w, "Invoice address line one "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageAddresslineOne, "warning")
 	} else if validateInvoiceAddressLine2 == false {
-		messageHTML(w, "Invoice address line two "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageAddresslineTwo, "warning")
 	} else if validateInvoiceCityTownVillage == false {
-		messageHTML(w, "Invoice city/town/village "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageCityTownVillage, "warning")
 	} else if validateInvoiceCountyStateRegion == false {
-		messageHTML(w, "Invoice county/state/region "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageCountyStateRegion, "warning")
 	} else if validateInvoicePostcodeZipCode == false {
-		messageHTML(w, "Invoice postcode/zip code "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessagePostcodeZipCode, "warning")
 	} else if validateInvoiceCountry == false {
-		messageHTML(w, "Invoice country "+validationMessageAlphaNumEmpty+" or empty", "warning")
+		messageHTML(w, validationMessageCountry, "warning")
 	} else if validateInvoiceContactEmail == false {
-		messageHTML(w, validationMessageEmail+" for the invoice address", "warning")
+		messageHTML(w, validationMessageInvoiceEmail, "warning")
 	} else if validateInvoiceContactNumber == false {
-		messageHTML(w, validationMessagePhoneNumber+" for the invoice address", "warning")
+		messageHTML(w, validationMessageInvoicePhoneNumber, "warning")
 	} else {
 		if addCustomerInputID == "Gen" || addCustomerInputID == "GEN" || addCustomerInputID == "gen" || addCustomerInputID == "Generate" || addCustomerInputID == "GENERATE" || addCustomerInputID == "generate" {
 			addCustomerInputID = genID()
@@ -2981,7 +3067,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		checkCustomerExist := selectWhere(dbDetail)
 
 		if checkCustomerExist == addCustomerInputID {
-			messageHTML(w, "Account with customer ID "+addCustomerInputID+" already exists", "success")
+			messageHTML(w, validationMessageCustomerlAlreadyExist, "warning")
 		} else {
 
 			// Convert string values to a float64 to use the math package to round to the nearest two decimal places
@@ -3089,9 +3175,9 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 			checkCustomerCreated := selectWhere(dbDetail)
 
 			if checkCustomerCreated == addCustomerInputID {
-				messageHTML(w, "Customer account "+addCustomerInputName+" ("+addCustomerInputID+") created", "success")
+				messageHTML(w, validationMessageCustomerCreated, "success")
 			} else {
-				messageHTML(w, "Customer account "+addCustomerInputName+" ("+addCustomerInputID+") not created", "success")
+				messageHTML(w, validationMessageCustomerNotCreated, "success")
 			}
 		}
 	}
@@ -3205,16 +3291,16 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 	if editCustomerSelectCustomerID == "" && editCustomerSelectColumn == "" && editCustomerInputNewValue == "" {
 		// Do Nothing
 	} else if validateCustomerID == false {
-		messageHTML(w, "Customer does not exist", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if editCustomerSelectColumn == "" {
-		messageHTML(w, "A column must be selected", "warning")
+		messageHTML(w, validationMessageCustomerColumn, "warning")
 	} else if editCustomerSelectColumn == "name" || editCustomerSelectColumn == "uk_based" || editCustomerSelectColumn == "reselling_minutes" || editCustomerSelectColumn == "consumer_type" || editCustomerSelectColumn == "uk_vat_registered" || editCustomerSelectColumn == "uk_vat_number" || editCustomerSelectColumn == "pbx_contract_length" || editCustomerSelectColumn == "ext_contract_length" {
 		// Validate editCustomerInputNewValue is a string
 		validateNewValue := validateInput(editCustomerInputNewValue, "alphaNumEmpty")
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?", editCustomerInputNewValue, editCustomerSelectCustomerID)
 		} else {
-			messageHTML(w, "Input "+validationMessageAlphaNumEmpty, "warning")
+			messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 		}
 	} else if editCustomerSelectColumn == "pbx_setup_price" || editCustomerSelectColumn == "pbx_rental_price" || editCustomerSelectColumn == "pbx_cease_price" || editCustomerSelectColumn == "ext_setup_price" || editCustomerSelectColumn == "ext_rental_price" || editCustomerSelectColumn == "ext_cease_price" {
 		// Validate editCustomerSelectColumn is a decimal
@@ -3224,7 +3310,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			editCustomerInputNewValueFloat64 := stringToFloat64(editCustomerInputNewValue)
 			dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?", math.Round(editCustomerInputNewValueFloat64*100)/100, editCustomerSelectCustomerID)
 		} else {
-			messageHTML(w, "Input "+validationMessagePrice, "warning")
+			messageHTML(w, validationMessageGenericPrice, "warning")
 		}
 	} else if editCustomerSelectColumn == "pbx_limit" {
 		pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
@@ -3233,7 +3319,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE `customer` SET `"+editCustomerSelectColumn+"` = ? WHERE `id` = '"+editCustomerSelectCustomerID+"'", editCustomerInputNewValue)
 		} else {
-			messageHTML(w, "Input must be a valid PBX limit", "warning")
+			messageHTML(w, validationMessagePBX, "warning")
 		}
 	} else if editCustomerSelectColumn == "pbx_sales_tax_rate" || editCustomerSelectColumn == "ext_sales_tax_rate" {
 		salesTaxRateList := singleColumnSlice(dbDetail)
@@ -3242,7 +3328,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE `customer` SET `"+editCustomerSelectColumn+"` = ? WHERE `id` = '"+editCustomerSelectCustomerID+"'", editCustomerInputNewValue)
 		} else {
-			messageHTML(w, "Input must be a valid sales tax rate", "warning")
+			messageHTML(w, validationMessageGenericInvalidOption, "warning")
 		}
 	} else if editCustomerSelectColumn == "pbx_sales_tax_status" || editCustomerSelectColumn == "ext_sales_tax_status" {
 		salesTaxStatusList := []string{"TAXABLE", "EXEMPT"}
@@ -3251,10 +3337,10 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE `customer` SET `"+editCustomerSelectColumn+"` = ? WHERE `id` = '"+editCustomerSelectCustomerID+"'", editCustomerInputNewValue)
 		} else {
-			messageHTML(w, "Input must be a valid sales tax status", "warning")
+			messageHTML(w, validationMessageGenericInvalidOption, "warning")
 		}
 	} else {
-		messageHTML(w, "Column does not exist", "warning")
+		messageHTML(w, validationMessageCustomerColumn, "warning")
 	}
 
 	// List of all column names from the customer table
@@ -3322,16 +3408,16 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 	if editCustomerSiteSelectCustomerID == "" && editCustomerSiteSelectColumn == "" && editCustomerSiteInputNewValue == "" {
 		// Do Nothing
 	} else if validateSiteCustomerID == false {
-		messageHTML(w, "Customer does not exist", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if editCustomerSiteSelectColumn == "" {
-		messageHTML(w, "A column must be selected", "warning")
+		messageHTML(w, validationMessageCustomerColumn, "warning")
 	} else if editCustomerSiteSelectColumn == "address_line_1" || editCustomerSiteSelectColumn == "address_line_2" || editCustomerSiteSelectColumn == "city_town_village" || editCustomerSiteSelectColumn == "county_state_region" || editCustomerSiteSelectColumn == "postcode_zip_code" || editCustomerSiteSelectColumn == "country" {
 		// Validate editCustomerSiteInputNewValue is a string
 		validateNewValue := validateInput(editCustomerSiteInputNewValue, "alphaNumEmpty")
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
 		} else {
-			messageHTML(w, "Input "+validationMessageAlphaNumEmpty, "warning")
+			messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 		}
 	} else if editCustomerSiteSelectColumn == "contact_email" {
 		// Validate editCustomerSiteInputNewValue is a email
@@ -3339,7 +3425,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
 		} else {
-			messageHTML(w, validationMessageEmail, "warning")
+			messageHTML(w, validationMessageCustomerEmail, "warning")
 		}
 	} else if editCustomerSiteSelectColumn == "contact_number" {
 		// Validate editCustomerSiteInputNewValue is a phone number
@@ -3347,10 +3433,10 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
 		} else {
-			messageHTML(w, validationMessagePhoneNumber, "warning")
+			messageHTML(w, validationMessageCustomerPhoneNumber, "warning")
 		}
 	} else {
-		messageHTML(w, "Column does not exist", "warning")
+		messageHTML(w, validationMessageCustomerColumn, "warning")
 	}
 
 	customerInvoiceColumnList := [][]string{
@@ -3417,16 +3503,16 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 	if editCustomerInvoiceSelectCustomerID == "" && editCustomerInvoiceSelectColumn == "" && editCustomerInvoiceInputNewValue == "" {
 		// Do Nothing
 	} else if validateInvoiceCustomerID == false {
-		messageHTML(w, "Customer does not exist", "warning")
+		messageHTML(w, "Invalid value for customer", "warning")
 	} else if editCustomerInvoiceSelectColumn == "" {
-		messageHTML(w, "A column must be selected", "warning")
+		messageHTML(w, "Invalid value for column", "warning")
 	} else if editCustomerInvoiceSelectColumn == "address_line_1" || editCustomerInvoiceSelectColumn == "address_line_2" || editCustomerInvoiceSelectColumn == "city_town_village" || editCustomerInvoiceSelectColumn == "county_state_region" || editCustomerInvoiceSelectColumn == "postcode_zip_code" || editCustomerInvoiceSelectColumn == "country" {
 		// Validate editCustomerInvoiceInputNewValue is a string
 		validateNewValue := validateInput(editCustomerInvoiceInputNewValue, "alphaNumEmpty")
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
 		} else {
-			messageHTML(w, "Input "+validationMessageAlphaNumEmpty, "warning")
+			messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 		}
 	} else if editCustomerInvoiceSelectColumn == "contact_email" {
 		// Validate editCustomerInvoiceInputNewValue is a email
@@ -3434,7 +3520,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
 		} else {
-			messageHTML(w, validationMessageEmail, "warning")
+			messageHTML(w, validationMessageInvoiceEmail, "warning")
 		}
 	} else if editCustomerInvoiceSelectColumn == "contact_number" {
 		// Validate editCustomerInvoiceInputNewValue is a phone number
@@ -3442,10 +3528,10 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		if validateNewValue == true {
 			dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
 		} else {
-			messageHTML(w, validationMessagePhoneNumber, "warning")
+			messageHTML(w, validationMessageInvoicePhoneNumber, "warning")
 		}
 	} else {
-		messageHTML(w, "Column does not exist", "warning")
+		messageHTML(w, validationMessageCustomerColumn, "warning")
 	}
 }
 
@@ -3490,11 +3576,11 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 	if deleteCustomerSelectCustomerID == "" && deleteCustomerSelectConfirm == "" {
 		// Do Nothing
 	} else if validateCustomerID == false && deleteCustomerSelectConfirm == "yes" {
-		messageHTML(w, "A customer must be selected", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if validateCustomerID == true && deleteCustomerSelectConfirm != "yes" {
-		messageHTML(w, "Confirmation must be yes to remove a customer", "warning")
+		messageHTML(w, validationMessageConfirmation, "warning")
 	} else if deleteCustomerSelectCustomerID == "1" {
-		messageHTML(w, "Customer with customer ID 1 cannot be deleted", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if validateCustomerID == true && deleteCustomerSelectConfirm == "yes" {
 
 		dbDetail.table = "view___customer_detail"
@@ -3505,7 +3591,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 		checkCustomerExist := selectWhere(dbDetail)
 
 		if checkCustomerExist == "" {
-			messageHTML(w, "Customer with customer ID "+deleteCustomerSelectCustomerID+" do not exist", "success")
+			messageHTML(w, validationMessageCustomerDoesNotExist, "warning")
 		} else {
 
 			dbDetail.connection.Query(`DELETE FROM customer WHERE id = ?`, deleteCustomerSelectCustomerID)
@@ -3516,9 +3602,9 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 			checkCustomerDeleted := selectWhere(dbDetail)
 
 			if checkCustomerDeleted == "" {
-				messageHTML(w, "Customer with customer ID "+deleteCustomerSelectCustomerID+" removed", "success")
+				messageHTML(w, validationMessageCustomerDeleted, "success")
 			} else {
-				messageHTML(w, "Customer with customer ID "+deleteCustomerSelectCustomerID+" not removed", "warning")
+				messageHTML(w, validationMessageCustomerNotDeleted, "warning")
 			}
 		}
 
@@ -4967,27 +5053,27 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 	if addInvoiceSelectCustomerID == "" && addInvoiceSelectGoodService == "" && addInvoiceInputTag == "" && addInvoiceInputSellPrice == "" && addInvoiceSelectSalesTaxRate == "" && addInvoiceSelectSalesTaxStatus == "" && addInvoiceSelectBillItemOnce == "" && addInvoiceSelectItemOnHold == "" && addInvoiceSelectContractLength == "" && addInvoiceInputContractStartDate == "" {
 		// Do Nothing
 	} else if validateCustomerID == false || addInvoiceSelectCustomerID == "" {
-		messageHTML(w, "Customer ID invalid", "warning")
+		messageHTML(w, validationMessageCustomer, "warning")
 	} else if validateGoodService == false || addInvoiceSelectGoodService == "" {
-		messageHTML(w, "Invalid option for good/service", "warning")
+		messageHTML(w, validationMessageServiceProduct, "warning")
 	} else if validateTag == false {
-		messageHTML(w, "Tag "+validationMessageAlphaNumEmpty, "warning")
+		messageHTML(w, validationMessageServiceProductTag, "warning")
 	} else if validateSellPrice == false || addInvoiceInputSellPrice == "" {
-		messageHTML(w, "Item price "+validationMessagePrice, "warning")
+		messageHTML(w, validationMessageItemPrice, "warning")
 	} else if validateSalesTaxRate == false || addInvoiceSelectSalesTaxRate == "" {
-		messageHTML(w, "Invalid input for sales tax rate", "warning")
+		messageHTML(w, validationMessageSalesTaxRate, "warning")
 	} else if validateSalesTaxStatus == false || addInvoiceSelectSalesTaxStatus == "" {
-		messageHTML(w, "Invalid input for sales tax status", "warning")
+		messageHTML(w, validationMessageSalesTaxStatus, "warning")
 	} else if validateBillItemOnce == false || addInvoiceSelectBillItemOnce == "" {
-		messageHTML(w, "Invalid option for bill item once", "warning")
+		messageHTML(w, validationMessageBillItemOnce, "warning")
 	} else if validateItemOnHold == false || addInvoiceSelectItemOnHold == "" {
-		messageHTML(w, "Invalid option for item on hold", "warning")
+		messageHTML(w, validationMessageItemOnHold, "warning")
 	} else if validateContractLength == false {
-		messageHTML(w, "Invalid option for contract length", "warning")
+		messageHTML(w, validationMessageContractLength, "warning")
 	} else if addInvoiceSelectContractLength != "" && addInvoiceInputContractStartDate == "" {
 		messageHTML(w, "If contract length is not empty then contract start date must have a value", "warning")
 	} else if validateStartDate == false {
-		messageHTML(w, "Invalid option for start date", "warning")
+		messageHTML(w, validationMessageContractStartDate, "warning")
 	} else {
 
 		// Convert string values to a float64 to use the math package to round to the nearest two decimal places
@@ -5020,7 +5106,6 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 			nullSQL(addInvoiceInputContractStartDate),
 		)
 
-		fmt.Println("works")
 	}
 }
 
