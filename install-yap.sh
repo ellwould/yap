@@ -327,7 +327,6 @@ mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer TO 'yap'@'localho
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer_invoice_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer_site_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx_invoice_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx_site_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_aors TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_asterisk_publications TO 'yap'@'localhost';";
