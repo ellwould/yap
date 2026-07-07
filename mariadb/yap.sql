@@ -74,21 +74,6 @@ PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `pbx_invoice_address`
-(
-  `id` BIGINT UNSIGNED NOT NULL,
-  `address_line_1` VARCHAR(255),
-  `address_line_2` VARCHAR(255),
-  `city_town_village` VARCHAR(255),
-  `county_state_region` VARCHAR(255),
-  `postcode_zip_code` VARCHAR(7),
-  `country` VARCHAR(255),
-  `contact_email` VARCHAR(255),
-  `contact_number` VARCHAR(20),
-PRIMARY KEY(`id`)
-)
-ENGINE = InnoDB;
-
 CREATE TABLE `pbx_site_address`
 (
   `id` BIGINT UNSIGNED NOT NULL,
@@ -347,12 +332,6 @@ FOREIGN KEY (`id`)
 REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
 
-ALTER TABLE `pbx_invoice_address`
-ADD CONSTRAINT fk___pbx_invoice_address___pbx
-FOREIGN KEY (`id`)
-REFERENCES `pbx` (`id`)
-ON DELETE CASCADE;
-
 ALTER TABLE `pbx_site_address`
 ADD CONSTRAINT fk___pbx_site_address___pbx
 FOREIGN KEY (`id`)
@@ -486,15 +465,7 @@ SELECT
   IFNULL(`pbx_site_address`.`postcode_zip_code`, '') AS 'pbx_site_postcode_zip_code',
   IFNULL(`pbx_site_address`.`country`, '') AS 'pbx_site_country',
   IFNULL(`pbx_site_address`.`contact_email`, '') AS 'pbx_site_contact_email',
-  IFNULL(`pbx_site_address`.`contact_number`, '') AS 'pbx_site_contact_number',
-  IFNULL(`pbx_invoice_address`.`address_line_1`, '') AS 'pbx_invoice_address_line_1',
-  IFNULL(`pbx_invoice_address`.`address_line_2`, '') AS 'pbx_invoice_address_line_2',
-  IFNULL(`pbx_invoice_address`.`city_town_village`, '') AS 'pbx_invoice_city_town_village',
-  IFNULL(`pbx_invoice_address`.`county_state_region`, '') AS 'pbx_invoice_county_state_region',
-  IFNULL(`pbx_invoice_address`.`postcode_zip_code`, '') AS 'pbx_invoice_postcode_zip_code',
-  IFNULL(`pbx_invoice_address`.`country`, '') AS 'pbx_invoice_country',
-  IFNULL(`pbx_invoice_address`.`contact_email`, '') AS 'pbx_invoice_contact_email',
-  IFNULL(`pbx_invoice_address`.`contact_number`, '') AS 'pbx_invoice_contact_number'
+  IFNULL(`pbx_site_address`.`contact_number`, '') AS 'pbx_site_contact_number'
 FROM `user_account`
 INNER JOIN `user_account_type`
 ON `user_account`.`user_account_type_id` = `user_account_type`.`id`
@@ -507,9 +478,7 @@ ON `user_account`.`customer_id` = `customer_site_address`.`id`
 INNER JOIN `customer_invoice_address`
 ON `user_account`.`customer_id` = `customer_invoice_address`.`id`
 INNER JOIN `pbx_site_address`
-ON `user_account`.`pbx_id` = `pbx_site_address`.`id`
-INNER JOIN `pbx_invoice_address`
-ON `user_account`.`pbx_id` = `pbx_invoice_address`.`id`;
+ON `user_account`.`pbx_id` = `pbx_site_address`.`id`;
 
 CREATE VIEW `view___customer_detail` AS
 SELECT
@@ -571,22 +540,12 @@ SELECT
   IFNULL(`pbx_site_address`.`postcode_zip_code`, '') AS 'pbx_site_postcode_zip_code',
   IFNULL(`pbx_site_address`.`country`, '') AS 'pbx_site_country',
   IFNULL(`pbx_site_address`.`contact_email`, '') AS 'pbx_site_contact_email',
-  IFNULL(`pbx_site_address`.`contact_number`, '') AS 'pbx_site_contact_number',
-  IFNULL(`pbx_invoice_address`.`address_line_1`, '') AS 'pbx_invoice_address_line_1',
-  IFNULL(`pbx_invoice_address`.`address_line_2`, '') AS 'pbx_invoice_address_line_2',
-  IFNULL(`pbx_invoice_address`.`city_town_village`, '') AS 'pbx_invoice_city_town_village',
-  IFNULL(`pbx_invoice_address`.`county_state_region`, '') AS 'pbx_invoice_county_state_region',
-  IFNULL(`pbx_invoice_address`.`postcode_zip_code`, '') AS 'pbx_invoice_postcode_zip_code',
-  IFNULL(`pbx_invoice_address`.`country`, '') AS 'pbx_invoice_country',
-  IFNULL(`pbx_invoice_address`.`contact_email`, '') AS 'pbx_invoice_contact_email',
-  IFNULL(`pbx_invoice_address`.`contact_number`, '') AS 'pbx_invoice_contact_number'
+  IFNULL(`pbx_site_address`.`contact_number`, '') AS 'pbx_site_contact_number'
 FROM `pbx`
 INNER JOIN `customer`
 ON `pbx`.`customer_id` = `customer`.`id`
 INNER JOIN `pbx_site_address`
-ON `pbx`.`id` = `pbx_site_address`.`id`
-INNER JOIN `pbx_invoice_address`
-ON `pbx`.`id` = `pbx_invoice_address`.`id`;
+ON `pbx`.`id` = `pbx_site_address`.`id`;
 
 CREATE VIEW `view___sip_extension_detail` AS
 SELECT DISTINCT
@@ -728,9 +687,6 @@ VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO `pbx` (`id`, `name`, `customer_id`, `sip_extension_limit`)
 VALUES (1, 'system', 1, 0);
-  
-INSERT INTO `pbx_invoice_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
-VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO `pbx_site_address` (`id`,	`address_line_1`,	`address_line_2`,	`city_town_village`, `postcode_zip_code`,	`county_state_region`, `country`,	`contact_email`, `contact_number`)
 VALUES (1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
