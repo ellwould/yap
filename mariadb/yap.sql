@@ -346,12 +346,14 @@ REFERENCES `user_account_type` (`id`);
 ALTER TABLE `user_account`
 ADD CONSTRAINT fk___user_account___customer
 FOREIGN KEY (`customer_id`)
-REFERENCES `customer` (`id`);
+REFERENCES `customer` (`id`)
+ON DELETE CASCADE;
 
 ALTER TABLE `user_account`
 ADD CONSTRAINT fk___user_account___pbx
 FOREIGN KEY (`pbx_id`)
-REFERENCES `pbx` (`id`);
+REFERENCES `pbx` (`id`)
+ON DELETE CASCADE;
 
 ALTER TABLE `ps_endpoints`
 ADD CONSTRAINT fk___ps_endpoints___pbx
