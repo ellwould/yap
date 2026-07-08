@@ -576,12 +576,14 @@ SELECT DISTINCT
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
+INNER JOIN `ps_aors`
+ON `ps_endpoints`.`id` = `ps_aors`.`id`
 INNER JOIN `pbx`
 ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
-LEFT JOIN `ps_contacts`
-on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `customer`
 ON `pbx`.`customer_id` = `customer`.`id`
+LEFT JOIN `ps_contacts`
+on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
 
 CREATE VIEW `view___sip_extension_registered` AS
@@ -596,6 +598,8 @@ SELECT
 FROM `ps_endpoints`
 INNER JOIN `ps_auths`
 ON `ps_endpoints`.`id` = `ps_auths`.`id`
+INNER JOIN `ps_aors`
+ON `ps_endpoints`.`id` = `ps_aors`.`id`
 INNER JOIN `pbx`
 ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 INNER JOIN `ps_contacts`
