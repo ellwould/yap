@@ -707,27 +707,26 @@ VALUES
 (100, 'YAP Admin (100)',
 '<table>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       <b>Key:</b><br>
       &#9989 = Allowed<br>
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own User Account<br>
       &#9989* Update Own User Account<br>
       &#9989* Delete Own User Account<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989* Create a YAP Admin (100) User Account<br>
       &#9989* View a YAP Admin (100) User Account<br>
       &#9989* Update a YAP Admin (100) User Account<br>
       &#9989* Delete a YAP Admin (100) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a Customer Admin (200) User Account<br>
       &#9989 View a Customer Admin (200) User Account<br>
       &#9989 Update a Customer Admin (200) User Account<br>
@@ -735,13 +734,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a Customer Regular (201) User Account<br>
       &#9989 View a Customer Regular (201) User Account<br>
       &#9989 Update a Customer Regular (201) User Account<br>
       &#9989 Delete a Customer Regular (201) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a PBX Admin (300) User Account<br>
       &#9989 View a PBX Admin (300) User Account<br>
       &#9989 Update a PBX Admin (300) User Account<br>
@@ -749,13 +748,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a PBX Regular (301) User Account<br>
       &#9989 View a PBX Regular (301) User Account<br>
       &#9989 Update a PBX Regular (301) User Account<br>
       &#9989 Delete a PBX Regular (301) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
       &#9989 Update a PBX Read Only (302) User Account<br>
@@ -763,13 +762,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a Customer Invoice (400) User Account<br>
       &#9989 View a Customer Invoice (400) User Account<br>
       &#9989 Update a Customer Invoice (400) User Account<br>
       &#9989 Delete a Customer Invoice (400) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       *Only the YAP Admin (100) account with account ID 1<br>
        can create and delete other YAP Admin (100) accounts<br>
       *The YAP Admin (100) account with account ID 1<br>
@@ -777,26 +776,24 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own Customer<br>
       &#9940 Update Own Customer<br>
       &#9940 Delete Own Customer<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a Customer<br>
       &#9989 View a Customer<br>
       &#9989 Update a Customer<br>
       &#9989 Delete a Customer<br>
     </td>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own PBX<br>
       &#9940 Update Own PBX<br>
       &#9940 Delete Own PBX<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a PBX<br>
       &#9989 View a PBX<br>
       &#9989 Update a PBX<br>
@@ -804,13 +801,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a SIP Extension<br>
       &#9989 View a SIP Extension<br>
       &#9989 Update a SIP Extension<br>
       &#9989 Delete a SIP Extension<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a Customer Invoice<br>
       &#9989 View a Customer Invoice<br>
       &#9989 Update a Customer Invoice<br>
@@ -818,13 +815,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View YAP User Account Logs<br>
       &#9989 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Server Information<br>
       &#9989 Download Server Information<br>
       &#9989 Set Resource Limits<br>
@@ -836,27 +833,26 @@ VALUES
 (200, 'Customer Admin (200)',
 '<table>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       <b>Key:</b><br>
       &#9989 = Allowed<br>
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own User Account<br>
       &#9989 Update Own User Account<br>
       &#10060 Delete Own User Account<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a YAP Admin (100) User Account<br>
       &#10060 View a YAP Admin (100) User Account<br>
       &#10060 Update a YAP Admin (100) User Account<br>
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Admin (200) User Account<br>
       &#9989 View a Customer Admin (200) User Account<br>
       &#10060 Update a Customer Admin (200) User Account<br>
@@ -864,13 +860,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Regular (201) User Account<br>
       &#9989 View a Customer Regular (201) User Account<br>
       &#9989 Update a Customer Regular (201) User Account<br>
       &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Admin (300) User Account<br>
       &#9989 View a PBX Admin (300) User Account<br>
       &#9989 Update a PBX Admin (300) User Account<br>
@@ -878,13 +874,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Regular (301) User Account<br>
       &#9989 View a PBX Regular (301) User Account<br>
       &#9989 Update a PBX Regular (301) User Account<br>
       &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
       &#9989 Update a PBX Read Only (302) User Account<br>
@@ -892,40 +888,37 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice (400) User Account<br>
       &#9989 View a Customer Invoice (400) User Account<br>
       &#10060 Update a Customer Invoice (400) User Account<br>
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
       Billed to a Customer.
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own Customer<br>
       &#9989 Update Own Customer<br>
       &#10060 Delete Own Customer<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer<br>
       &#10060 View a Customer<br>
       &#10060 Update a Customer<br>
       &#10060 Delete a Customer<br>
     </td>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own PBX<br>
       &#9940 Update Own PBX<br>
       &#9940 Delete Own PBX<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a PBX<br>
       &#9989 View a PBX<br>
       &#9989 Update a PBX<br>
@@ -933,13 +926,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a SIP Extension<br>
       &#9989 View a SIP Extension<br>
       &#9989 Update a SIP Extension<br>
       &#9989 Delete a SIP Extension<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice<br>
       &#9989 View a Customer Invoice<br>
       &#10060 Update a Customer Invoice<br>
@@ -947,13 +940,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View YAP User Account Logs<br>
       &#9989 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
       &#10060 Set Resource Limits<br>
@@ -965,27 +958,26 @@ VALUES
 (201, 'Customer Regular (201)',
 '<table>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       <b>Key:</b><br>
       &#9989 = Allowed<br>
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own User Account<br>
       &#10060 Update Own User Account<br>
       &#10060 Delete Own User Account<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a YAP Admin (100) User Account<br>
       &#10060 View a YAP Admin (100) User Account<br>
       &#10060 Update a YAP Admin (100) User Account<br>
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Admin (200) User Account<br>
       &#10060 View a Customer Admin (200) User Account<br>
       &#10060 Update a Customer Admin (200) User Account<br>
@@ -993,13 +985,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Regular (201) User Account<br>
       &#10060 View a Customer Regular (201) User Account<br>
       &#10060 Update a Customer Regular (201) User Account<br>
       &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Admin (300) User Account<br>
       &#9989 View a PBX Admin (300) User Account<br>
       &#9989 Update a PBX Admin (300) User Account<br>
@@ -1007,13 +999,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Regular (301) User Account<br>
       &#9989 View a PBX Regular (301) User Account<br>
       &#9989 Update a PBX Regular (301) User Account<br>
       &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
       &#9989 Update a PBX Read Only (302) User Account<br>
@@ -1021,40 +1013,37 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice (400) User Account<br>
       &#10060 View a Customer Invoice (400) User Account<br>
       &#10060 Update a Customer Invoice (400) User Account<br>
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
       Billed to a Customer.
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own Customer<br>
       &#10060 Update Own Customer<br>
       &#10060 Delete Own Customer<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer<br>
       &#10060 View a Customer<br>
       &#10060 Update a Customer<br>
       &#10060 Delete a Customer<br>
     </td>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own PBX<br>
       &#9940 Update Own PBX<br>
       &#9940 Delete Own PBX<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a PBX<br>
       &#9989 View a PBX<br>
       &#9989 Update a PBX<br>
@@ -1062,13 +1051,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a SIP Extension<br>
       &#9989 View a SIP Extension<br>
       &#9989 Update a SIP Extension<br>
       &#9989 Delete a SIP Extension<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice<br>
       &#9989 View a Customer Invoice<br>
       &#10060 Update a Customer Invoice<br>
@@ -1076,13 +1065,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View YAP User Account Logs<br>
       &#10060 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
       &#10060 Set Resource Limits<br>
@@ -1094,27 +1083,26 @@ VALUES
 (300, 'PBX Admin (300)',
 '<table>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       <b>Key:</b><br>
       &#9989 = Allowed<br>
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own User Account<br>
       &#9989 Update Own User Account<br>
       &#10060 Delete Own User Account<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a YAP Admin (100) User Account<br>
       &#10060 View a YAP Admin (100) User Account<br>
       &#10060 Update a YAP Admin (100) User Account<br>
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Admin (200) User Account<br>
       &#10060 View a Customer Admin (200) User Account<br>
       &#10060 Update a Customer Admin (200) User Account<br>
@@ -1122,13 +1110,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Regular (201) User Account<br>
       &#10060 View a Customer Regular (201) User Account<br>
       &#10060 Update a Customer Regular (201) User Account<br>
       &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Admin (300) User Account<br>
       &#9989 View a PBX Admin (300) User Account<br>
       &#10060 Update a PBX Admin (300) User Account<br>
@@ -1136,13 +1124,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Regular (301) User Account<br>
       &#9989 View a PBX Regular (301) User Account<br>
       &#9989 Update a PBX Regular (301) User Account<br>
       &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
       &#9989 Update a PBX Read Only (302) User Account<br>
@@ -1150,40 +1138,37 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice (400) User Account<br>
       &#10060 View a Customer Invoice (400) User Account<br>
       &#10060 Update a Customer Invoice (400) User Account<br>
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
       Billed to a Customer.
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own Customer<br>
       &#9940 Update Own Customer<br>
       &#9940 Delete Own Customer<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer<br>
       &#10060 View a Customer<br>
       &#10060 Update a Customer<br>
       &#10060 Delete a Customer<br>
     </td>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own PBX<br>
       &#9989 Update Own PBX<br>
       &#10060 Delete Own PBX<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX<br>
       &#10060 View a PBX<br>
       &#10060 Update a PBX<br>
@@ -1191,13 +1176,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a SIP Extension<br>
       &#9989 View a SIP Extension<br>
       &#9989 Update a SIP Extension<br>
       &#9989 Delete a SIP Extension<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice<br>
       &#10060 View a Customer Invoice<br>
       &#10060 Update a Customer Invoice<br>
@@ -1205,13 +1190,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View YAP User Account Logs<br>
       &#10060 View Customer Logs<br>
       &#9989 View PBX Logs<br>
       &#9989 Download Logs<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
       &#10060 Set Resource Limits<br>
@@ -1223,27 +1208,26 @@ VALUES
 (301, 'PBX Regular (301)',
 '<table>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       <b>Key:</b><br>
       &#9989 = Allowed<br>
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own User Account<br>
       &#10060 Update Own User Account<br>
       &#10060 Delete Own User Account<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a YAP Admin (100) User Account<br>
       &#10060 View a YAP Admin (100) User Account<br>
       &#10060 Update a YAP Admin (100) User Account<br>
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Admin (200) User Account<br>
       &#10060 View a Customer Admin (200) User Account<br>
       &#10060 Update a Customer Admin (200) User Account<br>
@@ -1251,13 +1235,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Regular (201) User Account<br>
       &#10060 View a Customer Regular (201) User Account<br>
       &#10060 Update a Customer Regular (201) User Account<br>
       &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Admin (300) User Account<br>
       &#10060 View a PBX Admin (300) User Account<br>
       &#10060 Update a PBX Admin (300) User Account<br>
@@ -1265,13 +1249,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Regular (301) User Account<br>
       &#10060 View a PBX Regular (301) User Account<br>
       &#10060 Update a PBX Regular (301) User Account<br>
       &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
       &#9989 Update a PBX Read Only (302) User Account<br>
@@ -1279,40 +1263,37 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice (400) User Account<br>
       &#10060 View a Customer Invoice (400) User Account<br>
       &#10060 Update a Customer Invoice (400) User Account<br>
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
       Billed to a Customer.
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own Customer<br>
       &#9940 Update Own Customer<br>
       &#9940 Delete Own Customer<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer<br>
       &#10060 View a Customer<br>
       &#10060 Update a Customer<br>
       &#10060 Delete a Customer<br>
     </td>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own PBX<br>
       &#10060 Update Own PBX<br>
       &#10060 Delete Own PBX<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX<br>
       &#10060 View a PBX<br>
       &#10060 Update a PBX<br>
@@ -1320,13 +1301,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 Create a SIP Extension<br>
       &#9989 View a SIP Extension<br>
       &#9989 Update a SIP Extension<br>
       &#9989 Delete a SIP Extension<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice<br>
       &#10060 View a Customer Invoice<br>
       &#10060 Update a Customer Invoice<br>
@@ -1334,13 +1315,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View YAP User Account Logs<br>
       &#10060 View Customer Logs<br>
       &#10060 View PBX Logs<br>
       &#10060 Download Logs<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
       &#10060 Set Resource Limits<br>
@@ -1352,27 +1333,26 @@ VALUES
 (302, 'PBX Read Only (302)',
 '<table>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       <b>Key:</b><br>
       &#9989 = Allowed<br>
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own User Account<br>
       &#10060 Update Own User Account<br>
       &#10060 Delete Own User Account<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a YAP Admin (100) User Account<br>
       &#10060 View a YAP Admin (100) User Account<br>
       &#10060 Update a YAP Admin (100) User Account<br>
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Admin (200) User Account<br>
       &#10060 View a Customer Admin (200) User Account<br>
       &#10060 Update a Customer Admin (200) User Account<br>
@@ -1380,13 +1360,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Regular (201) User Account<br>
       &#10060 View a Customer Regular (201) User Account<br>
       &#10060 Update a Customer Regular (201) User Account<br>
       &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Admin (300) User Account<br>
       &#10060 View a PBX Admin (300) User Account<br>
       &#10060 Update a PBX Admin (300) User Account<br>
@@ -1394,13 +1374,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Regular (301) User Account<br>
       &#10060 View a PBX Regular (301) User Account<br>
       &#10060 Update a PBX Regular (301) User Account<br>
       &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Read Only (302) User Account<br>
       &#10060 View a PBX Read Only (302) User Account<br>
       &#10060 Update a PBX Read Only (302) User Account<br>
@@ -1408,40 +1388,37 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice (400) User Account<br>
       &#10060 View a Customer Invoice (400) User Account<br>
       &#10060 Update a Customer Invoice (400) User Account<br>
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
       Billed to a Customer.
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own Customer<br>
       &#9940 Update Own Customer<br>
       &#9940 Delete Own Customer<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer<br>
       &#10060 View a Customer<br>
       &#10060 Update a Customer<br>
       &#10060 Delete a Customer<br>
     </td>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own PBX<br>
       &#10060 Update Own PBX<br>
       &#10060 Delete Own PBX<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX<br>
       &#10060 View a PBX<br>
       &#10060 Update a PBX<br>
@@ -1449,13 +1426,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a SIP Extension<br>
       &#9989 View a SIP Extension<br>
       &#10060 Update a SIP Extension<br>
       &#10060 Delete a SIP Extension<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice<br>
       &#10060 View a Customer Invoice<br>
       &#10060 Update a Customer Invoice<br>
@@ -1463,13 +1440,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View YAP User Account Logs<br>
       &#10060 View Customer Logs<br>
       &#10060 View PBX Logs<br>
       &#10060 Download Logs<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
       &#10060 Set Resource Limits<br>
@@ -1481,27 +1458,26 @@ VALUES
 (400, 'Group Invoice (400)',
 '<table>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       <b>Key:</b><br>
       &#9989 = Allowed<br>
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9989 View Own User Account<br>
       &#10060 Update Own User Account<br>
       &#10060 Delete Own User Account<br>
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a YAP Admin (100) User Account<br>
       &#10060 View a YAP Admin (100) User Account<br>
       &#10060 Update a YAP Admin (100) User Account<br>
       &#10060 Delete a YAP Admin (100) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Admin (200) User Account<br>
       &#10060 View a Customer Admin (200) User Account<br>
       &#10060 Update a Customer Admin (200) User Account<br>
@@ -1509,13 +1485,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Regular (201) User Account<br>
       &#10060 View a Customer Regular (201) User Account<br>
       &#10060 Update a Customer Regular (201) User Account<br>
       &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Admin (300) User Account<br>
       &#10060 View a PBX Admin (300) User Account<br>
       &#10060 Update a PBX Admin (300) User Account<br>
@@ -1523,13 +1499,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Regular (301) User Account<br>
       &#10060 View a PBX Regular (301) User Account<br>
       &#10060 Update a PBX Regular (301) User Account<br>
       &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX Read Only (302) User Account<br>
       &#10060 View a PBX Read Only (302) User Account<br>
       &#10060 Update a PBX Read Only (302) User Account<br>
@@ -1537,40 +1513,37 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice (400) User Account<br>
       &#10060 View a Customer Invoice (400) User Account<br>
       &#10060 Update a Customer Invoice (400) User Account<br>
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       Note: Customer Invoice Accounts Are Read Only<br>
       Accounts for Viewing Services and Goods<br>
       Billed to a Customer.
-      <div class="main-menu-space"></div>
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View Own Customer<br>
       &#10060 Update Own Customer<br>
       &#10060 Delete Own Customer<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer<br>
       &#10060 View a Customer<br>
       &#10060 Update a Customer<br>
       &#10060 Delete a Customer<br>
     </td>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#9940 View Own PBX<br>
       &#9940 Update Own PBX<br>
       &#9940 Delete Own PBX<br>
-      <div class="main-menu-space"></div>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a PBX<br>
       &#10060 View a PBX<br>
       &#10060 Update a PBX<br>
@@ -1578,13 +1551,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a SIP Extension<br>
       &#10060 View a SIP Extension<br>
       &#10060 Update a SIP Extension<br>
       &#10060 Delete a SIP Extension<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 Create a Customer Invoice<br>
       &#9989 View a Customer Invoice<br>
       &#10060 Update a Customer Invoice<br>
@@ -1592,13 +1565,13 @@ VALUES
     </td>
   </tr>
   <tr>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View YAP User Account Logs<br>
       &#10060 View Customer Logs<br>
       &#10060 View PBX Logs<br>
       &#10060 Download Logs<br>
     </td>
-    <td>
+    <td style=text-align: left; vertical-align: top;>
       &#10060 View Server Information<br>
       &#10060 Download Server Information<br>
       &#10060 Set Resource Limits<br>
