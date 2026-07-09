@@ -108,7 +108,7 @@ CREATE TABLE `user_account_type`
 (
   `id` SMALLINT UNSIGNED NOT NULL,
   `type` VARCHAR(255) NOT NULL,
-  `permission` VARCHAR(4000) NOT NULL,
+  `permission` VARCHAR(4500) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
@@ -713,7 +713,7 @@ VALUES
       &#10060 = Prohibited<br>
       &#9940 = Not Applicable<br>
     </td>
-    <td style=text-align: left; vertical-align: top;>
+    <td style="text-align: left; vertical-align: top;">
       &#9989 View Own User Account<br>
       &#9989* Update Own User Account<br>
       &#9989* Delete Own User Account<br>
