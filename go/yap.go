@@ -28,6 +28,7 @@ import (
 	"github.com/sony/sonyflake"
 	"log"
 	"math"
+	"math/rand"
 	"net/http"
 	"os"
 	"slices"
@@ -93,6 +94,17 @@ func genID() (uniqueID string) {
 	}
 	uniqueID = strconv.FormatUint(uniqueIdentifier, 10)
 	return uniqueID
+}
+
+// Function to generate random passowrds
+func genPassword(passwordLength int) string {
+	rand.Seed(time.Now().UnixNano())
+	character := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_$"
+	randomPassword := make([]byte, passwordLength)
+	for i := 0; i < passwordLength; i++ {
+		randomPassword[i] = character[rand.Intn(len(character))]
+	}
+	return string(randomPassword)
 }
 
 // Function for error message
@@ -166,11 +178,17 @@ func formatDateTime(dateTime string) string {
 //----------------------------------------------------------------------------------------------------
 
 // Pure embedded HTML Go functions
-
 func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string, inputType string) {
 	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
 	fmt.Fprintf(w, "  <input type=\""+inputType+"\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
+	fmt.Fprintf(w, "<br>")
+}
+
+func inputReadOnlyHTML(w http.ResponseWriter, inputValue string, labelMessage string, readOnlyData string) {
+	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>"+labelMessage+":</b>")
+	fmt.Fprintf(w, "  </label><br>")
+	fmt.Fprintf(w, "  <input style=\"text-align: center;\" type=\"text\" id=\""+inputValue+"\" name=\""+inputValue+"\" value=\""+readOnlyData+"\" readonly>")
 	fmt.Fprintf(w, "<br>")
 }
 
@@ -223,7 +241,6 @@ func messageHTML(w http.ResponseWriter, message string, messageType string) {
 }
 
 // Embedded JavaScript and associated HTML functions
-
 type jsFunctionParameter struct {
 	funcNameJS   string
 	inputID      string
@@ -637,6 +654,51 @@ func pbxSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
 	return pbxIDNameList, pbxIDList
 }
 
+// Function to retrive PBX name(s) and ID(s) or just the PBX ID(s) from the view___pbx_detail view based on customer ID
+func pbxWhereSlice(dbDetail databaseFunctionParameter) ([][]string, []string) {
+	// Get PBX name and ID from the database and append to slice
+	var pbxIDNameList [][]string
+	var pbxIDList []string
+
+	var pbxID string
+	var pbxName string
+
+	pbxIDNameSQL, err := dbDetail.connection.Query(`SELECT
+                                                          pbx_id,
+                                                          pbx_name
+                                                        FROM
+                                                          yap.view___pbx_detail
+                                                        WHERE
+                                                          `+dbDetail.columnWhere+` = ?;`, dbDetail.columnWhereValue)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for pbxIDNameSQL.Next() {
+
+		err = pbxIDNameSQL.Scan(
+			&pbxID,
+			&pbxName,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		var pbxIDAndName []string
+		if pbxID != "1" {
+			pbxIDAndName = append([]string{pbxID}, []string{pbxName}...)
+			pbxIDNameList = append(pbxIDNameList, pbxIDAndName)
+			pbxIDList = append(pbxIDList, pbxID)
+		}
+
+	}
+	return pbxIDNameList, pbxIDList
+}
+
 // Function to retrive values from a single column from inside a database table, the data is appended to a slice
 func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
 	// Get values from the database and append to a slice
@@ -671,6 +733,152 @@ func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
 
 //----------------------------------------------------------------------------------------------------
 
+// Function to return slice of pbxLimitList
+func pbxLimitSlice() []string {
+	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+	return pbxLimitList
+}
+
+// Function to return slice of extLimitList
+func extLimitSlice() []string {
+	extLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
+	return extLimitList
+}
+
+// Function to return slice of yesList
+func yesSlice() []string {
+	yesList := []string{"", "yes"}
+	return yesList
+}
+
+// Function to return slice of yesNoList
+func yesNoSlice() []string {
+	yesNoList := []string{"", "yes", "no"}
+	return yesNoList
+}
+
+// Function to return slice of invoiceColumnList
+func invoiceColumnSlice() [][]string {
+	invoiceColumnValueName := [][]string{
+		{"address_line_1", "Invoice Address Line One"},
+		{"address_line_2", "Invoice Address Line Two"},
+		{"city_town_village", "Invoice City Town Village"},
+		{"county_state_region", "Invoice County/State/Region"},
+		{"postcode_zip_code", "Invoice Postcode/Zip Code"},
+		{"country", "Invoice Country"},
+		{"contact_email", "Invoice Contact Email"},
+		{"contact_number", "Invoice Contact Number"},
+	}
+	return invoiceColumnValueName
+}
+
+// Function to return slice of siteColumnList
+func siteColumnSlice() [][]string {
+	siteColumnValueName := [][]string{
+		{"address_line_1", "Site Address Line One"},
+		{"address_line_2", "Site Address Line Two"},
+		{"city_town_village", "Site City Town Village"},
+		{"county_state_region", "Site County/State/Region"},
+		{"postcode_zip_code", "Site Postcode/Zip Code"},
+		{"country", "Site Country"},
+		{"contact_email", "Site Contact Email"},
+		{"contact_number", "Site Contact Number"},
+	}
+	return siteColumnValueName
+}
+
+// Function to return slice of codecAllowedSlice
+func codecAllowedSlice() ([][]string, []string) {
+	codecAllowedValueName := [][]string{
+		{"alaw", "A-LAW"},
+		{"ulaw", "U-lAW"},
+	}
+
+	var codecAllowedValue []string
+	for _, value := range codecAllowedValueName {
+		codecAllowedValue = append(codecAllowedValue, value[0])
+	}
+
+	return codecAllowedValueName, codecAllowedValue
+}
+
+// Function to return slice of dtmfModeSlice
+func dtmfModeSlice() ([][]string, []string) {
+	dtmfModeValueName := [][]string{
+		{"rfc4733", "RFC 4733"},
+		{"inband", "Inbound"},
+		{"info", "Info"},
+		{"auto", "Auto"},
+		{"auto_info", "Auto Info"},
+	}
+
+	var dtmfModeValue []string
+	for _, value := range dtmfModeValueName {
+		dtmfModeValue = append(dtmfModeValue, value[0])
+	}
+
+	dtmfModeValue = append(dtmfModeValue, "")
+	return dtmfModeValueName, dtmfModeValue
+}
+
+// Function to return slice of mediaEncryptionSlice
+func mediaEncryptionSlice() ([][]string, []string) {
+	mediaEncryptionValueName := [][]string{
+		{"sdes", "SDES (Session Description Protocol Security Descriptions)"},
+		{"no", "no"},
+	}
+
+	var mediaEncryptionValue []string
+	for _, value := range mediaEncryptionValueName {
+		mediaEncryptionValue = append(mediaEncryptionValue, value[0])
+	}
+
+	mediaEncryptionValue = append(mediaEncryptionValue, "")
+	return mediaEncryptionValueName, mediaEncryptionValue
+}
+
+// Function to return slice of directMediaMethodSlice
+func directMediaMethodSlice() ([][]string, []string) {
+	directMediaMethodValueName := [][]string{
+		{"invite", "Invite"},
+		{"reinvite", "Reinvite"},
+		{"update", "Update"},
+	}
+
+	var directMediaMethodValue []string
+	for _, value := range directMediaMethodValueName {
+		directMediaMethodValue = append(directMediaMethodValue, value[0])
+	}
+
+	directMediaMethodValue = append(directMediaMethodValue, "")
+	return directMediaMethodValueName, directMediaMethodValue
+}
+
+// Function to return slice of callerIDPrivacySlice
+func callerIDPrivacySlice() ([][]string, []string) {
+	callerIDPrivacyValueName := [][]string{
+		{"allowed_not_screened", "Allowed Not Screened"},
+		{"allowed_passed_screen", "Allowed Passed Screen"},
+		{"allowed_failed_screen", "Allowed Failed Screen"},
+		{"allowed", "Allowed"},
+		{"prohib_not_screened", "Prohib Not Screened"},
+		{"prohib_passed_screen", "Prohib Passed Screen"},
+		{"prohib_failed_screen", "Prohib Failed Screen"},
+		{"prohib", "Prohib"},
+		{"unavailable", "Unavailable"},
+	}
+
+	var callerIDPrivacyValue []string
+	for _, value := range callerIDPrivacyValueName {
+		callerIDPrivacyValue = append(callerIDPrivacyValue, value[0])
+	}
+
+	callerIDPrivacyValue = append(callerIDPrivacyValue, "")
+	return callerIDPrivacyValueName, callerIDPrivacyValue
+}
+
+//----------------------------------------------------------------------------------------------------
+
 // Constants for validation messages
 const validationMessageEmail string = " value must be a valid email address with a maxamium of 30 characters must be used"
 const validationMessagePhoneNumber string = " value must be a valid phone number in e.164 format with a maxamium of 16 characters must be used"
@@ -678,7 +886,10 @@ const validationMessageAlphaNum string = " value must be 1 to 30 characters and 
 const validationMessageAlphaNumEmpty string = " value can be empty or must be a maxamium of 30 characters and must only contain characters: a-z, A-Z or numbers"
 const validationMessagePrice string = " value must be a decimal number with maxamium of 8 numbers"
 const validationMessageBoolean string = " value must be yes or no"
+const validationMessageBooleanEmpty string = " value must be yes, no or empty"
 const validationMessageDate string = " value must be in the date format DD-MM-YYYY"
+const validationMessageIPAddress string = " value must be a valid IP address or empty"
+const validationMessageFilePath string = " value must be a valid absloute path or empty"
 
 const validationMessageAlreadyExist string = " already exists"
 const validationMessageDoesNotExist string = " does not exist"
@@ -748,9 +959,38 @@ const validationMessageExtLimit string = validationMessageInvalidOption + "ext l
 const validationMessagePBXCreated string = "PBX" + validationMessageCreated
 const validationMessagePBXNotCreated string = "PBX" + validationMessageNotCreated
 
-const validationMessagePBXColumn string = validationMessageInvalidOption + "PBX Column"
+const validationMessagePBXColumn string = validationMessageInvalidOption + "PBX column"
 const validationMessagePBXDeleted string = "PBX" + validationMessageDeleted
 const validationMessagePBXNotDeleted string = "PBX" + validationMessageNotDeleted
+
+// Ext page specific HTML messages
+const validationMessageExt string = "ext" + validationMessageAlphaNum
+const validationMessageCodecAllowed string = validationMessageInvalidOption + "codec allowed"
+const validationMessageDTMFMode string = validationMessageInvalidOption + "DTMF mode"
+const validationMessageCallGroup string = "Call group" + validationMessageAlphaNumEmpty
+const validationMessageCallPickup string = "Call pickup" + validationMessageAlphaNumEmpty
+
+const validationMessageMediaEncryption string = validationMessageInvalidOption + "media encryption"
+const validationMessageICESupport string = "Ice support" + validationMessageBooleanEmpty
+const validationMessageDirectMedia string = "Direct media" + validationMessageBooleanEmpty
+const validationMessageDirectMediaMethod string = validationMessageInvalidOption + "direct media method"
+const validationMessageRewriteContact string = "Rewrite contact" + validationMessageBooleanEmpty
+const validationMessageRTPSymmetric string = "RTP symmetric" + validationMessageBooleanEmpty
+const validationMessageForceRPort string = "Force RPort" + validationMessageBooleanEmpty
+const validationMessageRestrictExt string = "Restrict to ext" + validationMessageIPAddress
+
+const validationMessageAllowTransfer string = "Allow Transfer" + validationMessageBooleanEmpty
+const validationMessageCallerID string = "Caller ID" + validationMessageAlphaNumEmpty
+const validationMessageCallerIDPrivacy string = validationMessageInvalidOption + "caller ID privacy"
+const validationMessageContactUser string = "SIP header - contact user" + validationMessageAlphaNumEmpty
+const validationMessageFromUser string = "SIP header - from user" + validationMessageAlphaNumEmpty
+const validationMessageFromDomain string = "SIP header - from domain" + validationMessageAlphaNumEmpty
+const validationMessageStirShaken string = validationMessageInvalidOption + "stir/shaken"
+const validationMessageStirShakenProfile string = "Stir/shaken profile" + validationMessageFilePath
+
+const validationMessageExtAlreadyExist string = "Ext" + validationMessageAlreadyExist
+const validationMessageExtCreated string = "Ext" + validationMessageCreated
+const validationMessageExtNotCreated string = "Ext" + validationMessageNotCreated
 
 // invoice page specific HTML messages
 const validationMessageServiceProduct string = validationMessageInvalidOption + "service/product"
@@ -840,25 +1080,27 @@ func validateInput(value string, valueType string) (validation bool) {
 			validation = true
 			return
 		}
+	} else if valueType == "ipAddress" {
+		validateInputIPAddressErr := validateInput.Var(value, "omitempty,ip_addr")
+		if validateInputIPAddressErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
+	} else if valueType == "filePath" {
+		validateInputIPAddressErr := validateInput.Var(value, "omitempty,dir")
+		if validateInputIPAddressErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
 	} else {
-		panic("The validateInput function can only take the following arguments: email, alphaNum or alphaNumEmpty")
+		panic("The validateInput function can only take the following arguments: email, phoneNumber, alphaNum, alphaNumEmpty, price, data, ipAddress or filePath")
 	}
-}
-
-//----------------------------------------------------------------------------------------------------
-
-// Function to return slice of pbxLimitList
-
-func pbxLimitSlice() []string {
-	pbxLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
-	return pbxLimitList
-}
-
-// Function to return slice of extLimitList
-
-func extLimitSlice() []string {
-	extLimitList := []string{"", "1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
-	return extLimitList
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1066,15 +1308,7 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 					                pbx_site_postcode_zip_code,
 					                pbx_site_country,
 					                pbx_site_contact_email,
-					                pbx_site_contact_number,
-					                pbx_invoice_address_line_1,
-					                pbx_invoice_address_line_2,
-					                pbx_invoice_city_town_village,
-					                pbx_invoice_county_state_region,
-					                pbx_invoice_postcode_zip_code,
-					                pbx_invoice_country,
-					                pbx_invoice_contact_email,
-					                pbx_invoice_contact_number
+					                pbx_site_contact_number
 						      FROM
 						        yap.view___account_detail
 					  	      WHERE
@@ -1088,24 +1322,16 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 	for result.Next() {
 
 		var (
-			pbxName                     string
-			pbxID                       string
-			pbxSiteAddressLine1         string
-			pbxSiteAddressLine2         string
-			pbxSiteCityTownVillage      string
-			pbxSiteCountyStateRegion    string
-			pbxSitePostcodeZipCode      string
-			pbxSiteCountry              string
-			pbxSiteContactEmail         string
-			pbxSiteContactNumber        string
-			pbxInvoiceAddressLine1      string
-			pbxInvoiceAddressLine2      string
-			pbxInvoiceCityTownVillage   string
-			pbxInvoiceCountyStateRegion string
-			pbxInvoicePostcodeZipCode   string
-			pbxInvoiceCountry           string
-			pbxInvoiceContactEmail      string
-			pbxInvoiceContactNumber     string
+			pbxName                  string
+			pbxID                    string
+			pbxSiteAddressLine1      string
+			pbxSiteAddressLine2      string
+			pbxSiteCityTownVillage   string
+			pbxSiteCountyStateRegion string
+			pbxSitePostcodeZipCode   string
+			pbxSiteCountry           string
+			pbxSiteContactEmail      string
+			pbxSiteContactNumber     string
 		)
 
 		err = result.Scan(
@@ -1119,14 +1345,6 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 			&pbxSiteCountry,
 			&pbxSiteContactEmail,
 			&pbxSiteContactNumber,
-			&pbxInvoiceAddressLine1,
-			&pbxInvoiceAddressLine2,
-			&pbxInvoiceCityTownVillage,
-			&pbxInvoiceCountyStateRegion,
-			&pbxInvoicePostcodeZipCode,
-			&pbxInvoiceCountry,
-			&pbxInvoiceContactEmail,
-			&pbxInvoiceContactNumber,
 		)
 
 		// Error
@@ -1161,19 +1379,6 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+pbxSiteAddressLine1+"&nbsp<br>"+pbxSiteAddressLine2+"<br>"+pbxSiteCityTownVillage+"<br>"+pbxSiteCountyStateRegion+"<br><br>"+pbxSitePostcodeZipCode+"<br><br>"+pbxSiteCountry+"</td>")
 		fmt.Fprintf(w, "    <td><a href=\"mailto:"+pbxSiteContactEmail+"\">"+pbxSiteContactEmail+"</a></td>")
 		fmt.Fprintf(w, "    <td><a href=\"tel:"+pbxSiteContactNumber+"\">"+pbxSiteContactNumber+"</a></td>")
-		fmt.Fprintf(w, "  </tr>")
-		fmt.Fprintf(w, "</table>")
-		fmt.Fprintf(w, "<br>")
-		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
-		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th>PBX Invoice Address</th>")
-		fmt.Fprintf(w, "    <th>PBX Invoice Email</th>")
-		fmt.Fprintf(w, "    <th>PBX Invoice Phone Number</th>")
-		fmt.Fprintf(w, "  </tr>")
-		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <td style=\"text-align: left;\">"+pbxInvoiceAddressLine1+"&nbsp<br>"+pbxInvoiceAddressLine2+"<br>"+pbxInvoiceCityTownVillage+"<br>"+pbxInvoiceCountyStateRegion+"<br><br>"+pbxInvoicePostcodeZipCode+"<br><br>"+pbxInvoiceCountry+"</td>")
-		fmt.Fprintf(w, "    <td><a href=\"mailto:"+pbxInvoiceContactEmail+"\">"+pbxInvoiceContactEmail+"</a></td>")
-		fmt.Fprintf(w, "    <td><a href=\"tel:"+pbxInvoiceContactNumber+"\">"+pbxInvoiceContactNumber+"</a></td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 
@@ -2075,10 +2280,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 		}
 	}
 
-	confirmList := []string{"", "yes"}
-
 	// Delete all user accounts for a PBX
-
 	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 	fmt.Fprintf(w, "<table class=\"table-delete\">")
@@ -2094,6 +2296,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 	selectDoubleHTML(w, "delete_pbx_user_account_select_account_pbx_id", "PBX", pbxIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
+	confirmList := yesSlice()
 	selectSingleHTML(w, "delete_pbx_user_account_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -2642,7 +2845,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 		fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 		fmt.Fprintf(w, "          <td>"+formatDateTime(customerDateTimeAdded)+"</td>")
-		fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
+		fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
 		fmt.Fprintf(w, "            <b>UK Based:</b> "+customerUKBased+"<br>")
 		fmt.Fprintf(w, "            <b>Consumer Type:</b> "+customerConsumerType+"<br>")
 		fmt.Fprintf(w, "            <b>UK VAT Registered:</b> "+customerUKVATRegistered+"<br>")
@@ -2655,7 +2858,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "            <b>EXT Sales Tax Rate &#37:</b> "+customerExtSalesTaxRate+"<br>")
 		fmt.Fprintf(w, "            <b>EXT Sales Tax Status:</b> "+customerExtSalesTaxStatus)
 		fmt.Fprintf(w, "          </td>")
-		fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
+		fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
 		fmt.Fprintf(w, "            <b>PBX Setup Price:</b> "+currencySymbol+customerPBXSetupPrice+"<br>")
 		fmt.Fprintf(w, "            <b>PBX Rental Price:</b> "+currencySymbol+customerPBXRentalPrice+"<br>")
 		fmt.Fprintf(w, "            <b>PBX Cease Price:</b> "+currencySymbol+customerPBXCeasePrice+"<br>")
@@ -2726,11 +2929,11 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	inputHTML(w, "add_customer_input_customer_name", "Customer Name<br>(Cannot Be Empty)", "text")
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	ukBasedList := []string{"", "yes", "no"}
+	ukBasedList := yesNoSlice()
 	selectSingleHTML(w, "add_customer_select_uk_based", "Customer UK Based<br>(Cannot Be Empty)", ukBasedList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	resellingMinutesList := []string{"", "yes", "no"}
+	resellingMinutesList := yesNoSlice()
 	selectSingleHTML(w, "add_customer_select_reselling_minutes", "Customer Reselling Minutes<br>(Cannot Be Empty)", resellingMinutesList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -2743,7 +2946,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	selectSingleHTML(w, "add_customer_select_consumer_type", "Consumer Type<br>(Cannot Be Empty)", consumerTypeList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	ukVATRegisteredList := []string{"", "yes", "no"}
+	ukVATRegisteredList := yesNoSlice()
 	selectSingleHTML(w, "add_customer_select_uk_vat_registered", "UK VAT Registered<br>(Cannot Be Empty)", ukVATRegisteredList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
@@ -3369,18 +3572,6 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		messageHTML(w, validationMessageCustomerColumn, "warning")
 	}
 
-	// List of all column names from the customer table
-	customerSiteColumnList := [][]string{
-		{"address_line_1", "Site Address Line One"},
-		{"address_line_2", "Site Address Line Two"},
-		{"city_town_village", "Site City Town Village"},
-		{"county_state_region", "Site County/State/Region"},
-		{"postcode_zip_code", "Site Postcode/Zip Code"},
-		{"country", "Site Country"},
-		{"contact_email", "Site Contact Email"},
-		{"contact_number", "Site Contact Number"},
-	}
-
 	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 	fmt.Fprintf(w, "<table class=\"table-customer\">")
@@ -3408,7 +3599,8 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 	selectDoubleHTML(w, "edit_customer_site_select_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	selectDoubleHiddenHTML(w, "edit_customer_site_select_column", "Column to Edit (Cannot Be Empty)", customerSiteColumnList)
+	siteColumnList := siteColumnSlice()
+	selectDoubleHiddenHTML(w, "edit_customer_site_select_column", "Column to Edit (Cannot Be Empty)", siteColumnList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	inputHTML(w, "edit_customer_site_input_new_value", "New Value", "text")
@@ -3465,17 +3657,6 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		messageHTML(w, validationMessageCustomerColumn, "warning")
 	}
 
-	customerInvoiceColumnList := [][]string{
-		{"address_line_1", "Invoice Address Line One"},
-		{"address_line_2", "Invoice Address Line Two"},
-		{"city_town_village", "Invoice City Town Village"},
-		{"county_state_region", "Invoice County/State/Region"},
-		{"postcode_zip_code", "Invoice Postcode/Zip Code"},
-		{"country", "Invoice Country"},
-		{"contact_email", "Invoice Contact Email"},
-		{"contact_number", "Invoice Contact Number"},
-	}
-
 	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 	fmt.Fprintf(w, "<table class=\"table-customer\">")
@@ -3503,7 +3684,8 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 	selectDoubleHTML(w, "edit_customer_invoice_select_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	selectDoubleHiddenHTML(w, "edit_customer_invoice_select_column", "Column to Edit (Cannot Be Empty)", customerInvoiceColumnList)
+	invoiceColumnList := invoiceColumnSlice()
+	selectDoubleHiddenHTML(w, "edit_customer_invoice_select_column", "Column to Edit (Cannot Be Empty)", invoiceColumnList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	inputHTML(w, "edit_customer_invoice_input_new_value", "New Value", "text")
@@ -3568,7 +3750,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 	fmt.Fprintf(w, "<table class=\"table-delete\">")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a Customer<br>(Customers With User Accounts Associated With Them Cannot be Deleted)</th>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a Customer<br>(This Will Delete All User Accounts, PBXs and Exts Part of the Customer)</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
@@ -3579,7 +3761,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 	selectDoubleHTML(w, "delete_customer_select_customer_id", "Customer", customerIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	confirmList := []string{"", "yes"}
+	confirmList := yesSlice()
 	selectSingleHTML(w, "delete_customer_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -4106,8 +4288,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	selectSingleHTML(w, "add_pbx_select_ext_limit", "Ext Limt<br>(Cannot Be Empty)", extLimitList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	fmt.Fprintf(w, "            <label for=\"add_pbx_input_default_ext_limit\"><b>Default Ext Limit for Customers<br>Creating a New PBX:</b><br></label>")
-	fmt.Fprintf(w, "            <input style=\"text-align: center;\" type=\"text\" id=\"add_pbx_input_default_ext_limit\" name=\"add_pbx_input_default_ext_limit\" value=\""+defaultExtLimit+"\" readonly><br>")
+	inputReadOnlyHTML(w, "add_pbx_input_default_ext_limit", "Ext Limit When Customer is<br>Creating a New PBX", defaultExtLimit)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
@@ -4354,18 +4535,6 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		messageHTML(w, validationMessageCustomerColumn, "warning")
 	}
 
-	// List of all column names from the PBX table
-	pbxSiteColumnList := [][]string{
-		{"address_line_1", "Site Address Line One"},
-		{"address_line_2", "Site Address Line Two"},
-		{"city_town_village", "Site City Town Village"},
-		{"county_state_region", "Site County/State/Region"},
-		{"postcode_zip_code", "Site Postcode/Zip Code"},
-		{"country", "Site Country"},
-		{"contact_email", "Site Contact Email"},
-		{"contact_number", "Site Contact Number"},
-	}
-
 	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"/pbx\">")
 	fmt.Fprintf(w, "<table class=\"table-pbx\">")
@@ -4393,7 +4562,8 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 	selectDoubleHTML(w, "edit_pbx_site_select_pbx_id", "PBX", pbxIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	selectDoubleHiddenHTML(w, "edit_pbx_site_select_column", "Column to Edit (Cannot Be Empty)", pbxSiteColumnList)
+	siteColumnList := siteColumnSlice()
+	selectDoubleHiddenHTML(w, "edit_pbx_site_select_column", "Column to Edit (Cannot Be Empty)", siteColumnList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	inputHTML(w, "edit_pbx_site_input_new_value", "New Value", "text")
@@ -4469,7 +4639,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 	selectDoubleHTML(w, "delete_pbx_select_pbx_id", "PBX", pbxIDNameList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
-	confirmList := []string{"", "yes"}
+	confirmList := yesSlice()
 	selectSingleHTML(w, "delete_pbx_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -4551,31 +4721,36 @@ func dropDailplanTable(dbDetail databaseFunctionParameter) {
 
 // SIP extension page functions
 
-func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, userPBXID string) {
+func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, userPBXID string) {
 
 	var (
-		sipUsername            string
-		sipPassword            string
-		callerID               string
-		callerIDPrivacy        string
-		callGroup              string
-		codecAllowed           string
-		directMedia            string
-		directMediaMethod      string
-		dtmfMode               string
-		forceRPort             string
-		fromSIPHeaderUser      string
-		fromSIPHeaderDomain    string
-		ipAddressAllowed       string
-		pickupGroup            string
-		mediaEncryptionEnabled string
-		stirShakenEnabled      string
-		stirShakenProfile      string
-		registered             string
-		pbxID                  string
-		pbxName                string
-		customerID             string
-		customerName           string
+		sipUsername          string
+		sipPassword          string
+		codecAllowed         string
+		dtmfMode             string
+		namedCallGroup       string
+		namedPickupGroup     string
+		mediaEncryption      string
+		iceSupport           string
+		directMedia          string
+		directMediaMethod    string
+		rewriteContact       string
+		rtpSymmetric         string
+		forceRPort           string
+		ipAddressAllowed     string
+		allowTransfer        string
+		callerID             string
+		callerIDPrivacy      string
+		contactSIPHeaderUser string
+		fromSIPHeaderUser    string
+		fromSIPHeaderDomain  string
+		stirShaken           string
+		stirShakenProfile    string
+		registered           string
+		pbxID                string
+		pbxName              string
+		customerID           string
+		customerName         string
 	)
 
 	// Registered table
@@ -4584,65 +4759,65 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		userAgent string
 	)
 
-	var dbTableCountUserSIPExtension databaseFunctionParameter
-	dbTableCountUserSIPExtension.connection = dbDetail.connection
-	dbTableCountUserSIPExtension.database = dbDetail.database
-	dbTableCountUserSIPExtension.table = "view___sip_extension_detail"
-	dbTableCountUserSIPExtension.columnWhere = "sip_username"
+	var dbTableCountUserExt databaseFunctionParameter
+	dbTableCountUserExt.connection = dbDetail.connection
+	dbTableCountUserExt.database = dbDetail.database
+	dbTableCountUserExt.table = "view___sip_extension_detail"
+	dbTableCountUserExt.columnWhere = "sip_username"
 
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-extension\">")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-ext\">")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-sip-extension\">")
+	fmt.Fprintf(w, "      <table id=\"table\" class=\"table-ext\">")
 	fmt.Fprintf(w, "        <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "          <th>Total SIP Extensions On YAP</th>")
+		fmt.Fprintf(w, "          <th>Total Extensions On YAP</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "          <th>Total SIP Extensions for the Customer</th>")
+		fmt.Fprintf(w, "          <th>Total Extensions for the Customer</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		fmt.Fprintf(w, "          <th>Total SIP Extensions Within the PBX</th>")
+		fmt.Fprintf(w, "          <th>Total Extensions Within the PBX</th>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "        <tr>")
 	if userTypeID == "100" {
-		dbTableCountUserSIPExtension.countMinusOne = false
-		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserSIPExtension)+"</td>")
+		dbTableCountUserExt.countMinusOne = false
+		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserExt)+"</td>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		var dbTableCountUserSIPExtensionWhere databaseFunctionParameter
-		dbTableCountUserSIPExtensionWhere.connection = dbDetail.connection
-		dbTableCountUserSIPExtensionWhere.database = dbDetail.database
-		dbTableCountUserSIPExtensionWhere.table = "view___sip_extension_detail"
-		dbTableCountUserSIPExtensionWhere.columnWhere = "customer_id"
-		dbTableCountUserSIPExtensionWhere.columnWhereValue = userCustomerID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPExtensionWhere)+"</td>")
+		var dbTableCountUserExtWhere databaseFunctionParameter
+		dbTableCountUserExtWhere.connection = dbDetail.connection
+		dbTableCountUserExtWhere.database = dbDetail.database
+		dbTableCountUserExtWhere.table = "view___sip_extension_detail"
+		dbTableCountUserExtWhere.columnWhere = "customer_id"
+		dbTableCountUserExtWhere.columnWhereValue = userCustomerID
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserExtWhere)+"</td>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		var dbTableCountUserSIPExtensionWhere databaseFunctionParameter
-		dbTableCountUserSIPExtensionWhere.connection = dbDetail.connection
-		dbTableCountUserSIPExtensionWhere.database = dbDetail.database
-		dbTableCountUserSIPExtensionWhere.table = "view___sip_extension_detail"
-		dbTableCountUserSIPExtensionWhere.columnWhere = "pbx_id"
-		dbTableCountUserSIPExtensionWhere.columnWhereValue = userPBXID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserSIPExtensionWhere)+"</td>")
+		var dbTableCountUserExtWhere databaseFunctionParameter
+		dbTableCountUserExtWhere.connection = dbDetail.connection
+		dbTableCountUserExtWhere.database = dbDetail.database
+		dbTableCountUserExtWhere.table = "view___sip_extension_detail"
+		dbTableCountUserExtWhere.columnWhere = "pbx_id"
+		dbTableCountUserExtWhere.columnWhereValue = userPBXID
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserExtWhere)+"</td>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
 	fmt.Fprintf(w, "    </th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
-	fmt.Fprintf(w, "    <th><button onclick=\"toggleSIPExtension() \"class=\"button-general button-sip-extension\">&nbsp Show/Hide SIP Extension &nbsp</button></th>")
+	fmt.Fprintf(w, "    <th><button onclick=\"toggleExt() \"class=\"button-general button-ext\">&nbsp Show/Hide Extension &nbsp</button></th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
-	fmt.Fprintf(w, "<div id=\"sip-extension-div\" style=\"display:none\">")
+	fmt.Fprintf(w, "<div id=\"ext-div\" style=\"display:none\">")
 	fmt.Fprintf(w, "<br>")
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-extension\">")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-ext\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details on the Server:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Ext Details on the Server:</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details for the Customer:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Ext Details for the Customer:</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extension Details Within the PBX:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Ext Details Within the PBX:</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
@@ -4650,34 +4825,34 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	var inputTableHTMLArgument jsFunctionParameter
-	inputTableHTMLArgument.inputID = "sip-extension-detail-input-sip-username"
-	inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchSIPUsername"
+	inputTableHTMLArgument.inputID = "ext-detail-input-sip-username"
+	inputTableHTMLArgument.funcNameJS = "extDetailSearchSIPUsername"
 	inputTableHTMLArgument.placeholder = "SIP Username/PBX ID"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-extension-detail-input-option"
-	inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchOption"
+	inputTableHTMLArgument.inputID = "ext-detail-input-option"
+	inputTableHTMLArgument.funcNameJS = "extDetailSearchOption"
 	inputTableHTMLArgument.placeholder = "Options"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		inputTableHTMLArgument.inputID = "sip-extension-detail-input-pbx-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchPBXName"
+		inputTableHTMLArgument.inputID = "ext-detail-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "extDetailSearchPBXName"
 		inputTableHTMLArgument.placeholder = "PBX Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	}
 	if userTypeID == "100" {
-		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-id"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerID"
+		inputTableHTMLArgument.inputID = "ext-detail-input-customer-id"
+		inputTableHTMLArgument.funcNameJS = "extDetailSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-detail-input-customer-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
+		inputTableHTMLArgument.inputID = "ext-detail-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "extDetailSearchCustomerName"
 		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
@@ -4688,7 +4863,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"sip-extension-detail-table\" class=\"table-sip-extension\">")
+	fmt.Fprintf(w, "      <table id=\"ext-detail-table\" class=\"table-ext\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <th>SIP Username</th>")
 	fmt.Fprintf(w, "          <th>SIP Password</th>")
@@ -4717,24 +4892,29 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		userWhereID = userPBXID
 	}
 
-	sipExtensionDetailSQL, err := dbDetail.connection.Query(`SELECT
+	extDetailSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							sip_password,
-							caller_id,
-							caller_id_privacy,
-							call_group,
 							codec_allowed,
+							dtmf_mode,
+							named_call_group,
+							named_pickup_group,
+							media_encryption,
+							ice_support,
 							direct_media,
 							direct_media_method,
-					                dtmf_mode,
-					                force_rport,
-					                from_sip_header_user,
-					                from_sip_Header_domain,
-					                ip_address_allowed,
-					                pickup_group,
-					                media_encryption_enabled,
-					                stir_shaken_enabled,
-					                stir_shaken_profile,
+							rewrite_contact,
+							rtp_symmetric,
+							force_rport,
+							ip_address_allowed,
+							allow_transfer,
+							caller_id,
+							caller_id_privacy,
+							contact_sip_header_user,
+							from_sip_header_user,
+							from_sip_header_domain,
+							stir_shaken,
+							stir_shaken_profile,  
 					                registered,
 					                pbx_id,
 					                pbx_name,
@@ -4750,25 +4930,30 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 	}
 
-	for sipExtensionDetailSQL.Next() {
+	for extDetailSQL.Next() {
 
-		err = sipExtensionDetailSQL.Scan(
+		err = extDetailSQL.Scan(
 			&sipUsername,
 			&sipPassword,
-			&callerID,
-			&callerIDPrivacy,
-			&callGroup,
 			&codecAllowed,
+			&dtmfMode,
+			&namedCallGroup,
+			&namedPickupGroup,
+			&mediaEncryption,
+			&iceSupport,
 			&directMedia,
 			&directMediaMethod,
-			&dtmfMode,
+			&rewriteContact,
+			&rtpSymmetric,
 			&forceRPort,
+			&ipAddressAllowed,
+			&allowTransfer,
+			&callerID,
+			&callerIDPrivacy,
+			&contactSIPHeaderUser,
 			&fromSIPHeaderUser,
 			&fromSIPHeaderDomain,
-			&ipAddressAllowed,
-			&pickupGroup,
-			&mediaEncryptionEnabled,
-			&stirShakenEnabled,
+			&stirShaken,
 			&stirShakenProfile,
 			&registered,
 			&pbxID,
@@ -4783,8 +4968,9 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		}
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>"+sipUsername)
+
 		var copyButtonJSArgument jsFunctionParameter
-		copyButtonJSArgument.buttonCSS = "button-sip-extension"
+		copyButtonJSArgument.buttonCSS = "button-ext"
 		copyButtonJSArgument.data = sipUsername
 		copyButtonJS(w, copyButtonJSArgument)
 		fmt.Fprintf(w, "	  </td>")
@@ -4798,20 +4984,25 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 			fmt.Fprintf(w, "          <td>&#128308</td>")
 		}
 		fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
-		fmt.Fprintf(w, "          <b>Caller ID:</b> "+callerID+"<br>")
-		fmt.Fprintf(w, "          <b>Caller ID Privacy:</b> "+callerIDPrivacy+"<br>")
-		fmt.Fprintf(w, "          <b>Call Group:</b> "+callGroup+"<br>")
-		fmt.Fprintf(w, "          <b>Codecs Allowed:</b> "+codecAllowed+"<br>")
+		fmt.Fprintf(w, "          <b>Codec Allowed:</b> "+codecAllowed+"<br>")
+		fmt.Fprintf(w, "          <b>DTMF Mode:</b> "+dtmfMode+"<br>")
+		fmt.Fprintf(w, "          <b>Call Group:</b> "+namedCallGroup+"<br>")
+		fmt.Fprintf(w, "          <b>Pickup Group:</b> "+namedPickupGroup+"<br>")
+		fmt.Fprintf(w, "          <b>Media Encryption:</b> "+mediaEncryption+"<br>")
+		fmt.Fprintf(w, "          <b>ICE Support:</b> "+iceSupport+"<br>")
 		fmt.Fprintf(w, "          <b>Direct Media:</b> "+directMedia+"<br>")
 		fmt.Fprintf(w, "          <b>Direct Media Method:</b> "+directMediaMethod+"<br>")
-		fmt.Fprintf(w, "          <b>DTMF Mode:</b> "+dtmfMode+"<br>")
+		fmt.Fprintf(w, "          <b>Rewrite Contact:</b> "+rewriteContact+"<br>")
+		fmt.Fprintf(w, "          <b>RTP Symmetric:</b> "+rtpSymmetric+"<br>")
 		fmt.Fprintf(w, "          <b>Force Rport:</b> "+forceRPort+"<br>")
+		fmt.Fprintf(w, "          <b>IP Address Allowed:</b> "+ipAddressAllowed+"<br>")
+		fmt.Fprintf(w, "          <b>Allow Transfer:</b> "+allowTransfer+"<br>")
+		fmt.Fprintf(w, "          <b>Caller ID:</b> "+callerID+"<br>")
+		fmt.Fprintf(w, "          <b>Caller ID Privacy:</b> "+callerIDPrivacy+"<br>")
+		fmt.Fprintf(w, "          <b>Contact SIP Header User:</b> "+contactSIPHeaderUser+"<br>")
 		fmt.Fprintf(w, "          <b>From SIP Header User:</b> "+fromSIPHeaderUser+"<br>")
 		fmt.Fprintf(w, "          <b>From SIP Header Domain:</b> "+fromSIPHeaderDomain+"<br>")
-		fmt.Fprintf(w, "          <b>IP Address Allowed:</b> "+ipAddressAllowed+"<br>")
-		fmt.Fprintf(w, "          <b>Pickup Group:</b> "+pickupGroup+"<br>")
-		fmt.Fprintf(w, "          <b>Media Encryption Enabled:</b> "+mediaEncryptionEnabled+"<br>")
-		fmt.Fprintf(w, "          <b>STIR/SHAKEN Enabled:</b> "+stirShakenEnabled+"<br>")
+		fmt.Fprintf(w, "          <b>STIR/SHAKEN Enabled:</b> "+stirShaken+"<br>")
 		fmt.Fprintf(w, "          <b>STIR/SHAKEN Profile:</b> "+stirShakenProfile+"<br>")
 		fmt.Fprintf(w, "          </td>")
 		if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
@@ -4826,33 +5017,33 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 	fmt.Fprintf(w, "      </table>")
 	var filterTableJSArgument jsFunctionParameter
-	filterTableJSArgument.tableID = "sip-extension-detail-table"
+	filterTableJSArgument.tableID = "ext-detail-table"
 	// Call JS filter function for SIP username in the SIP extension detail table
-	filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchSIPUsername"
-	filterTableJSArgument.inputID = "sip-extension-detail-input-sip-username"
+	filterTableJSArgument.funcNameJS = "extDetailSearchSIPUsername"
+	filterTableJSArgument.inputID = "ext-detail-input-sip-username"
 	filterTableJSArgument.columnNumber = 0
 	filterTableJS(w, filterTableJSArgument)
-	// Call JS filter function for options in the SIP extension detail table
-	filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchOption"
-	filterTableJSArgument.inputID = "sip-extension-detail-input-option"
+	// Call JS filter function for options in the SIP extenson detail table
+	filterTableJSArgument.funcNameJS = "extDetailSearchOption"
+	filterTableJSArgument.inputID = "ext-detail-input-option"
 	filterTableJSArgument.columnNumber = 3
 	filterTableJS(w, filterTableJSArgument)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		// Call JS filter function for PBX name in the SIP extension detail table
-		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchPBXName"
-		filterTableJSArgument.inputID = "sip-extension-detail-input-pbx-name"
+		filterTableJSArgument.funcNameJS = "extDetailSearchPBXName"
+		filterTableJSArgument.inputID = "ext-detail-input-pbx-name"
 		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
 		// Call JS filter function for the customer ID in the SIP extension detail table
-		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCustomerID"
-		filterTableJSArgument.inputID = "sip-extension-detail-input-customer-id"
+		filterTableJSArgument.funcNameJS = "extDetailSearchCustomerID"
+		filterTableJSArgument.inputID = "ext-detail-input-customer-id"
 		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for the customer name in the SIP extension detail table
-		filterTableJSArgument.funcNameJS = "sipExtensionDetailSearchCustomerName"
-		filterTableJSArgument.inputID = "sip-extension-detail-input-customer-name"
+		filterTableJSArgument.funcNameJS = "extDetailSearchCustomerName"
+		filterTableJSArgument.inputID = "ext-detail-input-customer-name"
 		filterTableJSArgument.columnNumber = 6
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -4862,38 +5053,38 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	fmt.Fprintf(w, "<br>")
 
 	// Registered SIP extension Table
-	fmt.Fprintf(w, "<table id=\"table\" class=\"table-sip-extension\">")
+	fmt.Fprintf(w, "<table id=\"table\" class=\"table-ext\">")
 	fmt.Fprintf(w, "  <tr>")
 	if userTypeID == "100" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered on the Server:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered on the Server:</th>")
 	} else if userTypeID == "200" || userTypeID == "201" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered for the Customer:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered for the Customer:</th>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All SIP Extensions Registered Within the PBX:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered Within the PBX:</th>")
 	}
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
 	fmt.Fprintf(w, "    <br>")
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-extension-reg-input-sip-username"
-	inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchSIPUsername"
+	inputTableHTMLArgument.inputID = "ext-reg-input-sip-username"
+	inputTableHTMLArgument.funcNameJS = "extRegSearchSIPUsername"
 	inputTableHTMLArgument.placeholder = "SIP Username/PBX ID"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-extension-reg-input-uri"
-	inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchURI"
+	inputTableHTMLArgument.inputID = "ext-reg-input-uri"
+	inputTableHTMLArgument.funcNameJS = "extRegSearchURI"
 	inputTableHTMLArgument.placeholder = "URI"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-	inputTableHTMLArgument.inputID = "sip-extension-reg-input-user-agent"
-	inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchUserAgent"
+	inputTableHTMLArgument.inputID = "ext-reg-input-user-agent"
+	inputTableHTMLArgument.funcNameJS = "extRegSearchUserAgent"
 	inputTableHTMLArgument.placeholder = "User Agent"
 	inputTableHTML(w, inputTableHTMLArgument)
 	fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
-		inputTableHTMLArgument.inputID = "sip-extension-reg-input-pbx-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchPBXName"
+		inputTableHTMLArgument.inputID = "ext-reg-input-pbx-name"
+		inputTableHTMLArgument.funcNameJS = "extRegSearchPBXName"
 		inputTableHTMLArgument.placeholder = "PBX Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
@@ -4902,13 +5093,13 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    <br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-reg-input-customer-id"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchCustomerID"
+		inputTableHTMLArgument.inputID = "ext-reg-input-customer-id"
+		inputTableHTMLArgument.funcNameJS = "extRegSearchCustomerID"
 		inputTableHTMLArgument.placeholder = "Customer ID"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		inputTableHTMLArgument.inputID = "sip-extension-reg-input-customer-name"
-		inputTableHTMLArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
+		inputTableHTMLArgument.inputID = "ext-reg-input-customer-name"
+		inputTableHTMLArgument.funcNameJS = "extRegSearchCustomerName"
 		inputTableHTMLArgument.placeholder = "Customer Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
@@ -4919,11 +5110,11 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>")
-	fmt.Fprintf(w, "      <table id=\"sip-extension-reg-table\" class=\"table-sip-extension\">")
+	fmt.Fprintf(w, "      <table id=\"ext-reg-table\" class=\"table-ext\">")
 	fmt.Fprintf(w, "        <tr>")
 	fmt.Fprintf(w, "          <th>SIP Username</th>")
 	fmt.Fprintf(w, "          <th>URI</th>")
-	fmt.Fprintf(w, "          <th>User Agent<br>SIP Client</th>")
+	fmt.Fprintf(w, "          <th>User Agent/SIP Client</th>")
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		fmt.Fprintf(w, "          <th>PBX Name</th>")
 	}
@@ -4933,7 +5124,7 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	}
 	fmt.Fprintf(w, "        </tr>")
 
-	sipExtensionRegSQL, err := dbDetail.connection.Query(`SELECT
+	extRegSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							uri,
 							user_agent,
@@ -4950,9 +5141,9 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 
 	}
 
-	for sipExtensionRegSQL.Next() {
+	for extRegSQL.Next() {
 
-		err = sipExtensionRegSQL.Scan(
+		err = extRegSQL.Scan(
 			&sipUsername,
 			&uri,
 			&userAgent,
@@ -4976,38 +5167,38 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	}
 
 	fmt.Fprintf(w, "      </table>")
-	filterTableJSArgument.tableID = "sip-extension-reg-table"
+	filterTableJSArgument.tableID = "ext-reg-table"
 	// Call JS filter function for SIP username in the SIP extension registration (reg) table
-	filterTableJSArgument.funcNameJS = "sipExtensionRegSearchSIPUsername"
-	filterTableJSArgument.inputID = "sip-extension-reg-input-sip-username"
+	filterTableJSArgument.funcNameJS = "extRegSearchSIPUsername"
+	filterTableJSArgument.inputID = "ext-reg-input-sip-username"
 	filterTableJSArgument.columnNumber = 0
 	filterTableJS(w, filterTableJSArgument)
 	// Call JS filter function for URI in the SIP extension registration (reg) table
-	filterTableJSArgument.funcNameJS = "sipExtensionRegSearchURI"
-	filterTableJSArgument.inputID = "sip-extension-reg-input-uri"
+	filterTableJSArgument.funcNameJS = "extRegSearchURI"
+	filterTableJSArgument.inputID = "ext-reg-input-uri"
 	filterTableJSArgument.columnNumber = 1
 	filterTableJS(w, filterTableJSArgument)
 	// Call JS filter function for user agent in the SIP extension registration (reg) table
-	filterTableJSArgument.funcNameJS = "sipExtensionRegSearchUserAgent"
-	filterTableJSArgument.inputID = "sip-extension-reg-input-user-agent"
+	filterTableJSArgument.funcNameJS = "extRegSearchUserAgent"
+	filterTableJSArgument.inputID = "ext-reg-input-user-agent"
 	filterTableJSArgument.columnNumber = 2
 	filterTableJS(w, filterTableJSArgument)
 	if userTypeID == "100" || userTypeID == "200" || userTypeID == "201" {
 		// Call JS filter function for PBX name in the SIP extension registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchPBXName"
-		filterTableJSArgument.inputID = "sip-extension-reg-input-pbx-name"
+		filterTableJSArgument.funcNameJS = "extRegSearchPBXName"
+		filterTableJSArgument.inputID = "ext-reg-input-pbx-name"
 		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 	}
 	if userTypeID == "100" {
 		// Call JS filter function for the customer ID in the SIP extension registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchCustomerID"
-		filterTableJSArgument.inputID = "sip-extension-reg-input-customer-id"
+		filterTableJSArgument.funcNameJS = "extRegSearchCustomerID"
+		filterTableJSArgument.inputID = "ext-reg-input-customer-id"
 		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function for the customer name in the SIP extension registration (reg) table
-		filterTableJSArgument.funcNameJS = "sipExtensionRegSearchCustomerName"
-		filterTableJSArgument.inputID = "sip-extension-reg-input-customer-name"
+		filterTableJSArgument.funcNameJS = "extRegSearchCustomerName"
+		filterTableJSArgument.inputID = "ext-reg-input-customer-name"
 		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
 	}
@@ -5016,9 +5207,415 @@ func sipExtensionList(w http.ResponseWriter, dbDetail databaseFunctionParameter,
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "</div>")
 	var toggleDivJSArgument jsFunctionParameter
-	toggleDivJSArgument.funcNameJS = "toggleSIPExtension"
-	toggleDivJSArgument.divID = "sip-extension-div"
+	toggleDivJSArgument.funcNameJS = "toggleExt"
+	toggleDivJSArgument.divID = "ext-div"
 	toggleDivJS(w, toggleDivJSArgument)
+}
+
+// Add ext function
+func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, userTypeID string, userCustomerID string, userPBXID string) {
+
+	fmt.Fprintf(w, "<form method=\"POST\" action=\"/extension\">")
+	fmt.Fprintf(w, "<table class=\"table-ext\">")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Ext</th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th>")
+	fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	pbxIDNameList, _ := pbxSlice(dbDetail)
+	dbDetail.columnWhere = "customer_id"
+	dbDetail.columnWhereValue = userCustomerID
+	pbxWhereIDNameList, _ := pbxWhereSlice(dbDetail)
+	if userTypeID == "100" {
+		selectDoubleHTML(w, "add_ext_select_pbx_id", "PBX", pbxIDNameList)
+	} else if userTypeID == "200" || userTypeID == "201" {
+		selectDoubleHTML(w, "add_ext_select_pbx_id", "PBX", pbxWhereIDNameList)
+	} else if userTypeID == "300" || userTypeID == "301" {
+		inputReadOnlyHTML(w, "add_ext_input_pbx_id", "PBX ID is", userPBXID)
+	}
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_ext_input_sip_ext", "SIP Ext (Cannot Be Empty)", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	codecAllowedValueNameList, _ := codecAllowedSlice()
+	selectDoubleHiddenHTML(w, "add_ext_select_codec_allowed", "Codec Allowed (Cannot Be Empty)", codecAllowedValueNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	dtmfModeValueNameList, _ := dtmfModeSlice()
+	selectDoubleHiddenHTML(w, "add_ext_select_dtmf_mode", "DTMF Mode", dtmfModeValueNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_ext_input_call_group", "Call Group", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_ext_input_call_pickup", "Call Pickup", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td style=\"border: none;\">")
+	fmt.Fprintf(w, "            <br>")
+	fmt.Fprintf(w, "            <br>")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	mediaEncryptionValueNameList, _ := mediaEncryptionSlice()
+	selectDoubleHiddenHTML(w, "add_ext_select_media_encryption", "Media Encryption (Recommended)", mediaEncryptionValueNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	iceSupportValueList := yesNoSlice()
+	selectSingleHTML(w, "add_ext_select_ice_support", "ICE Support", iceSupportValueList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	directMediaValueList := yesNoSlice()
+	selectSingleHTML(w, "add_ext_select_direct_media", "Direct Media", directMediaValueList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	directMediaMethodValueNameList, _ := directMediaMethodSlice()
+	selectDoubleHiddenHTML(w, "add_ext_select_direct_media_method", "Direct Media Method", directMediaMethodValueNameList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	fmt.Fprintf(w, "        <tr>")
+	fmt.Fprintf(w, "          <td>")
+	rewriteContactValueList := yesNoSlice()
+	selectSingleHTML(w, "add_ext_select_rewrite_contact", "Rewrite Contact", rewriteContactValueList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	rtpSymmetricValueList := yesNoSlice()
+	selectSingleHTML(w, "add_ext_select_rtp_symmetric", "RTP Symmetric", rtpSymmetricValueList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	forceRPortValueList := yesNoSlice()
+	selectSingleHTML(w, "add_ext_select_force_rport", "Force RPort", forceRPortValueList)
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "          <td>")
+	inputHTML(w, "add_ext_input_ip_address", "IP Address to Restrict Ext to", "text")
+	fmt.Fprintf(w, "          </td>")
+	fmt.Fprintf(w, "        </tr>")
+	allowTransferValueList := yesNoSlice()
+	callerIDPrivacyValueNameList, _ := callerIDPrivacySlice()
+	stirShakenValueList := yesNoSlice()
+	if userTypeID == "100" {
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td style=\"border: none;\">")
+		fmt.Fprintf(w, "            <br>")
+		fmt.Fprintf(w, "            <br>")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>")
+		selectSingleHTML(w, "add_ext_select_allow_transfer", "Allow Transfer", allowTransferValueList)
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "add_ext_input_caller_id", "Caller ID", "text")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		selectDoubleHiddenHTML(w, "add_ext_select_caller_id_privacy", "Caller ID Privacy", callerIDPrivacyValueNameList)
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "add_ext_input_contact_user", "SIP Header - Contact User", "text")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "add_ext_input_from_user", "SIP Header - From User", "text")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "add_ext_input_from_domain", "SIP header - From Domain", "text")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		selectSingleHTML(w, "add_ext_select_stir_shaken", "Stir Shaken", stirShakenValueList)
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "add_ext_input_stir_shaken_profile", "Stir Shaken Profile", "text")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        </tr>")
+	}
+	fmt.Fprintf(w, "      </table>")
+	fmt.Fprintf(w, "    </th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "  <tr>")
+	fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Create Ext\"></th>")
+	fmt.Fprintf(w, "  </tr>")
+	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, "</form>")
+
+	addExtSelectPBXID := r.FormValue("add_ext_select_pbx_id")
+	addExtInputExt := r.FormValue("add_ext_input_sip_ext")
+	addExtSelectCodecAllowed := r.FormValue("add_ext_select_codec_allowed")
+	addExtSelectDTMFMode := r.FormValue("add_ext_select_dtmf_mode")
+	addExtInputCallGroup := r.FormValue("add_ext_input_call_group")
+	addExtInputCallPickup := r.FormValue("add_ext_input_call_pickup")
+
+	addExtSelectMediaEncryption := r.FormValue("add_ext_select_media_encryption")
+	addExtSelectICESupport := r.FormValue("add_ext_select_ice_support")
+	addExtSelectDirectMedia := r.FormValue("add_ext_select_direct_media")
+	addExtSelectDirectMediaMethod := r.FormValue("add_ext_select_direct_media_method")
+	addExtSelectRewriteContact := r.FormValue("add_ext_select_rewrite_contact")
+	addExtSelectRTPSymmetric := r.FormValue("add_ext_select_rtp_symmetric")
+	addExtSelectForceRPort := r.FormValue("add_ext_select_force_rport")
+	addExtInputIPAddress := r.FormValue("add_ext_input_ip_address")
+
+	addExtSelectAllowTransfer := r.FormValue("add_ext_select_allow_transfer")
+	addExtInputCallerID := r.FormValue("add_ext_input_caller_id")
+	addExtSelectCallerIDPrivacy := r.FormValue("add_ext_select_caller_id_privacy")
+	addExtInputContactUser := r.FormValue("add_ext_input_contact_user")
+	addExtInputFromUser := r.FormValue("add_ext_input_from_user")
+	addExtInputFromDomain := r.FormValue("add_ext_input_from_domain")
+	addExtSelectStirShaken := r.FormValue("add_ext_select_stir_shaken")
+	addExtInputStirShakenProfile := r.FormValue("add_ext_input_stir_shaken_profile")
+
+	// Validate the PBX ID
+	_, pbxIDList := pbxSlice(dbDetail)
+	validatePBXID := slices.Contains(pbxIDList, addExtSelectPBXID)
+	_, pbxWhereIDList := pbxWhereSlice(dbDetail)
+	validatePBXWhereID := slices.Contains(pbxWhereIDList, addExtSelectPBXID)
+	// Validate Ext
+	validateExt := validateInput(addExtInputExt, "alphaNum")
+	// Validate Codec
+	_, codecAllowedValueList := codecAllowedSlice()
+	validateCodecAllowed := slices.Contains(codecAllowedValueList, addExtSelectCodecAllowed)
+	// Validate DTMF Mode
+	_, dtmfModeValueList := dtmfModeSlice()
+	validateDTMFMode := slices.Contains(dtmfModeValueList, addExtSelectDTMFMode)
+	// Validate Call Group
+	validateCallGroup := validateInput(addExtInputCallGroup, "alphaNumEmpty")
+	// Validate Pickup Group
+	validateCallPickup := validateInput(addExtInputCallPickup, "alphaNumEmpty")
+
+	// Validate Media Encryption
+	_, mediaEncryptionValueList := mediaEncryptionSlice()
+	validateMediaEncryption := slices.Contains(mediaEncryptionValueList, addExtSelectMediaEncryption)
+	// Validate ICE Support
+	validateICESupport := slices.Contains(iceSupportValueList, addExtSelectICESupport)
+	// Validate Direct Media
+	validateDirectMedia := slices.Contains(directMediaValueList, addExtSelectDirectMedia)
+	// Validate Direct Media Method
+	_, directMediaMethodValueList := directMediaMethodSlice()
+	validateDirectMediaMethod := slices.Contains(directMediaMethodValueList, addExtSelectDirectMediaMethod)
+	// Validate Rewrite Contact
+	validateRewriteContact := slices.Contains(rewriteContactValueList, addExtSelectRewriteContact)
+	// Validate RTP Symmetric
+	validateRTPSymmetric := slices.Contains(rtpSymmetricValueList, addExtSelectRTPSymmetric)
+	// Validate Force RPort
+	validateForceRPort := slices.Contains(forceRPortValueList, addExtSelectForceRPort)
+	// Validate IP Address
+	validateIPAddress := validateInput(addExtInputIPAddress, "ipAddress")
+
+	// Validate Allow Transfer
+	validateAllowTransfer := slices.Contains(allowTransferValueList, addExtSelectAllowTransfer)
+	// Validate Direct Media Method
+	validateCallerID := validateInput(addExtInputCallerID, "alphaNumEmpty")
+	// Validate Rewrite Contact
+	_, callerIDPrivacyValueList := callerIDPrivacySlice()
+	validateCallerIDPrivacy := slices.Contains(callerIDPrivacyValueList, addExtSelectCallerIDPrivacy)
+	// Validate Contact User
+	validateContactUser := validateInput(addExtInputContactUser, "alphaNumEmpty")
+	// Validate From User
+	validateFromUser := validateInput(addExtInputFromUser, "alphaNumEmpty")
+	// Validate From Domain
+	validateFromDomain := validateInput(addExtInputFromDomain, "alphaNumEmpty")
+	// Validate Stir/Shaken
+	validateStirShaken := slices.Contains(stirShakenValueList, addExtSelectStirShaken)
+	// Validate Stir/Shaken Profile
+	validateStirShakenProfile := validateInput(addExtInputStirShakenProfile, "alphaNumEmpty")
+
+	if addExtSelectPBXID == "" && addExtInputExt == "" && addExtSelectCodecAllowed == "" {
+		// Do Nothing
+	} else if userTypeID == "100" && validatePBXID == false {
+		messageHTML(w, validationMessagePBX, "warning")
+	} else if userTypeID == "200" && validatePBXWhereID == false {
+		messageHTML(w, validationMessagePBX, "warning")
+	} else if userTypeID == "201" && validatePBXWhereID == false {
+		messageHTML(w, validationMessagePBX, "warning")
+	} else if validateExt == false {
+		messageHTML(w, validationMessageExt, "warning")
+	} else if validateCodecAllowed == false || addExtSelectCodecAllowed == "" {
+		messageHTML(w, validationMessageCodecAllowed, "warning")
+	} else if validateDTMFMode == false {
+		messageHTML(w, validationMessageDTMFMode, "warning")
+	} else if validateCallGroup == false {
+		messageHTML(w, validationMessageCallGroup, "warning")
+	} else if validateCallPickup == false {
+		messageHTML(w, validationMessageCallPickup, "warning")
+	} else if validateMediaEncryption == false {
+		messageHTML(w, validationMessageMediaEncryption, "warning")
+	} else if validateICESupport == false {
+		messageHTML(w, validationMessageICESupport, "warning")
+	} else if validateDirectMedia == false {
+		messageHTML(w, validationMessageDirectMedia, "warning")
+	} else if validateDirectMediaMethod == false {
+		messageHTML(w, validationMessageDirectMediaMethod, "warning")
+	} else if validateRewriteContact == false {
+		messageHTML(w, validationMessageRewriteContact, "warning")
+	} else if validateRTPSymmetric == false {
+		messageHTML(w, validationMessageRTPSymmetric, "warning")
+	} else if validateForceRPort == false {
+		messageHTML(w, validationMessageForceRPort, "warning")
+	} else if validateIPAddress == false {
+		messageHTML(w, validationMessageRestrictExt, "warning")
+	} else if validateAllowTransfer == false {
+		messageHTML(w, validationMessageAllowTransfer, "warning")
+	} else if validateCallerID == false {
+		messageHTML(w, validationMessageCallerID, "warning")
+	} else if validateCallerIDPrivacy == false {
+		messageHTML(w, validationMessageCallerIDPrivacy, "warning")
+	} else if validateContactUser == false {
+		messageHTML(w, validationMessageContactUser, "warning")
+	} else if validateFromUser == false {
+		messageHTML(w, validationMessageFromUser, "warning")
+	} else if validateFromDomain == false {
+		messageHTML(w, validationMessageFromDomain, "warning")
+	} else if validateStirShaken == false {
+		messageHTML(w, validationMessageStirShaken, "warning")
+	} else if validateStirShakenProfile == false {
+		messageHTML(w, validationMessageStirShakenProfile, "warning")
+	} else {
+
+		if userTypeID == "300" || userTypeID == "301" {
+			addExtSelectPBXID = userPBXID
+		}
+
+		extPBXID := addExtInputExt + "-" + addExtSelectPBXID
+
+		var callGroupPBXID string
+		if addExtInputCallGroup != "" {
+			callGroupPBXID = addExtInputCallGroup + "-" + addExtSelectPBXID
+		}
+
+		var callPickupPBXID string
+		if addExtInputCallPickup != "" {
+			callPickupPBXID = addExtInputCallPickup + "-" + addExtSelectPBXID
+		}
+
+		dbDetail.table = "view___sip_extension_detail"
+		dbDetail.column = "sip_username"
+		dbDetail.columnWhere = "sip_username"
+		dbDetail.columnWhereValue = extPBXID
+
+		checkExtExist := selectWhere(dbDetail)
+
+		if checkExtExist == extPBXID {
+			messageHTML(w, validationMessageExtAlreadyExist, "warning")
+		} else {
+
+			if userTypeID != "100" {
+				addExtSelectAllowTransfer = ""
+				addExtInputCallerID = ""
+				addExtSelectCallerIDPrivacy = ""
+				addExtInputContactUser = ""
+				addExtInputFromUser = ""
+				addExtInputFromDomain = ""
+				addExtSelectStirShaken = ""
+				addExtInputStirShakenProfile = ""
+			}
+
+			dbDetail.connection.Query(`INSERT 
+                                   INTO
+                                 ps_endpoints (
+                                   id,
+                                   aors,
+                                   auth,
+                                   disallow,
+                                   allow,
+                                   dtmf_mode,
+                                   named_call_group,
+                                   named_pickup_group,
+                                   media_encryption,
+                                   ice_support,
+                                   direct_media,
+                                   direct_media_method,
+                                   rewrite_contact,
+                                   rtp_symmetric,
+                                   force_rport,
+                                   allow_transfer,
+                                   callerid,
+                                   callerid_privacy,
+                                   contact_user,
+                                   from_user,
+                                   from_domain,
+                                   stir_shaken,
+                                   stir_shaken_profile,
+                                   pbx_id
+                                 )
+                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+				extPBXID,
+				extPBXID,
+				extPBXID,
+				"all",
+				addExtSelectCodecAllowed,
+				nullSQL(addExtSelectDTMFMode),
+				nullSQL(callGroupPBXID),
+				nullSQL(callPickupPBXID),
+				nullSQL(addExtSelectMediaEncryption),
+				nullSQL(addExtSelectICESupport),
+				nullSQL(addExtSelectDirectMedia),
+				nullSQL(addExtSelectDirectMediaMethod),
+				nullSQL(addExtSelectRewriteContact),
+				nullSQL(addExtSelectRTPSymmetric),
+				nullSQL(addExtSelectForceRPort),
+				nullSQL(addExtSelectAllowTransfer),
+				nullSQL(addExtInputCallerID),
+				nullSQL(addExtSelectCallerIDPrivacy),
+				nullSQL(addExtInputContactUser),
+				nullSQL(addExtInputFromUser),
+				nullSQL(addExtInputFromDomain),
+				nullSQL(addExtSelectStirShaken),
+				nullSQL(addExtInputStirShakenProfile),
+				addExtSelectPBXID)
+
+			dbDetail.connection.Query(`INSERT 
+                                   INTO
+                                 ps_aors (
+                                   id,
+                                   max_contacts,
+                                   pbx_id
+                                 )
+                                 VALUES(?, ?, ?);`,
+				extPBXID,
+				"2",
+				addExtSelectPBXID)
+
+			password := genPassword(20)
+
+			dbDetail.connection.Query(`INSERT 
+                                   INTO
+                                 ps_auths (
+                                   id,
+                                   auth_type,
+                                   username,
+                                   password,
+                                   pbx_id
+                                 )
+                                 VALUES(?, ?, ?, ?, ?);`,
+				extPBXID,
+				"userpass",
+				extPBXID,
+				password,
+				addExtSelectPBXID)
+
+			checkExtCreated := selectWhere(dbDetail)
+
+			if checkExtCreated == extPBXID {
+				messageHTML(w, validationMessageExtCreated, "success")
+			} else {
+				messageHTML(w, validationMessageExtNotCreated, "success")
+			}
+
+		}
+
+	}
+
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -5674,7 +6271,7 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -5711,7 +6308,7 @@ func main() {
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
@@ -5743,7 +6340,7 @@ func main() {
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
@@ -5767,7 +6364,7 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
@@ -5791,7 +6388,7 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/sip-extension", headerCSS: "header-sip-extension", buttonCSS: "button-sip-extension"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -6017,7 +6614,11 @@ func main() {
 	})
 
 	// SIP Extension Page
-	go http.HandleFunc("/sip-extension", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/extension", func(w http.ResponseWriter, r *http.Request) {
+
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
@@ -6031,7 +6632,7 @@ func main() {
 		fmt.Fprintf(w, startHTML)
 
 		// Wallpaper
-		wallpaper(w, "wallpaper-sip-extension")
+		wallpaper(w, "wallpaper-ext")
 
 		// Code to call the emailHeaderHTTP function
 		email := emailHeaderHTTP(r)
@@ -6048,22 +6649,32 @@ func main() {
 		userPBXName := userAccountData(dbDetail, "pbx_name")
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-sip-extension", "button-sip-extension")
+			errorBox(w, "email_error", "header-ext", "button-ext")
 		} else {
 			if userTypeID == "100" {
-				header(w, "YAP Admin Account<br>All SIP Extensions on the Server", "header-sip-extension", extraButtonName, extraButtonURL)
-				sipExtensionList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
-				footer(w, "header-sip-extension", "button-sip-extension")
+				header(w, "YAP Admin Account<br>All SIP Extensions on the Server", "header-ext", extraButtonName, extraButtonURL)
+				extList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
+				fmt.Fprintf(w, "<br>")
+				extAdd(w, r, dbDetail, userTypeID, userCustomerID, userPBXID)
+				footer(w, "header-ext", "button-ext")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All SIP Extensions for the Customer", "header-sip-extension", extraButtonName, extraButtonURL)
-				sipExtensionList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
-				footer(w, "header-sip-extension", "button-sip-extension")
-			} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
-				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-sip-extension", extraButtonName, extraButtonURL)
-				sipExtensionList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
-				footer(w, "header-sip-extension", "button-sip-extension")
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All SIP Extensions for the Customer", "header-ext", extraButtonName, extraButtonURL)
+				extList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
+				fmt.Fprintf(w, "<br>")
+				extAdd(w, r, dbDetail, userTypeID, userCustomerID, userPBXID)
+				footer(w, "header-ext", "button-ext")
+			} else if userTypeID == "300" || userTypeID == "301" {
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
+				extList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
+				fmt.Fprintf(w, "<br>")
+				extAdd(w, r, dbDetail, userTypeID, userCustomerID, userPBXID)
+				footer(w, "header-ext", "button-ext")
+			} else if userTypeID == "302" {
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
+				extList(w, dbDetail, userTypeID, userCustomerID, userPBXID)
+				footer(w, "header-ext", "button-ext")
 			} else {
-				errorBox(w, "account_type_error", "header-sip-extension", "button-sip-extension")
+				errorBox(w, "account_type_error", "header-ext", "button-ext")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
