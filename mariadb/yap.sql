@@ -176,9 +176,6 @@ ENGINE = InnoDB;
 -- Add pbx_id and and endpoint_type column to Asterisk tables
 
 ALTER TABLE `ps_endpoints`
-ADD COLUMN `endpoint_type` ENUM ('sip_extension', 'webrtc_extension') NOT NULL;
-
-ALTER TABLE `ps_endpoints`
 ADD COLUMN `pbx_id` BIGINT UNSIGNED NOT NULL;
 
 ALTER TABLE `ps_aors`
@@ -588,8 +585,7 @@ ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 INNER JOIN `customer`
 ON `pbx`.`customer_id` = `customer`.`id`
 LEFT JOIN `ps_contacts`
-on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
-WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
+on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`;
 
 CREATE VIEW `view___sip_extension_registered` AS
 SELECT
@@ -610,8 +606,7 @@ ON `ps_endpoints`.`pbx_id` = `pbx`.`id`
 INNER JOIN `ps_contacts`
 on `ps_endpoints`.`id` = `ps_contacts`.`endpoint`
 INNER JOIN `customer`
-ON `pbx`.`customer_id` = `customer`.`id`
-WHERE `ps_endpoints`.`endpoint_type` = 'sip_extension';
+ON `pbx`.`customer_id` = `customer`.`id`;
 
 CREATE VIEW `view___invoice_item` AS
 SELECT DISTINCT
