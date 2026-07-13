@@ -350,7 +350,6 @@ func exportCSVJS(w http.ResponseWriter, parameter jsFunctionParameter) {
 //----------------------------------------------------------------------------------------------------
 
 // Database functions
-
 type databaseFunctionParameter struct {
 	connection          *sql.DB
 	database            string
@@ -361,6 +360,19 @@ type databaseFunctionParameter struct {
 	columnWhereAnd      string
 	columnWhereValueAnd string
 	countMinusOne       bool
+}
+
+type invoicePBXExtFunctionParameter struct {
+	customerID        string
+	goodService       string
+	tag               string
+	sellPrice         string
+	salesTaxRate      string
+	salesTaxStatus    string
+	billItemOnce      string
+	itemOnHold        string
+	contractLength    string
+	contractStartDate string
 }
 
 // Function to insert NULL value into database
@@ -729,6 +741,39 @@ func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
 		singleColumnList = append(singleColumnList, singleColumn)
 	}
 	return singleColumnList
+}
+
+// Function to add ext and PBX setup/rental/cease charges
+func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoicePBXExtFunctionParameter) {
+	// Convert string values to a float64 to use the math package to round to the nearest two decimal places
+	sellPriceFloat64 := stringToFloat64(invoicePBXExt.sellPrice)
+
+	dbDetail.connection.Query(`INSERT 
+                                             INTO
+                                           invoice_item (
+                                             customer_id,
+                                             good_service_name,
+                                             tag,
+                                             sell_price,
+                                             sales_tax_rate,
+                                             sales_tax_status,
+                                             bill_item_once,
+                                             item_on_hold,
+                                             contract_length,
+                                             contract_start_date
+                                           )
+                                           VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+		invoicePBXExt.customerID,
+		invoicePBXExt.goodService,
+		nullSQL(invoicePBXExt.tag),
+		math.Round(sellPriceFloat64*100)/100,
+		invoicePBXExt.salesTaxRate,
+		invoicePBXExt.salesTaxStatus,
+		invoicePBXExt.billItemOnce,
+		invoicePBXExt.itemOnHold,
+		nullSQL(invoicePBXExt.contractLength),
+		nullSQL(invoicePBXExt.contractStartDate),
+	)
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -5608,6 +5653,71 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 			if checkExtCreated == extPBXID {
 				messageHTML(w, validationMessageExtCreated, "success")
+
+				// If userTypeID is 100 then get userCustomerID based on the  addExtSelectPBXID
+				if userTypeID == "100" {
+					dbDetail.table = "view___pbx_detail"
+					dbDetail.column = "customer_id"
+					dbDetail.columnWhere = "pbx_id"
+					dbDetail.columnWhereValue = addExtSelectPBXID
+
+					userCustomerID = selectWhere(dbDetail)
+				}
+
+				dbDetail.table = "view___customer_detail"
+				dbDetail.columnWhere = "customer_id"
+				dbDetail.columnWhereValue = userCustomerID
+
+				// Get ext setup price
+				dbDetail.column = "customer_ext_setup_price"
+				setupPrice := selectWhere(dbDetail)
+
+				// Get ext sales tax rate
+				dbDetail.column = "customer_ext_sales_tax_rate"
+				salesTaxRate := selectWhere(dbDetail)
+
+				// Get ext sales tax status
+				dbDetail.column = "customer_ext_sales_tax_status"
+				salesTaxStatus := selectWhere(dbDetail)
+
+				// Get ext contract length
+				dbDetail.column = "customer_ext_contract_length"
+				contractLength := selectWhere(dbDetail)
+
+				var invoicePBXExt invoicePBXExtFunctionParameter
+
+				invoicePBXExt.customerID = userCustomerID
+				invoicePBXExt.goodService = "YAP Extension Setup"
+				invoicePBXExt.tag = extPBXID
+				invoicePBXExt.sellPrice = setupPrice
+				invoicePBXExt.salesTaxRate = salesTaxRate
+				invoicePBXExt.salesTaxStatus = salesTaxStatus
+				invoicePBXExt.billItemOnce = "yes"
+				invoicePBXExt.itemOnHold = "no"
+				invoicePBXExt.contractLength = contractLength
+				invoicePBXExt.contractStartDate = ""
+
+				// Add extension setup to invoice
+				invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+				// Get ext setup price
+				dbDetail.column = "customer_ext_rental_price"
+				rentalPrice := selectWhere(dbDetail)
+
+				invoicePBXExt.customerID = userCustomerID
+				invoicePBXExt.goodService = "YAP Extension Rental"
+				invoicePBXExt.tag = extPBXID
+				invoicePBXExt.sellPrice = rentalPrice
+				invoicePBXExt.salesTaxRate = salesTaxRate
+				invoicePBXExt.salesTaxStatus = salesTaxStatus
+				invoicePBXExt.billItemOnce = "no"
+				invoicePBXExt.itemOnHold = "yes"
+				invoicePBXExt.contractLength = contractLength
+				invoicePBXExt.contractStartDate = ""
+
+				// Add extension rental to invoice
+				invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
 			} else {
 				messageHTML(w, validationMessageExtNotCreated, "success")
 			}
@@ -6063,6 +6173,8 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		messageHTML(w, validationMessageCustomer, "warning")
 	} else if validateGoodService == false || addInvoiceSelectGoodService == "" {
 		messageHTML(w, validationMessageServiceProduct, "warning")
+	} else if addInvoiceSelectGoodService == "YAP PBX Setup" || addInvoiceSelectGoodService == "YAP PBX Rental" || addInvoiceSelectGoodService == "YAP PBX Cease" || addInvoiceSelectGoodService == "YAP Extension Setup" || addInvoiceSelectGoodService == "YAP Extension Rental" || addInvoiceSelectGoodService == "YAP Extension Cease" {
+		messageHTML(w, "YAP PBX setup/rental/cease and YAP extension setup/rental/cease invoicing options cannot be created manually", "warning")
 	} else if validateTag == false {
 		messageHTML(w, validationMessageServiceProductTag, "warning")
 	} else if validateSellPrice == false || addInvoiceInputSellPrice == "" {
