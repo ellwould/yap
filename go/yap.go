@@ -407,7 +407,7 @@ func selectWhere(dbSelectWhere databaseFunctionParameter) string {
 	return selectWhere
 }
 
-func totalTableCount(w http.ResponseWriter, dbTotalTableCount databaseFunctionParameter) string {
+func totalTableCount(dbTotalTableCount databaseFunctionParameter) string {
 	if dbTotalTableCount.countMinusOne == true {
 		var countMinusOne string
 		countMinusOneQuery, err := dbTotalTableCount.connection.Query(`SELECT
@@ -445,7 +445,7 @@ func totalTableCount(w http.ResponseWriter, dbTotalTableCount databaseFunctionPa
 	}
 }
 
-func totalTableCountWhere(w http.ResponseWriter, dbTotalTableCountWhere databaseFunctionParameter) string {
+func totalTableCountWhere(dbTotalTableCountWhere databaseFunctionParameter) string {
 	if dbTotalTableCountWhere.countMinusOne == true {
 		var countMinusOne string
 		countMinusOneQuery, err := dbTotalTableCountWhere.connection.Query(`SELECT
@@ -489,7 +489,7 @@ func totalTableCountWhere(w http.ResponseWriter, dbTotalTableCountWhere database
 	}
 }
 
-func totalTableCountWhereAnd(w http.ResponseWriter, dbTotalTableCountWhereAnd databaseFunctionParameter) string {
+func totalTableCountWhereAnd(dbTotalTableCountWhereAnd databaseFunctionParameter) string {
 	var count string
 	countQuery, err := dbTotalTableCountWhereAnd.connection.Query(`SELECT
 								       COUNT(*)
@@ -983,8 +983,8 @@ const validationMessageCityTownVillage string = "City/town/village" + validation
 const validationMessageCountyStateRegion string = "County/state/region" + validationMessageAlphaNumEmpty
 const validationMessagePostcodeZipCode string = "Postcode zip code" + validationMessageAlphaNumEmpty
 const validationMessageCountry string = "Country" + validationMessageAlphaNumEmpty
-const validationMessageSiteEmail string = "A customer site email" + validationMessageEmail
-const validationMessageSitePhoneNumber string = "A customer site phone number" + validationMessagePhoneNumber
+const validationMessageCustomerSiteEmail string = "A customer site email" + validationMessageEmail
+const validationMessageCustomerSitePhoneNumber string = "A customer site phone number" + validationMessagePhoneNumber
 const validationMessageInvoiceEmail string = "A customer invoice email" + validationMessageEmail
 const validationMessageInvoicePhoneNumber string = "A customer invoice phone number" + validationMessagePhoneNumber
 
@@ -1008,6 +1008,9 @@ const validationMessagePBXNotCreated string = "PBX" + validationMessageNotCreate
 const validationMessagePBXColumn string = validationMessageInvalidOption + "PBX column"
 const validationMessagePBXDeleted string = "PBX" + validationMessageDeleted
 const validationMessagePBXNotDeleted string = "PBX" + validationMessageNotDeleted
+const validationMessagePBXSiteEmail string = "A PBX site email" + validationMessageEmail
+const validationMessagePBXSitePhoneNumber string = "A PBX site phone number" + validationMessagePhoneNumber
+const validationMessagePBXMaxPBX string = "Max amount of PBXs allowed for the customer"
 
 // Ext page specific HTML messages
 const validationMessageExt string = "ext" + validationMessageAlphaNum
@@ -1037,6 +1040,7 @@ const validationMessageStirShakenProfile string = "Stir/shaken profile" + valida
 const validationMessageExtAlreadyExist string = "Ext" + validationMessageAlreadyExist
 const validationMessageExtCreated string = "Ext" + validationMessageCreated
 const validationMessageExtNotCreated string = "Ext" + validationMessageNotCreated
+const validationMessageExtMaxExt string = "Max amount of extensions allowed for the PBX"
 
 // invoice page specific HTML messages
 const validationMessageServiceProduct string = validationMessageInvalidOption + "service/product"
@@ -1174,13 +1178,13 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCount.table = "view___customer_detail"
 	dbTotalTableCount.countMinusOne = true
-	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCount(dbTotalTableCount)+"</td>")
 	dbTotalTableCount.table = "view___pbx_detail"
 	dbTotalTableCount.countMinusOne = true
-	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCount(dbTotalTableCount)+"</td>")
 	dbTotalTableCount.table = "view___sip_extension_detail"
 	dbTotalTableCount.countMinusOne = false
-	fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTotalTableCount)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCount(dbTotalTableCount)+"</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 	fmt.Fprintf(w, "<br>")
@@ -1196,19 +1200,19 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCountWhere.columnWhereValue = "100"
-	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "200"
-	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "201"
-	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "300"
-	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "301"
-	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "302"
-	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 	dbTotalTableCountWhere.columnWhereValue = "400"
-	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+	fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "</table>")
 
@@ -1309,7 +1313,7 @@ func mainMenuCustomerAccount(w http.ResponseWriter, dbCustomerAccount databaseFu
 		dbTotalTableCountWhere.table = "pbx"
 		dbTotalTableCountWhere.columnWhere = "id"
 		dbTotalTableCountWhere.columnWhereValue = pbxID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
@@ -1410,7 +1414,7 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 		dbTotalTableCountWhere.table = "view___sip_extension_detail"
 		dbTotalTableCountWhere.columnWhere = "pbx_id"
 		dbTotalTableCountWhere.columnWhereValue = pbxID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "<br>")
@@ -1661,47 +1665,47 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "  <tr>")
 			if userTypeID == "100" {
 				dbTotalTableCountWhere.columnWhereValue = "100"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "200"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "201"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "300"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "301"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "400"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTotalTableCountWhere)+"</td>")
 			} else if userTypeID == "200" || userTypeID == "201" {
 				dbTotalTableCountWhere.columnWhereAnd = "customer_id"
 				dbTotalTableCountWhere.columnWhereValueAnd = customerID
 				if userTypeID == "200" {
 					dbTotalTableCountWhere.columnWhereValue = "200"
-					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 					dbTotalTableCountWhere.columnWhereValue = "201"
-					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				}
 				dbTotalTableCountWhere.columnWhereValue = "300"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "301"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				if userTypeID == "200" {
 					dbTotalTableCountWhere.columnWhereValue = "400"
-					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				}
 			} else if userTypeID == "300" {
 				dbTotalTableCountWhere.columnWhereAnd = "pbx_id"
 				dbTotalTableCountWhere.columnWhereValueAnd = pbxID
 				dbTotalTableCountWhere.columnWhereValue = "300"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "301"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				dbTotalTableCountWhere.columnWhereValue = "302"
-				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(w, dbTotalTableCountWhere)+"</td>")
+				fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 			}
 			fmt.Fprintf(w, "  </tr>")
 			fmt.Fprintf(w, "</table>")
@@ -2625,7 +2629,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, use
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		dbTableCountUserCustomer.countMinusOne = true
-		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserCustomer)+"</td>")
+		fmt.Fprintf(w, "          <td>"+totalTableCount(dbTableCountUserCustomer)+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
@@ -3396,9 +3400,9 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	} else if validateSiteCountry == false {
 		messageHTML(w, validationMessageCountry, "warning")
 	} else if validateSiteContactEmail == false {
-		messageHTML(w, validationMessageSiteEmail, "warning")
+		messageHTML(w, validationMessageCustomerSiteEmail, "warning")
 	} else if validateSiteContactNumber == false {
-		messageHTML(w, validationMessageSitePhoneNumber, "warning")
+		messageHTML(w, validationMessageCustomerSitePhoneNumber, "warning")
 	} else if validateInvoiceAddressLine1 == false {
 		messageHTML(w, validationMessageAddresslineOne, "warning")
 	} else if validateInvoiceAddressLine2 == false {
@@ -3995,11 +3999,11 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		fmt.Fprintf(w, "        <tr>")
 		if userTypeID == "100" {
 			dbTableCountUserPBX.countMinusOne = true
-			fmt.Fprintf(w, "    <td>"+totalTableCount(w, dbTableCountUserPBX)+"</td>")
+			fmt.Fprintf(w, "    <td>"+totalTableCount(dbTableCountUserPBX)+"</td>")
 		} else if userTypeID == "200" || userTypeID == "201" {
 			dbTableCountUserPBX.columnWhere = "customer_id"
 			dbTableCountUserPBX.columnWhereValue = userCustomerID
-			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserPBX)+"</td>")
+			fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTableCountUserPBX)+"</td>")
 		}
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -4409,9 +4413,9 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	fmt.Fprintf(w, "          <td>")
 	if userTypeID == "100" {
 		customerIDNameList, _ := customerSlice(dbDetail)
-		selectDoubleHTML(w, "add_pbx_select_customer_id", "Customer<br>", customerIDNameList)
-	} else if userTypeID == "200" || userTypeID == "201" {
-		inputReadOnlyHTML(w, "add_pbx_input_customer_id", "Customer ID is", userCustomerID)
+		selectDoubleHTML(w, "add_pbx_select_customer_id", "Customer", customerIDNameList)
+	} else {
+		// Do Nothing
 	}
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
@@ -4419,13 +4423,17 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	extLimitList := extLimitSlice()
-	selectSingleHTML(w, "add_pbx_select_ext_limit", "Ext Limt (Cannot Be Empty)", extLimitList)
+	if userTypeID == "100" {
+		selectSingleHTML(w, "add_pbx_select_ext_limit", "Ext Limt (Cannot Be Empty)", extLimitList)
+	} else {
+		inputReadOnlyHTML(w, "add_pbx_input_default_ext_limit", "Default Ext Limit for PBX", defaultExtLimit)
+	}
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "          <td>")
 	if userTypeID == "100" {
-		inputReadOnlyHTML(w, "add_pbx_input_default_ext_limit", "Ext Limit When Customer is<br>Creating a New PBX", defaultExtLimit)
-	} else if userTypeID == "200" || userTypeID == "201" {
 		inputReadOnlyHTML(w, "add_pbx_input_default_ext_limit", "Default Ext Limit for PBX", defaultExtLimit)
+	} else {
+		// Do Nothing
 	}
 	fmt.Fprintf(w, "          </td>")
 	fmt.Fprintf(w, "        </tr>")
@@ -4485,6 +4493,10 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	addPBXInputSiteContactEmail := r.FormValue("add_pbx_input_site_contact_email")
 	addPBXInputSiteContactNumber := r.FormValue("add_pbx_input_site_contact_number")
 
+	if userTypeID != "100" {
+		addPBXSelectExtLimit = defaultExtLimit
+	}
+
 	// Check customer ID is contained in the slice
 	_, customerIDList := customerSlice(dbDetail)
 	customerIDList = append(customerIDList, "")
@@ -4510,10 +4522,34 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	// Validate Site contact phone number
 	validateSiteContactNumber := validateInput(addPBXInputSiteContactNumber, "phoneNumber")
 
+	if userTypeID != "100" {
+		addPBXSelectCustomerID = userCustomerID
+	}
+
+	// Used to compare the max allowed PBXs to the number of PBXs that already exist
+	var pbxMaxLimit string
+	dbDetail.table = "view___customer_detail"
+	dbDetail.column = "customer_pbx_limit"
+	dbDetail.columnWhere = "customer_id"
+	dbDetail.columnWhereValue = addPBXSelectCustomerID
+	pbxMaxLimit = selectWhere(dbDetail)
+
+	var pbxCount string
+	dbDetail.table = "view___pbx_detail"
+	dbDetail.column = "customer_id"
+	dbDetail.columnWhere = "customer_id"
+	dbDetail.countMinusOne = false
+	dbDetail.columnWhereValue = addPBXSelectCustomerID
+	pbxCount = totalTableCountWhere(dbDetail)
+
 	if addPBXSelectCustomerID == "" && addPBXInputPBXName == "" && addPBXSelectExtLimit == "" {
+		// Do Nothing
+	} else if userTypeID != "100" && addPBXInputPBXName == "" {
 		// Do Nothing
 	} else if validateCustomerID == false {
 		messageHTML(w, validationMessageCustomer, "warning")
+	} else if pbxCount >= pbxMaxLimit {
+		messageHTML(w, validationMessagePBXMaxPBX, "warning")
 	} else if validatePBXName == false {
 		messageHTML(w, validationMessagePBXName, "warning")
 	} else if validateExtLimit == false || addPBXSelectExtLimit == "" {
@@ -4531,15 +4567,11 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	} else if validateSiteCountry == false {
 		messageHTML(w, validationMessageCountry, "warning")
 	} else if validateSiteContactEmail == false {
-		messageHTML(w, validationMessageSiteEmail, "warning")
+		messageHTML(w, validationMessagePBXSiteEmail, "warning")
 	} else if validateSiteContactNumber == false {
-		messageHTML(w, validationMessageSitePhoneNumber, "warning")
+		messageHTML(w, validationMessagePBXSitePhoneNumber, "warning")
 	} else {
 		pbxID := genID()
-
-		if userTypeID != "100" {
-			addPBXSelectCustomerID = userCustomerID
-		}
 
 		dbDetail.connection.Query(`INSERT 
 					     INTO
@@ -4611,7 +4643,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 			var invoicePBXExt invoicePBXExtFunctionParameter
 
-			invoicePBXExt.customerID = userCustomerID
+			invoicePBXExt.customerID = addPBXSelectCustomerID
 			invoicePBXExt.goodService = "YAP PBX Setup"
 			invoicePBXExt.tag = pbxID
 			invoicePBXExt.sellPrice = setupPrice
@@ -4629,7 +4661,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			dbDetail.column = "customer_pbx_rental_price"
 			rentalPrice := selectWhere(dbDetail)
 
-			invoicePBXExt.customerID = userCustomerID
+			invoicePBXExt.customerID = addPBXSelectCustomerID
 			invoicePBXExt.goodService = "YAP PBX Rental"
 			invoicePBXExt.tag = pbxID
 			invoicePBXExt.sellPrice = rentalPrice
@@ -4974,7 +5006,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 	fmt.Fprintf(w, "        <tr>")
 	if userTypeID == "100" {
 		dbTableCountUserExt.countMinusOne = false
-		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountUserExt)+"</td>")
+		fmt.Fprintf(w, "          <td>"+totalTableCount(dbTableCountUserExt)+"</td>")
 	} else if userTypeID == "200" || userTypeID == "201" {
 		var dbTableCountUserExtWhere databaseFunctionParameter
 		dbTableCountUserExtWhere.connection = dbDetail.connection
@@ -4982,7 +5014,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		dbTableCountUserExtWhere.table = "view___sip_extension_detail"
 		dbTableCountUserExtWhere.columnWhere = "customer_id"
 		dbTableCountUserExtWhere.columnWhereValue = userCustomerID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserExtWhere)+"</td>")
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTableCountUserExtWhere)+"</td>")
 	} else if userTypeID == "300" || userTypeID == "301" || userTypeID == "302" {
 		var dbTableCountUserExtWhere databaseFunctionParameter
 		dbTableCountUserExtWhere.connection = dbDetail.connection
@@ -4990,7 +5022,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, userType
 		dbTableCountUserExtWhere.table = "view___sip_extension_detail"
 		dbTableCountUserExtWhere.columnWhere = "pbx_id"
 		dbTableCountUserExtWhere.columnWhereValue = userPBXID
-		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(w, dbTableCountUserExtWhere)+"</td>")
+		fmt.Fprintf(w, "    <td>"+totalTableCountWhere(dbTableCountUserExtWhere)+"</td>")
 	}
 	fmt.Fprintf(w, "        </tr>")
 	fmt.Fprintf(w, "      </table>")
@@ -5623,6 +5655,26 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	// Validate Stir/Shaken Profile
 	validateStirShakenProfile := validateInput(addExtInputStirShakenProfile, "alphaNumEmpty")
 
+	if userTypeID == "300" || userTypeID == "301" {
+		addExtSelectPBXID = userPBXID
+	}
+
+	// Used to compare the max allowed extensions to the number of extensions that already exist
+	var extMaxLimit string
+	dbDetail.table = "view___pbx_detail"
+	dbDetail.column = "pbx_sip_extension_limit"
+	dbDetail.columnWhere = "pbx_id"
+	dbDetail.columnWhereValue = addExtSelectPBXID
+	extMaxLimit = selectWhere(dbDetail)
+
+	var extCount string
+	dbDetail.table = "view___sip_extension_detail"
+	dbDetail.column = "sip_username"
+	dbDetail.columnWhere = "pbx_id"
+	dbDetail.countMinusOne = false
+	dbDetail.columnWhereValue = addExtSelectPBXID
+	extCount = totalTableCountWhere(dbDetail)
+
 	if addExtSelectPBXID == "" && addExtInputExt == "" && addExtSelectCodecAllowed == "" {
 		// Do Nothing
 	} else if userTypeID == "100" && validatePBXID == false {
@@ -5631,6 +5683,8 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 		messageHTML(w, validationMessagePBX, "warning")
 	} else if userTypeID == "201" && validatePBXWhereID == false {
 		messageHTML(w, validationMessagePBX, "warning")
+	} else if extCount >= extMaxLimit {
+		messageHTML(w, validationMessageExtMaxExt, "warning")
 	} else if validateExt == false {
 		messageHTML(w, validationMessageExt, "warning")
 	} else if validateCodecAllowed == false || addExtSelectCodecAllowed == "" {
@@ -5674,10 +5728,6 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	} else if validateStirShakenProfile == false {
 		messageHTML(w, validationMessageStirShakenProfile, "warning")
 	} else {
-
-		if userTypeID == "300" || userTypeID == "301" {
-			addExtSelectPBXID = userPBXID
-		}
 
 		extPBXID := addExtInputExt + "-" + addExtSelectPBXID
 
@@ -5919,7 +5969,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, user
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		dbTableCountInvoice.countMinusOne = false
-		fmt.Fprintf(w, "          <td>"+totalTableCount(w, dbTableCountInvoice)+"</td>")
+		fmt.Fprintf(w, "          <td>"+totalTableCount(dbTableCountInvoice)+"</td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
