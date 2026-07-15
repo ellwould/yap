@@ -1939,8 +1939,8 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						     			 pbx_name,
 						     			 pbx_id						     
 								       FROM
-								         yap.view___account_detail`+whereClause, userCustomerID, userPBXID)
-
+								         yap.view___account_detail
+								       `+whereClause, userCustomerID, userPBXID)
 		// Error
 		if err != nil {
 			panic(err)
