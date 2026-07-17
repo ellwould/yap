@@ -380,6 +380,7 @@ type generalFunctionParameter struct {
 // InvoicePBXExt struct
 type invoicePBXExtFunctionParameter struct {
 	customerID        string
+	pbxID             string
 	goodService       string
 	tag               string
 	sellPrice         string
@@ -796,6 +797,7 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
                                              INTO
                                            invoice_item (
                                              customer_id,
+                                             pbx_id,
                                              good_service_name,
                                              tag,
                                              sell_price,
@@ -806,8 +808,9 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
                                              contract_length,
                                              contract_start_date
                                            )
-                                           VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+                                           VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
 		invoicePBXExt.customerID,
+		invoicePBXExt.pbxID,
 		invoicePBXExt.goodService,
 		nullSQL(invoicePBXExt.tag),
 		math.Round(sellPriceFloat64*100)/100,
@@ -3667,7 +3670,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
-		fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
 		fmt.Fprintf(w, "      <b>Name:</b> text<br>")
 		fmt.Fprintf(w, "      <b>UK Based:</b> yes, no<br>")
 		fmt.Fprintf(w, "      <b>Resell Minutes:</b> yes, no<br>")
@@ -3802,7 +3805,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
-		fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
 		fmt.Fprintf(w, "      <b>Site Address Line One:</b> text<br>")
 		fmt.Fprintf(w, "      <b>Site Address Line Two:</b> text<br>")
 		fmt.Fprintf(w, "      <b>Site City Town Village:</b> text<br>")
@@ -3887,7 +3890,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
-		fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
 		fmt.Fprintf(w, "      <b>Invoice Address Line One:</b> text<br>")
 		fmt.Fprintf(w, "      <b>Invoice Address Line Two:</b> text<br>")
 		fmt.Fprintf(w, "      <b>Invoice City Town Village:</b> text<br>")
@@ -4759,6 +4762,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					invoicePBXExt.customerID = addPBXSelectCustomerID
 					invoicePBXExt.goodService = "YAP PBX Setup"
 					invoicePBXExt.tag = pbxID
+					invoicePBXExt.pbxID = pbxID
 					invoicePBXExt.sellPrice = setupPrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
 					invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -4777,6 +4781,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					invoicePBXExt.customerID = addPBXSelectCustomerID
 					invoicePBXExt.goodService = "YAP PBX Rental"
 					invoicePBXExt.tag = pbxID
+					invoicePBXExt.pbxID = pbxID
 					invoicePBXExt.sellPrice = rentalPrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
 					invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -4789,7 +4794,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 				} else {
-					messageHTML(w, validationMessagePBXNotCreated, "success")
+					messageHTML(w, validationMessagePBXNotCreated, "warning")
 				}
 			}
 		}
@@ -4823,7 +4828,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
-		fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
 		fmt.Fprintf(w, "      <b>PBX Name:</b> text<br>")
 		if genDetail.userTypeID == "100" {
 			fmt.Fprintf(w, "      <b>Ext Limit:</b> 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000<br>")
@@ -4924,7 +4929,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
-		fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
 		fmt.Fprintf(w, "      <b>Site Address Line One:</b> text<br>")
 		fmt.Fprintf(w, "      <b>Site Address Line Two:</b> text<br>")
 		fmt.Fprintf(w, "      <b>Site City Town Village:</b> text<br>")
@@ -5065,9 +5070,18 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 		_, pbxWhereIDList := pbxWhereSlice(dbDetail)
 		validatePBXWhereID := slices.Contains(pbxWhereIDList, deletePBXSelectPBXID)
 
+		// Check PBX Exist
 		dbDetail.table = "view___pbx_detail"
 		dbDetail.column = "pbx_id"
 		dbDetail.columnWhere = "pbx_id"
+
+		// Variables for adding cease charge to invoice; they are safe because they are not the input from the user
+		var invoicePBXExt invoicePBXExtFunctionParameter
+		invoicePBXExt.goodService = "YAP PBX Cease"
+		invoicePBXExt.billItemOnce = "yes"
+		invoicePBXExt.itemOnHold = "no"
+		invoicePBXExt.contractLength = ""
+		invoicePBXExt.contractStartDate = ""
 
 		if deletePBXSelectPBXID == "" && deletePBXSelectConfirm == "" {
 			// Do Nothing
@@ -5089,13 +5103,97 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 			if checkPBXExist == "" {
 				messageHTML(w, validationMessagePBXDoesNotExist, "warning")
 			} else {
+				// Get customer ID based on the PBX ID
+				dbDetail.column = "customer_id"
+				userCustomerID := selectWhere(dbDetail)
+
+				// Check how many exts the PBX has
+				dbDetail.table = "view___sip_extension_detail"
+				dbDetail.countMinusOne = false
+				dbDetail.columnWhere = "pbx_id"
+				dbDetail.columnWhereValue = deletePBXSelectPBXID
+				extTotal := totalTableCountWhere(dbDetail)
 
 				dbDetail.connection.Query(`DELETE FROM pbx WHERE id = ?;`, deletePBXSelectPBXID)
 
+				// Check PBX deleted
+				dbDetail.column = "pbx_id"
 				checkPBXDeleted := selectWhere(dbDetail)
 
 				if checkPBXDeleted == "" {
 					messageHTML(w, validationMessagePBXDeleted, "success")
+
+					// Variables for customer table columns
+					dbDetail.table = "view___pbx_detail"
+					dbDetail.table = "view___customer_detail"
+					dbDetail.column = "pbx_id"
+					dbDetail.columnWhere = "customer_id"
+					dbDetail.columnWhereValue = userCustomerID
+
+					// Add cease charge for exts deleted
+					extTotalFloat64 := stringToFloat64(extTotal)
+
+					if extTotalFloat64 >= 1 {
+
+						// Get ext cease price
+						dbDetail.column = "customer_ext_cease_price"
+						extCeasePrice := selectWhere(dbDetail)
+
+						// Get ext sales tax rate
+						dbDetail.column = "customer_ext_sales_tax_rate"
+						salesTaxRate := selectWhere(dbDetail)
+
+						// Get ext sales tax status
+						dbDetail.column = "customer_ext_sales_tax_status"
+						salesTaxStatus := selectWhere(dbDetail)
+
+						invoicePBXExt.goodService = "YAP Extension Cease"
+						invoicePBXExt.customerID = userCustomerID
+						invoicePBXExt.pbxID = deletePBXSelectPBXID
+						invoicePBXExt.tag = "Ext Cease X" + extTotal + ": " + deletePBXSelectPBXID
+						extCeasePriceFloat64 := stringToFloat64(extCeasePrice)
+						extTotalExtCeasePrice := extTotalFloat64 * extCeasePriceFloat64
+
+						invoicePBXExt.sellPrice = strconv.FormatFloat(extTotalExtCeasePrice, 'f', -1, 64)
+
+						invoicePBXExt.salesTaxRate = salesTaxRate
+						invoicePBXExt.salesTaxStatus = salesTaxStatus
+
+						// Add PBX cease to invoice
+						invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+						// Delete PBX rental record from invoice_item table
+						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP Extension Rental")
+
+					}
+
+					// Get PBX cease price
+					dbDetail.column = "customer_pbx_cease_price"
+					pbxCeasePrice := selectWhere(dbDetail)
+
+					// Get PBX sales tax rate
+					dbDetail.column = "customer_pbx_sales_tax_rate"
+					salesTaxRate := selectWhere(dbDetail)
+
+					// Get PBX sales tax status
+					dbDetail.column = "customer_pbx_sales_tax_status"
+					salesTaxStatus := selectWhere(dbDetail)
+
+					// These variables have to be here because they need validation first!
+					invoicePBXExt.goodService = "YAP PBX Cease"
+					invoicePBXExt.customerID = userCustomerID
+					invoicePBXExt.pbxID = deletePBXSelectPBXID
+					invoicePBXExt.tag = deletePBXSelectPBXID
+					invoicePBXExt.sellPrice = pbxCeasePrice
+					invoicePBXExt.salesTaxRate = salesTaxRate
+					invoicePBXExt.salesTaxStatus = salesTaxStatus
+
+					// Add PBX cease to invoice
+					invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+					// Delete PBX rental record from invoice_item table
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP PBX Rental")
+
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
 				}
@@ -5109,13 +5207,93 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 			if checkPBXExist == "" {
 				messageHTML(w, validationMessagePBXDoesNotExist, "warning")
 			} else {
+				// Check how many exts the PBX has
+				dbDetail.table = "view___sip_extension_detail"
+				dbDetail.countMinusOne = false
+				dbDetail.columnWhere = "pbx_id"
+				dbDetail.columnWhereValue = deletePBXSelectPBXID
+				extTotal := totalTableCountWhere(dbDetail)
 
 				dbDetail.connection.Query(`DELETE FROM pbx WHERE id = ?;`, deletePBXSelectPBXID)
 
+				// Check PBX deleted
+				dbDetail.column = "pbx_id"
 				checkPBXDeleted := selectWhere(dbDetail)
 
 				if checkPBXDeleted == "" {
 					messageHTML(w, validationMessagePBXDeleted, "success")
+
+					// Variables for customer table columns
+					dbDetail.table = "view___pbx_detail"
+					dbDetail.table = "view___customer_detail"
+					dbDetail.column = "pbx_id"
+					dbDetail.columnWhere = "customer_id"
+					dbDetail.columnWhereValue = genDetail.userCustomerID
+
+					// Add cease charge for exts deleted
+					extTotalFloat64 := stringToFloat64(extTotal)
+
+					if extTotalFloat64 >= 1 {
+
+						// Get ext cease price
+						dbDetail.column = "customer_ext_cease_price"
+						extCeasePrice := selectWhere(dbDetail)
+
+						// Get ext sales tax rate
+						dbDetail.column = "customer_ext_sales_tax_rate"
+						salesTaxRate := selectWhere(dbDetail)
+
+						// Get ext sales tax status
+						dbDetail.column = "customer_ext_sales_tax_status"
+						salesTaxStatus := selectWhere(dbDetail)
+
+						invoicePBXExt.goodService = "YAP Extension Cease"
+						invoicePBXExt.customerID = genDetail.userCustomerID
+						invoicePBXExt.pbxID = deletePBXSelectPBXID
+						invoicePBXExt.tag = "Ext Cease X" + extTotal + ": " + deletePBXSelectPBXID
+						extCeasePriceFloat64 := stringToFloat64(extCeasePrice)
+						extTotalExtCeasePrice := extTotalFloat64 * extCeasePriceFloat64
+
+						invoicePBXExt.sellPrice = strconv.FormatFloat(extTotalExtCeasePrice, 'f', -1, 64)
+
+						invoicePBXExt.salesTaxRate = salesTaxRate
+						invoicePBXExt.salesTaxStatus = salesTaxStatus
+
+						// Add PBX cease to invoice
+						invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+						// Delete PBX rental record from invoice_item table
+						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP Extension Rental")
+
+					}
+
+					// Get PBX cease price
+					dbDetail.column = "customer_pbx_cease_price"
+					pbxCeasePrice := selectWhere(dbDetail)
+
+					// Get PBX sales tax rate
+					dbDetail.column = "customer_pbx_sales_tax_rate"
+					salesTaxRate := selectWhere(dbDetail)
+
+					// Get PBX sales tax status
+					dbDetail.column = "customer_pbx_sales_tax_status"
+					salesTaxStatus := selectWhere(dbDetail)
+
+					// These variables have to be here because they need validation first!
+					invoicePBXExt.goodService = "YAP PBX Cease"
+					invoicePBXExt.customerID = genDetail.userCustomerID
+					invoicePBXExt.pbxID = deletePBXSelectPBXID
+					invoicePBXExt.tag = deletePBXSelectPBXID
+					invoicePBXExt.sellPrice = pbxCeasePrice
+					invoicePBXExt.salesTaxRate = salesTaxRate
+					invoicePBXExt.salesTaxStatus = salesTaxStatus
+
+					// Add PBX cease to invoice
+					invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+					// Delete PBX rental record from invoice_item table
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP PBX Rental")
+
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
 				}
@@ -6084,6 +6262,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						var invoicePBXExt invoicePBXExtFunctionParameter
 
 						invoicePBXExt.customerID = genDetail.userCustomerID
+						invoicePBXExt.pbxID = addExtSelectPBXID
 						invoicePBXExt.goodService = "YAP Extension Setup"
 						invoicePBXExt.tag = extPBXID
 						invoicePBXExt.sellPrice = setupPrice
@@ -6102,6 +6281,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						rentalPrice := selectWhere(dbDetail)
 
 						invoicePBXExt.customerID = genDetail.userCustomerID
+						invoicePBXExt.pbxID = addExtSelectPBXID
 						invoicePBXExt.goodService = "YAP Extension Rental"
 						invoicePBXExt.tag = extPBXID
 						invoicePBXExt.sellPrice = rentalPrice
@@ -6169,7 +6349,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
-		fmt.Fprintf(w, "      <b>Acceptable Values for Columns</b><br><br>")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
 		fmt.Fprintf(w, "      <b>Generate New Ext Password:</b> yes<br>")
 		fmt.Fprintf(w, "      <b>Codec:</b> alaw, ulaw<br>")
 		fmt.Fprintf(w, "      <b>Call Group:</b> text<br>")
@@ -6594,8 +6774,8 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 		fmt.Fprintf(w, "          <th>Item ID</th>")
 		fmt.Fprintf(w, "          <th>Name & Information</th>")
 		fmt.Fprintf(w, "          <th>Sale Price</th>")
+		fmt.Fprintf(w, "          <th>Details</th>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "          <th>Details</th>")
 			fmt.Fprintf(w, "          <th>Customer ID</th>")
 			fmt.Fprintf(w, "          <th>Customer Name</th>")
 		}
@@ -6672,17 +6852,13 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 			}
 
 			if genDetail.userTypeID != "100" && invoiceItemOnHold == "yes" {
+				// Do Nothing
 			} else {
 				fmt.Fprintf(w, "        <tr>")
 				fmt.Fprintf(w, "          <td>"+invoiceItemID+"</td>")
 				fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
 				fmt.Fprintf(w, "            "+goodServiceName+"<br><br>")
 				fmt.Fprintf(w, "            <b>Service/Product Tag:</b> "+invoiceItemTag+"<br>")
-				if invoiceItemContractLength == "" {
-					// Do Nothing
-				} else {
-					fmt.Fprintf(w, "          <b>Contract Start Date:</b> "+formatDate(invoiceItemContractStartDate)+"<br><b>Contract Length:</b> "+invoiceItemContractLength)
-				}
 				fmt.Fprintf(w, "          </td>")
 				fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
 				//If the YAP Admin is UK VAT registered and the service/product is taxable
@@ -6708,10 +6884,17 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 					fmt.Fprintf(w, "            "+genDetail.currencySymbol+invoiceItemSellPrice+"<br>")
 				}
 				fmt.Fprintf(w, "          </td>")
+				fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
+				fmt.Fprintf(w, "            <b><u>Item Details</u></b><br><br>")
+				fmt.Fprintf(w, " 	    <b>Item Added Date & Time: </b>"+formatDateTime(invoiceItemDateTimeAdded)+"<br>")
+				fmt.Fprintf(w, "            <b>Item Type: </b>"+goodServiceType+"<br>")
+				if invoiceItemContractLength == "" {
+					// Do Nothing
+				} else {
+					fmt.Fprintf(w, "            <b>Contract Start Date: </b>"+formatDate(invoiceItemContractStartDate)+"<br>")
+					fmt.Fprintf(w, "            <b>Contract Length: </b>"+invoiceItemContractLength+"<br>")
+				}
 				if genDetail.userTypeID == "100" {
-					fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
-					fmt.Fprintf(w, "            <b><u>Item Details</u></b><br><br>")
-					fmt.Fprintf(w, " 	    <b>Item Added Date & Time: </b>"+formatDateTime(invoiceItemDateTimeAdded)+"<br>")
 					fmt.Fprintf(w, "            <b>Sale VAT Status: </b>"+invoiceItemSalesTaxStatus+"<br>")
 					fmt.Fprintf(w, "            <b>Bill Item Once: </b>"+invoiceBillItemOnce+"<br>")
 					fmt.Fprintf(w, "            <b>Item on Hold: </b>"+invoiceItemOnHold+"<br>")
@@ -6726,7 +6909,9 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 					fmt.Fprintf(w, "            <b><u>Supplier Details</u></b><br><br>")
 					fmt.Fprintf(w, "            <b>Name: </b>"+goodServiceSupplierName+"<br>")
 					fmt.Fprintf(w, "            <b>Supplier Contract Length: </b>"+goodServiceSupplierContractLength)
-					fmt.Fprintf(w, "          </td>")
+				}
+				fmt.Fprintf(w, "          </td>")
+				if genDetail.userTypeID == "100" {
 					fmt.Fprintf(w, "          <td>"+customerID+"</td>")
 					fmt.Fprintf(w, "          <td>"+customerName+"</td>")
 				}
