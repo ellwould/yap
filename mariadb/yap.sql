@@ -116,6 +116,7 @@ ENGINE = InnoDB;
 CREATE TABLE `invoice_item` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
+  `pbx_id` BIGINT UNSIGNED,
   `tag` VARCHAR(255),
   `good_service_name` VARCHAR(255) NOT NULL,
   `sell_price` DECIMAL(8,2) NOT NULL,
@@ -612,6 +613,7 @@ CREATE VIEW `view___invoice_item` AS
 SELECT DISTINCT
   `customer`.`id` AS 'customer_id',
   `customer`.`name` AS 'customer_name',
+  IFNULL(`invoice_item`.`pbx_id`, '') AS 'pbx_id',
   `customer`.`uk_based` AS 'customer_uk_based',
   `customer`.`reselling_minutes` AS 'customer_reselling_minutes',
   `customer`.`uk_vat_registered` AS 'customer_uk_vat_registered',
