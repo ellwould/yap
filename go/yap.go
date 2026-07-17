@@ -175,9 +175,24 @@ func formatDateTime(dateTime string) string {
 	return string(parse.Format(layout))
 }
 
+// Get current date
+func currentDate() string {
+	date := time.Now().UTC()
+	result := date.Format("2006-01-02")
+	return string(result)
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // Pure embedded HTML Go functions
+
+func dateHTML(w http.ResponseWriter, inputValue string, labelMessage string, inputType string) {
+	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter/Select "+labelMessage+":</b>")
+	fmt.Fprintf(w, "  </label><br>")
+	fmt.Fprintf(w, "  <input type=\""+inputType+"\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
+	fmt.Fprintf(w, "<br>")
+}
+
 func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string, inputType string) {
 	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
@@ -1172,7 +1187,7 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else if valueType == "date" {
-		validateInputDateErr := validateInput.Var(value, "datetime")
+		validateInputDateErr := validateInput.Var(value, "datetime=2006-01-02")
 		if validateInputDateErr != nil {
 			validation = false
 			return
@@ -4769,7 +4784,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					invoicePBXExt.billItemOnce = "yes"
 					invoicePBXExt.itemOnHold = "no"
 					invoicePBXExt.contractLength = contractLength
-					invoicePBXExt.contractStartDate = ""
+					invoicePBXExt.contractStartDate = currentDate()
 
 					// Add PBX setup to invoice
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
@@ -4788,7 +4803,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					invoicePBXExt.billItemOnce = "no"
 					invoicePBXExt.itemOnHold = "yes"
 					invoicePBXExt.contractLength = contractLength
-					invoicePBXExt.contractStartDate = ""
+					invoicePBXExt.contractStartDate = currentDate()
 
 					// Add PBX rental to invoice
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
@@ -5151,11 +5166,10 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExt.customerID = userCustomerID
 						invoicePBXExt.pbxID = deletePBXSelectPBXID
 						invoicePBXExt.tag = "Ext Cease X" + extTotal + ": " + deletePBXSelectPBXID
+						invoicePBXExt.contractStartDate = currentDate()
 						extCeasePriceFloat64 := stringToFloat64(extCeasePrice)
 						extTotalExtCeasePrice := extTotalFloat64 * extCeasePriceFloat64
-
 						invoicePBXExt.sellPrice = strconv.FormatFloat(extTotalExtCeasePrice, 'f', -1, 64)
-
 						invoicePBXExt.salesTaxRate = salesTaxRate
 						invoicePBXExt.salesTaxStatus = salesTaxStatus
 
@@ -5184,6 +5198,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExt.customerID = userCustomerID
 					invoicePBXExt.pbxID = deletePBXSelectPBXID
 					invoicePBXExt.tag = deletePBXSelectPBXID
+					invoicePBXExt.contractStartDate = currentDate()
 					invoicePBXExt.sellPrice = pbxCeasePrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
 					invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -5251,11 +5266,10 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExt.customerID = genDetail.userCustomerID
 						invoicePBXExt.pbxID = deletePBXSelectPBXID
 						invoicePBXExt.tag = "Ext Cease X" + extTotal + ": " + deletePBXSelectPBXID
+						invoicePBXExt.contractStartDate = currentDate()
 						extCeasePriceFloat64 := stringToFloat64(extCeasePrice)
 						extTotalExtCeasePrice := extTotalFloat64 * extCeasePriceFloat64
-
 						invoicePBXExt.sellPrice = strconv.FormatFloat(extTotalExtCeasePrice, 'f', -1, 64)
-
 						invoicePBXExt.salesTaxRate = salesTaxRate
 						invoicePBXExt.salesTaxStatus = salesTaxStatus
 
@@ -5284,6 +5298,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExt.customerID = genDetail.userCustomerID
 					invoicePBXExt.pbxID = deletePBXSelectPBXID
 					invoicePBXExt.tag = deletePBXSelectPBXID
+					invoicePBXExt.contractStartDate = currentDate()
 					invoicePBXExt.sellPrice = pbxCeasePrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
 					invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -6271,7 +6286,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						invoicePBXExt.billItemOnce = "yes"
 						invoicePBXExt.itemOnHold = "no"
 						invoicePBXExt.contractLength = contractLength
-						invoicePBXExt.contractStartDate = ""
+						invoicePBXExt.contractStartDate = currentDate()
 
 						// Add extension setup to invoice
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
@@ -6290,7 +6305,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						invoicePBXExt.billItemOnce = "no"
 						invoicePBXExt.itemOnHold = "yes"
 						invoicePBXExt.contractLength = contractLength
-						invoicePBXExt.contractStartDate = ""
+						invoicePBXExt.contractStartDate = currentDate()
 
 						// Add extension rental to invoice
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
@@ -6891,6 +6906,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 				if invoiceItemContractLength == "" {
 					// Do Nothing
 				} else {
+					// The date is automatically added for YAP PBX/Ext charges
 					fmt.Fprintf(w, "            <b>Contract Start Date: </b>"+formatDate(invoiceItemContractStartDate)+"<br>")
 					fmt.Fprintf(w, "            <b>Contract Length: </b>"+invoiceItemContractLength+"<br>")
 				}
@@ -7041,7 +7057,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		selectSingleHTML(w, "add_invoice_select_contract_length", "Contract Length", contractLengthList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_invoice_input_contract_start_date", "Contract Start Date", "text")
+		dateHTML(w, "add_invoice_input_contract_start_date", "Contract Start Date", "date")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
