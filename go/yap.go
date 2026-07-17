@@ -186,17 +186,17 @@ func currentDate() string {
 
 // Pure embedded HTML Go functions
 
-func dateHTML(w http.ResponseWriter, inputValue string, labelMessage string, inputType string) {
+func dateHTML(w http.ResponseWriter, inputValue string, labelMessage string) {
 	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter/Select "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
-	fmt.Fprintf(w, "  <input type=\""+inputType+"\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
+	fmt.Fprintf(w, "  <input type=\"date\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
 	fmt.Fprintf(w, "<br>")
 }
 
-func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string, inputType string) {
+func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string) {
 	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
-	fmt.Fprintf(w, "  <input type=\""+inputType+"\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
+	fmt.Fprintf(w, "  <input type=\"text\" id=\""+inputValue+"\" name=\""+inputValue+"\">")
 	fmt.Fprintf(w, "<br>")
 }
 
@@ -2118,13 +2118,13 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_account_input_first_name", "First Name (Cannot Be Empty)", "text")
+		inputHTML(w, "add_account_input_first_name", "First Name (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_account_input_last_name", "Last Name (Cannot Be Empty)", "text")
+		inputHTML(w, "add_account_input_last_name", "Last Name (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_account_input_email", "Email Address (Cannot Be Empty)", "text")
+		inputHTML(w, "add_account_input_email", "Email Address (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
@@ -2338,16 +2338,16 @@ func userAccountEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFu
 		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_account_input_account_id", "Account ID (Cannot Be Empty)", "text")
+		inputHTML(w, "edit_account_input_account_id", "Account ID (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_account_input_email", "Account Email (Cannot Be Empty)", "text")
+		inputHTML(w, "edit_account_input_email", "Account Email (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		selectDoubleHiddenHTML(w, "edit_account_select_column", "Column to Edit (Cannot Be Empty)", accountColumnList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_account_input_new_value", "New Value", "text")
+		inputHTML(w, "edit_account_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -2451,10 +2451,10 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "delete_individual_user_account_input_account_id", "Account ID (Cannot Be Empty)", "text")
+		inputHTML(w, "delete_individual_user_account_input_account_id", "Account ID (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "delete_individual_user_account_input_account_email", "Account Email (Cannot Be Empty)", "text")
+		inputHTML(w, "delete_individual_user_account_input_account_email", "Account Email (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		userAccountTypeIDNameList, _ := userAccountTypeSlice(dbDetail)
@@ -3157,10 +3157,10 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_customer_id", "Customer ID<br>(Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_customer_id", "Customer ID<br>(Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_customer_name", "Customer Name<br>(Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_customer_name", "Customer Name<br>(Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		ukBasedList := yesNoSlice()
@@ -3184,7 +3184,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		selectSingleHTML(w, "add_customer_select_uk_vat_registered", "UK VAT Registered<br>(Cannot Be Empty)", ukVATRegisteredList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number<br>(Cannot Be Empty if UK VAT Registered yes)", "text")
+		inputHTML(w, "add_customer_input_uk_vat_number", "UK VAT Number<br>(Cannot Be Empty if UK VAT Registered yes)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		pbxLimitList := pbxLimitSlice()
@@ -3218,13 +3218,13 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_pbx_setup_price", "PBX Setup Price (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_pbx_setup_price", "PBX Setup Price (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_pbx_rental_price", "PBX Rental Price (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_pbx_rental_price", "PBX Rental Price (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_pbx_cease_price", "PBX Cease Price (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_pbx_cease_price", "PBX Cease Price (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		dbDetail.table = "contract_length_lookup"
@@ -3236,13 +3236,13 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_ext_setup_price", "EXT Setup Price (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_ext_setup_price", "EXT Setup Price (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_ext_rental_price", "EXT Rental Price (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_ext_rental_price", "EXT Rental Price (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_ext_cease_price", "EXT Cease Price (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_ext_cease_price", "EXT Cease Price (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		selectSingleHTML(w, "add_customer_select_ext_contract_length", "EXT Contract Length", contractLengthList)
@@ -3256,30 +3256,30 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_address_line_1", "Site Address Line One", "text")
+		inputHTML(w, "add_customer_input_site_address_line_1", "Site Address Line One")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_address_line_2", "Site Address Line Two", "text")
+		inputHTML(w, "add_customer_input_site_address_line_2", "Site Address Line Two")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_city_town_village", "Site City/Town/Village", "text")
+		inputHTML(w, "add_customer_input_site_city_town_village", "Site City/Town/Village")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_county_state_region", "Site County/State/Region", "text")
+		inputHTML(w, "add_customer_input_site_county_state_region", "Site County/State/Region")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_postcode_zip_code", "Site Postcode/Zip Code", "text")
+		inputHTML(w, "add_customer_input_site_postcode_zip_code", "Site Postcode/Zip Code")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_country", "Site Country", "text")
+		inputHTML(w, "add_customer_input_site_country", "Site Country")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_contact_email", "Site Email (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_site_contact_email", "Site Email (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_site_contact_number", "Site Phone (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_site_contact_number", "Site Phone (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
@@ -3290,30 +3290,30 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_address_line_1", "Invoice Address Line One", "text")
+		inputHTML(w, "add_customer_input_invoice_address_line_1", "Invoice Address Line One")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_address_line_2", "Invoice Address Line Two", "text")
+		inputHTML(w, "add_customer_input_invoice_address_line_2", "Invoice Address Line Two")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_city_town_village", "Invoice City/Town/Village", "text")
+		inputHTML(w, "add_customer_input_invoice_city_town_village", "Invoice City/Town/Village")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_county_state_region", "Invoice County/State/Region", "text")
+		inputHTML(w, "add_customer_input_invoice_county_state_region", "Invoice County/State/Region")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_postcode_zip_code", "Invoice Postcode/Zip Code", "text")
+		inputHTML(w, "add_customer_input_invoice_postcode_zip_code", "Invoice Postcode/Zip Code")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_country", "Invoice Country", "text")
+		inputHTML(w, "add_customer_input_invoice_country", "Invoice Country")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_contact_email", "Invoice Email (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_invoice_contact_email", "Invoice Email (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_customer_input_invoice_contact_number", "Invoice Phone (Cannot Be Empty)", "text")
+		inputHTML(w, "add_customer_input_invoice_contact_number", "Invoice Phone (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -3737,7 +3737,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		selectDoubleHiddenHTML(w, "edit_customer_select_column", "Column to Edit (Cannot Be Empty)", customerColumnList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_customer_input_new_value", "New Value", "text")
+		inputHTML(w, "edit_customer_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -3843,7 +3843,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		selectDoubleHiddenHTML(w, "edit_customer_site_select_column", "Column to Edit (Cannot Be Empty)", siteColumnList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_customer_site_input_new_value", "New Value", "text")
+		inputHTML(w, "edit_customer_site_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -3928,7 +3928,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		selectDoubleHiddenHTML(w, "edit_customer_invoice_select_column", "Column to Edit (Cannot Be Empty)", invoiceColumnList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_customer_invoice_input_new_value", "New Value", "text")
+		inputHTML(w, "edit_customer_invoice_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -4537,7 +4537,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 		}
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_pbx_name", "PBX Name (Cannot Be Empty)", "text")
+		inputHTML(w, "add_pbx_input_pbx_name", "PBX Name (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		extLimitList := extLimitSlice()
@@ -4563,30 +4563,30 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_address_line_1", "Site Address Line One", "text")
+		inputHTML(w, "add_pbx_input_site_address_line_1", "Site Address Line One")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_address_line_2", "Site Address Line Two", "text")
+		inputHTML(w, "add_pbx_input_site_address_line_2", "Site Address Line Two")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_city_town_village", "Site City/Town/Village", "text")
+		inputHTML(w, "add_pbx_input_site_city_town_village", "Site City/Town/Village")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_county_state_region", "Site County/State/Region", "text")
+		inputHTML(w, "add_pbx_input_site_county_state_region", "Site County/State/Region")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_postcode_zip_code", "Site Postcode/Zip Code", "text")
+		inputHTML(w, "add_pbx_input_site_postcode_zip_code", "Site Postcode/Zip Code")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_country", "Site Country", "text")
+		inputHTML(w, "add_pbx_input_site_country", "Site Country")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_contact_email", "Site Email (Cannot Be Empty)", "text")
+		inputHTML(w, "add_pbx_input_site_contact_email", "Site Email (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_pbx_input_site_contact_number", "Site Phone (Cannot Be Empty)", "text")
+		inputHTML(w, "add_pbx_input_site_contact_number", "Site Phone (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -4873,7 +4873,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		}
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_pbx_input_new_value", "New Value", "text")
+		inputHTML(w, "edit_pbx_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -4971,7 +4971,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		selectDoubleHiddenHTML(w, "edit_pbx_site_select_column", "Column to Edit (Cannot Be Empty)", siteColumnList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_pbx_site_input_new_value", "New Value", "text")
+		inputHTML(w, "edit_pbx_site_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -5853,7 +5853,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 		}
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_ext_input_sip_ext", "SIP Ext (Cannot Be Empty)", "text")
+		inputHTML(w, "add_ext_input_sip_ext", "SIP Ext (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		fmt.Fprintf(w, "          </td>")
@@ -5868,10 +5868,10 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 		selectDoubleHiddenHTML(w, "add_ext_select_dtmf_mode", "DTMF Mode", dtmfModeValueNameList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_ext_input_call_group", "Call Group", "text")
+		inputHTML(w, "add_ext_input_call_group", "Call Group")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_ext_input_pickup_group", "Pickup Group", "text")
+		inputHTML(w, "add_ext_input_pickup_group", "Pickup Group")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
@@ -5912,7 +5912,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 		selectSingleHTML(w, "add_ext_select_force_rport", "Force RPort", forceRPortValueList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_ext_input_ip_address", "IP Address to Restrict Ext to", "text")
+		inputHTML(w, "add_ext_input_ip_address", "IP Address to Restrict Ext to")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		allowTransferValueList := yesNoSlice()
@@ -5930,27 +5930,27 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			selectSingleHTML(w, "add_ext_select_allow_transfer", "Allow Transfer", allowTransferValueList)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>")
-			inputHTML(w, "add_ext_input_caller_id", "Caller ID", "text")
+			inputHTML(w, "add_ext_input_caller_id", "Caller ID")
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>")
 			selectDoubleHiddenHTML(w, "add_ext_select_caller_id_privacy", "Caller ID Privacy", callerIDPrivacyValueNameList)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>")
-			inputHTML(w, "add_ext_input_contact_user", "SIP Header - Contact User", "text")
+			inputHTML(w, "add_ext_input_contact_user", "SIP Header - Contact User")
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "        </tr>")
 			fmt.Fprintf(w, "        <tr>")
 			fmt.Fprintf(w, "          <td>")
-			inputHTML(w, "add_ext_input_from_user", "SIP Header - From User", "text")
+			inputHTML(w, "add_ext_input_from_user", "SIP Header - From User")
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>")
-			inputHTML(w, "add_ext_input_from_domain", "SIP header - From Domain", "text")
+			inputHTML(w, "add_ext_input_from_domain", "SIP header - From Domain")
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>")
 			selectSingleHTML(w, "add_ext_select_stir_shaken", "Stir Shaken", stirShakenValueList)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td>")
-			inputHTML(w, "add_ext_input_stir_shaken_profile", "Stir Shaken Profile", "text")
+			inputHTML(w, "add_ext_input_stir_shaken_profile", "Stir Shaken Profile")
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
@@ -6394,7 +6394,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_ext_input_ext", "Ext (Cannot Be Empty)", "text")
+		inputHTML(w, "edit_ext_input_ext", "Ext (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		if genDetail.userTypeID == "100" {
@@ -6404,7 +6404,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		}
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_ext_input_new_value", "New Value", "text")
+		inputHTML(w, "edit_ext_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
@@ -6571,7 +6571,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "delete_ext_input_ext", "Ext (Cannot Be Empty)", "text")
+		inputHTML(w, "delete_ext_input_ext", "Ext (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		confirmList := yesSlice()
@@ -6603,7 +6603,27 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 
 			var pbxID string
 
+			// These variables have to be here because they need validation first!
+			// Variables for adding cease charge to invoice; they are safe because they are not the input from the user
+			var invoicePBXExt invoicePBXExtFunctionParameter
+			invoicePBXExt.goodService = "YAP Extension Cease"
+			invoicePBXExt.billItemOnce = "yes"
+			invoicePBXExt.itemOnHold = "no"
+			invoicePBXExt.contractLength = ""
+			invoicePBXExt.contractStartDate = ""
+
 			if genDetail.userTypeID == "100" {
+				// Get customer ID based on the ext
+				dbDetail.table = "view___sip_extension_detail"
+				dbDetail.column = "customer_id"
+				dbDetail.columnWhere = "sip_username"
+				dbDetail.columnWhereValue = deleteExtInputExt
+				customerID := selectWhere(dbDetail)
+
+				// Get PBX ID based on the ext
+				dbDetail.column = "pbx_id"
+				pbxID = selectWhere(dbDetail)
+
 				dbDetail.connection.Query(`DELETE FROM ps_endpoints WHERE id = ?;`, deleteExtInputExt)
 				dbDetail.table = "view___sip_extension_detail"
 				dbDetail.column = "sip_username"
@@ -6612,6 +6632,36 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				checkExtDeleted := selectWhere(dbDetail)
 				if checkExtDeleted == "" {
 					messageHTML(w, validationMessageExtDeleted, "success")
+
+					dbDetail.table = "view___customer_detail"
+					dbDetail.columnWhere = "customer_id"
+					dbDetail.columnWhereValue = customerID
+
+					// Get Ext cease price
+					dbDetail.column = "customer_ext_cease_price"
+					extCeasePrice := selectWhere(dbDetail)
+
+					// Get Ext sales tax rate
+					dbDetail.column = "customer_ext_sales_tax_rate"
+					salesTaxRate := selectWhere(dbDetail)
+
+					// Get Ext sales tax status
+					dbDetail.column = "customer_ext_sales_tax_status"
+					salesTaxStatus := selectWhere(dbDetail)
+
+					invoicePBXExt.customerID = customerID
+					invoicePBXExt.pbxID = pbxID
+					invoicePBXExt.tag = deleteExtInputExt
+					invoicePBXExt.sellPrice = extCeasePrice
+					invoicePBXExt.salesTaxRate = salesTaxRate
+					invoicePBXExt.salesTaxStatus = salesTaxStatus
+
+					// Add Ext cease to invoice
+					invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+					// Delete Ext rental record from invoice_item table
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND good_service_name = ?;`, deleteExtInputExt, customerID, "YAP Extension Rental")
+
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
 				}
@@ -6634,7 +6684,38 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					dbDetail.columnWhereValue = deleteExtInputExt
 					checkExtDeleted := selectWhere(dbDetail)
 					if checkExtDeleted == "" {
+
 						messageHTML(w, validationMessageExtDeleted, "success")
+
+						dbDetail.table = "view___customer_detail"
+						dbDetail.columnWhere = "customer_id"
+						dbDetail.columnWhereValue = genDetail.userCustomerID
+
+						// Get Ext cease price
+						dbDetail.column = "customer_ext_cease_price"
+						extCeasePrice := selectWhere(dbDetail)
+
+						// Get Ext sales tax rate
+						dbDetail.column = "customer_ext_sales_tax_rate"
+						salesTaxRate := selectWhere(dbDetail)
+
+						// Get Ext sales tax status
+						dbDetail.column = "customer_ext_sales_tax_status"
+						salesTaxStatus := selectWhere(dbDetail)
+
+						invoicePBXExt.customerID = genDetail.userCustomerID
+						invoicePBXExt.pbxID = pbxID
+						invoicePBXExt.tag = deleteExtInputExt
+						invoicePBXExt.sellPrice = extCeasePrice
+						invoicePBXExt.salesTaxRate = salesTaxRate
+						invoicePBXExt.salesTaxStatus = salesTaxStatus
+
+						// Add Ext cease to invoice
+						invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+						// Delete Ext rental record from invoice_item table
+						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND good_service_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "YAP Extension Rental")
+
 					} else {
 						messageHTML(w, validationMessageExtNotDeleted, "warning")
 					}
@@ -6648,7 +6729,37 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				dbDetail.columnWhereValue = deleteExtInputExt
 				checkExtDeleted := selectWhere(dbDetail)
 				if checkExtDeleted == "" {
+
 					messageHTML(w, validationMessageExtDeleted, "success")
+
+					dbDetail.table = "view___customer_detail"
+					dbDetail.columnWhere = "customer_id"
+					dbDetail.columnWhereValue = genDetail.userCustomerID
+
+					// Get Ext cease price
+					dbDetail.column = "customer_ext_cease_price"
+					extCeasePrice := selectWhere(dbDetail)
+
+					// Get Ext sales tax rate
+					dbDetail.column = "customer_ext_sales_tax_rate"
+					salesTaxRate := selectWhere(dbDetail)
+
+					// Get Ext sales tax status
+					dbDetail.column = "customer_ext_sales_tax_status"
+					salesTaxStatus := selectWhere(dbDetail)
+
+					invoicePBXExt.customerID = genDetail.userCustomerID
+					invoicePBXExt.pbxID = pbxID
+					invoicePBXExt.tag = deleteExtInputExt
+					invoicePBXExt.sellPrice = extCeasePrice
+					invoicePBXExt.salesTaxRate = salesTaxRate
+					invoicePBXExt.salesTaxStatus = salesTaxStatus
+
+					// Add Ext cease to invoice
+					invoicePBXExtAdd(dbDetail, invoicePBXExt)
+
+					// Delete Ext rental record from invoice_item table
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND good_service_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "YAP Extension Rental")
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
 				}
@@ -7023,10 +7134,10 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_invoice_input_tag", "Item Tag (Cannot Be Empty)", "text")
+		inputHTML(w, "add_invoice_input_tag", "Item Tag (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_invoice_input_price", "Item Price (Cannot Be Empty)", "text")
+		inputHTML(w, "add_invoice_input_price", "Item Price (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		dbDetail.table = "sales_tax_rate_lookup"
@@ -7057,7 +7168,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		selectSingleHTML(w, "add_invoice_select_contract_length", "Contract Length", contractLengthList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		dateHTML(w, "add_invoice_input_contract_start_date", "Contract Start Date", "date")
+		dateHTML(w, "add_invoice_input_contract_start_date", "Contract Start Date")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
