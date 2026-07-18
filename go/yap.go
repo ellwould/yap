@@ -989,6 +989,7 @@ func callerIDPrivacySlice() ([][]string, []string) {
 // Constants for validation messages
 const validationMessageEmail string = " value must be a valid email address with a maxamium of 30 characters must be used"
 const validationMessagePhoneNumber string = " value must be a valid phone number in e.164 format with a maxamium of 16 characters must be used"
+const validationMessageNumber string = " value must be a number"
 const validationMessageAlphaNum string = " value must be 1 to 30 characters and must only contain characters: a-z, A-Z or numbers"
 const validationMessageAlphaNumEmpty string = " value can be empty or must be a maxamium of 30 characters and must only contain characters: a-z, A-Z or numbers"
 const validationMessagePrice string = " value must be a decimal number with maxamium of 8 numbers"
@@ -1110,6 +1111,12 @@ const validationMessageInvoiceItemOnHold string = validationMessageInvalidOption
 const validationMessageInvoiceContractStartDate string = "Contract start date" + validationMessageDate
 const validationMessageInvoiceContractStartDateEmpty string = "If contract length is not empty then contract start date must have a value"
 
+const validationMessageInvoice string = validationMessageInvalidOption + "invoice"
+const validationMessageInvoiceDoesNotExist string = "Invoice" + validationMessageDoesNotExist
+const validationMessageInvoiceDeleted string = "Invoice" + validationMessageDeleted
+const validationMessageInvoiceNotDeleted string = "Invoice" + validationMessageNotDeleted
+const validationMessageInvoiceID string = "Invoice ID" + validationMessageNumber
+
 // General/multi-page HTML messsages
 const validationMessageCustomer string = validationMessageInvalidOption + "customer"
 const validationMessageEmailAlreadyExist string = "Email" + validationMessageAlreadyExist
@@ -1156,10 +1163,19 @@ func validateInput(value string, valueType string) (validation bool) {
 			validation = true
 			return
 		}
+	} else if valueType == "number" {
+		validateInputNumberErr := validateInput.Var(value, "number,min=1,max=30")
+		if validateInputNumberErr != nil {
+			validation = false
+			return
+		} else {
+			validation = true
+			return
+		}
 	} else if valueType == "alphaNum" {
-		validateInputAlphaspaceErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
+		validateInputAlphaSpaceErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
 		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\.<>/?")
-		if validateInputAlphaspaceErr != nil || validateInputSymbolErr != nil {
+		if validateInputAlphaSpaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
 		} else {
@@ -1167,9 +1183,9 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else if valueType == "alphaNumEmpty" {
-		validateInputAlphanumspaceErr := validateInput.Var(value, "ascii,max=30")
+		validateInputAlphaNumSpaceErr := validateInput.Var(value, "ascii,max=30")
 		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\.<>/?")
-		if validateInputAlphanumspaceErr != nil || validateInputSymbolErr != nil {
+		if validateInputAlphaNumSpaceErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
 		} else {
@@ -7110,7 +7126,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/invoice\">")
 		fmt.Fprintf(w, "<table class=\"table-invoice\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Invoice Item</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Invoice Item<br>(YAP PBX and Ext Invoices Cannot Be Created Manually)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -7127,6 +7143,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		dbDetail.column = "name"
 		goodServiceList := singleColumnSlice(dbDetail)
 		goodServiceList = append([]string{""}, goodServiceList...)
+		goodServiceList = slices.Delete(goodServiceList, 1, 7)
 		selectSingleHTML(w, "add_invoice_select_good_service", "Service/Product (Cannot Be Empty)", goodServiceList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
@@ -7153,11 +7170,11 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		billItemOnceList := []string{"", "yes", "no"}
+		billItemOnceList := yesNoSlice()
 		selectSingleHTML(w, "add_invoice_select_bill_item_once", "Bill Item Once (Cannot Be Empty)", billItemOnceList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		itemOnHoldList := []string{"", "yes", "no"}
+		itemOnHoldList := yesNoSlice()
 		selectSingleHTML(w, "add_invoice_select_item_on_hold", "Item On Hold (Cannot Be Empty)", itemOnHoldList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
@@ -7285,13 +7302,85 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 	}
 }
 
+// Invoice delete function
+func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, genDetail generalFunctionParameter) {
+
+	// Only account type ID 100 should be able to use this function
+	if genDetail.userTypeID == "100" {
+
+		// Delete a invoice
+		fmt.Fprintf(w, "<form method=\"POST\" action=\"/invoice\">")
+		fmt.Fprintf(w, "<table class=\"table-delete\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete An Invoice<br>(YAP PBX and Ext Invoices Cannot Be Deleted Manually)</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "delete_invoice_input_invoice_id", "Invoice ID (Cannot Be Empty)")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		confirmList := yesSlice()
+		selectSingleHTML(w, "delete_invoice_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Delete Invoice Item\"></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "</form>")
+
+		deleteInvoiceInputInvoiceID := r.FormValue("delete_invoice_input_invoice_id")
+		deleteInvoiceSelectConfirm := r.FormValue("delete_invoice_select_confirm")
+
+		// Validate Ext
+		validateInvoiceID := validateInput(deleteInvoiceInputInvoiceID, "number")
+
+		if deleteInvoiceInputInvoiceID == "" && deleteInvoiceSelectConfirm == "" {
+			// Do Nothing
+		} else if validateInvoiceID == false && deleteInvoiceSelectConfirm == "yes" {
+			messageHTML(w, validationMessageInvoiceID, "warning")
+		} else if validateInvoiceID == true && deleteInvoiceSelectConfirm != "yes" {
+			messageHTML(w, validationMessageInvoice, "warning")
+		} else if validateInvoiceID == true && deleteInvoiceSelectConfirm == "yes" {
+
+			dbDetail.table = "view___invoice_item"
+			dbDetail.column = "invoice_item_id"
+			dbDetail.columnWhere = "invoice_item_id"
+			dbDetail.columnWhereValue = deleteInvoiceInputInvoiceID
+
+			checkInvoiceExist := selectWhere(dbDetail)
+
+			if checkInvoiceExist == "" {
+				messageHTML(w, validationMessageInvoiceDoesNotExist, "warning")
+			} else {
+
+				dbDetail.connection.Query(`DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;`, deleteInvoiceInputInvoiceID, "")
+
+				checkInvoiceDeleted := selectWhere(dbDetail)
+
+				if checkInvoiceDeleted == "" {
+					messageHTML(w, validationMessageInvoiceDeleted, "success")
+				} else {
+					messageHTML(w, validationMessageInvoiceNotDeleted, "warning")
+				}
+			}
+		} else {
+			messageHTML(w, "Invalid Input", "warning")
+		}
+	} else {
+		panic("invoiceDelete function shoud only be called with account type ID 100")
+	}
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // Server log page functions
-
-//----------------------------------------------------------------------------------------------------
-
-// Server information functions
 
 //----------------------------------------------------------------------------------------------------
 
@@ -7440,25 +7529,19 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "All<br>PBXs<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
-				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
+				mainMenuButton(mainMenuButtonFour)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All Customer<br>Invoicing<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonFive)
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "</div>")
+				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
 				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
 				mainMenuButton(mainMenuButtonSix)
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "YAP Server<br>Information<br>&#128421", hyperlink: "/server-information", headerCSS: "header-server-information", buttonCSS: "button-server-information"}
-				mainMenuButton(mainMenuButtonSeven)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "200" {
@@ -7963,6 +8046,8 @@ func main() {
 				invoiceList(w, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				invoiceAdd(w, r, dbDetail, genDetail)
+				fmt.Fprintf(w, "<br>")
+				invoiceDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-invoice", "button-invoice")
 			} else if userTypeID == "200" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
@@ -7990,19 +8075,6 @@ func main() {
 		wallpaper(w, "wallpaper-server-log")
 
 		footer(w, "header-server-log", "button-server-log")
-		fmt.Fprintf(w, endHTML)
-	})
-
-	// Server Information Page
-	http.HandleFunc("/server-information", func(w http.ResponseWriter, r *http.Request) {
-
-		fmt.Fprintf(w, startHTML)
-		header(w, "Server Information", "header-server-information", extraButtonName, extraButtonURL)
-
-		// Wallpaper
-		wallpaper(w, "wallpaper-server-information")
-
-		footer(w, "header-server-information", "button-server-information")
 		fmt.Fprintf(w, endHTML)
 	})
 
