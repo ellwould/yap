@@ -688,16 +688,16 @@ VALUES
 
 INSERT INTO `supplier` (`name`)
 VALUES
-  ('YAP (Yet Another PBX)');
+  ('⊛ YAP (Yet Another PBX) ⊛');
 
-INSERT INTO `service_product` (`id`, `name`, `service_product_type`, `supplier_name`, `supplier_contract_length`)
+INSERT INTO `service_product` (`name`, `service_product_type`, `supplier_name`, `supplier_contract_length`)
 VALUES
-  (1, 'YAP PBX Setup', 'Services', 'YAP (Yet Another PBX)', NULL),
-  (2, 'YAP PBX Rental', 'Services', 'YAP (Yet Another PBX)', NULL),
-  (3, 'YAP PBX Cease', 'Services', 'YAP (Yet Another PBX)', NULL),
-  (4, 'YAP Extension Setup', 'Services', 'YAP (Yet Another PBX)', NULL),
-  (5, 'YAP Extension Rental', 'Services', 'YAP (Yet Another PBX)', NULL),
-  (6, 'YAP Extension Cease', 'Services', 'YAP (Yet Another PBX)', NULL);
+  ('⊛ YAP PBX Setup ⊛', 'Services', '⊛ YAP (Yet Another PBX) ⊛', NULL),
+  ('⊛ YAP PBX Rental ⊛', 'Services', '⊛ YAP (Yet Another PBX) ⊛', NULL),
+  ('⊛ YAP PBX Cease ⊛', 'Services', '⊛ YAP (Yet Another PBX) ⊛', NULL),
+  ('⊛ YAP Extension Setup ⊛', 'Services', '⊛ YAP (Yet Another PBX) ⊛', NULL),
+  ('⊛ YAP Extension Rental ⊛', 'Services', '⊛ YAP (Yet Another PBX) ⊛', NULL),
+  ('⊛ YAP Extension Cease ⊛', 'Services', '⊛ YAP (Yet Another PBX) ⊛', NULL);
 
 INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_sales_tax_rate`, `pbx_sales_tax_status`, `ext_sales_tax_rate`, `ext_sales_tax_status`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `ext_setup_price`, `ext_rental_price`, `ext_cease_price`, `ext_contract_length`)
 VALUES (1, 'system', 'n/a', 'n/a', 'n/a', NULL, 'n/a', 0, 0, 'n/a', 0, 'n/a', 0, 0, 0, NULL, 0, 0, 0, NULL);
