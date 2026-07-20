@@ -640,6 +640,16 @@ ON `invoice_item`.`customer_id` = `customer`.`id`
 INNER JOIN `service_product`
 ON `service_product`.`name` = `invoice_item`.`service_product_name`;
 
+CREATE VIEW `view___service_product` AS
+SELECT DISTINCT
+  `service_product`.`id` AS 'service_product_id',
+  `service_product`.`name` AS 'service_product_name',
+  `service_product`.`service_product_type` AS 'service_product_type',
+  `service_product`.`supplier_name` AS 'service_product_supplier_name',
+   IFNULL(`service_product`.`supplier_contract_length`, '') AS 'service_product_supplier_contract_length',
+  `service_product`.`date_time_added` AS 'service_product_date_time_added'
+FROM `service_product`;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Insert data to YAP tables
