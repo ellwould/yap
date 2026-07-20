@@ -118,7 +118,7 @@ CREATE TABLE `invoice_item` (
   `customer_id` VARCHAR(255) NOT NULL,
   `pbx_id` BIGINT UNSIGNED,
   `tag` VARCHAR(255),
-  `good_service_name` VARCHAR(255) NOT NULL,
+  `service_product_name` VARCHAR(255) NOT NULL,
   `sell_price` DECIMAL(8,2) NOT NULL,
   `sales_tax_rate` DECIMAL(5,2) NOT NULL,
   `sales_tax_status` VARCHAR(255) NOT NULL,
@@ -143,19 +143,21 @@ CREATE TABLE `sales_tax_status_lookup` (
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `good_service` (
+CREATE TABLE `service_product` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `good_service_type` VARCHAR(255) NOT NULL,
+  `service_product_type` VARCHAR(255) NOT NULL,
   `supplier_name` VARCHAR(255) NOT NULL,
   `supplier_contract_length` VARCHAR(255),
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
-  PRIMARY KEY(`name`)
+  UNIQUE (`name`),
+  PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
 
-CREATE TABLE `good_service_type_lookup` (
-  `good_service_type` VARCHAR(255),
-  PRIMARY KEY(`good_service_type`)
+CREATE TABLE `service_product_type_lookup` (
+  `service_product_type` VARCHAR(255),
+  PRIMARY KEY(`service_product_type`)
 )
 ENGINE = InnoDB;
 
@@ -259,19 +261,19 @@ ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__sales_tax_status` (`sales_tax_status`);
 
 ALTER TABLE `invoice_item`
-ADD INDEX `index___invoice_item__good_service_name` (`good_service_name`);
+ADD INDEX `index___invoice_item__service_product_name` (`service_product_name`);
 
 ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__contract_length` (`contract_length`);
 
-ALTER TABLE `good_service`
-ADD INDEX `index___good_service__good_service_type` (`good_service_type`);
+ALTER TABLE `service_product`
+ADD INDEX `index___service_product__service_product_type` (`service_product_type`);
 
-ALTER TABLE `good_service`
-ADD INDEX `index___good_service__supplier_name` (`supplier_name`);
+ALTER TABLE `service_product`
+ADD INDEX `index___service_product__supplier_name` (`supplier_name`);
 
-ALTER TABLE `good_service`
-ADD INDEX `index___good_service__supplier_contract_length` (`supplier_contract_length`);
+ALTER TABLE `service_product`
+ADD INDEX `index___service_product__supplier_contract_length` (`supplier_contract_length`);
 
 ----------------------------------------------------------------------------------------------------
 
@@ -400,27 +402,27 @@ FOREIGN KEY (`sales_tax_status`)
 REFERENCES `sales_tax_status_lookup` (`sales_tax_status`);
 
 ALTER TABLE `invoice_item`
-ADD CONSTRAINT fk___invoice_item___good_service
-FOREIGN KEY (`good_service_name`)
-REFERENCES `good_service` (`name`);
+ADD CONSTRAINT fk___invoice_item___service_product
+FOREIGN KEY (`service_product_name`)
+REFERENCES `service_product` (`name`);
 
 ALTER TABLE `invoice_item`
 ADD CONSTRAINT fk___invoice_item___contract_length_lookup
 FOREIGN KEY (`contract_length`)
 REFERENCES `contract_length_lookup` (`contract_length`);
 
-ALTER TABLE `good_service`
-ADD CONSTRAINT fk___good_service___good_service_type_lookup
-FOREIGN KEY (`good_service_type`)
-REFERENCES `good_service_type_lookup` (`good_service_type`);
+ALTER TABLE `service_product`
+ADD CONSTRAINT fk___service_product___service_product_type_lookup
+FOREIGN KEY (`service_product_type`)
+REFERENCES `service_product_type_lookup` (`service_product_type`);
 
-ALTER TABLE `good_service`
-ADD CONSTRAINT fk___good_service___supplier
+ALTER TABLE `service_product`
+ADD CONSTRAINT fk___service_product___supplier
 FOREIGN KEY (`supplier_name`)
 REFERENCES `supplier` (`name`);
 
-ALTER TABLE `good_service`
-ADD CONSTRAINT fk___good_service___contract_length_lookup
+ALTER TABLE `service_product`
+ADD CONSTRAINT fk___service_product___contract_length_lookup
 FOREIGN KEY (`supplier_contract_length`)
 REFERENCES `contract_length_lookup` (`contract_length`);
 
@@ -628,15 +630,15 @@ SELECT DISTINCT
   `invoice_item`.`item_on_hold` AS 'invoice_item_on_hold',
   IFNULL(`invoice_item`.`contract_length`, '') AS 'invoice_item_contract_length',
   IFNULL(`invoice_item`.`contract_start_date`, '') AS 'invoice_item_contract_start_date',
-  `good_service`.`name` AS 'good_service_name',
-  `good_service`.`good_service_type`,
-  `good_service`.`supplier_name` AS 'good_service_supplier_name',
-  IFNULL(`good_service`.`supplier_contract_length`, '') AS 'good_service_supplier_contract_length'
+  `service_product`.`name` AS 'service_product_name',
+  `service_product`.`service_product_type`,
+  `service_product`.`supplier_name` AS 'service_product_supplier_name',
+  IFNULL(`service_product`.`supplier_contract_length`, '') AS 'service_product_supplier_contract_length'
 FROM `customer`
 INNER JOIN `invoice_item`
 ON `invoice_item`.`customer_id` = `customer`.`id`
-INNER JOIN `good_service`
-ON `good_service`.`name` = `invoice_item`.`good_service_name`;
+INNER JOIN `service_product`
+ON `service_product`.`name` = `invoice_item`.`service_product_name`;
 
 ----------------------------------------------------------------------------------------------------
 
@@ -665,7 +667,7 @@ VALUES
   ('Community Interest Company (CIC)'),
   ('n/a');
 
-INSERT INTO `good_service_type_lookup` (`good_service_type`)
+INSERT INTO `service_product_type_lookup` (`service_product_type`)
 VALUES
   ('Services'),
   ('Products');
@@ -688,14 +690,14 @@ INSERT INTO `supplier` (`name`)
 VALUES
   ('YAP (Yet Another PBX)');
 
-INSERT INTO `good_service` (`name`, `good_service_type`, `supplier_name`, `supplier_contract_length`)
+INSERT INTO `service_product` (`id`, `name`, `service_product_type`, `supplier_name`, `supplier_contract_length`)
 VALUES
-  ('YAP PBX Setup', 'Services', 'YAP (Yet Another PBX)', NULL),
-  ('YAP PBX Rental', 'Services', 'YAP (Yet Another PBX)', NULL),
-  ('YAP PBX Cease', 'Services', 'YAP (Yet Another PBX)', NULL),
-  ('YAP Extension Setup', 'Services', 'YAP (Yet Another PBX)', NULL),
-  ('YAP Extension Rental', 'Services', 'YAP (Yet Another PBX)', NULL),
-  ('YAP Extension Cease', 'Services', 'YAP (Yet Another PBX)', NULL);
+  (1, 'YAP PBX Setup', 'Services', 'YAP (Yet Another PBX)', NULL),
+  (2, 'YAP PBX Rental', 'Services', 'YAP (Yet Another PBX)', NULL),
+  (3, 'YAP PBX Cease', 'Services', 'YAP (Yet Another PBX)', NULL),
+  (4, 'YAP Extension Setup', 'Services', 'YAP (Yet Another PBX)', NULL),
+  (5, 'YAP Extension Rental', 'Services', 'YAP (Yet Another PBX)', NULL),
+  (6, 'YAP Extension Cease', 'Services', 'YAP (Yet Another PBX)', NULL);
 
 INSERT INTO `customer` (`id`, `name`, `uk_based`, `consumer_type`, `uk_vat_registered`, `uk_vat_number`, `reselling_minutes`, `pbx_limit`, `pbx_sales_tax_rate`, `pbx_sales_tax_status`, `ext_sales_tax_rate`, `ext_sales_tax_status`, `pbx_setup_price`, `pbx_rental_price`, `pbx_cease_price`, `pbx_contract_length`, `ext_setup_price`, `ext_rental_price`, `ext_cease_price`, `ext_contract_length`)
 VALUES (1, 'system', 'n/a', 'n/a', 'n/a', NULL, 'n/a', 0, 0, 'n/a', 0, 'n/a', 0, 0, 0, NULL, 0, 0, 0, NULL);
