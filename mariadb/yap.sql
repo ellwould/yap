@@ -297,7 +297,8 @@ REFERENCES `contract_length_lookup` (`contract_length`);
 ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer__pbx_sales_tax_rate___sales_tax_rate_lookup
 FOREIGN KEY (`pbx_sales_tax_rate`)
-REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`);
+REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`)
+ON UPDATE CASCADE;
 
 ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer__pbx_sales_tax_status___sales_tax_status_lookup
@@ -307,7 +308,8 @@ REFERENCES `sales_tax_status_lookup` (`sales_tax_status`);
 ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer__ext_sales_tax_rate___sales_tax_rate_lookup
 FOREIGN KEY (`ext_sales_tax_rate`)
-REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`);
+REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`)
+ON UPDATE CASCADE;
 
 ALTER TABLE `customer`
 ADD CONSTRAINT fk___customer__ext_sales_tax_status___sales_tax_status_lookup
@@ -394,7 +396,8 @@ ON DELETE CASCADE;
 ALTER TABLE `invoice_item`
 ADD CONSTRAINT fk___invoice_item___sales_tax_rate_lookup
 FOREIGN KEY (`sales_tax_rate`)
-REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`);
+REFERENCES `sales_tax_rate_lookup` (`sales_tax_rate`)
+ON UPDATE CASCADE;
 
 ALTER TABLE `invoice_item`
 ADD CONSTRAINT fk___invoice_item___sales_tax_status_lookup
@@ -419,7 +422,8 @@ REFERENCES `service_product_type_lookup` (`service_product_type`);
 ALTER TABLE `service_product`
 ADD CONSTRAINT fk___service_product___supplier
 FOREIGN KEY (`supplier_name`)
-REFERENCES `supplier` (`name`);
+REFERENCES `supplier` (`name`)
+ON UPDATE CASCADE;
 
 ALTER TABLE `service_product`
 ADD CONSTRAINT fk___service_product___contract_length_lookup
