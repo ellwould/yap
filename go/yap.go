@@ -396,7 +396,7 @@ type generalFunctionParameter struct {
 type invoicePBXExtFunctionParameter struct {
 	customerID        string
 	pbxID             string
-	goodService       string
+	serviceProduct    string
 	tag               string
 	sellPrice         string
 	salesTaxRate      string
@@ -813,7 +813,7 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
                                            invoice_item (
                                              customer_id,
                                              pbx_id,
-                                             good_service_name,
+                                             service_product_name,
                                              tag,
                                              sell_price,
                                              sales_tax_rate,
@@ -826,7 +826,7 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
                                            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
 		invoicePBXExt.customerID,
 		invoicePBXExt.pbxID,
-		invoicePBXExt.goodService,
+		invoicePBXExt.serviceProduct,
 		nullSQL(invoicePBXExt.tag),
 		math.Round(sellPriceFloat64*100)/100,
 		invoicePBXExt.salesTaxRate,
@@ -4791,7 +4791,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					var invoicePBXExt invoicePBXExtFunctionParameter
 
 					invoicePBXExt.customerID = addPBXSelectCustomerID
-					invoicePBXExt.goodService = "YAP PBX Setup"
+					invoicePBXExt.serviceProduct = "⊛ YAP PBX Setup ⊛"
 					invoicePBXExt.tag = pbxID
 					invoicePBXExt.pbxID = pbxID
 					invoicePBXExt.sellPrice = setupPrice
@@ -4810,7 +4810,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					rentalPrice := selectWhere(dbDetail)
 
 					invoicePBXExt.customerID = addPBXSelectCustomerID
-					invoicePBXExt.goodService = "YAP PBX Rental"
+					invoicePBXExt.serviceProduct = "⊛ YAP PBX Rental ⊛"
 					invoicePBXExt.tag = pbxID
 					invoicePBXExt.pbxID = pbxID
 					invoicePBXExt.sellPrice = rentalPrice
@@ -5108,7 +5108,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 
 		// Variables for adding cease charge to invoice; they are safe because they are not the input from the user
 		var invoicePBXExt invoicePBXExtFunctionParameter
-		invoicePBXExt.goodService = "YAP PBX Cease"
+		invoicePBXExt.serviceProduct = "⊛ YAP PBX Cease ⊛"
 		invoicePBXExt.billItemOnce = "yes"
 		invoicePBXExt.itemOnHold = "no"
 		invoicePBXExt.contractLength = ""
@@ -5178,7 +5178,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						dbDetail.column = "customer_ext_sales_tax_status"
 						salesTaxStatus := selectWhere(dbDetail)
 
-						invoicePBXExt.goodService = "YAP Extension Cease"
+						invoicePBXExt.serviceProduct = "⊛ YAP Extension Cease ⊛"
 						invoicePBXExt.customerID = userCustomerID
 						invoicePBXExt.pbxID = deletePBXSelectPBXID
 						invoicePBXExt.tag = "Ext Cease X" + extTotal + ": " + deletePBXSelectPBXID
@@ -5193,7 +5193,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete PBX rental record from invoice_item table
-						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP Extension Rental")
+						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
 
 					}
 
@@ -5210,7 +5210,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					salesTaxStatus := selectWhere(dbDetail)
 
 					// These variables have to be here because they need validation first!
-					invoicePBXExt.goodService = "YAP PBX Cease"
+					invoicePBXExt.serviceProduct = "⊛ YAP PBX Cease ⊛"
 					invoicePBXExt.customerID = userCustomerID
 					invoicePBXExt.pbxID = deletePBXSelectPBXID
 					invoicePBXExt.tag = deletePBXSelectPBXID
@@ -5223,7 +5223,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete PBX rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP PBX Rental")
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
@@ -5278,7 +5278,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						dbDetail.column = "customer_ext_sales_tax_status"
 						salesTaxStatus := selectWhere(dbDetail)
 
-						invoicePBXExt.goodService = "YAP Extension Cease"
+						invoicePBXExt.serviceProduct = "⊛ YAP Extension Cease ⊛"
 						invoicePBXExt.customerID = genDetail.userCustomerID
 						invoicePBXExt.pbxID = deletePBXSelectPBXID
 						invoicePBXExt.tag = "Ext Cease X" + extTotal + ": " + deletePBXSelectPBXID
@@ -5293,7 +5293,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete PBX rental record from invoice_item table
-						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP Extension Rental")
+						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
 
 					}
 
@@ -5310,7 +5310,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					salesTaxStatus := selectWhere(dbDetail)
 
 					// These variables have to be here because they need validation first!
-					invoicePBXExt.goodService = "YAP PBX Cease"
+					invoicePBXExt.serviceProduct = "⊛ YAP PBX Cease ⊛"
 					invoicePBXExt.customerID = genDetail.userCustomerID
 					invoicePBXExt.pbxID = deletePBXSelectPBXID
 					invoicePBXExt.tag = deletePBXSelectPBXID
@@ -5323,7 +5323,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete PBX rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND good_service_name = ?;`, deletePBXSelectPBXID, "YAP PBX Rental")
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
@@ -6067,6 +6067,8 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			// Do Nothing
 		} else if genDetail.userTypeID == "300" && addExtInputExt == "" && addExtSelectCodecAllowed == "" {
 			// Do Nothing
+		} else if genDetail.userTypeID == "301" && addExtInputExt == "" && addExtSelectCodecAllowed == "" {
+			// Do Nothing
 		} else if genDetail.userTypeID == "100" && validatePBXID == false {
 			messageHTML(w, validationMessagePBX, "warning")
 		} else if genDetail.userTypeID == "200" && validatePBXWhereID == false {
@@ -6294,7 +6296,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 						invoicePBXExt.customerID = genDetail.userCustomerID
 						invoicePBXExt.pbxID = addExtSelectPBXID
-						invoicePBXExt.goodService = "YAP Extension Setup"
+						invoicePBXExt.serviceProduct = "⊛ YAP Extension Setup ⊛"
 						invoicePBXExt.tag = extPBXID
 						invoicePBXExt.sellPrice = setupPrice
 						invoicePBXExt.salesTaxRate = salesTaxRate
@@ -6313,7 +6315,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 						invoicePBXExt.customerID = genDetail.userCustomerID
 						invoicePBXExt.pbxID = addExtSelectPBXID
-						invoicePBXExt.goodService = "YAP Extension Rental"
+						invoicePBXExt.serviceProduct = "⊛ YAP Extension Rental ⊛"
 						invoicePBXExt.tag = extPBXID
 						invoicePBXExt.sellPrice = rentalPrice
 						invoicePBXExt.salesTaxRate = salesTaxRate
@@ -6622,7 +6624,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 			// These variables have to be here because they need validation first!
 			// Variables for adding cease charge to invoice; they are safe because they are not the input from the user
 			var invoicePBXExt invoicePBXExtFunctionParameter
-			invoicePBXExt.goodService = "YAP Extension Cease"
+			invoicePBXExt.serviceProduct = "⊛ YAP Extension Cease ⊛"
 			invoicePBXExt.billItemOnce = "yes"
 			invoicePBXExt.itemOnHold = "no"
 			invoicePBXExt.contractLength = ""
@@ -6676,7 +6678,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete Ext rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND good_service_name = ?;`, deleteExtInputExt, customerID, "YAP Extension Rental")
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;`, deleteExtInputExt, customerID, "⊛ YAP Extension Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
@@ -6730,7 +6732,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete Ext rental record from invoice_item table
-						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND good_service_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "YAP Extension Rental")
+						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
 
 					} else {
 						messageHTML(w, validationMessageExtNotDeleted, "warning")
@@ -6775,7 +6777,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete Ext rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND good_service_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "YAP Extension Rental")
+					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
 				}
@@ -6794,26 +6796,26 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 	if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "400" {
 
 		var (
-			invoiceItemID                     string
-			customerName                      string
-			customerID                        string
-			customerUKBased                   string
-			customerResellingMinutes          string
-			customerUKVATRegistered           string
-			customerUKVATNumber               string
-			invoiceItemTag                    string
-			invoiceItemSellPrice              string
-			invoiceItemDateTimeAdded          string
-			invoiceItemSalesTaxRate           string
-			invoiceItemSalesTaxStatus         string
-			invoiceBillItemOnce               string
-			invoiceItemOnHold                 string
-			invoiceItemContractLength         string
-			invoiceItemContractStartDate      string
-			goodServiceName                   string
-			goodServiceType                   string
-			goodServiceSupplierName           string
-			goodServiceSupplierContractLength string
+			invoiceItemID                        string
+			customerName                         string
+			customerID                           string
+			customerUKBased                      string
+			customerResellingMinutes             string
+			customerUKVATRegistered              string
+			customerUKVATNumber                  string
+			invoiceItemTag                       string
+			invoiceItemSellPrice                 string
+			invoiceItemDateTimeAdded             string
+			invoiceItemSalesTaxRate              string
+			invoiceItemSalesTaxStatus            string
+			invoiceBillItemOnce                  string
+			invoiceItemOnHold                    string
+			invoiceItemContractLength            string
+			invoiceItemContractStartDate         string
+			serviceProductName                   string
+			serviceProductType                   string
+			serviceProductSupplierName           string
+			serviceProductSupplierContractLength string
 		)
 
 		var dbTableCountInvoice databaseFunctionParameter
@@ -6949,10 +6951,10 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 							invoice_item_on_hold,
 							invoice_item_contract_length,
 							invoice_item_contract_start_date,
-							good_service_name,
-							good_service_type,
-							good_service_supplier_name,
-							good_service_supplier_contract_length
+							service_product_name,
+							service_product_type,
+							service_product_supplier_name,
+							service_product_supplier_contract_length
 					              FROM
 					  	        yap.view___invoice_item
 						      `+whereClause, genDetail.userCustomerID)
@@ -6982,10 +6984,10 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 				&invoiceItemOnHold,
 				&invoiceItemContractLength,
 				&invoiceItemContractStartDate,
-				&goodServiceName,
-				&goodServiceType,
-				&goodServiceSupplierName,
-				&goodServiceSupplierContractLength,
+				&serviceProductName,
+				&serviceProductType,
+				&serviceProductSupplierName,
+				&serviceProductSupplierContractLength,
 			)
 
 			// Error
@@ -6999,7 +7001,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 				fmt.Fprintf(w, "        <tr>")
 				fmt.Fprintf(w, "          <td>"+invoiceItemID+"</td>")
 				fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
-				fmt.Fprintf(w, "            "+goodServiceName+"<br><br>")
+				fmt.Fprintf(w, "            "+serviceProductName+"<br><br>")
 				fmt.Fprintf(w, "            <b>Service/Product Tag:</b> "+invoiceItemTag+"<br>")
 				fmt.Fprintf(w, "          </td>")
 				fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
@@ -7029,7 +7031,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 				fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
 				fmt.Fprintf(w, "            <b><u>Item Details</u></b><br><br>")
 				fmt.Fprintf(w, " 	    <b>Item Added Date & Time: </b>"+formatDateTime(invoiceItemDateTimeAdded)+"<br>")
-				fmt.Fprintf(w, "            <b>Item Type: </b>"+goodServiceType+"<br>")
+				fmt.Fprintf(w, "            <b>Item Type: </b>"+serviceProductType+"<br>")
 				if invoiceItemContractLength == "" {
 					// Do Nothing
 				} else {
@@ -7041,7 +7043,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 					fmt.Fprintf(w, "            <b>Sale VAT Status: </b>"+invoiceItemSalesTaxStatus+"<br>")
 					fmt.Fprintf(w, "            <b>Bill Item Once: </b>"+invoiceBillItemOnce+"<br>")
 					fmt.Fprintf(w, "            <b>Item on Hold: </b>"+invoiceItemOnHold+"<br>")
-					fmt.Fprintf(w, "            <b>Item Type: </b>"+goodServiceType+"<br>")
+					fmt.Fprintf(w, "            <b>Item Type: </b>"+serviceProductType+"<br>")
 					fmt.Fprintf(w, "            <hr class=\"line-table\"></h>")
 					fmt.Fprintf(w, "            <b><u>Customer Details</u></b><br><br>")
 					fmt.Fprintf(w, "            <b>Reselling Minutes: </b>"+customerResellingMinutes+"<br>")
@@ -7050,8 +7052,8 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 					fmt.Fprintf(w, "            <b>UK VAT Number: </b>"+customerUKVATNumber+"<br>")
 					fmt.Fprintf(w, "            <hr class=\"line-table\"></h>")
 					fmt.Fprintf(w, "            <b><u>Supplier Details</u></b><br><br>")
-					fmt.Fprintf(w, "            <b>Name: </b>"+goodServiceSupplierName+"<br>")
-					fmt.Fprintf(w, "            <b>Supplier Contract Length: </b>"+goodServiceSupplierContractLength)
+					fmt.Fprintf(w, "            <b>Supplier Name: </b>"+serviceProductSupplierName+"<br>")
+					fmt.Fprintf(w, "            <b>Supplier Contract Length: </b>"+serviceProductSupplierContractLength)
 				}
 				fmt.Fprintf(w, "          </td>")
 				if genDetail.userTypeID == "100" {
@@ -7139,12 +7141,12 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		selectDoubleHTML(w, "add_invoice_select_customer_id", "Customer", customerIDNameList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		dbDetail.table = "good_service"
+		dbDetail.table = "service_product"
 		dbDetail.column = "name"
-		goodServiceList := singleColumnSlice(dbDetail)
-		goodServiceList = append([]string{""}, goodServiceList...)
-		goodServiceList = slices.Delete(goodServiceList, 1, 7)
-		selectSingleHTML(w, "add_invoice_select_good_service", "Service/Product (Cannot Be Empty)", goodServiceList)
+		serviceProductList := singleColumnSlice(dbDetail)
+		serviceProductList = append([]string{""}, serviceProductList...)
+		serviceProductList = serviceProductList[:len(serviceProductList)-6]
+		selectSingleHTML(w, "add_invoice_select_service_product", "Service/Product (Cannot Be Empty)", serviceProductList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		fmt.Fprintf(w, "          </td>")
@@ -7198,7 +7200,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		fmt.Fprintf(w, "</form>")
 
 		addInvoiceSelectCustomerID := r.FormValue("add_invoice_select_customer_id")
-		addInvoiceSelectGoodService := r.FormValue("add_invoice_select_good_service")
+		addInvoiceSelectServiceProduct := r.FormValue("add_invoice_select_service_product")
 		addInvoiceInputTag := r.FormValue("add_invoice_input_tag")
 		addInvoiceInputSellPrice := r.FormValue("add_invoice_input_price")
 		addInvoiceSelectSalesTaxRate := r.FormValue("add_invoice_select_sales_tax_rate")
@@ -7213,8 +7215,8 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		customerIDList = append(customerIDList, "")
 		validateCustomerID := slices.Contains(customerIDList, addInvoiceSelectCustomerID)
 
-		// Validate good/service is contained in the slice
-		validateGoodService := slices.Contains(goodServiceList, addInvoiceSelectGoodService)
+		// Validate service/product is contained in the slice
+		validateServiceProduct := slices.Contains(serviceProductList, addInvoiceSelectServiceProduct)
 
 		// Validate the good/service tag
 		validateTag := validateInput(addInvoiceInputTag, "alphaNumEmpty")
@@ -7240,11 +7242,11 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		// Validate the contract start date
 		validateStartDate := validateInput(addInvoiceInputContractStartDate, "date")
 
-		if addInvoiceSelectCustomerID == "" && addInvoiceSelectGoodService == "" && addInvoiceInputTag == "" && addInvoiceInputSellPrice == "" && addInvoiceSelectSalesTaxRate == "" && addInvoiceSelectSalesTaxStatus == "" && addInvoiceSelectBillItemOnce == "" && addInvoiceSelectItemOnHold == "" && addInvoiceSelectContractLength == "" && addInvoiceInputContractStartDate == "" {
+		if addInvoiceSelectCustomerID == "" && addInvoiceSelectServiceProduct == "" && addInvoiceInputTag == "" && addInvoiceInputSellPrice == "" && addInvoiceSelectSalesTaxRate == "" && addInvoiceSelectSalesTaxStatus == "" && addInvoiceSelectBillItemOnce == "" && addInvoiceSelectItemOnHold == "" && addInvoiceSelectContractLength == "" && addInvoiceInputContractStartDate == "" {
 			// Do Nothing
 		} else if validateCustomerID == false || addInvoiceSelectCustomerID == "" {
 			messageHTML(w, validationMessageCustomer, "warning")
-		} else if validateGoodService == false || addInvoiceSelectGoodService == "" {
+		} else if validateServiceProduct == false || addInvoiceSelectServiceProduct == "" {
 			messageHTML(w, validationMessageInvoiceServiceProduct, "warning")
 		} else if validateTag == false {
 			messageHTML(w, validationMessageInvoiceServiceProductTag, "warning")
@@ -7273,7 +7275,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
         	              		     INTO
         	              		   invoice_item (
 					     customer_id,
-					     good_service_name,
+					     service_product_name,
 					     tag,
 					     sell_price,
 					     sales_tax_rate,
@@ -7285,7 +7287,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 					   )
 					   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
 				addInvoiceSelectCustomerID,
-				addInvoiceSelectGoodService,
+				addInvoiceSelectServiceProduct,
 				nullSQL(addInvoiceInputTag),
 				math.Round(addInvoiceInputSellPriceFloat64*100)/100,
 				addInvoiceSelectSalesTaxRate,
@@ -7380,7 +7382,298 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 
 //----------------------------------------------------------------------------------------------------
 
-// Server log page functions
+// Service/Products page functions
+
+// Service/products list function
+func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetail generalFunctionParameter) {
+
+	if genDetail.userTypeID == "100" {
+
+		// service_product table columns
+		var (
+			serviceProductName                   string
+			serviceProductType                   string
+			serviceProductSupplierName           string
+			serviceProductSupplierContractLength string
+			serviceProductDateTimeAdded          string
+		)
+
+		// sales_tax_rate table column
+		var (
+			salesTaxRate string
+		)
+
+		// supplier table column
+		var (
+			supplierName          string
+			supplierDateTimeAdded string
+		)
+
+		var dbTableCountServiceProduct databaseFunctionParameter
+		dbTableCountServiceProduct.connection = dbDetail.connection
+		dbTableCountServiceProduct.database = dbDetail.database
+		dbTableCountServiceProduct.table = "view___service_product"
+
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-service-product\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-service-product\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Total Services/Products Available</th>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "        <tr>")
+		dbTableCountServiceProduct.countMinusOne = false
+		fmt.Fprintf(w, "          <td>"+totalTableCount(dbTableCountServiceProduct)+"</td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><button onclick=\"toggleServiceProduct() \"class=\"button-general button-service-product\">&nbsp Show/Hide Services/Products &nbsp</button></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
+		fmt.Fprintf(w, "<div id=\"service-product-div\" style=\"display:none\">")
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-service-product\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Service/Product Information:</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "    <br>")
+		var inputTableHTMLArgument jsFunctionParameter
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "service-product-input-name"
+		inputTableHTMLArgument.funcNameJS = "serviceProductSearchName"
+		inputTableHTMLArgument.placeholder = "Service/Product Name"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "service-product-input-type"
+		inputTableHTMLArgument.funcNameJS = "serviceProductSearchType"
+		inputTableHTMLArgument.placeholder = "Service/Product Type"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "service-product-input-supplier-name"
+		inputTableHTMLArgument.funcNameJS = "serviceProductSearchSupplierName"
+		inputTableHTMLArgument.placeholder = "Service/Product Supplier Name"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "service-product-input-supplier-contract-length"
+		inputTableHTMLArgument.funcNameJS = "serviceProductSearchSupplierContractLength"
+		inputTableHTMLArgument.placeholder = "Supplier Contract Length"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		fmt.Fprintf(w, "    <br><br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "service-product-input-date-time"
+		inputTableHTMLArgument.funcNameJS = "serviceProductSearchDateTime"
+		inputTableHTMLArgument.placeholder = "Date & Time Added"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		var exportCSVButtonHTMLArgument jsFunctionParameter
+		exportCSVButtonHTMLArgument.funcNameJS = "ServiceProductInfo"
+		exportCSVButtonHTMLArgument.buttonCSS = "button-service-product"
+		exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"service-product-info-table\" class=\"table-service-product\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Service/Product Name</th>")
+		fmt.Fprintf(w, "          <th>Service/Product Type</th>")
+		fmt.Fprintf(w, "          <th>Supplier Name</th>")
+		fmt.Fprintf(w, "          <th>Supplier Contract Length</th>")
+		fmt.Fprintf(w, "          <th>Date & Time Added</th>")
+		fmt.Fprintf(w, "        </tr>")
+		serviceProductInfoSQL, err := dbDetail.connection.Query(`SELECT
+									   service_product_name,
+									   service_product_type,
+									   service_product_supplier_name,
+									   service_product_supplier_contract_length,
+									   service_product_date_time_added
+									 FROM
+									   yap.view___service_product;`)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for serviceProductInfoSQL.Next() {
+
+			err = serviceProductInfoSQL.Scan(
+				&serviceProductName,
+				&serviceProductType,
+				&serviceProductSupplierName,
+				&serviceProductSupplierContractLength,
+				&serviceProductDateTimeAdded,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+serviceProductName+"</td>")
+			fmt.Fprintf(w, "          <td>"+serviceProductType+"</td>")
+			fmt.Fprintf(w, "          <td>"+serviceProductSupplierName+"</td>")
+			fmt.Fprintf(w, "          <td>"+serviceProductSupplierContractLength+"</td>")
+			fmt.Fprintf(w, "          <td>"+formatDateTime(serviceProductDateTimeAdded)+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+		fmt.Fprintf(w, "      </table>")
+		var filterTableJSArgument jsFunctionParameter
+		filterTableJSArgument.tableID = "service-product-info-table"
+
+		filterTableJSArgument.funcNameJS = "serviceProductSearchName"
+		filterTableJSArgument.inputID = "service-product-input-name"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "serviceProductSearchType"
+		filterTableJSArgument.inputID = "service-product-input-type"
+		filterTableJSArgument.columnNumber = 1
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "serviceProductSearchSupplierName"
+		filterTableJSArgument.inputID = "service-product-input-supplier-name"
+		filterTableJSArgument.columnNumber = 2
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "serviceProductSearchSupplierContractLength"
+		filterTableJSArgument.inputID = "service-product-input-supplier-contract-length"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.funcNameJS = "serviceProductSearchDateTime"
+		filterTableJSArgument.inputID = "service-product-input-date-time"
+		filterTableJSArgument.columnNumber = 4
+		filterTableJS(w, filterTableJSArgument)
+
+		var exportCSVJSArgument jsFunctionParameter
+		exportCSVJSArgument.funcNameJS = "ServiceProductInfo"
+		exportCSVJSArgument.tableID = "service-product-info-table"
+		exportCSVJSArgument.fileName = "YAP_service_product_information_details"
+		exportCSVJSArgument.pathURL = "service-product"
+		exportCSVJS(w, exportCSVJSArgument)
+
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-service-product\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Service/Product Suppliers Available:</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <td>")
+		fmt.Fprintf(w, "      <table id=\"service-product-supplier-table\" class=\"table-service-product-supplier\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Supplier Name</th>")
+		fmt.Fprintf(w, "          <th>Date & Time Added</th>")
+		fmt.Fprintf(w, "        </tr>")
+
+		supplierSQL, err := dbDetail.connection.Query(`SELECT
+                                                                 name,
+                                                                 date_time_added
+                                                               FROM
+                                                                 yap.supplier;`)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for supplierSQL.Next() {
+
+			err = supplierSQL.Scan(
+				&supplierName,
+				&supplierDateTimeAdded,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+supplierName+"</td>")
+			fmt.Fprintf(w, "          <td>"+formatDateTime(supplierDateTimeAdded)+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </td>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-service-product\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Sales Tax Rates Used:</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <td>")
+		fmt.Fprintf(w, "      <table id=\"sales-tax-rate-table\" class=\"table-sales-tax-rate\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Sales Tax Rates</th>")
+		fmt.Fprintf(w, "        </tr>")
+
+		salesTaxRateSQL, err := dbDetail.connection.Query(`SELECT
+                                                                     sales_tax_rate
+                                                                   FROM
+                                                                     yap.sales_tax_rate_lookup;`)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for salesTaxRateSQL.Next() {
+
+			err = salesTaxRateSQL.Scan(
+				&salesTaxRate,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+salesTaxRate+"&#37</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </td>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
+		fmt.Fprintf(w, "</div>")
+		var toggleDivJSArgument jsFunctionParameter
+		toggleDivJSArgument.funcNameJS = "toggleServiceProduct"
+		toggleDivJSArgument.divID = "service-product-div"
+		toggleDivJS(w, toggleDivJSArgument)
+
+	} else {
+		panic("productServiceList function shoud only be called with account type ID 100")
+	}
+}
 
 //----------------------------------------------------------------------------------------------------
 
@@ -7540,7 +7833,7 @@ func main() {
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Server<br>Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Services &<br>Products<br>&#128230", hyperlink: "/service-product", headerCSS: "header-service-product", buttonCSS: "button-service-product"}
 				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -7571,10 +7864,6 @@ func main() {
 				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "Customer<br>Invoice<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
 				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Customer & PBX<br>Server Logs<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
-				mainMenuButton(mainMenuButtonSix)
-				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "201" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Main Menu", "", extraButtonName, extraButtonURL)
@@ -7593,15 +7882,11 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBXs for the<br>Customer<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
-				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
-				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "300" {
@@ -7621,11 +7906,6 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonThree)
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Server Log<br>&#128221", hyperlink: "/server-log", headerCSS: "header-server-log", buttonCSS: "button-server-log"}
-				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "301" || userTypeID == "302" {
@@ -7988,6 +8268,7 @@ func main() {
 				extAdd(w, r, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				extEdit(w, r, dbDetail, genDetail)
+				footer(w, "header-ext", "button-ext")
 			} else if userTypeID == "302" {
 				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
 				extList(w, dbDetail, genDetail)
@@ -8065,17 +8346,54 @@ func main() {
 		fmt.Fprintf(w, endHTML)
 	})
 
-	// Server Log Page
-	http.HandleFunc("/server-log", func(w http.ResponseWriter, r *http.Request) {
+	// Service product Page
+	http.HandleFunc("/service-product", func(w http.ResponseWriter, r *http.Request) {
+
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
+
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
 
 		fmt.Fprintf(w, startHTML)
-		header(w, "Server Logs", "header-server-log", extraButtonName, extraButtonURL)
 
 		// Wallpaper
-		wallpaper(w, "wallpaper-server-log")
+		wallpaper(w, "wallpaper-service-product")
 
-		footer(w, "header-server-log", "button-server-log")
-		fmt.Fprintf(w, endHTML)
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountData(dbDetail, "type_id")
+		userCustomerID := userAccountData(dbDetail, "customer_id")
+
+		var genDetail generalFunctionParameter
+		genDetail.userTypeID = userTypeID
+		genDetail.userCustomerID = userCustomerID
+		genDetail.defaultExtLimit = defaultExtLimit
+
+		if userTypeID == "" {
+			errorBox(w, "email_error", "header-service-product", "button-service-product")
+		} else {
+			if userTypeID == "100" {
+				header(w, "YAP Admin Account<br>Service/Product Information", "header-service-product", extraButtonName, extraButtonURL)
+				serviceProductList(w, dbDetail, genDetail)
+				footer(w, "header-service-product", "button-service-product")
+			} else {
+				errorBox(w, "account_type_error", "header-service-product", "button-service-product")
+			}
+		}
 	})
 
 	yapPort := os.Getenv("yapPort")
