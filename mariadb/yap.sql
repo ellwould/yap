@@ -116,7 +116,7 @@ ENGINE = InnoDB;
 CREATE TABLE `invoice_item` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `customer_id` VARCHAR(255) NOT NULL,
-  `pbx_id` BIGINT UNSIGNED,
+  `pbx_id` BIGINT UNSIGNED NOT NULL,
   `tag` VARCHAR(255),
   `service_product_name` VARCHAR(255) NOT NULL,
   `sell_price` DECIMAL(8,2) NOT NULL,
@@ -253,6 +253,9 @@ ADD INDEX `index___ps_auths__pbx_id` (`pbx_id`);
 
 ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__customer_id` (`customer_id`);
+
+ALTER TABLE `invoice_item`
+ADD INDEX `index___invoice_item__pbx_id` (`pbx_id`);
 
 ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__sales_tax_rate` (`sales_tax_rate`);
@@ -392,6 +395,11 @@ ADD CONSTRAINT fk___invoice_item___customer_id
 FOREIGN KEY (`customer_id`)
 REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
+
+ALTER TABLE `invoice_item`
+ADD CONSTRAINT fk___invoice_item___pbx_id
+FOREIGN KEY (`pbx_id`)
+REFERENCES `pbx` (`id`);
 
 ALTER TABLE `invoice_item`
 ADD CONSTRAINT fk___invoice_item___sales_tax_rate_lookup
@@ -660,9 +668,9 @@ FROM `service_product`;
 
 INSERT INTO `sales_tax_rate_lookup` (`sales_tax_rate`)
 VALUES
-  (20),
-  (5),
-  (0);
+  (20.0),
+  (5.0),
+  (0.0);
 
 INSERT INTO `sales_tax_status_lookup` (`sales_tax_status`)
 VALUES
