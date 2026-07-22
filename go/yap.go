@@ -1156,6 +1156,15 @@ const validationMessageSalesTaxRateDoesNotExist string = "Sales tax rate" + vali
 const validationMessageSalesTaxRateDeleted string = "Sales tax rate" + validationMessageDeleted
 const validationMessageSalesTaxRateNotDeleted string = "Sales tax rate" + validationMessageNotDeleted
 
+const validationMessageServiceProductID string = "Service/product ID" + validationMessageNumber
+const validationMessageServiceProductColumn string = validationMessageInvalidOption + "service/product column"
+
+const validationMessageSupplierExistingValue string = ""
+const validationMessageSupplierColumn string = ""
+
+const validationMessageSalesTaxRateColumn string = validationMessageInvalidOption + "sales tax rate column"
+const validationMessageGenericTax string = ""
+
 // General/multi-page HTML messsages
 const validationMessageCustomer string = validationMessageInvalidOption + "customer"
 const validationMessageEmailAlreadyExist string = "Email" + validationMessageAlreadyExist
@@ -1165,6 +1174,7 @@ const validationMessagePBXAlreadyExist string = "PBX" + validationMessageAlready
 const validationMessagePBXDoesNotExist string = "PBX" + validationMessageDoesNotExist
 const validationMessageGenericInvalidOption string = "Invalid option selected"
 const validationMessageGenericAlphaNumEmpty string = "value " + validationMessageAlphaNumEmpty
+const validationMessageGenericAlphaNum string = "Value " + validationMessageAlphaNum
 const validationMessageGenericPrice string = "Price" + validationMessagePrice
 const validationMessageConfirmation string = "Confirmation must be yes"
 const validationMessageContractLength string = validationMessageInvalidOption + "contract length"
@@ -1252,7 +1262,7 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else if valueType == "date" {
-		validateInputDateErr := validateInput.Var(value, "datetime=2006-01-02")
+		validateInputDateErr := validateInput.Var(value, "omitempty,datetime=2006-01-02")
 		if validateInputDateErr != nil {
 			validation = false
 			return
@@ -1289,7 +1299,7 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else {
-		panic("The validateInput function can only take the following arguments: email, phoneNumber, alphaNum, alphaNumEmpty, price, data, ipAddress, filePath or extension")
+		panic("The validateInput function can only take the following arguments: email, phoneNumber, alphaNum, alphaNumEmpty, price, tax, data, ipAddress, filePath or extension")
 	}
 }
 
@@ -7324,6 +7334,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
         	              		     INTO
         	              		   invoice_item (
 					     customer_id,
+					     pbx_id,
 					     service_product_name,
 					     tag,
 					     sell_price,
@@ -7334,8 +7345,9 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 					     contract_length,
 					     contract_start_date
 					   )
-					   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+					   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
 				addInvoiceSelectCustomerID,
+				"1",
 				addInvoiceSelectServiceProduct,
 				nullSQL(addInvoiceInputTag),
 				math.Round(addInvoiceInputSellPriceFloat64*100)/100,
@@ -7411,7 +7423,7 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 				messageHTML(w, validationMessageInvoiceDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;`, deleteInvoiceInputInvoiceID, "")
+				dbDetail.connection.Query(`DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;`, deleteInvoiceInputInvoiceID, "1")
 
 				checkInvoiceDeleted := selectWhere(dbDetail)
 
@@ -7440,6 +7452,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 
 		// service_product table columns
 		var (
+			serviceProductID                     string
 			serviceProductName                   string
 			serviceProductType                   string
 			serviceProductSupplierName           string
@@ -7493,6 +7506,11 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		fmt.Fprintf(w, "    <br>")
 		var inputTableHTMLArgument jsFunctionParameter
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "service-product-input-id"
+		inputTableHTMLArgument.funcNameJS = "serviceProductSearchID"
+		inputTableHTMLArgument.placeholder = "Service/Product ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "service-product-input-name"
 		inputTableHTMLArgument.funcNameJS = "serviceProductSearchName"
 		inputTableHTMLArgument.placeholder = "Service/Product Name"
@@ -7508,12 +7526,13 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		inputTableHTMLArgument.placeholder = "Service/Product Supplier Name"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "service-product-input-supplier-contract-length"
 		inputTableHTMLArgument.funcNameJS = "serviceProductSearchSupplierContractLength"
 		inputTableHTMLArgument.placeholder = "Supplier Contract Length"
 		inputTableHTML(w, inputTableHTMLArgument)
-		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
-		fmt.Fprintf(w, "    <br><br>")
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "service-product-input-date-time"
 		inputTableHTMLArgument.funcNameJS = "serviceProductSearchDateTime"
@@ -7536,6 +7555,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		fmt.Fprintf(w, "    <th>")
 		fmt.Fprintf(w, "      <table id=\"service-product-info-table\" class=\"table-service-product\">")
 		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Service/Product ID</th>")
 		fmt.Fprintf(w, "          <th>Service/Product Name</th>")
 		fmt.Fprintf(w, "          <th>Service/Product Type</th>")
 		fmt.Fprintf(w, "          <th>Supplier Name</th>")
@@ -7543,6 +7563,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		fmt.Fprintf(w, "          <th>Date & Time Added</th>")
 		fmt.Fprintf(w, "        </tr>")
 		serviceProductInfoSQL, err := dbDetail.connection.Query(`SELECT
+									   service_product_id,
 									   service_product_name,
 									   service_product_type,
 									   service_product_supplier_name,
@@ -7560,6 +7581,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		for serviceProductInfoSQL.Next() {
 
 			err = serviceProductInfoSQL.Scan(
+				&serviceProductID,
 				&serviceProductName,
 				&serviceProductType,
 				&serviceProductSupplierName,
@@ -7573,6 +7595,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 			}
 
 			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+serviceProductID+"</td>")
 			fmt.Fprintf(w, "          <td>"+serviceProductName+"</td>")
 			fmt.Fprintf(w, "          <td>"+serviceProductType+"</td>")
 			fmt.Fprintf(w, "          <td>"+serviceProductSupplierName+"</td>")
@@ -7585,29 +7608,34 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		var filterTableJSArgument jsFunctionParameter
 		filterTableJSArgument.tableID = "service-product-info-table"
 
+		filterTableJSArgument.funcNameJS = "serviceProductSearchID"
+		filterTableJSArgument.inputID = "service-product-input-id"
+		filterTableJSArgument.columnNumber = 0
+		filterTableJS(w, filterTableJSArgument)
+
 		filterTableJSArgument.funcNameJS = "serviceProductSearchName"
 		filterTableJSArgument.inputID = "service-product-input-name"
-		filterTableJSArgument.columnNumber = 0
+		filterTableJSArgument.columnNumber = 1
 		filterTableJS(w, filterTableJSArgument)
 
 		filterTableJSArgument.funcNameJS = "serviceProductSearchType"
 		filterTableJSArgument.inputID = "service-product-input-type"
-		filterTableJSArgument.columnNumber = 1
+		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
 
 		filterTableJSArgument.funcNameJS = "serviceProductSearchSupplierName"
 		filterTableJSArgument.inputID = "service-product-input-supplier-name"
-		filterTableJSArgument.columnNumber = 2
+		filterTableJSArgument.columnNumber = 3
 		filterTableJS(w, filterTableJSArgument)
 
 		filterTableJSArgument.funcNameJS = "serviceProductSearchSupplierContractLength"
 		filterTableJSArgument.inputID = "service-product-input-supplier-contract-length"
-		filterTableJSArgument.columnNumber = 3
+		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
 
 		filterTableJSArgument.funcNameJS = "serviceProductSearchDateTime"
 		filterTableJSArgument.inputID = "service-product-input-date-time"
-		filterTableJSArgument.columnNumber = 4
+		filterTableJSArgument.columnNumber = 5
 		filterTableJS(w, filterTableJSArgument)
 
 		var exportCSVJSArgument jsFunctionParameter
@@ -7958,6 +7986,10 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 			messageHTML(w, validationMessageConfirmation, "warning")
 		} else if validateSalesTaxRate == true && addSalesTaxRateSelectConfirm == "yes" {
 
+			addSalesTaxRateInputRateFloat64 := stringToFloat64(addSalesTaxRateInputRate)
+			addSalesTaxRateInputRateFloat64 = math.Round(addSalesTaxRateInputRateFloat64*100) / 100
+			addSalesTaxRateInputRate = strconv.FormatFloat(addSalesTaxRateInputRateFloat64, 'f', 2, 64)
+
 			dbDetail.table = "sales_tax_rate_lookup"
 			dbDetail.column = "sales_tax_rate"
 			dbDetail.columnWhere = "sales_tax_rate"
@@ -7996,69 +8028,29 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 // Service/Product edit function
 func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, genDetail generalFunctionParameter) {
 
-	// Only account type ID 100, 200, 201, 300, 301 should be able to use this function
-	if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
+	// Only account type ID 100 should be able to use this function
+	if genDetail.userTypeID == "100" {
 
-		// List of all column names to edit in the ps_endpoints table
-		extColumnList := [][]string{
-			{"password", "Generate New Ext Password"},
-			{"allow", "Codec"},
-			{"dtmf_mode", "DTMF Mode"},
-			{"named_call_group", "Call Group"},
-			{"named_pickup_group", "Pickup Group"},
-			{"media_encryption", "Media Encryption"},
-			{"ice_support", "ICE Support"},
-			{"direct_media", "Direct Media"},
-			{"direct_media_method", "Direct Media Method"},
-			{"rewrite_contact", "Rewrite Contact"},
-			{"rtp_symmetric", "RTP Symmetric"},
-			{"force_rport", "Force RPort"},
-			{"permit", "Restrict to IP Address"},
+		// List of all column names to edit in the service_product table
+		serviceProductColumnList := [][]string{
+			{"name", "Service/Product Name"},
+			{"service_product_type", "Service/Product Type"},
+			{"supplier_name", "Supplier Name"},
+			{"supplier_contract_length", "Supplier Contract Length"},
 		}
 
-		extExtraColumnList := [][]string{
-			{"allow_transfer", "Allow Transfer"},
-			{"callerid", "Caller ID"},
-			{"callerid_privacy", "Caller ID Privacy"},
-			{"contact_user", "SIP Header - Contact User"},
-			{"from_user", "SIP Header - From User"},
-			{"from_domain", "SIP Header - From Domain"},
-			{"stir_shaken", "Stir Shaken"},
-			{"stir_shaken_profile", "Stir Shaken Profile"},
-		}
-
-		extExtraColumnList = append(extColumnList, extExtraColumnList...)
-
-		fmt.Fprintf(w, "<form method=\"POST\" action=\"/extension\">")
-		fmt.Fprintf(w, "<table class=\"table-ext\">")
+		fmt.Fprintf(w, "<form method=\"POST\" action=\"/service-product\">")
+		fmt.Fprintf(w, "<table class=\"table-service-product\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Edit Extension Details</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Edit Service/Product Details</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
 		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
-		fmt.Fprintf(w, "      <b>Generate New Ext Password:</b> yes<br>")
-		fmt.Fprintf(w, "      <b>Codec:</b> alaw, ulaw<br>")
-		fmt.Fprintf(w, "      <b>Call Group:</b> text<br>")
-		fmt.Fprintf(w, "      <b>Pickup Group:</b> text<br>")
-		fmt.Fprintf(w, "      <b>Media Encryption:</b> sdes, no<br>")
-		fmt.Fprintf(w, "      <b>ICE Support:</b> yes, no<br>")
-		fmt.Fprintf(w, "      <b>Direct Media:</b> yes, no<br>")
-		fmt.Fprintf(w, "      <b>Direct Media Method:</b> invite, reinvite, update<br>")
-		fmt.Fprintf(w, "      <b>Rewrite Contact:</b> yes, no<br>")
-		fmt.Fprintf(w, "      <b>RTP Symmetric:</b> yes, no<br>")
-		fmt.Fprintf(w, "      <b>Force RPort:</b> yes, no<br>")
-		fmt.Fprintf(w, "      <b>Restrict to IP Address:</b> Valid IP Address<br>")
-		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "      <b>Allow Transfer:</b> yes, no<br>")
-			fmt.Fprintf(w, "      <b>Caller ID:</b> text<br>")
-			fmt.Fprintf(w, "      <b>Caller ID Privacy:</b> allowed_not_screened, allowed_passed_screen, allowed_failed_screen, allowed, prohib_not_screened, prohib_passed_screen, prohib_failed_screen, prohib, unavailable<br>")
-			fmt.Fprintf(w, "      <b>SIP Header - Contact User:</b> text<br>")
-			fmt.Fprintf(w, "      <b>SIP Header - From User:</b> text<br>")
-			fmt.Fprintf(w, "      <b>SIP Header - From Domain:</b> text<br>")
-			fmt.Fprintf(w, "      <b>Stir Shaken:</b> yes, no<br>")
-			fmt.Fprintf(w, "      <b>Stir Shaken Profile:</b> Valid File Path<br>")
-		}
+		fmt.Fprintf(w, "      <b>Service/Product Name:</b> text<br>")
+		fmt.Fprintf(w, "      <b>Service/Product Type:</b> Services, Products<br>")
+		fmt.Fprintf(w, "      <b>Supplier Name:</b> text<br>")
+		fmt.Fprintf(w, "      <b>Supplier Contract Length:</b> text<br>")
 		fmt.Fprintf(w, "    </td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
@@ -8066,160 +8058,195 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
 		fmt.Fprintf(w, "        <tr>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_ext_input_ext", "Ext (Cannot Be Empty)")
+		inputHTML(w, "edit_service_product_input_id", "Service/Product (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		if genDetail.userTypeID == "100" {
-			selectDoubleHiddenHTML(w, "edit_ext_select_column", "Column to Edit (Cannot Be Empty)", extExtraColumnList)
-		} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-			selectDoubleHiddenHTML(w, "edit_ext_select_column", "Column to Edit (Cannot Be Empty)", extColumnList)
-		}
+		selectDoubleHiddenHTML(w, "edit_service_product_select_column", "Column to Edit (Cannot Be Empty)", serviceProductColumnList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "edit_ext_input_new_value", "New Value")
+		inputHTML(w, "edit_service_product_input_new_value", "New Value")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "      </table>")
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update Extension\"></th>")
+		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update Service/Product\"></th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "</form>")
 
-		editExtInputExt := r.FormValue("edit_ext_input_ext")
-		editExtSelectColumn := r.FormValue("edit_ext_select_column")
-		editExtInputNewValue := r.FormValue("edit_ext_input_new_value")
+		editServiceProductInputID := r.FormValue("edit_service_product_input_id")
+		editServiceProductSelectColumn := r.FormValue("edit_service_product_select_column")
+		editServiceProductInputNewValue := r.FormValue("edit_service_product_input_new_value")
 
-		// Validate Ext
-		validateExt := validateInput(editExtInputExt, "extension")
+		// Validate service/product ID
+		validateServiceProductID := validateInput(editServiceProductInputID, "number")
 
-		var pbxID string
-
-		// If the userTypeID is 300 or 301 then set the pbxID to the user account userPBXID
-		if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-			pbxID = genDetail.userPBXID
-		}
-
-		// If the userTypeID is 200 or 201 then get the extensions pbxID and set it
-		dbDetail.table = "view___sip_extension_detail"
-		dbDetail.column = "pbx_id"
-		dbDetail.columnWhere = "sip_username"
-		dbDetail.columnWhereAnd = "customer_id"
-
-		if editExtInputExt == "" && editExtSelectColumn == "" && editExtInputNewValue == "" {
+		if editServiceProductInputID == "" && editServiceProductSelectColumn == "" && editServiceProductInputNewValue == "" {
 			// Do Nothing
-		} else if validateExt == false || editExtInputExt == "" {
-			messageHTML(w, validationMessageExt, "warning")
-		} else if editExtSelectColumn == "" {
-			messageHTML(w, validationMessageExtColumn, "warning")
-			fmt.Println("umn: ", editExtSelectColumn)
-		} else if editExtSelectColumn == "password" {
-			if editExtInputNewValue == "y" || editExtInputNewValue == "Y" || editExtInputNewValue == "yes" || editExtInputNewValue == "Yes" || editExtInputNewValue == "YES" {
-				newExtPassword := genPassword(20)
-				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ?;", newExtPassword, editExtInputExt)
-				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
-					dbDetail.columnWhereValue = editExtInputExt
-					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
-					pbxID = selectWhereAnd(dbDetail)
-					if pbxID == "" {
-						// Do Nothing
-					} else {
-						dbDetail.connection.Query("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", newExtPassword, editExtInputExt, pbxID)
-					}
-				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", newExtPassword, editExtInputExt, pbxID)
-				}
+		} else if validateServiceProductID == false || editServiceProductInputID == "" {
+			messageHTML(w, validationMessageServiceProductID, "warning")
+		} else if editServiceProductSelectColumn == "" {
+			messageHTML(w, validationMessageServiceProductColumn, "warning")
+		} else if editServiceProductInputNewValue == "⊛ YAP (Yet Another PBX) ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Setup ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Rental ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Cease ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Setup ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Rental ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Cease ⊛" {
+			messageHTML(w, validationMessageServiceProductYAP, "warning")
+		} else if editServiceProductSelectColumn == "name" || editServiceProductSelectColumn == "service_product_type" || editServiceProductSelectColumn == "supplier_name" {
+			// Validate editServiceProductInputNewValue is a string and not empty
+			validateNewValue := validateInput(editServiceProductInputNewValue, "alphaNum")
+			if validateNewValue == true {
+				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ?;", editServiceProductInputNewValue, editServiceProductInputID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 			}
-		} else if editExtSelectColumn == "allow" {
-			// Validate editExtInputNewValue is a string and not empty
-			validateNewValue := validateInput(editExtInputNewValue, "alphaNum")
+		} else if editServiceProductSelectColumn == "supplier_contract_length" {
+			// Validate editServiceProductInputNewValue is a string
+			validateNewValue := validateInput(editServiceProductInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
-				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
-				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
-					dbDetail.columnWhereValue = editExtInputExt
-					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
-					pbxID = selectWhereAnd(dbDetail)
-					if pbxID == "" {
-						// Do Nothing
-					} else {
-						dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
-					}
-				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
-				}
+				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ?;", editServiceProductInputNewValue, editServiceProductInputID)
 			} else {
-				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
-			}
-		} else if editExtSelectColumn == "editExtSelectColumn" || editExtSelectColumn == "dtmf_mode" || editExtSelectColumn == "named_call_group" || editExtSelectColumn == "named_pickup_group" || editExtSelectColumn == "media_encryption" || editExtSelectColumn == "ice_support" || editExtSelectColumn == "direct_media" || editExtSelectColumn == "direct_media_method" || editExtSelectColumn == "rewrite_contact" || editExtSelectColumn == "rtp_symmetric" || editExtSelectColumn == "force_rport" {
-			// Validate editExtInputNewValue is a string
-			validateNewValue := validateInput(editExtInputNewValue, "alphaNumEmpty")
-			if validateNewValue == true {
-				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
-				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
-					dbDetail.columnWhereValue = editExtInputExt
-					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
-					pbxID = selectWhereAnd(dbDetail)
-					if pbxID == "" {
-						// Do Nothing
-					} else {
-						dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
-					}
-				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
-				}
-			} else {
-				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
-			}
-		} else if editExtSelectColumn == "permit" {
-			// Validate editExtInputNewValue is an IP Address
-			validateNewValue := validateInput(editExtInputNewValue, "ipAddress")
-			if validateNewValue == true {
-				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
-				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
-					dbDetail.columnWhereValue = editExtInputExt
-					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
-					pbxID = selectWhereAnd(dbDetail)
-					if pbxID == "" {
-						// Do Nothing
-					} else {
-						dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
-					}
-				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
-				}
-			} else {
-				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
-			}
-		} else if genDetail.userTypeID == "100" && editExtSelectColumn == "allow_transfer" || editExtSelectColumn == "callerid" || editExtSelectColumn == "callerid_privacy" || editExtSelectColumn == "contact_user" || editExtSelectColumn == "from_user" || editExtSelectColumn == "from_domain" || editExtSelectColumn == "stir_shaken" {
-			// Validate editExtInputNewValue is a string
-			validateNewValue := validateInput(editExtInputNewValue, "alphaNumEmpty")
-			if validateNewValue == true {
-				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
-				}
-			} else {
-				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
-			}
-		} else if genDetail.userTypeID == "100" && editExtSelectColumn == "stir_shaken_profile" {
-			// Validate editExtInputNewValue is a string
-			validateNewValue := validateInput(editExtInputNewValue, "alphaNumEmpty")
-			if validateNewValue == true {
-				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
-				}
-			} else {
-				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
+				messageHTML(w, validationMessageGenericAlphaNum, "warning")
 			}
 		} else {
-			messageHTML(w, validationMessageCustomerColumn, "warning")
+			messageHTML(w, validationMessageServiceProductColumn, "warning")
+		}
+
+		// Supplier edit code
+
+		// List of column names to edit in the supplier table
+		supplierColumnList := [][]string{
+			{"name", "Supplier Name"},
+		}
+
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<form method=\"POST\" action=\"/service-product\">")
+		fmt.Fprintf(w, "<table class=\"table-service-product\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Edit Supplier Details</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
+		fmt.Fprintf(w, "      <b>Supplier Name:</b> text<br>")
+		fmt.Fprintf(w, "    </td>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "edit_supplier_input_existing_value", "Supplier Name (Cannot Be Empty)")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		selectDoubleHiddenHTML(w, "edit_supplier_select_column", "Column to Edit (Cannot Be Empty)", supplierColumnList)
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "edit_supplier_input_new_value", "New Value (Cannot Be Empty)")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update Supplier\"></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "</form>")
+
+		editSupplierInputExistingValue := r.FormValue("edit_supplier_input_existing_value")
+		editSupplierSelectColumn := r.FormValue("edit_supplier_select_column")
+		editSupplierInputNewValue := r.FormValue("edit_supplier_input_new_value")
+
+		// Validate supplier existing value
+		validateSupplierExistingValue := validateInput(editSupplierInputExistingValue, "alphaNum")
+
+		if editSupplierInputExistingValue == "" && editSupplierSelectColumn == "" && editSupplierInputNewValue == "" {
+			// Do Nothing
+		} else if validateSupplierExistingValue == false || editSupplierInputExistingValue == "" {
+			messageHTML(w, validationMessageSupplierExistingValue, "warning")
+		} else if editSupplierSelectColumn == "" {
+			messageHTML(w, validationMessageSupplierColumn, "warning")
+		} else if editSupplierInputNewValue == "⊛ YAP (Yet Another PBX) ⊛" {
+			messageHTML(w, validationMessageSupplierYAP, "warning")
+		} else if editSupplierSelectColumn == "name" {
+			// Validate editSupplierInputNewValue is a string and not empty
+			validateNewValue := validateInput(editSupplierInputNewValue, "alphaNum")
+			if validateNewValue == true {
+				dbDetail.connection.Query("UPDATE supplier SET "+editSupplierSelectColumn+" = ? WHERE name = ?;", editSupplierInputNewValue, editSupplierInputExistingValue)
+			} else {
+				messageHTML(w, validationMessageGenericAlphaNum, "warning")
+			}
+		} else {
+			messageHTML(w, validationMessageSupplierColumn, "warning")
+		}
+
+		// Sales Tax Rate name edit code
+
+		// List of column names to edit in the sales_tax_rate_lookup table
+		salesTaxRateColumnList := [][]string{
+			{"sales_tax_rate", "Sales Tax Rate"},
+		}
+
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<form method=\"POST\" action=\"/service-product\">")
+		fmt.Fprintf(w, "<table class=\"table-service-product\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Edit Sales Tax Rate</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
+		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
+		fmt.Fprintf(w, "      <b>Sales Tax Rate:</b> decimal<br>")
+		fmt.Fprintf(w, "    </td>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "edit_sales_tax_rate_input_existing_value", "Sales Tax Rate (Cannot Be Empty)")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		selectDoubleHiddenHTML(w, "edit_sales_tax_rate_select_column", "Column to Edit (Cannot Be Empty)", salesTaxRateColumnList)
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "          <td>")
+		inputHTML(w, "edit_sales_tax_rate_input_new_value", "New Value (Cannot Be Empty)")
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Update Sales Tax Rate\"></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "</form>")
+
+		editSalesTaxRateInputExistingValue := r.FormValue("edit_sales_tax_rate_input_existing_value")
+		editSalesTaxRateSelectColumn := r.FormValue("edit_sales_tax_rate_select_column")
+		editSalesTaxRateInputNewValue := r.FormValue("edit_sales_tax_rate_input_new_value")
+
+		// Validate sales tax rate existing value
+		validateSalesTaxRateExistingValue := validateInput(editSalesTaxRateInputExistingValue, "tax")
+
+		if editSalesTaxRateInputExistingValue == "" && editSalesTaxRateSelectColumn == "" && editSalesTaxRateInputNewValue == "" {
+			// Do Nothing
+		} else if validateSalesTaxRateExistingValue == false {
+			messageHTML(w, validationMessageSalesTaxRate, "warning")
+		} else if editSalesTaxRateSelectColumn == "" {
+			messageHTML(w, validationMessageSalesTaxRateColumn, "warning")
+		} else if editSalesTaxRateSelectColumn == "sales_tax_rate" {
+			// Validate editSalesTaxRateInputNewValue is a tax value and not empty
+			validateNewValue := validateInput(editSalesTaxRateInputNewValue, "tax")
+			editSalesTaxRateInputNewValueFloat64 := stringToFloat64(editSalesTaxRateInputNewValue)
+			editSalesTaxRateInputExistingValueFloat64 := stringToFloat64(editSalesTaxRateInputExistingValue)
+			if validateNewValue == true {
+				dbDetail.connection.Query("UPDATE sales_tax_rate_lookup SET "+editSalesTaxRateSelectColumn+" = ? WHERE sales_tax_rate = ?;", math.Round(editSalesTaxRateInputNewValueFloat64*100)/100, math.Round(editSalesTaxRateInputExistingValueFloat64*100)/100)
+			} else {
+				messageHTML(w, validationMessageGenericTax, "warning")
+			}
+		} else {
+			messageHTML(w, validationMessageSalesTaxRateColumn, "warning")
 		}
 	} else {
 		panic("serviceProductEdit function shoud only be called with account type ID 100")
@@ -8303,8 +8330,8 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 			messageHTML(w, "Invalid Input", "warning")
 		}
 
-		fmt.Fprintf(w, "<br>")
 		// Delete a supplier code
+		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/service-product\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
 		fmt.Fprintf(w, "  <tr>")
@@ -8374,8 +8401,8 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 			messageHTML(w, "Invalid Input", "warning")
 		}
 
-		fmt.Fprintf(w, "<br>")
 		// Delete a sales tax rate code
+		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/service-product\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
 		fmt.Fprintf(w, "  <tr>")
@@ -9163,6 +9190,8 @@ func main() {
 				serviceProductList(w, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				serviceProductAdd(w, r, dbDetail, genDetail)
+				fmt.Fprintf(w, "<br>")
+				serviceProductEdit(w, r, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				serviceProductDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-service-product", "button-service-product")
