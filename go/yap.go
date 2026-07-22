@@ -153,7 +153,7 @@ func footer(w http.ResponseWriter, headerCSS string, buttonCSS string) {
 	fmt.Fprintf(w, "</div>")
 }
 
-// Function to format ISO DATE format
+// Function to format ISO date format
 func formatDate(date string) string {
 	const (
 		iso    = "2006-01-02"
@@ -164,7 +164,7 @@ func formatDate(date string) string {
 	return string(parse.Format(layout))
 }
 
-// Function to format ISO DATETIME format
+// Function to format ISO datetime format
 func formatDateTime(dateTime string) string {
 	const (
 		iso    = "2006-01-02 15:04:05"
@@ -186,6 +186,7 @@ func currentDate() string {
 
 // Pure embedded HTML Go functions
 
+// Function to create HTML date input
 func dateHTML(w http.ResponseWriter, inputValue string, labelMessage string) {
 	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter/Select "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
@@ -193,6 +194,7 @@ func dateHTML(w http.ResponseWriter, inputValue string, labelMessage string) {
 	fmt.Fprintf(w, "<br>")
 }
 
+// Function to create HTML text input
 func inputHTML(w http.ResponseWriter, inputValue string, labelMessage string) {
 	fmt.Fprintf(w, "  <label for=\""+inputValue+"\"><b>Enter "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
@@ -208,7 +210,7 @@ func inputReadOnlyHTML(w http.ResponseWriter, inputValue string, labelMessage st
 	fmt.Fprintf(w, "<br>")
 }
 
-// Function to slice elements into HTML select options
+// Function to put slice elements into HTML select options
 func selectSingleHTML(w http.ResponseWriter, selectValue string, labelMessage string, optionValue []string) {
 	fmt.Fprintf(w, "  <label for=\""+selectValue+"\"><b>Select "+labelMessage+":</b>")
 	fmt.Fprintf(w, "  </label><br>")
@@ -381,7 +383,7 @@ type databaseFunctionParameter struct {
 	countMinusOne       bool
 }
 
-// General struct for functions
+// General struct for list/add/edit/delete functions
 type generalFunctionParameter struct {
 	userID                  string
 	userTypeID              string
@@ -407,7 +409,7 @@ type invoicePBXExtFunctionParameter struct {
 	contractStartDate string
 }
 
-// Function to insert NULL value into database
+// Function to insert NULL value into database column
 func nullSQL(value string) sql.NullString {
 	if len(value) == 0 {
 		return sql.NullString{}
@@ -909,7 +911,7 @@ func codecAllowedSlice() ([][]string, []string) {
 	return codecAllowedValueName, codecAllowedValue
 }
 
-// Function to return slice of dtmfModeSlice
+// Function to return nested slice of dtmfModeSlice
 func dtmfModeSlice() ([][]string, []string) {
 	dtmfModeValueName := [][]string{
 		{"rfc4733", "RFC 4733"},
@@ -928,7 +930,7 @@ func dtmfModeSlice() ([][]string, []string) {
 	return dtmfModeValueName, dtmfModeValue
 }
 
-// Function to return slice of mediaEncryptionSlice
+// Function to return nested slice of mediaEncryptionSlice
 func mediaEncryptionSlice() ([][]string, []string) {
 	mediaEncryptionValueName := [][]string{
 		{"sdes", "SDES (Session Description Protocol Security Descriptions)"},
@@ -944,7 +946,7 @@ func mediaEncryptionSlice() ([][]string, []string) {
 	return mediaEncryptionValueName, mediaEncryptionValue
 }
 
-// Function to return slice of directMediaMethodSlice
+// Function to return nested slice of directMediaMethodSlice
 func directMediaMethodSlice() ([][]string, []string) {
 	directMediaMethodValueName := [][]string{
 		{"invite", "Invite"},
@@ -961,7 +963,7 @@ func directMediaMethodSlice() ([][]string, []string) {
 	return directMediaMethodValueName, directMediaMethodValue
 }
 
-// Function to return slice of callerIDPrivacySlice
+// Function to return nested slice of callerIDPrivacySlice
 func callerIDPrivacySlice() ([][]string, []string) {
 	callerIDPrivacyValueName := [][]string{
 		{"allowed_not_screened", "Allowed Not Screened"},
@@ -993,7 +995,7 @@ func serviceProductTypeSlice() []string {
 //----------------------------------------------------------------------------------------------------
 
 // Constants for validation messages
-const validationMessageEmail string = " value must be a valid email address with a maxamium of 30 characters must be used"
+const validationMessageEmail string = " value must be a valid email address with a maxamium of 30 characters used"
 const validationMessagePhoneNumber string = " value must be a valid phone number in e.164 format with a maxamium of 16 characters must be used"
 const validationMessageNumber string = " value must be a number"
 const validationMessageAlphaNum string = " value must be 1 to 30 characters and must only contain characters: a-z, A-Z or numbers"
@@ -1019,15 +1021,22 @@ const validationMessageAccountFirstName string = "A first name" + validationMess
 const validationMessageAccountLastName string = "A last name" + validationMessageAlphaNumEmpty
 const validationMessageAccountType string = validationMessageInvalidOption + "account type"
 const validationMessageAccountID string = "User account ID" + validationMessageDoesNotExist
-const validationMessageAccountEmail string = "Account email" + validationMessageDoesNotExist
+const validationMessageAccountEmail string = "Account email" + validationMessageEmail
 const validationMessageAccountCreated string = "User account" + validationMessageCreated
+
 const validationMessageAccountDeleted string = "User account(s)" + validationMessageDeleted
-const validationMessageAccountNotDeleted string = "User account(s) not" + validationMessageDeleted
+const validationMessageAccountIndividualDeleted string = "User account" + validationMessageDeleted
+
 const validationMessageAccountAlreadyExist string = "User account(s)" + validationMessageAlreadyExist
-const validationMessageAccountDoesNotExist string = "User account(s)" + validationMessageDoesNotExist
+
 const validationMessageAccountYAPAdmin string = "Must be a YAP Admin (100) account with account ID 1"
 const validationMessageAccountIDOne string = "User account with ID 1 cannot be used"
 const validationMessageAccountColumn string = validationMessageInvalidOption + "account column"
+
+const validationMessageAccountPBXDoesNotExist string = "User account(s) with PBX ID" + validationMessageDoesNotExist
+const validationMessageAccountMultipleDeleted string = "User account(s)" + validationMessageDeleted
+const validationMessageAccountMultipleNotDeleted string = "User account(s)" + validationMessageNotDeleted
+const validationMessageAccountCustomerDoesNotExist string = "User account(s) with customer ID" + validationMessageDoesNotExist
 
 // customer page specific HTML messages
 const validationMessageCustomerID string = "A customer ID" + validationMessageAlphaNum
@@ -1178,6 +1187,7 @@ const validationMessageGenericAlphaNum string = "Value " + validationMessageAlph
 const validationMessageGenericPrice string = "Price" + validationMessagePrice
 const validationMessageConfirmation string = "Confirmation must be yes"
 const validationMessageContractLength string = validationMessageInvalidOption + "contract length"
+const validationMessageInvalid string = "Invalid"
 
 const validationMessageAddresslineOne string = "Address line one" + validationMessageAlphaNumEmpty
 const validationMessageAddresslineTwo string = "Address line two" + validationMessageAlphaNumEmpty
@@ -1190,13 +1200,13 @@ const validationMessageCustomerSitePhoneNumber string = "A customer site phone n
 const validationMessageInvoiceEmail string = "A customer invoice email" + validationMessageEmail
 const validationMessageInvoicePhoneNumber string = "A customer invoice phone number" + validationMessagePhoneNumber
 
-// Function to validate user input utlising the Go Validator package
+// Function to validate user input utlising the Go validator version 10 package
 func validateInput(value string, valueType string) (validation bool) {
 	validateInput := validator.New()
 	// Conditional statments are used for each type of validation needed
 	if valueType == "email" {
-		validateInputErr := validateInput.Var(value, "email,max=200")
-		if validateInputErr != nil {
+		validateInputEmailErr := validateInput.Var(value, "email,max=200")
+		if validateInputEmailErr != nil {
 			validation = false
 			return
 		} else {
@@ -1204,8 +1214,8 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else if valueType == "phoneNumber" {
-		validateInputErr := validateInput.Var(value, "e164,max=16")
-		if validateInputErr != nil {
+		validateInputPhoneNumberErr := validateInput.Var(value, "e164,max=16")
+		if validateInputPhoneNumberErr != nil {
 			validation = false
 			return
 		} else {
@@ -1222,9 +1232,9 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else if valueType == "alphaNum" {
-		validateInputAlphaSpaceErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
+		validateInputAlphaNumErr := validateInput.Var(value, "alphanumspace,min=1,max=30")
 		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\.<>/?")
-		if validateInputAlphaSpaceErr != nil || validateInputSymbolErr != nil {
+		if validateInputAlphaNumErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
 		} else {
@@ -1232,9 +1242,9 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else if valueType == "alphaNumEmpty" {
-		validateInputAlphaNumSpaceErr := validateInput.Var(value, "ascii,max=30")
+		validateInputAlphaNumEmptyErr := validateInput.Var(value, "ascii,max=30")
 		validateInputSymbolErr := validateInput.Var(value, "excludes=`!\"£$%^&*()-_=+{}[];:@'#~\\.<>/?")
-		if validateInputAlphaNumSpaceErr != nil || validateInputSymbolErr != nil {
+		if validateInputAlphaNumEmptyErr != nil || validateInputSymbolErr != nil {
 			validation = false
 			return
 		} else {
@@ -1280,8 +1290,8 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else if valueType == "filePath" {
-		validateInputIPAddressErr := validateInput.Var(value, "omitempty,dir")
-		if validateInputIPAddressErr != nil {
+		validateInputDirErr := validateInput.Var(value, "omitempty,dir")
+		if validateInputDirErr != nil {
 			validation = false
 			return
 		} else {
@@ -1299,13 +1309,15 @@ func validateInput(value string, valueType string) (validation bool) {
 			return
 		}
 	} else {
-		panic("The validateInput function can only take the following arguments: email, phoneNumber, alphaNum, alphaNumEmpty, price, tax, data, ipAddress, filePath or extension")
+		panic("The validateInput function can only take the following arguments: email, phoneNumber, number, alphaNum, alphaNumEmpty, price, tax, data, ipAddress, filePath or extension")
 	}
 }
 
 //----------------------------------------------------------------------------------------------------
 
 // Main menu page functions
+
+// YAP account function
 func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionParameter) {
 
 	var dbTotalTableCount databaseFunctionParameter
@@ -1323,7 +1335,7 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 	fmt.Fprintf(w, "  <tr>")
 	fmt.Fprintf(w, "    <th>Total Customers</th>")
 	fmt.Fprintf(w, "    <th>Total PBXs</th>")
-	fmt.Fprintf(w, "    <th>Total SIP Extensions</th>")
+	fmt.Fprintf(w, "    <th>Total Exts</th>")
 	fmt.Fprintf(w, "  </tr>")
 	fmt.Fprintf(w, "  <tr>")
 	dbTotalTableCount.table = "view___customer_detail"
@@ -1368,6 +1380,7 @@ func mainMenuYapAccount(w http.ResponseWriter, dbYapAccount databaseFunctionPara
 
 }
 
+// Customer account function
 func mainMenuCustomerAccount(w http.ResponseWriter, dbCustomerAccount databaseFunctionParameter) {
 
 	result, err := dbCustomerAccount.connection.Query(`SELECT
@@ -1495,6 +1508,7 @@ func mainMenuCustomerAccount(w http.ResponseWriter, dbCustomerAccount databaseFu
 	}
 }
 
+// PBX account function
 func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionParameter) {
 
 	result, err := dbPBXAccount.connection.Query(`SELECT
@@ -1554,7 +1568,7 @@ func mainMenuPBXAccount(w http.ResponseWriter, dbPBXAccount databaseFunctionPara
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-main-menu\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>PBX Name and ID</th>")
-		fmt.Fprintf(w, "    <th>Total SIP Extensions in PBX</th>")
+		fmt.Fprintf(w, "    <th>Total Exts in PBX</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td>PBX Name: "+pbxName+"<br><br>PBX ID: "+pbxID+"</td>")
@@ -1734,7 +1748,7 @@ func userAccountListTdHTML(w http.ResponseWriter, userAccountID string, userAcco
 // Function to list user accounts
 func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetail generalFunctionParameter) {
 
-	// Only account type ID 100, 200, 201, 300, 301 should be able to use this function
+	// Only account type ID 100, 200, 201, 300, 301, 302, 400 should be able to use this function
 	if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" || genDetail.userTypeID == "301" || genDetail.userTypeID == "302" || genDetail.userTypeID == "400" {
 
 		var (
@@ -1798,7 +1812,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			dbTotalTableCountWhere.table = "user_account"
 			dbTotalTableCountWhere.columnWhere = "user_account_type_id"
 
-			if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" {
+			if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
 				fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 				fmt.Fprintf(w, "  <tr>")
 				if genDetail.userTypeID == "100" {
@@ -1806,10 +1820,14 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				}
 				if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" {
 					fmt.Fprintf(w, "    <th>Total Customer<br>Admin<br>Accounts<br>(Type ID: 200)</th>")
+				}
+				if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 					fmt.Fprintf(w, "    <th>Total Customer<br>Regular<br>Accounts<br>(Type ID: 201)</th>")
 				}
 				if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" {
 					fmt.Fprintf(w, "    <th>Total PBX<br>Admin<br>Accounts<br>(Type ID: 300)</th>")
+				}
+				if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
 					fmt.Fprintf(w, "    <th>Total PBX<br>Regular<br>Accounts<br>(Type ID: 301)</th>")
 					fmt.Fprintf(w, "    <th>Total PBX<br>Read Only<br>Accounts<br>(Type ID: 302)</th>")
 				}
@@ -1841,6 +1859,9 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 						dbTotalTableCountWhere.columnWhereValue = "201"
 						fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
+					} else if genDetail.userTypeID == "201" {
+						dbTotalTableCountWhere.columnWhereValue = "201"
+						fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 					}
 					dbTotalTableCountWhere.columnWhereValue = "300"
 					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
@@ -1852,13 +1873,18 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 						dbTotalTableCountWhere.columnWhereValue = "400"
 						fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 					}
-				} else if genDetail.userTypeID == "300" {
+				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
 					dbTotalTableCountWhere.columnWhereAnd = "pbx_id"
 					dbTotalTableCountWhere.columnWhereValueAnd = pbxID
-					dbTotalTableCountWhere.columnWhereValue = "300"
-					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
-					dbTotalTableCountWhere.columnWhereValue = "301"
-					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
+					if genDetail.userTypeID == "300" {
+						dbTotalTableCountWhere.columnWhereValue = "300"
+						fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
+						dbTotalTableCountWhere.columnWhereValue = "301"
+						fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
+					} else if genDetail.userTypeID == "301" {
+						dbTotalTableCountWhere.columnWhereValue = "301"
+						fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
+					}
 					dbTotalTableCountWhere.columnWhereValue = "302"
 					fmt.Fprintf(w, "    <td>"+totalTableCountWhereAnd(dbTotalTableCountWhere)+"</td>")
 				}
@@ -1867,7 +1893,6 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "<br>")
 
 			}
-
 			fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 			fmt.Fprintf(w, "  <tr>")
 			fmt.Fprintf(w, "    <th class=\"table-title\";>Own User Account Details:</th>")
@@ -1912,7 +1937,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 			fmt.Fprintf(w, "  <tr>")
 			if genDetail.userTypeID == "100" {
-				fmt.Fprintf(w, "    <th class=\"table-title\";>All User Account Details on the Server:</th>")
+				fmt.Fprintf(w, "    <th class=\"table-title\";>All User Account Details on the YAP Server:</th>")
 			} else if genDetail.userTypeID == "200" {
 				fmt.Fprintf(w, "    <th class=\"table-title\";>User Account Details for the Customer<br>"+userCustomerName+"<br>(Customer ID: "+userCustomerID+")</th>")
 			} else if genDetail.userTypeID == "201" {
@@ -2008,7 +2033,6 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				fmt.Fprintf(w, "          <th>Customer ID</th>")
 				fmt.Fprintf(w, "          <th>Customer Name</th>")
 			}
-
 			fmt.Fprintf(w, "        </tr>")
 
 			var whereClause string
@@ -2173,7 +2197,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			toggleDivJS(w, toggleDivJSArgument)
 		}
 	} else {
-		panic("userAccountList function shoud only be called with account type ID 100, 200, 201, 300, 301")
+		panic("userAccountList function shoud only be called with account type ID 100, 200, 201, 300, 301, 302, 400")
 	}
 }
 
@@ -2283,7 +2307,7 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 			messageHTML(w, validationMessagePBX, "warning")
 		} else if addAccountSelectAccountType == "302" && addAccountSelectPBXID == "" {
 			messageHTML(w, validationMessagePBX, "warning")
-		} else {
+		} else if validateFirstName == true && validateLastName == true && validateEmail == true && validateUserAccountTypeID == true && validatePBXID == true && validateCustomerID == true {
 			dbDetail.table = "view___account_detail"
 			dbDetail.column = "user_account_email"
 			dbDetail.columnWhere = "user_account_email"
@@ -2516,10 +2540,11 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			userAccountEmailList = append(userAccountEmailList, userAccountEmail)
 		}
 
+		// Delete individual user account code
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete an Individual User Account</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete Individual User Account</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -2571,7 +2596,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			messageHTML(w, validationMessageAccountIDOne, "warning")
 		} else if deleteIndividualUserAccountSelectAccountType == "100" && genDetail.userID != "1" {
 			messageHTML(w, validationMessageAccountYAPAdmin, "warning")
-		} else {
+		} else if validateIndividualUserAccountID == true && validateIndividualUserAccountEmail == true && validateIndividualUserAccountTypeID == true {
 			dbDetail.table = "view___account_detail"
 			dbDetail.column = "user_account_id"
 			dbDetail.columnWhere = "user_account_id"
@@ -2582,13 +2607,15 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			checkIndividualUserAccountDeleted := selectWhere(dbDetail)
 
 			if checkIndividualUserAccountDeleted == "" {
-				messageHTML(w, validationMessageAccountDeleted, "success")
+				messageHTML(w, validationMessageAccountIndividualDeleted, "success")
 			} else {
 				messageHTML(w, validationMessageAccountType, "warning")
 			}
+		} else {
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 
-		// Delete all user accounts for a PBX
+		// Delete all user accounts for a PBX code
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
@@ -2642,7 +2669,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			checkPBXUserAccountExist := selectWhere(dbDetail)
 
 			if checkPBXUserAccountExist == "" {
-				messageHTML(w, validationMessageAccountDoesNotExist, "warning")
+				messageHTML(w, validationMessageAccountPBXDoesNotExist, "warning")
 			} else {
 
 				dbDetail.connection.Query(`DELETE FROM user_account WHERE pbx_id = ?;`, deletePBXUserAccountSelectPBXID)
@@ -2650,13 +2677,13 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 				checkPBXUserAccountDeleted := selectWhere(dbDetail)
 
 				if checkPBXUserAccountDeleted == "" {
-					messageHTML(w, validationMessageAccountDeleted, "success")
+					messageHTML(w, validationMessageAccountMultipleDeleted, "success")
 				} else {
-					messageHTML(w, validationMessageAccountCreated, "warning")
+					messageHTML(w, validationMessageAccountMultipleNotDeleted, "warning")
 				}
 			}
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 
 		// Delete all user accounts for a Customer
@@ -2712,7 +2739,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			checkCustomerUserAccountExist := selectWhere(dbDetail)
 
 			if checkCustomerUserAccountExist == "" {
-				messageHTML(w, validationMessageAccountDoesNotExist, "warning")
+				messageHTML(w, validationMessageAccountCustomerDoesNotExist, "warning")
 			} else {
 
 				dbDetail.connection.Query(`DELETE FROM user_account WHERE customer_id = ?;`, deleteCustomerUserAccountSelectCustomerID)
@@ -2720,14 +2747,14 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 				checkCustomerUserAccountDeleted := selectWhere(dbDetail)
 
 				if checkCustomerUserAccountDeleted == "" {
-					messageHTML(w, validationMessageAccountDeleted, "success")
+					messageHTML(w, validationMessageAccountMultipleDeleted, "success")
 				} else {
-					messageHTML(w, validationMessageAccountNotDeleted, "warning")
+					messageHTML(w, validationMessageAccountMultipleNotDeleted, "warning")
 				}
 			}
 
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 	} else {
 		panic("userAccountDelete function shoud only be called with account type ID 100")
@@ -2793,7 +2820,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, gen
 			fmt.Fprintf(w, "    <th>")
 			fmt.Fprintf(w, "      <table id=\"table\" class=\"table-customer\">")
 			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <th>Total Customers On YAP</th>")
+			fmt.Fprintf(w, "          <th>Total Customers On YAP Server</th>")
 			fmt.Fprintf(w, "        </tr>")
 			fmt.Fprintf(w, "        <tr>")
 			dbTableCountUserCustomer.countMinusOne = true
@@ -2817,7 +2844,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, gen
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Contact Details on the Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Contact Details on the YAP Server:</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Contact Details</th>")
 		}
@@ -3720,7 +3747,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 			}
 		}
 	} else {
-		panic("customerAdd function shoud only be called with account type ID 100")
+		panic("customerAdd function should only be called with account type ID 100")
 	}
 }
 
@@ -3887,6 +3914,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			messageHTML(w, validationMessageCustomerColumn, "warning")
 		}
 
+		// Customer site address edit code
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 		fmt.Fprintf(w, "<table class=\"table-customer\">")
@@ -3972,6 +4000,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			messageHTML(w, validationMessageCustomerColumn, "warning")
 		}
 
+		// Customer invoice address edit code
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 		fmt.Fprintf(w, "<table class=\"table-customer\">")
@@ -4135,7 +4164,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 			}
 
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 	} else {
 		panic("customerDelete function shoud only be called with account type ID 100")
