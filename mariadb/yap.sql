@@ -255,9 +255,6 @@ ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__customer_id` (`customer_id`);
 
 ALTER TABLE `invoice_item`
-ADD INDEX `index___invoice_item__pbx_id` (`pbx_id`);
-
-ALTER TABLE `invoice_item`
 ADD INDEX `index___invoice_item__sales_tax_rate` (`sales_tax_rate`);
 
 ALTER TABLE `invoice_item`
@@ -395,11 +392,6 @@ ADD CONSTRAINT fk___invoice_item___customer_id
 FOREIGN KEY (`customer_id`)
 REFERENCES `customer` (`id`)
 ON DELETE CASCADE;
-
-ALTER TABLE `invoice_item`
-ADD CONSTRAINT fk___invoice_item___pbx_id
-FOREIGN KEY (`pbx_id`)
-REFERENCES `pbx` (`id`);
 
 ALTER TABLE `invoice_item`
 ADD CONSTRAINT fk___invoice_item___sales_tax_rate_lookup
