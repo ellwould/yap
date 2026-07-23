@@ -132,7 +132,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a Sales Tax Rate                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View a Sales Tax Rate                           | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Update a  Sales Tax Rate                        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Update a Sales Tax Rate                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Delete a Sales Tax Rate                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 <br>
