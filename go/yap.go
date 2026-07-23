@@ -1168,11 +1168,11 @@ const validationMessageSalesTaxRateNotDeleted string = "Sales tax rate" + valida
 const validationMessageServiceProductID string = "Service/product ID" + validationMessageNumber
 const validationMessageServiceProductColumn string = validationMessageInvalidOption + "service/product column"
 
-const validationMessageSupplierExistingValue string = ""
-const validationMessageSupplierColumn string = ""
+const validationMessageSupplierExistingValue string = "Supplier" + validationMessageAlphaNum
+const validationMessageSupplierColumn string = validationMessageInvalidOption + "supplier column"
 
 const validationMessageSalesTaxRateColumn string = validationMessageInvalidOption + "sales tax rate column"
-const validationMessageGenericTax string = ""
+const validationMessageSalesTaxRateTax string = "Sales tax rate" + validationMessageTax
 
 // General/multi-page HTML messsages
 const validationMessageCustomer string = validationMessageInvalidOption + "customer"
@@ -1182,8 +1182,8 @@ const validationMessagePBX string = validationMessageInvalidOption + "PBX"
 const validationMessagePBXAlreadyExist string = "PBX" + validationMessageAlreadyExist
 const validationMessagePBXDoesNotExist string = "PBX" + validationMessageDoesNotExist
 const validationMessageGenericInvalidOption string = "Invalid option selected"
-const validationMessageGenericAlphaNumEmpty string = "value " + validationMessageAlphaNumEmpty
-const validationMessageGenericAlphaNum string = "Value " + validationMessageAlphaNum
+const validationMessageGenericAlphaNumEmpty string = "The" + validationMessageAlphaNumEmpty
+const validationMessageGenericAlphaNum string = "The" + validationMessageAlphaNum
 const validationMessageGenericPrice string = "Price" + validationMessagePrice
 const validationMessageConfirmation string = "Confirmation must be yes"
 const validationMessageContractLength string = validationMessageInvalidOption + "contract length"
@@ -2197,7 +2197,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			toggleDivJS(w, toggleDivJSArgument)
 		}
 	} else {
-		panic("userAccountList function shoud only be called with account type ID 100, 200, 201, 300, 301, 302, 400")
+		panic("userAccountList function should only be called with account type ID 100, 200, 201, 300, 301, 302, 400")
 	}
 }
 
@@ -2208,7 +2208,7 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 	if genDetail.userTypeID == "100" {
 
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/user-account\">")
-		fmt.Fprintf(w, "<table class=\"table-user-account\">")
+		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New User Account</th>")
 		fmt.Fprintf(w, "  </tr>")
@@ -2404,7 +2404,7 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 			}
 		}
 	} else {
-		panic("userAccountAdd function shoud only be called with account type ID 100")
+		panic("userAccountAdd function should only be called with account type ID 100")
 	}
 }
 
@@ -2497,7 +2497,7 @@ func userAccountEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFu
 			messageHTML(w, validationMessageAccountColumn, "warning")
 		}
 	} else {
-		panic("userAccountEdit function shoud only be called with account type ID 100")
+		panic("userAccountEdit function should only be called with account type ID 100")
 	}
 }
 
@@ -2757,7 +2757,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			messageHTML(w, validationMessageInvalid, "warning")
 		}
 	} else {
-		panic("userAccountDelete function shoud only be called with account type ID 100")
+		panic("userAccountDelete function should only be called with account type ID 100")
 	}
 }
 
@@ -2820,7 +2820,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, gen
 			fmt.Fprintf(w, "    <th>")
 			fmt.Fprintf(w, "      <table id=\"table\" class=\"table-customer\">")
 			fmt.Fprintf(w, "        <tr>")
-			fmt.Fprintf(w, "          <th>Total Customers On YAP Server</th>")
+			fmt.Fprintf(w, "          <th>Total Customers on the YAP Server</th>")
 			fmt.Fprintf(w, "        </tr>")
 			fmt.Fprintf(w, "        <tr>")
 			dbTableCountUserCustomer.countMinusOne = true
@@ -3184,21 +3184,21 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, gen
 			fmt.Fprintf(w, "            <b>UK VAT Number:</b> "+customerUKVATNumber+"<br>")
 			fmt.Fprintf(w, "            <b>Reselling Minutes:</b> "+customerResellingMinutes+"<br>")
 			fmt.Fprintf(w, "            <b>PBX Limit:</b> "+customerPBXLimit+"<br>")
-			fmt.Fprintf(w, "            <b>EXT Default Limit:</b> "+genDetail.defaultExtLimit+"<br>")
+			fmt.Fprintf(w, "            <b>Ext Default Limit:</b> "+genDetail.defaultExtLimit+"<br>")
 			fmt.Fprintf(w, "            <b>PBX Sales Tax Rate:</b> "+customerPBXSalesTaxRate+"&#37<br>")
 			fmt.Fprintf(w, "            <b>PBX Sales Tax Status:</b> "+customerPBXSalesTaxStatus+"<br>")
-			fmt.Fprintf(w, "            <b>EXT Sales Tax Rate:</b> "+customerExtSalesTaxRate+"&#37<br>")
-			fmt.Fprintf(w, "            <b>EXT Sales Tax Status:</b> "+customerExtSalesTaxStatus)
+			fmt.Fprintf(w, "            <b>Ext Sales Tax Rate:</b> "+customerExtSalesTaxRate+"&#37<br>")
+			fmt.Fprintf(w, "            <b>Ext Sales Tax Status:</b> "+customerExtSalesTaxStatus)
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "          <td style=\"text-align: left; vertical-align: top;\">")
 			fmt.Fprintf(w, "            <b>PBX Setup Price:</b> "+genDetail.currencySymbol+customerPBXSetupPrice+"<br>")
 			fmt.Fprintf(w, "            <b>PBX Rental Price:</b> "+genDetail.currencySymbol+customerPBXRentalPrice+"<br>")
 			fmt.Fprintf(w, "            <b>PBX Cease Price:</b> "+genDetail.currencySymbol+customerPBXCeasePrice+"<br>")
 			fmt.Fprintf(w, "            <b>PBX Contract Length:</b> "+customerPBXContractLength+"<br>")
-			fmt.Fprintf(w, "            <b>SIP EXT Setup Price:</b> "+genDetail.currencySymbol+customerExtSetupPrice+"<br>")
-			fmt.Fprintf(w, "            <b>SIP EXT Rental Price:</b> "+genDetail.currencySymbol+customerExtRentalPrice+"<br>")
-			fmt.Fprintf(w, "            <b>SIP EXT Cease Price:</b> "+genDetail.currencySymbol+customerExtCeasePrice+"<br>")
-			fmt.Fprintf(w, "            <b>SIP EXT Contract Length:</b> "+customerExtContractLength+"<br>")
+			fmt.Fprintf(w, "            <b>SIP Ext Setup Price:</b> "+genDetail.currencySymbol+customerExtSetupPrice+"<br>")
+			fmt.Fprintf(w, "            <b>SIP Ext Rental Price:</b> "+genDetail.currencySymbol+customerExtRentalPrice+"<br>")
+			fmt.Fprintf(w, "            <b>SIP Ext Cease Price:</b> "+genDetail.currencySymbol+customerExtCeasePrice+"<br>")
+			fmt.Fprintf(w, "            <b>SIP Ext Contract Length:</b> "+customerExtContractLength+"<br>")
 			fmt.Fprintf(w, "          </td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
@@ -3239,7 +3239,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, gen
 			toggleDivJS(w, toggleDivJSArgument)
 		}
 	} else {
-		panic("customerList function shoud only be called with account type ID 100, 200, 201, 400")
+		panic("customerList function should only be called with account type ID 100, 200, 201, 400")
 	}
 }
 
@@ -3250,7 +3250,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 	if genDetail.userTypeID == "100" {
 
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
-		fmt.Fprintf(w, "<table class=\"table-customer\">")
+		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Customer<br>(Typing GEN in the Customer ID Box Will Automatically Generate a Random Customer ID)</th>")
 		fmt.Fprintf(w, "  </tr>")
@@ -3306,10 +3306,10 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		selectSingleHTML(w, "add_customer_select_pbx_sales_tax_status", "PBX Sales Tax Status<br>(Cannot Be Empty)", salesTaxStatusList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		selectSingleHTML(w, "add_customer_select_ext_sales_tax_rate", "EXT Sales Tax Rate &#37<br>(Cannot Be Empty)", salesTaxRateList)
+		selectSingleHTML(w, "add_customer_select_ext_sales_tax_rate", "Ext Sales Tax Rate &#37<br>(Cannot Be Empty)", salesTaxRateList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		selectSingleHTML(w, "add_customer_select_ext_sales_tax_status", "EXT Sales Tax Status<br>(Cannot Be Empty)", salesTaxStatusList)
+		selectSingleHTML(w, "add_customer_select_ext_sales_tax_status", "Ext Sales Tax Status<br>(Cannot Be Empty)", salesTaxStatusList)
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "        </tr>")
 		fmt.Fprintf(w, "        <tr>")
@@ -3797,8 +3797,8 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 		fmt.Fprintf(w, "      <b>Consumer Type: </b>")
 		fmt.Fprintf(w, strings.Join(consumerTypeList, ", "))
 		fmt.Fprintf(w, "      <br>")
-		fmt.Fprintf(w, "      <b>UK VAT Registered:</b> yes or no<br>")
-		fmt.Fprintf(w, "      <b>UK VAT Number:</b> text or EMPTY<br>")
+		fmt.Fprintf(w, "      <b>UK VAT Registered:</b> yes, no<br>")
+		fmt.Fprintf(w, "      <b>UK VAT Number:</b> text, EMPTY<br>")
 		fmt.Fprintf(w, "      <b>PBX Limit:</b> 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000<br>")
 		dbDetail.table = "sales_tax_rate_lookup"
 		dbDetail.column = "sales_tax_rate"
@@ -3888,7 +3888,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerInputNewValue is in the pbxLimitList slice
 			validateNewValue := slices.Contains(pbxLimitList, editCustomerInputNewValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerSelectCustomerID, editCustomerInputNewValue)
+				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessagePBX, "warning")
 			}
@@ -3897,7 +3897,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerSelectColumn is in the salesTaxRateList Slice
 			validateNewValue := slices.Contains(salesTaxRateList, editCustomerInputNewValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerSelectCustomerID, editCustomerInputNewValue)
+				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericInvalidOption, "warning")
 			}
@@ -3906,7 +3906,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerSelectColumn is in the salesTaxStatusList Slice
 			validateNewValue := slices.Contains(salesTaxStatusList, editCustomerInputNewValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerSelectCustomerID, editCustomerInputNewValue)
+				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericInvalidOption, "warning")
 			}
@@ -4086,7 +4086,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			messageHTML(w, validationMessageCustomerColumn, "warning")
 		}
 	} else {
-		panic("customerEdit function shoud only be called with account type ID 100")
+		panic("customerEdit function should only be called with account type ID 100")
 	}
 }
 
@@ -4167,7 +4167,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 			messageHTML(w, validationMessageInvalid, "warning")
 		}
 	} else {
-		panic("customerDelete function shoud only be called with account type ID 100")
+		panic("customerDelete function should only be called with account type ID 100")
 	}
 }
 
@@ -4208,7 +4208,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 			fmt.Fprintf(w, "      <table id=\"table\" class=\"table-pbx\">")
 			fmt.Fprintf(w, "        <tr>")
 			if genDetail.userTypeID == "100" {
-				fmt.Fprintf(w, "          <th>Total PBXs On YAP</th>")
+				fmt.Fprintf(w, "          <th>Total PBXs on the YAP Server</th>")
 			} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 				fmt.Fprintf(w, "          <th>Customers Total PBXs</th>")
 			}
@@ -4227,7 +4227,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 			fmt.Fprintf(w, "    </th>")
 			fmt.Fprintf(w, "  </tr>")
 			fmt.Fprintf(w, "  <tr>")
-			fmt.Fprintf(w, "    <th><button onclick=\"togglePBX() \"class=\"button-general button-pbx\">&nbsp Show/Hide PBX(s) &nbsp</button></th>")
+			fmt.Fprintf(w, "    <th><button onclick=\"togglePBX() \"class=\"button-general button-pbx\">&nbsp Show/Hide PBXs &nbsp</button></th>")
 			fmt.Fprintf(w, "  </tr>")
 			fmt.Fprintf(w, "</table>")
 		}
@@ -4241,7 +4241,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Contact Details on the Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Contact Details on the YAP Server:</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX Contact Details</th>")
 		}
@@ -4450,7 +4450,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Resource Limits on the Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Resource Limits on the YAP Server:</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX Resource Limits</th>")
 		}
@@ -4613,7 +4613,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 			toggleDivJS(w, toggleDivJSArgument)
 		}
 	} else {
-		panic("pbxList function shoud only be called with account type ID 100, 200, 201, 300, 301, 302")
+		panic("pbxList function should only be called with account type ID 100, 200, 201, 300, 301, 302")
 	}
 }
 
@@ -4624,7 +4624,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/pbx\">")
-		fmt.Fprintf(w, "<table class=\"table-pbx\">")
+		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New PBX</th>")
 		fmt.Fprintf(w, "  </tr>")
@@ -4762,7 +4762,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			// Do Nothing
 		} else if genDetail.userTypeID != "100" && addPBXInputPBXName == "" {
 			// Do Nothing
-		} else if validateCustomerID == false {
+		} else if validateCustomerID == false || addPBXSelectCustomerID == "" {
 			messageHTML(w, validationMessageCustomer, "warning")
 		} else if validatePBXName == false {
 			messageHTML(w, validationMessagePBXName, "warning")
@@ -4918,7 +4918,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			}
 		}
 	} else {
-		panic("pbxAdd function shoud only be called with account type ID 100, 200, 201")
+		panic("pbxAdd function should only be called with account type ID 100, 200, 201")
 	}
 }
 
@@ -5029,12 +5029,12 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			}
 		} else if genDetail.userTypeID == "100" && editPBXSelectColumn == "sip_extension_limit" {
 			extLimitList := extLimitSlice()
-			// Validate editCustomerSelectColumn is in the salesTaxStatusList Slice
+			// Validate editCustomerSelectColumn is in the extLimitList Slice
 			validateNewValue := slices.Contains(extLimitList, editPBXInputNewValue)
 			if validateNewValue == true {
 				dbDetail.connection.Query("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ?;", editPBXInputNewValue, editPBXSelectPBXID)
 			} else {
-				messageHTML(w, validationMessagePBXColumn, "warning")
+				messageHTML(w, validationMessagePBXExtLimit, "warning")
 			}
 		} else {
 			messageHTML(w, validationMessagePBXColumn, "warning")
@@ -5121,7 +5121,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			if validateNewValue == true {
 				dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
 			} else {
-				messageHTML(w, validationMessageCustomerEmail, "warning")
+				messageHTML(w, validationMessagePBXSiteEmail, "warning")
 			}
 		} else if editPBXSiteSelectColumn == "contact_number" {
 			// Validate editPBXSiteInputNewValue is a phone number
@@ -5129,13 +5129,13 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			if validateNewValue == true {
 				dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
 			} else {
-				messageHTML(w, validationMessageCustomerPhoneNumber, "warning")
+				messageHTML(w, validationMessagePBXSitePhoneNumber, "warning")
 			}
 		} else {
-			messageHTML(w, validationMessageCustomerColumn, "warning")
+			messageHTML(w, validationMessagePBXColumn, "warning")
 		}
 	} else {
-		panic("pbxEdit function shoud only be called with account type ID 100, 200, 201")
+		panic("pbxEdit function should only be called with account type ID 100, 200, 201")
 	}
 }
 
@@ -5419,10 +5419,10 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 			}
 
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 	} else {
-		panic("pbxDelete function shoud only be called with account type ID 100, 200")
+		panic("pbxDelete function should only be called with account type ID 100, 200")
 	}
 }
 
@@ -5437,6 +5437,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		var (
 			sipUsername          string
 			sipPassword          string
+			inboundContext       string
 			codecAllowed         string
 			dtmfMode             string
 			namedCallGroup       string
@@ -5482,7 +5483,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-ext\">")
 		fmt.Fprintf(w, "        <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "          <th>Total Extensions On YAP</th>")
+			fmt.Fprintf(w, "          <th>Total Extensions on the YAP Server</th>")
 		} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 			fmt.Fprintf(w, "          <th>Total Extensions for the Customer</th>")
 		} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" || genDetail.userTypeID == "302" {
@@ -5524,7 +5525,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-ext\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details on the Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details on the YAP Server:</th>")
 		} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details for the Customer:</th>")
 		} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" || genDetail.userTypeID == "302" {
@@ -5606,6 +5607,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		extDetailSQL, err := dbDetail.connection.Query(`SELECT
 							sip_username,
 							sip_password,
+							inbound_context,
 							codec_allowed,
 							dtmf_mode,
 							named_call_group,
@@ -5646,6 +5648,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 			err = extDetailSQL.Scan(
 				&sipUsername,
 				&sipPassword,
+				&inboundContext,
 				&codecAllowed,
 				&dtmfMode,
 				&namedCallGroup,
@@ -5695,6 +5698,8 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 				fmt.Fprintf(w, "          <td>&#128308</td>")
 			}
 			fmt.Fprintf(w, "          <td style=\"text-align: left;\">")
+			fmt.Fprintf(w, "          <b>Inbound Context:</b> "+inboundContext+"<br>")
+			fmt.Fprintf(w, "          <hr class=\"line-table\"></h>")
 			fmt.Fprintf(w, "          <b>Codec Allowed:</b> "+codecAllowed+"<br>")
 			fmt.Fprintf(w, "          <b>DTMF Mode:</b> "+dtmfMode+"<br>")
 			fmt.Fprintf(w, "          <b>Call Group:</b> "+namedCallGroup+"<br>")
@@ -5922,7 +5927,7 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		toggleDivJS(w, toggleDivJSArgument)
 
 	} else {
-		panic("extList function shoud only be called with account type ID 100, 200, 201, 300, 301, 302")
+		panic("extList function should only be called with account type ID 100, 200, 201, 300, 301, 302")
 	}
 }
 
@@ -5933,7 +5938,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 	if genDetail.userTypeID == "100" || genDetail.userTypeID == "200" || genDetail.userTypeID == "201" || genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
 
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/extension\">")
-		fmt.Fprintf(w, "<table class=\"table-ext\">")
+		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Extension</th>")
 		fmt.Fprintf(w, "  </tr>")
@@ -5957,7 +5962,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 		}
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
-		inputHTML(w, "add_ext_input_sip_ext", "SIP Ext (Cannot Be Empty)")
+		inputHTML(w, "add_ext_input_sip_ext", "Extension (Cannot Be Empty)")
 		fmt.Fprintf(w, "          </td>")
 		fmt.Fprintf(w, "          <td>")
 		fmt.Fprintf(w, "          </td>")
@@ -6267,6 +6272,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
                                    id,
                                    aors,
                                    auth,
+                                   context,
                                    disallow,
                                    allow,
                                    dtmf_mode,
@@ -6289,10 +6295,11 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
                                    stir_shaken_profile,
                                    pbx_id
                                  )
-                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
 						extPBXID,
 						extPBXID,
 						extPBXID,
+						"inbound_"+addExtSelectPBXID,
 						"all",
 						addExtSelectCodecAllowed,
 						nullSQL(addExtSelectDTMFMode),
@@ -6350,7 +6357,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					if checkExtCreated == extPBXID {
 						messageHTML(w, validationMessageExtCreated, "success")
 
-						// If userTypeID is 100 then get userCustomerID based on the  addExtSelectPBXID
+						// If userTypeID is 100 then get userCustomerID based on the addExtSelectPBXID
 						if genDetail.userTypeID == "100" {
 							dbDetail.table = "view___pbx_detail"
 							dbDetail.column = "customer_id"
@@ -6423,7 +6430,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			}
 		}
 	} else {
-		panic("extAdd function shoud only be called with account type ID 100, 200, 201, 300, 301")
+		panic("extAdd function should only be called with account type ID 100, 200, 201, 300, 301")
 	}
 }
 
@@ -6482,7 +6489,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 		fmt.Fprintf(w, "      <b>Rewrite Contact:</b> yes, no<br>")
 		fmt.Fprintf(w, "      <b>RTP Symmetric:</b> yes, no<br>")
 		fmt.Fprintf(w, "      <b>Force RPort:</b> yes, no<br>")
-		fmt.Fprintf(w, "      <b>Restrict to IP Address:</b> Valid IP Address<br>")
+		fmt.Fprintf(w, "      <b>Restrict to IP Address:</b> valid IP address<br>")
 		if genDetail.userTypeID == "100" {
 			fmt.Fprintf(w, "      <b>Allow Transfer:</b> yes, no<br>")
 			fmt.Fprintf(w, "      <b>Caller ID:</b> text<br>")
@@ -6491,7 +6498,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			fmt.Fprintf(w, "      <b>SIP Header - From User:</b> text<br>")
 			fmt.Fprintf(w, "      <b>SIP Header - From Domain:</b> text<br>")
 			fmt.Fprintf(w, "      <b>Stir Shaken:</b> yes, no<br>")
-			fmt.Fprintf(w, "      <b>Stir Shaken Profile:</b> Valid File Path<br>")
+			fmt.Fprintf(w, "      <b>Stir Shaken Profile:</b> valid file path<br>")
 		}
 		fmt.Fprintf(w, "    </td>")
 		fmt.Fprintf(w, "  </tr>")
@@ -6548,7 +6555,6 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			messageHTML(w, validationMessageExt, "warning")
 		} else if editExtSelectColumn == "" {
 			messageHTML(w, validationMessageExtColumn, "warning")
-			fmt.Println("umn: ", editExtSelectColumn)
 		} else if editExtSelectColumn == "password" {
 			if editExtInputNewValue == "y" || editExtInputNewValue == "Y" || editExtInputNewValue == "yes" || editExtInputNewValue == "Yes" || editExtInputNewValue == "YES" {
 				newExtPassword := genPassword(20)
@@ -6653,10 +6659,10 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 			}
 		} else {
-			messageHTML(w, validationMessageCustomerColumn, "warning")
+			messageHTML(w, validationMessageExtColumn, "warning")
 		}
 	} else {
-		panic("extEdit function shoud only be called with account type ID 100, 200, 201, 300, 301")
+		panic("extEdit function should only be called with account type ID 100, 200, 201, 300, 301")
 	}
 }
 
@@ -6872,7 +6878,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 			}
 		}
 	} else {
-		panic("extDelete function shoud only be called with account type ID 100, 200, 201, 300")
+		panic("extDelete function should only be called with account type ID 100, 200, 201, 300")
 	}
 }
 
@@ -6941,7 +6947,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-invoice\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Service/Product Invoice Items on YAP:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Service/Product Invoice Items on the YAP Server:</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Invoice Services/Products</th>")
 		}
@@ -7190,7 +7196,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 		var exportCSVJSArgument jsFunctionParameter
 		exportCSVJSArgument.funcNameJS = "Invoice"
 		exportCSVJSArgument.tableID = "invoice-table"
-		exportCSVJSArgument.fileName = "YAP_customer_contact_details"
+		exportCSVJSArgument.fileName = "YAP_invoice_item_details"
 		exportCSVJSArgument.pathURL = "invoice"
 		exportCSVJS(w, exportCSVJSArgument)
 		fmt.Fprintf(w, "    </th>")
@@ -7203,7 +7209,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 		toggleDivJS(w, toggleDivJSArgument)
 
 	} else {
-		panic("invoiceList function shoud only be called with account type ID 100, 200, 400")
+		panic("invoiceList function should only be called with account type ID 100, 200, 400")
 	}
 }
 
@@ -7214,9 +7220,9 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 	if genDetail.userTypeID == "100" {
 
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/invoice\">")
-		fmt.Fprintf(w, "<table class=\"table-invoice\">")
+		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Invoice Item<br>(YAP PBX and Ext Invoices Cannot Be Created Manually)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Invoice Item<br>(YAP PBX & Ext Invoices Cannot Be Created Manually)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -7282,7 +7288,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Add Invoice item\"></th>")
+		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Create Invoice Item\"></th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "</form>")
@@ -7390,7 +7396,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 
 		}
 	} else {
-		panic("invoiceAdd function shoud only be called with account type ID 100")
+		panic("invoiceAdd function should only be called with account type ID 100")
 	}
 }
 
@@ -7404,7 +7410,7 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/invoice\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete An Invoice<br>(YAP PBX and Ext Invoices Cannot Be Deleted Manually)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete an Invoice<br>(YAP PBX and Ext Invoices Cannot Be Deleted Manually)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -7463,10 +7469,10 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 				}
 			}
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 	} else {
-		panic("invoiceDelete function shoud only be called with account type ID 100")
+		panic("invoiceDelete function should only be called with account type ID 100")
 	}
 }
 
@@ -7894,8 +7900,8 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 			}
 		}
 
-		fmt.Fprintf(w, "<br>")
 		// Add new supplier code
+		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/service-product\">")
 		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
@@ -7994,7 +8000,7 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Add Sales Tax Rate\"></th>")
+		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Create Sales Tax Rate\"></th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
 		fmt.Fprintf(w, "</form>")
@@ -8079,7 +8085,12 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 		fmt.Fprintf(w, "      <b>Service/Product Name:</b> text<br>")
 		fmt.Fprintf(w, "      <b>Service/Product Type:</b> Services, Products<br>")
 		fmt.Fprintf(w, "      <b>Supplier Name:</b> text<br>")
-		fmt.Fprintf(w, "      <b>Supplier Contract Length:</b> text<br>")
+		dbDetail.table = "contract_length_lookup"
+		dbDetail.column = "contract_length"
+		contractLengthList := singleColumnSlice(dbDetail)
+		fmt.Fprintf(w, "      <b>Supplier Contract Length: </b>EMPTY, ")
+		fmt.Fprintf(w, strings.Join(contractLengthList, ", "))
+		fmt.Fprintf(w, "      <br>")
 		fmt.Fprintf(w, "    </td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
@@ -8225,7 +8236,7 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td style=\"text-align: left;\">")
 		fmt.Fprintf(w, "      <b><u>Acceptable Values for Columns</u></b><br><br>")
-		fmt.Fprintf(w, "      <b>Sales Tax Rate:</b> decimal<br>")
+		fmt.Fprintf(w, "      <b>Sales Tax Rate:</b> decimal number<br>")
 		fmt.Fprintf(w, "    </td>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
@@ -8272,13 +8283,13 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			if validateNewValue == true {
 				dbDetail.connection.Query("UPDATE sales_tax_rate_lookup SET "+editSalesTaxRateSelectColumn+" = ? WHERE sales_tax_rate = ?;", math.Round(editSalesTaxRateInputNewValueFloat64*100)/100, math.Round(editSalesTaxRateInputExistingValueFloat64*100)/100)
 			} else {
-				messageHTML(w, validationMessageGenericTax, "warning")
+				messageHTML(w, validationMessageSalesTaxRateTax, "warning")
 			}
 		} else {
 			messageHTML(w, validationMessageSalesTaxRateColumn, "warning")
 		}
 	} else {
-		panic("serviceProductEdit function shoud only be called with account type ID 100")
+		panic("serviceProductEdit function should only be called with account type ID 100")
 	}
 }
 
@@ -8356,7 +8367,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 			}
 
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 
 		// Delete a supplier code
@@ -8427,7 +8438,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 			}
 
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 
 		// Delete a sales tax rate code
@@ -8496,10 +8507,10 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 			}
 
 		} else {
-			messageHTML(w, "Invalid Input", "warning")
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 	} else {
-		panic("serviceProductDelete function shoud only be called with account type ID 100")
+		panic("serviceProductDelete function should only be called with account type ID 100")
 	}
 }
 
@@ -8684,7 +8695,7 @@ func main() {
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
@@ -8713,7 +8724,7 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -8732,7 +8743,7 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -8751,7 +8762,7 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
+				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "PBX<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonThree)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -8918,11 +8929,7 @@ func main() {
 				fmt.Fprint(w, "<br>")
 				customerDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-customer", "button-customer")
-			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Own Customer Information", "header-customer", extraButtonName, extraButtonURL)
-				customerList(w, dbDetail, genDetail)
-				footer(w, "header-customer", "button-customer")
-			} else if userTypeID == "400" {
+			} else if userTypeID == "200" || userTypeID == "201" || userTypeID == "400" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Own Customer Information", "header-customer", extraButtonName, extraButtonURL)
 				customerList(w, dbDetail, genDetail)
 				footer(w, "header-customer", "button-customer")
@@ -9060,7 +9067,7 @@ func main() {
 			errorBox(w, "email_error", "header-ext", "button-ext")
 		} else {
 			if userTypeID == "100" {
-				header(w, "YAP Admin Account<br>All SIP Extensions on the Server", "header-ext", extraButtonName, extraButtonURL)
+				header(w, "YAP Admin Account<br>All Extensions on the Server", "header-ext", extraButtonName, extraButtonURL)
 				extList(w, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				extAdd(w, r, dbDetail, genDetail)
@@ -9070,7 +9077,7 @@ func main() {
 				extDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-ext", "button-ext")
 			} else if userTypeID == "200" || userTypeID == "201" {
-				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All SIP Extensions for the Customer", "header-ext", extraButtonName, extraButtonURL)
+				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>All Extensions for the Customer", "header-ext", extraButtonName, extraButtonURL)
 				extList(w, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				extAdd(w, r, dbDetail, genDetail)
@@ -9080,7 +9087,7 @@ func main() {
 				extDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-ext", "button-ext")
 			} else if userTypeID == "300" {
-				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
 				extList(w, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				extAdd(w, r, dbDetail, genDetail)
@@ -9090,7 +9097,7 @@ func main() {
 				extDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-ext", "button-ext")
 			} else if userTypeID == "301" {
-				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
 				extList(w, dbDetail, genDetail)
 				fmt.Fprintf(w, "<br>")
 				extAdd(w, r, dbDetail, genDetail)
@@ -9098,7 +9105,7 @@ func main() {
 				extEdit(w, r, dbDetail, genDetail)
 				footer(w, "header-ext", "button-ext")
 			} else if userTypeID == "302" {
-				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All SIP Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
+				header(w, userPBXName+"<br>[PBX ID: "+userPBXID+"]<br>All Extensions Within the PBX", "header-ext", extraButtonName, extraButtonURL)
 				extList(w, dbDetail, genDetail)
 				footer(w, "header-ext", "button-ext")
 			} else {
@@ -9158,15 +9165,10 @@ func main() {
 				fmt.Fprintf(w, "<br>")
 				invoiceDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-invoice", "button-invoice")
-			} else if userTypeID == "200" {
+			} else if userTypeID == "200" || userTypeID == "400" {
 				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
 				invoiceList(w, dbDetail, genDetail)
 				footer(w, "header-invoice", "button-invoice")
-			} else if userTypeID == "400" {
-				header(w, userCustomerName+"<br>[Customer ID: "+userCustomerID+"]<br>Customer Invoice", "header-invoice", extraButtonName, extraButtonURL)
-				invoiceList(w, dbDetail, genDetail)
-				footer(w, "header-invoice", "button-invoice")
-
 			} else {
 				errorBox(w, "account_type_error", "header-invoice", "button-invoice")
 			}
