@@ -557,6 +557,7 @@ CREATE VIEW `view___sip_extension_detail` AS
 SELECT DISTINCT
   `ps_auths`.`username` AS 'sip_username',
   `ps_auths`.`password` AS 'sip_password',
+  `ps_endpoints`.`context` AS 'inbound_context',
   `ps_endpoints`.`allow` AS 'codec_allowed',
   IFNULL(`ps_endpoints`.`dtmf_mode`, 'rfc4733 (DEFAULT)') AS 'dtmf_mode',
   IFNULL(`ps_endpoints`.`named_call_group`, '(NOT SET)') AS 'named_call_group',
