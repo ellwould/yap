@@ -49,89 +49,12 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-**Groups page (still in development):**
-
-![YAP (Yet Another PBX) Groups Page](https://github.com/ellwould/yap/blob/main/image/groups_incomplete.jpeg)
-
-<br>
-
-**PBX page (still in development):**
-
-![YAP (Yet Another PBX) PBX Page](https://github.com/ellwould/yap/blob/main/image/pbx_incomplete.jpeg)
-
-<br>
-
-## An Example of the group :busts_in_silhouette: Table
-
-| id                | group_name                                    | date_added          | group_active | note                       |
-|-------------------|-----------------------------------------------|---------------------|--------------|----------------------------|
-| 1                 | system                                        | 20/10/2025 11:45:34 | 1          | created during YAP install |
-| 13986442703273989 | (typically a company name of a VoIP reseller) | 04/11/2025 05:51:21 | 1          | not_provided               |
-
-<br>
-
-## An Example of the group_invoice_address :closed_book: Table
-
-| id | address_line_1 | address_line_2 | city_town_village | postcode_zip_code | county_state_region | country | contact_email | contact_number |
-|----|----------------|----------------|-------------------|-------------------|---------------------|---------|---------------|------------------|
-| 1  | system         | system         | system            | system            | system              | system  | system        | system         |
-| 13986442703273989 | (typically the VoIP resellers street/road) | (typically the VoIP resellers building name/number) |(typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers county/state/region) | (typically the VoIP resellers country) | accounts@example.com | +441514960000 |
-
-<br>
-
-## An Example of the group_site_address :green_book: Table
-
-| id | address_line_1 | address_line_2 | city_town_village | postcode_zip_code | county_state_region | country | contact_email | contact_number |
-|----|----------------|----------------|-------------------|-------------------|---------------------|---------|---------------|------------------|
-| 1  | system         | system         | system            | system            | system              | system  | system        | system         |
-| 13986442703273989 | (typically the VoIP resellers street/road) | (typically the VoIP resellers building name/number) |(typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers county/state/region) | (typically the VoIP resellers country) | support@example.com | +441614960000 |
-
-<br>
-
-## An Example of the pbx :desktop_computer: Table
-
-| id  | pbx_name | group_id   | date_added | pbx_active | note                       |
-|-----|----------|------------|------------|------------|----------------------------|
-| 1   | system   | 1          | 20/10/2025 03:08:23 | 1          | created during YAP install |
-| 13995787344150533 | (typically a company that is a customer of a VoIP reseller) | 13986442703273989 | 02/01/2026 09:02:13 | 1 | not_provided |
-
-<br>
-
-## An Example of the pbx_invoice_address :blue_book: Table
-
-| id | address_line_1 | address_line_2 | city_town_village | postcode_zip_code | county_state_region | country | contact_email | contact_number |
-|----|----------------|----------------|-------------------|-------------------|---------------------|---------|---------------|------------------|
-| 1  | system         | system         | system            | system            | system              | system  | system        | system         |
-| 13995787344150533 | (typically the VoIP resellers street/road) | (typically the VoIP resellers building name/number) |(typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers county/state/region) | (typically the VoIP resellers country) | accounts@example.net | +441414960000
-
-<br>
-
-## An Example of the pbx_site_address :orange_book: Table
-
-| id | address_line_1 | address_line_2 | city_town_village | postcode_zip_code | county_state_region | country | contact_email | contact_number |
-|----|----------------|----------------|-------------------|-------------------|---------------------|---------|---------------|------------------|
-| 1  | system         | system         | system            | system            | system              | system  | system        | system         |
-| 13995787344150533 | (typically the VoIP resellers street/road) | (typically the VoIP resellers building name/number) |(typically the VoIP resellers city/town/village) | (typically the VoIP resellers postcode/zip code) | (typically the VoIP resellers county/state/region) | (typically the VoIP resellers country) | sales@example.net | +441414960000
-
-<br>
-
-## An Example of the user_account :bust_in_silhouette: Table
-
-| id | email             | first_name | last_name    | user_account_type_id | group_id | pbx_id | date_added | account_active |
-|----|-------------------|------------|--------------|----------------------|----------|--------|------------|----------------|
-| 1  | yap@ell.today     | Elliot     | Keavney      | 100                  | 1        | 1      | 20/10/2025 09:53:55 | 1            |
-| 2  | john@example.com  | John       | not_provided | 200                  | 13986442703273989 | 1      | 04/11/2025 10:23:19 | 1   |
-| 3  | jane@example.net  | Jane       | not_provided | 301                  | 13986442703273989 | 13995787344150533 | 03/01/2026 07:49:12 | 0 |
-| 4  | frank@example.com | Frank      | not_provided | 201                  | 13986442703273989 | 1      | 02/01/2026 04:42:10 | 1   |
-
-<br>
-
 ## User Account Permissions :heavy_check_mark: ( ✅ = Allowed | ❌ = Prohibited | ⛔ = Not Applicable )
 
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |  Customer Invoice (400) |
 |-------------------------------------------------|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | View Own User Account                           | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Update Own User Account                         | ✅\* | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Update Own User Account                         | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Delete Own User Account                         | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a YAP Admin<br>(100) User Account        | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -145,23 +68,23 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 | Delete a Customer Admin (200)                   | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a Customer Regular<br>(201) User Account | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View a Customer Regular<br>(201) User Account   | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Update a Customer Regular<br>(201) User Account | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| View a Customer Regular<br>(201) User Account   | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Update a Customer Regular<br>(201) User Account | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Delete a Customer Regular<br>(201) User Account | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a PBX Admin (300)                        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View a PBX Admin<br>(300) User Account          | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Update a PBX Admin<br>(300) User Account        | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Update a PBX Admin<br>(300) User Account        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Delete a PBX Admin<br>(300) User Account        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a PBX Regular<br>(301) User Account      | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View a PBX Regular<br>(301) User Account        | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Update a PBX Regular<br>(301) User Account      | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| View a PBX Regular<br>(301) User Account        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Update a PBX Regular<br>(301) User Account      | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Delete a PBX Regular<br>(301) User Account      | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a PBX Read Only<br>(302) User Account    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View a PBX Read Only<br>(302) User Account      | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Update a PBX Read Only<br>(302) User Account    | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Update a PBX Read Only<br>(302) User Account    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Delete a PBX Read Only<br>(302) User Account    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a Customer Invoice (400) User Account    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -170,7 +93,7 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 | Delete a Customer Invoice (400) User Account    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | View Own Customer                               | ⛔ | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ❌ |
-| Update Own Customer                             | ⛔ | ✅ | ❌ | ⛔ | ⛔ | ⛔ | ❌ |
+| Update Own Customer                             | ⛔ | ❌ | ❌ | ⛔ | ⛔ | ⛔ | ❌ |
 | Delete Own Customer                             | ⛔ | ❌ | ❌ | ⛔ | ⛔ | ⛔ | ❌ |
 |  | YAP Admin (100) | Group Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a Customer                               | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -179,33 +102,38 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 | Delete a Customer                               | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | View Own PBX                                    | ⛔ | ⛔ | ⛔ | ✅ | ✅ | ✅ | ⛔ |
-| Update Own PBX                                  | ⛔ | ⛔ | ⛔ | ✅ | ❌ | ❌ | ⛔ |
+| Update Own PBX                                  | ⛔ | ⛔ | ⛔ | ❌ | ❌ | ❌ | ⛔ |
 | Delete Own PBX                                  | ⛔ | ⛔ | ⛔ | ❌ | ❌ | ❌ | ⛔ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
-| Create a PBX                                    | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| View a PBX                                      | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Update a PBX                                    | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Delete a PBX                                    | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Create Another PBX                              | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| View Another PBX                                | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Update Another PBX                              | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Delete Another PBX                              | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
-| Create a SIP Endpoint                           | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| View a SIP Endpoint                             | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Update a SIP Endpoint                           | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Delete a SIP Endpoint                           | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Create an Extension                             | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| View an Extension                               | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Update an Extension                             | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Delete an Extension                             | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
-| Create a Customer Invoice                          | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View a Customer Invoice                            | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Update a Customer Invoice                          | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Delete a Customer Invoice                          | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Create a Customer Invoice                       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| View a Customer Invoice                         | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Update a Customer Invoice                       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Delete a Customer Invoice                       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
-| View YAP User Account Logs                      | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View Customer Logs                                 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View PBX Logs                                   | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Download Logs                                   | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Create a Service/Product                        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| View a Service/Product                          | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Update a Service/Product                        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Delete a Service/Product                        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
-| View Server Information                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Download Server Information                     | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Set Resource Limits                             | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| View Resource Limits                            | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Create a Supplier                               | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| View a Supplier                                 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Update a Supplier                               | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Delete a Supplier                               | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+|  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
+| Create a Sales Tax Rate                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| View a Sales Tax Rate                           | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Update a  Sales Tax Rate                        | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Delete a Sales Tax Rate                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 <br>
 
@@ -242,33 +170,11 @@ A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses
 
 <br>
 
-**SIP Trunks :left_right_arrow: naming format:**
-- PBX-13995787344150533-ST-1 (Endpoint)
-- PBX-13995787344150533-ST-1 (AOR)
-- PBX-13995787344150533-ST-1 (AUTH)
-- PBX_13995787344150533_IN (Context)
-
-<br>
-
-- PBX-13995787344150533-ST-2 (Endpoint)
-- PBX-13995787344150533-ST-2 (AOR)
-- PBX-13995787344150533-ST-2 (AUTH)
-- PBX_13995787344150533_IN (Context)
-
-<br>
-
 **Extensions :calling: naming format:**
-- PBX-13995787344150533-EXT-200 (Endpoint)
-- PBX-13995787344150533-EXT-200 (AOR)
-- PBX-13995787344150533-EXT-200 (AUTH)
-- PBX_13995787344150533_OUT (Context)
-
-<br>
-
-- PBX-13995787344150533-EXT-201 (Endpoint)
-- PBX-13995787344150533-EXT-201 (AOR)
-- PBX-13995787344150533-EXT-201 (AUTH)
-- PBX_13995787344150533_OUT (Context)
+- 200-13995787344150533 (Endpoint)
+- 200-13995787344150533 (AOR)
+- 200-13995787344150533 (AUTH)
+- inbound_13995787344150533 (Context)
 
 <br>
 
