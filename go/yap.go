@@ -4274,11 +4274,16 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			fmt.Fprintf(w, "    <br>")
 			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 			inputTableHTMLArgument.inputID = "pbx-contact-input-site-phone"
 			inputTableHTMLArgument.funcNameJS = "pbxContactSearchSitePhone"
 			inputTableHTMLArgument.placeholder = "PBX Site Phone Number"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
+				fmt.Fprintf(w, "    <br>")
+				fmt.Fprintf(w, "    <br>")
+			}
 			if genDetail.userTypeID == "100" {
 				inputTableHTMLArgument.inputID = "pbx-contact-input-customer-id"
 				inputTableHTMLArgument.funcNameJS = "pbxContactSearchCustomerID"
@@ -4476,6 +4481,10 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 			inputTableHTMLArgument.placeholder = "Date & Time Created"
 			inputTableHTML(w, inputTableHTMLArgument)
 			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
+				fmt.Fprintf(w, "    <br>")
+				fmt.Fprintf(w, "    <br>")
+			}
 			if genDetail.userTypeID == "100" {
 				inputTableHTMLArgument.inputID = "pbx-resource-input-customer-id"
 				inputTableHTMLArgument.funcNameJS = "pbxResourceSearchCustomerID"
