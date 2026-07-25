@@ -24,12 +24,6 @@ bg_purple="\033[45m";
 go_tar="go1.26.0.linux-amd64.tar.gz";
 go_tar_hash="aac1b08a0fb0c4e0a7c1555beb7b59180b05dfc5a3d62e40e9de90cd42f88235";
 
-# Generate strong passwords using the OpenSSL cryptographic libary
-mariadb_root_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
-mariadb_yap_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
-mariadb_pbx_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
-mariadb_temp_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
-
 # Variable for Asterisk version
 asterisk_version="asterisk-certified-20.7-cert8";
 
@@ -49,9 +43,9 @@ then
   printf $clear_screen;
   printf $bg_yellow;
   printf $text_bold_white;
-  printf " ╔════════════════════╗ \n";
-  printf " ║ Please run as root ║ \n";
-  printf " ╚════════════════════╝ \n";
+  printf " ╔═══════════════════════════════════════════╗ \n";
+  printf " ║ Please run the YAP install script as root ║ \n";
+  printf " ╚═══════════════════════════════════════════╝ \n";
   printf $reset_colour;
   exit;
 fi;
@@ -72,6 +66,87 @@ then
   printf $reset_colour;
   exit;
 fi;
+
+#----------------------------------------------------------------------
+
+# YAP Install Title
+printf $clear_screen;
+printf "\n";
+printf "    ██╗   ██╗  █████╗  ██████╗     ██╗ ███╗   ██╗ ███████╗ ████████╗  █████╗  ██╗      ██╗         ███████╗  ██████╗ ██████╗  ██╗ ██████╗  ████████╗\n";
+printf "    ╚██╗ ██╔╝ ██╔══██╗ ██╔══██╗    ██║ ████╗  ██║ ██╔════╝ ╚══██╔══╝ ██╔══██╗ ██║      ██║         ██╔════╝ ██╔════╝ ██╔══██╗ ██║ ██╔══██╗ ╚══██╔══╝\n";
+printf "     ╚████╔╝  ███████║ ██████╔╝    ██║ ██╔██╗ ██║ ███████╗    ██║    ███████║ ██║      ██║         ███████╗ ██║      ██████╔╝ ██║ ██████╔╝    ██║   \n";
+printf "      ╚██╔╝   ██╔══██║ ██╔═══╝     ██║ ██║╚██╗██║ ╚════██║    ██║    ██╔══██║ ██║      ██║         ╚════██║ ██║      ██╔══██╗ ██║ ██╔═══╝     ██║   \n";
+printf "       ██║    ██║  ██║ ██║         ██║ ██║ ╚████║ ███████║    ██║    ██║  ██║ ███████╗ ███████╗    ███████║ ╚██████╗ ██║  ██║ ██║ ██║         ██║   \n";
+printf "       ╚═╝    ╚═╝  ╚═╝ ╚═╝         ╚═╝ ╚═╝  ╚═══╝ ╚══════╝    ╚═╝    ╚═╝  ╚═╝ ╚══════╝ ╚══════╝    ╚══════╝  ╚═════╝ ╚═╝  ╚═╝ ╚═╝ ╚═╝         ╚═╝   \n";
+printf "\n";
+
+#----------------------------------------------------------------------
+
+# Enter email
+read -p "    Enter the email of the YAP admin account with account ID 1 (type exit to stop the YAP install script): " email;
+printf "\n";
+if [[ $email = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔════════════════════════════╗ \n";
+  printf " ║ Email name cannot be empty ║ \n";
+  printf " ║ Press return to continue   ║ \n";
+  printf " ╚════════════════════════════╝ \n";
+  printf $reset_colour;
+  printf "\n";
+  read -p "";
+  source ./install-yap.sh;
+elif [[ $email = "exit" ]] || [[ $email = "Exit" ]]
+then
+  exit;
+fi;
+
+# UK VAT registered status 
+read -p "    Enter UK VAT registered status, option can be yes/no (type exit to stop the YAP install script): " uk_vat_reg;
+printf "\n";
+if [[ $uk_vat_reg = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔══════════════════════════════════════════╗ \n";
+  printf " ║ UK VAT registered status cannot be empty ║ \n";
+  printf " ║ Press return to continue                 ║ \n";
+  printf " ╚══════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+elif [[ $uk_vat_reg = "exit" ]] || [[ $uk_vat_reg = "Exit" ]]
+then
+  exit;
+elif [[ $uk_vat_reg = "yes" ]] || [[ $uk_vat_reg = "Yes" ]] || [[ $uk_vat_reg = "YES" ]] || [[ $uk_vat_reg = "y" ]] || [[ $uk_vat_reg = "Y" ]]
+then  
+  uk_vat_reg="yes";
+elif [[ $uk_vat_reg = "no" ]] || [[ $uk_vat_reg = "No" ]] || [[ $uk_vat_reg = "NO" ]] || [[ $uk_vat_reg = "n" ]] || [[ $uk_vat_reg = "N" ]]
+then
+  uk_vat_reg="no";
+else
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔═══════════════════════════════════════════════════════════════════╗ \n";
+  printf " ║ Invalid option for UK VAT registered status, option can be yes/no ║ \n";
+  printf " ║ Press return to continue                                          ║ \n";
+  printf " ╚═══════════════════════════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh
+fi;
+
+#----------------------------------------------------------------------
+
+# Generate strong passwords using the OpenSSL cryptographic libary
+mariadb_root_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
+mariadb_yap_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
+mariadb_pbx_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
+mariadb_temp_password=(`openssl rand -base64 40 | tr "/" a | tr "=" a | tr "+" a`);
 
 #----------------------------------------------------------------------
 
@@ -323,26 +398,31 @@ mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Grant privileges for YAP MariaDB user
 mysql -u root -e "GRANT SELECT ON yap.* TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.user_account TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer_invoice_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.customer_site_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.pbx_site_address TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_aors TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_asterisk_publications TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_auths TO 'yap'@'localhost';";
-mysql -u root -e "GRANT DELETE ON yap.ps_contacts TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_domain_aliases TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_endpoint_id_ips TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_endpoints TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.user_account TO 'yap'@'localhost';";
-mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.invoice_item TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, DELETE ON yap.invoice_item TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.service_product TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.supplier TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.sales_tax_rate_lookup TO 'yap'@'localhost';";
 mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Add the YAP MariaDB user password to the YAP configuration file
 string_update_file="/etc/yap/yap.env";
 search_string="<REPLACE_YAP_PASSWORD>";
 replace_string="$mariadb_yap_password";
+string_update;
+
+# Add the UK VAT registered status to the YAP configuration file
+string_update_file="/etc/yap/yap.env";
+search_string="<REPLACE_VAT_REGISTERED_STATUS>";
+replace_string="$uk_vat_reg";
 string_update;
 
 # Drop any previous PBX MaraiDB user and create a PBX MaraiDB user for Asterisk
@@ -454,6 +534,12 @@ string_update;
 
 #----------------------------------------------------------------------
 
+# Create YAP admin user with account ID 1
+mysql -u root -e "INSERT INTO yap.user_account (id, email, first_name, last_name, user_account_type_id, customer_id, pbx_id) VALUES (1, '$email', 'YAP', 'Admin', 100, 1, 1);";
+mysql -u root -e "FLUSH PRIVILEGES;";
+
+#----------------------------------------------------------------------
+
 printf $bg_green;
 printf $text_bold_white;
 printf " ╔═══════════════════════════════════════╗ \n";
@@ -461,3 +547,4 @@ printf " ║ YAP has been installed in /usr/bin    ║ \n";
 printf " ║ To run YAP type \"systemctl start yap\" ║ \n"; 
 printf " ╚═══════════════════════════════════════╝ \n";
 printf $reset_colour;
+exit;
