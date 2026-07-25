@@ -35,10 +35,13 @@ function string_update {
   sed -i "s/$search_string/$replace_string/" $string_update_file;
 };
 
+# Nginx fingerprint
+nginx_fingerprint="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62";
+
 #----------------------------------------------------------------------
 
 # Check user is root otherwise exit script
-if [ "$EUID" -ne 0 ]
+if [[ "$EUID" -ne 0 ]]
 then
   printf $clear_screen;
   printf $bg_yellow;
@@ -53,7 +56,7 @@ fi;
 #----------------------------------------------------------------------
 
 # Check YAP has been cloned from GitHub
-if [ ! -d "/root/yap" ]
+if [[ ! -d "/root/yap" ]]
 then
   printf $clear_screen;
   printf $bg_red;
@@ -72,20 +75,69 @@ fi;
 # YAP Install Title
 printf $clear_screen;
 printf "\n";
-printf "    ██╗   ██╗  █████╗  ██████╗     ██╗ ███╗   ██╗ ███████╗ ████████╗  █████╗  ██╗      ██╗         ███████╗  ██████╗ ██████╗  ██╗ ██████╗  ████████╗\n";
-printf "    ╚██╗ ██╔╝ ██╔══██╗ ██╔══██╗    ██║ ████╗  ██║ ██╔════╝ ╚══██╔══╝ ██╔══██╗ ██║      ██║         ██╔════╝ ██╔════╝ ██╔══██╗ ██║ ██╔══██╗ ╚══██╔══╝\n";
-printf "     ╚████╔╝  ███████║ ██████╔╝    ██║ ██╔██╗ ██║ ███████╗    ██║    ███████║ ██║      ██║         ███████╗ ██║      ██████╔╝ ██║ ██████╔╝    ██║   \n";
-printf "      ╚██╔╝   ██╔══██║ ██╔═══╝     ██║ ██║╚██╗██║ ╚════██║    ██║    ██╔══██║ ██║      ██║         ╚════██║ ██║      ██╔══██╗ ██║ ██╔═══╝     ██║   \n";
-printf "       ██║    ██║  ██║ ██║         ██║ ██║ ╚████║ ███████║    ██║    ██║  ██║ ███████╗ ███████╗    ███████║ ╚██████╗ ██║  ██║ ██║ ██║         ██║   \n";
-printf "       ╚═╝    ╚═╝  ╚═╝ ╚═╝         ╚═╝ ╚═╝  ╚═══╝ ╚══════╝    ╚═╝    ╚═╝  ╚═╝ ╚══════╝ ╚══════╝    ╚══════╝  ╚═════╝ ╚═╝  ╚═╝ ╚═╝ ╚═╝         ╚═╝   \n";
+printf "  ██╗   ██╗  █████╗  ██████╗     ██╗ ███╗   ██╗ ███████╗ ████████╗  █████╗  ██╗      ██╗         ███████╗  ██████╗ ██████╗  ██╗ ██████╗  ████████╗\n";
+printf "  ╚██╗ ██╔╝ ██╔══██╗ ██╔══██╗    ██║ ████╗  ██║ ██╔════╝ ╚══██╔══╝ ██╔══██╗ ██║      ██║         ██╔════╝ ██╔════╝ ██╔══██╗ ██║ ██╔══██╗ ╚══██╔══╝\n";
+printf "   ╚████╔╝  ███████║ ██████╔╝    ██║ ██╔██╗ ██║ ███████╗    ██║    ███████║ ██║      ██║         ███████╗ ██║      ██████╔╝ ██║ ██████╔╝    ██║   \n";
+printf "    ╚██╔╝   ██╔══██║ ██╔═══╝     ██║ ██║╚██╗██║ ╚════██║    ██║    ██╔══██║ ██║      ██║         ╚════██║ ██║      ██╔══██╗ ██║ ██╔═══╝     ██║   \n";
+printf "     ██║    ██║  ██║ ██║         ██║ ██║ ╚████║ ███████║    ██║    ██║  ██║ ███████╗ ███████╗    ███████║ ╚██████╗ ██║  ██║ ██║ ██║         ██║   \n";
+printf "     ╚═╝    ╚═╝  ╚═╝ ╚═╝         ╚═╝ ╚═╝  ╚═══╝ ╚══════╝    ╚═╝    ╚═╝  ╚═╝ ╚══════╝ ╚══════╝    ╚══════╝  ╚═════╝ ╚═╝  ╚═╝ ╚═╝ ╚═╝         ╚═╝   \n";
 printf "\n";
+printf "  $bg_purple $text_bold_white╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║ To install and run YAP (Yet Another PBX) the following prerequisites must be completed in advance of the install:                         ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║ - A domain with an A record and/or an AAAA record setup to the servers IPv4 address and IPv6 address; also the FQDN, servers IPv4 address ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║   and/or IPv6 address must be known to input in to this install script                                                                    ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║ - A TLS certificate obtained; also the absolute paths for the certficate and key file must be known to input in to this install script    ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║   (To retrieve a Let\'s Encrypt certifcate run the lets-encrypt-cert.sh script in /root/yap/bash)                                         ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║ - YAP uses oauth2-proxy to handle authentication via GitHub; also the Github oAuth app client ID and client secret must be known to input ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║   in to this install script                                                                                                               ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║   (To create a GitHub oAuth app see this guide - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)    ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║                                               - TYPE EXIT TO STOP THE YAP INSTALL SCRIPT -                                                ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ $reset_colour\n";
+printf "\n";
+read -p "  Has all the prerequisites been completed? (yes/no): " prerequisites;
+printf "\n";
+if [[ $prerequisites = "exit" ]] || [[ $prerequisites = "Exit" ]] || [[ $prerequisites = "EXIT" ]]
+then
+  exit;
+elif [[ $prerequisites = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔══════════════════════════════════════╗ \n";
+  printf " ║ Prerequisites answer cannot be empty ║ \n";
+  printf " ║ Press return to continue             ║ \n";
+  printf " ╚══════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+elif [[ $prerequisites != "yes" ]] && [[ $prerequisites != "Yes" ]] && [[ $prerequisites != "YES" ]] && [[ $prerequisites != "y" ]] && [[ $prerequisites != "Y" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔════════════════════════════════════════════════════════════════╗ \n";
+  printf " ║ Complete prerequisites first and re-run the YAP install script ║ \n";
+  printf " ║ Press return to continue                                       ║ \n";
+  printf " ╚════════════════════════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  exit;
+fi;
 
 #----------------------------------------------------------------------
 
-# Enter email
-read -p "    Enter the email of the YAP admin account with account ID 1 (type exit to stop the YAP install script): " email;
+# Enter YAP admin email
+read -p "  Enter the email of the YAP admin account with account ID 1: " email;
 printf "\n";
-if [[ $email = "" ]]
+if [[ $email = "exit" ]] || [[ $email = "Exit" ]] || [[ $email = "EXIT" ]]
+then
+  exit;
+elif [[ $email = "" ]]
 then
   printf $clear_screen;
   printf $bg_yellow;
@@ -95,18 +147,17 @@ then
   printf " ║ Press return to continue ║ \n";
   printf " ╚══════════════════════════╝ \n";
   printf $reset_colour;
-  printf "\n";
   read -p "";
   source ./install-yap.sh;
-elif [[ $email = "exit" ]] || [[ $email = "Exit" ]]
-then
-  exit;
 fi;
 
 # UK VAT registered status 
-read -p "    Enter UK VAT registered status, option can be yes/no (type exit to stop the YAP install script): " uk_vat_reg;
+read -p "  Enter UK VAT registered status, option can be yes/no: " uk_vat_reg;
 printf "\n";
-if [[ $uk_vat_reg = "" ]]
+if [[ $uk_vat_reg = "exit" ]] || [[ $uk_vat_reg = "Exit" ]] || [[ $email = "EXIT" ]]
+then
+  exit;
+elif [[ $uk_vat_reg = "" ]]
 then
   printf $clear_screen;
   printf $bg_yellow;
@@ -118,9 +169,6 @@ then
   printf $reset_colour;
   read -p "";
   source ./install-yap.sh;
-elif [[ $uk_vat_reg = "exit" ]] || [[ $uk_vat_reg = "Exit" ]]
-then
-  exit;
 elif [[ $uk_vat_reg = "yes" ]] || [[ $uk_vat_reg = "Yes" ]] || [[ $uk_vat_reg = "YES" ]] || [[ $uk_vat_reg = "y" ]] || [[ $uk_vat_reg = "Y" ]]
 then  
   uk_vat_reg="yes";
@@ -138,6 +186,146 @@ else
   printf $reset_colour;
   read -p "";
   source ./install-yap.sh
+fi;
+
+# Enter FQDN
+read -p "  Enter the FQDN: " FQDN;
+printf "\n";
+if [[ $FQDN = "exit" ]] || [[ $FQDN = "Exit" ]] || [[ $FQDN = "EXIT" ]]
+then
+  exit;
+elif [[ $FQDN = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔══════════════════════════╗ \n";
+  printf " ║ FQDN cannot be empty     ║ \n";
+  printf " ║ Press return to continue ║ \n";
+  printf " ╚══════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+fi;
+
+# Enter servers public IPv4 address
+read -p "  Enter the servers public IPv4 address (Enter 127.0.0.1 if no public IPv4 address exists): " public_IPv4;
+printf "\n";
+if [[ $public_IPv4 = "exit" ]] || [[ $public_IPv4 = "Exit" ]] || [[ $public_IPv4 = "EXIT" ]]
+then
+  exit;
+elif [[ $public_IPv4 = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔═════════════════════════════════════╗ \n";
+  printf " ║ Servers public IPv4 cannot be empty ║ \n";
+  printf " ║ Press return to continue            ║ \n";
+  printf " ╚═════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+fi;
+
+# Enter servers public IPv6 address
+read -p "  Enter the servers public IPv6 address (Enter ::1 if no public IPv6 address exists): " public_IPv6;
+printf "\n";
+if [[ $public_IPv6 = "exit" ]] || [[ $public_IPv6 = "Exit" ]] || [[ $public_IPv6 = "EXIT" ]]
+then
+  exit;
+elif [[ $public_IPv6 = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔═════════════════════════════════════╗ \n";
+  printf " ║ Servers public IPv6 cannot be empty ║ \n";
+  printf " ║ Press return to continue            ║ \n";
+  printf " ╚═════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+fi;
+
+# Enter the absolute path for the TLS certificate
+read -p "  Enter the absolute path for the TLS certificate: " tls_cert_path;
+printf "\n";
+if [[ $tls_cert_path = "exit" ]] || [[ $tls_cert_path = "Exit" ]] || [[ $tls_cert_path = "EXIT" ]]
+then
+  exit;
+elif [[ $tls_cert_path = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔═══════════════════════════════════════════════════════════╗ \n";
+  printf " ║ The absolute path for the TLS certificate cannot be empty ║ \n";
+  printf " ║ Press return to continue                                  ║ \n";
+  printf " ╚═══════════════════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+fi;
+
+# Enter the absolute path for the TLS key
+read -p "  Enter the absolute path for the TLS key: " tls_key_path;
+printf "\n";
+if [[ $tls_key_path = "exit" ]] || [[ $tls_key_path = "Exit" ]] || [[ $tls_key_path = "EXIT" ]]
+then
+  exit;
+elif [[ $tls_key_path = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔═══════════════════════════════════════════════════╗ \n";
+  printf " ║ The absolute path for the TLS key cannot be empty ║ \n";
+  printf " ║ Press return to continue                          ║ \n";
+  printf " ╚═══════════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+fi;
+
+# Enter the GitHub oAuth app client ID
+read -p "  Enter the GitHub oAuth app client ID: " oauth_client_id;
+printf "\n";
+if [[ $oauth_client_id = "exit" ]] || [[ $oauth_client_id = "Exit" ]] || [[ $oauth_client_id = "EXIT" ]]
+then
+  exit;
+elif [[ $oauth_client_id = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔════════════════════════════════════════════╗ \n";
+  printf " ║ The GitHub oAuth client ID cannot be empty ║ \n";
+  printf " ║ Press return to continue                   ║ \n";
+  printf " ╚════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+fi;
+
+# Enter the GitHub oAuth app client secret
+read -p "  Enter the GitHub oAuth app client secret: " oauth_client_secret;
+printf "\n";
+if [[ $tls_key_path = "exit" ]] || [[ $tls_key_path = "Exit" ]] || [[ $tls_key_path = "EXIT" ]]
+then
+  exit;
+elif [[ $tls_key_path = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔════════════════════════════════════════════════╗ \n";
+  printf " ║ The GitHub oAuth client secret cannot be empty ║ \n";
+  printf " ║ Press return to continue                       ║ \n";
+  printf " ╚════════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
 fi;
 
 #----------------------------------------------------------------------
@@ -172,8 +360,13 @@ apt install wget \
             libtool \
             libssl-dev \
             libcurl4-gnutls-dev \
-            mariadb-server -y;
-if [ $? != 0 ]
+            mariadb-server \
+	    curl \
+	    gnupg2 \
+	    ca-certificates \
+	    lsb-release \
+	    ubuntu-keyring -y;
+if [[ $? != 0 ]]
 then
   printf $clear_screen;
   printf $bg_red;
@@ -200,26 +393,26 @@ printf $reset_colour;
 printf "\n";
 printf $text_bold_black;
 read -p "   Would you like to continue? [Yes/No]: " response;
-if [ $response == "Yes" ] || [ $response == "yes" ] || [ $response == "YES" ] || [ $response == "Y" ] || [ $response == "y" ]
+if [[ $response == "Yes" ]] || [[ $response == "yes" ]] || [[ $response == "YES" ]] || [[ $response == "Y" ]] || [[ $response == "y" ]]
 then
   printf $reset_colour;
   # If the Go source code has not already been download in /root then download it
-  if [ ! -f "/root/$go_tar" ]; then
+  if [[ ! -f "/root/$go_tar" ]]; then
     wget -P /root https://go.dev/dl/$go_tar;
   fi;
   hash_result="$(shasum -a 256 /root/$go_tar | cut -d " " -f 1)";
-  if [ $hash_result != $go_tar_hash ]
-    then
-      rm /root/$go_tar;
-      printf $clear_screen;
-      printf $bg_red;
-      printf $text_bold_white;
-      printf " ╔══════════════════════════════════════════════════════════╗ \n";
-      printf " ║ The hash for $go_tar does not match! ║ \n";
-      printf " ║ The Go source code has been removed ║ \n";
-      printf " ╚══════════════════════════════════════════════════════════╝ \n";
-      printf $reset_colour;
-      exit;
+  if [[ $hash_result != $go_tar_hash ]]
+  then
+    rm /root/$go_tar;
+    printf $clear_screen;
+    printf $bg_red;
+    printf $text_bold_white;
+    printf " ╔══════════════════════════════════════════════════════════╗ \n";
+    printf " ║ The hash for $go_tar does not match! ║ \n";
+    printf " ║ The Go source code has been removed                      ║ \n";
+    printf " ╚══════════════════════════════════════════════════════════╝ \n";
+    printf $reset_colour;
+    exit;
   fi;
   rm -rf /usr/local/go && tar -C /usr/local -xzf /root/$go_tar;
   export PATH=$PATH:/usr/local/go/bin;
@@ -298,12 +491,14 @@ systemctl daemon-reload;
 cd /root;
 
 # If the Asterisk source code has not already been download in /root then download it
-if [ ! -f "/root/$asterisk_version.tar.gz" ]; then
+if [[ ! -f "/root/$asterisk_version.tar.gz" ]]
+then
   wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz;
 fi;
 
 # If the Asterisk teams PGP signature has not already been download in /root then download it
-if [ ! -f "/root/$asterisk_version.tar.gz.asc" ]; then
+if [[ ! -f "/root/$asterisk_version.tar.gz.asc" ]]
+then
   wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/$asterisk_version.tar.gz.asc;
 fi;
 
@@ -314,7 +509,7 @@ gpg --keyserver keyserver.ubuntu.com --recv 0x$asterisk_key;
 gpg --verify $asterisk_version.tar.gz.asc $asterisk_version.tar.gz;
 
 # Conditional statment based on the return code of the GPG command used to verify Asterisk source code
-if [ $? != 0 ]
+if [[ $? != 0 ]]
 then
   rm /root/$asterisk_tar; 
   printf $clear_screen;
@@ -347,7 +542,7 @@ mysql -u root -e "FLUSH PRIVILEGES;";
 # Create a .my.cnf file in /root and populate with account details for MariaDB root
 my_cnf=/root/.my.cnf;
 # If any previous .my.cnf file exists remove it from /root
-if [ -f "$my_cnf" ]; then
+if [[ -f "$my_cnf" ]]; then
   rm -r $my_cnf;
 fi;
 touch $my_cnf;
@@ -537,6 +732,45 @@ string_update;
 # Create YAP admin user with account ID 1
 mysql -u root -e "INSERT INTO yap.user_account (id, email, first_name, last_name, user_account_type_id, customer_id, pbx_id) VALUES (1, '$email', 'YAP', 'Admin', 100, 1, 1);";
 mysql -u root -e "FLUSH PRIVILEGES;";
+
+#----------------------------------------------------------------------
+
+# Nginx Install
+
+# Retrieve the Nginx signing keys and create a keyring
+curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null
+
+# Show the fingerprint from the keyring
+nginx_fingerprint_check=`gpg --with-colons --fingerprint --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg | awk -F: '$1 == "fpr" {print $10;}' | grep $nginx_fingerprint`;
+
+# Check if the Nginx fingerprint matches
+if [ $nginx_fingerprint_check != $nginx_fingerprint ]
+then
+  rm /usr/share/keyrings/nginx-archive-keyring.gpg;
+  printf $clear_screen;
+  printf $bg_red;
+  printf $text_bold_white;
+  printf " ╔═══════════════════════════════════════════════════════════╗ \n";
+  printf " ║ The fingerprint for the Nginx signing key does not match! ║ \n";
+  printf " ║ The keyring has been been removed                         ║ \n";
+  printf " ╚═══════════════════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  exit;
+else
+  # Configure the apt repository for stable nginx packages
+  echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/ubuntu `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list;
+  # Set system to use Nginx own packages over the Nginx packages in the Ubuntu repository
+  echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" | tee /etc/apt/preferences.d/99nginx;
+  # Update apt repositary
+  apt update;
+  # Install Nginx
+  apt install nginx;
+fi;
+
+# Copy Nginx Configuration files and #change file attributes
+cp /root/yap/nginx/nginx.conf /etc/nginx/nginx.conf;
+rm /root/yap/nginx/conf.d/*;
+cp /root/yap/nginx/conf.d/* /etc/nginx/conf.d/;
 
 #----------------------------------------------------------------------
 
