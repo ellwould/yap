@@ -90,10 +90,10 @@ then
   printf $clear_screen;
   printf $bg_yellow;
   printf $text_bold_white;
-  printf " ╔════════════════════════════╗ \n";
-  printf " ║ Email name cannot be empty ║ \n";
-  printf " ║ Press return to continue   ║ \n";
-  printf " ╚════════════════════════════╝ \n";
+  printf " ╔══════════════════════════╗ \n";
+  printf " ║ Email cannot be empty    ║ \n";
+  printf " ║ Press return to continue ║ \n";
+  printf " ╚══════════════════════════╝ \n";
   printf $reset_colour;
   printf "\n";
   read -p "";
