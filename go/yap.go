@@ -19,6 +19,7 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"github.com/ellwould/csvcell"
@@ -26,10 +27,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/sony/sonyflake"
+	"github.com/tidwall/gjson"
+	"io"
 	"log"
 	"math"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"slices"
 	"strconv"
@@ -117,6 +121,21 @@ func errorBox(w http.ResponseWriter, errorType string, headerCSS string, buttonC
 	} else if errorType == "account_type_error" {
 		fmt.Fprintf(w, "    Account Type Forbidden<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+	} else if errorType == "url_error" {
+		fmt.Fprintf(w, "    The URL is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+	} else if errorType == "client_id_error" {
+		fmt.Fprintf(w, "    The Client ID is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+	} else if errorType == "client_secret_error" {
+		fmt.Fprintf(w, "    The Client Secret is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+	} else if errorType == "refresh_token_error" {
+		fmt.Fprintf(w, "    The Refresh Token is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+	} else if errorType == "currency_code_error" {
+		fmt.Fprintf(w, "    The Currency Code is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else {
 		fmt.Fprintf(w, "    Unknown Error<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
@@ -180,6 +199,12 @@ func currentDate() string {
 	date := time.Now().UTC()
 	result := date.Format("2006-01-02")
 	return string(result)
+}
+
+// Function to trim string
+func trimString(unTrimmedString string, characterToTrim string) (result string) {
+	result = strings.Replace(unTrimmedString, characterToTrim, "", -1)
+	return result
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -407,6 +432,18 @@ type invoicePBXExtFunctionParameter struct {
 	itemOnHold        string
 	contractLength    string
 	contractStartDate string
+}
+
+// Struct for accounting software API
+type accountingSoftwareParameter struct {
+	url            string
+	accessToken    string
+	customerID     string
+	clientID       string
+	clientSecret   string
+	refreshToken   string
+	currencyCode   string
+	httpStatusCode int
 }
 
 // Function to insert NULL value into database column
@@ -838,6 +875,224 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
 		nullSQL(invoicePBXExt.contractLength),
 		nullSQL(invoicePBXExt.contractStartDate),
 	)
+}
+
+//----------------------------------------------------------------------------------------------------
+
+// Functions to send invoices to accounting software via API
+
+// Function to get access token via the accounting software API
+func accessToken(accountingSoftware accountingSoftwareParameter) string {
+
+	// Set data to POST
+	data := url.Values{}
+	data.Set("client_id", accountingSoftware.clientID)
+	data.Set("client_secret", accountingSoftware.clientSecret)
+	data.Set("grant_type", "refresh_token")
+	data.Set("refresh_token", accountingSoftware.refreshToken)
+
+	// Send POST request
+	request, error := http.NewRequest("POST", accountingSoftware.url+`/token_endpoint`, strings.NewReader(data.Encode()))
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Add("Accept", "application/json")
+
+	client := &http.Client{}
+	response, error := client.Do(request)
+	if error != nil {
+		panic(error)
+	}
+
+	defer response.Body.Close()
+
+	bodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonReturned := string(bodyBytes)
+	// Parse JSON
+	token := gjson.Get(jsonReturned, "access_token")
+	// Trim " out of string
+	tokenTrimmed := trimString(token.Raw, "\"")
+	// Return the access token
+	return string(tokenTrimmed)
+}
+
+// Function for invoice item JSON (this function is only accessed by the postInvoice)
+func invoiceItemJSON(dbDetail databaseFunctionParameter) string {
+
+	var (
+		serviceProductName        string
+		serviceProductType        string
+		invoiceItemTag            string
+		invoiceItemSellPrice      string
+		invoiceItemSalesTaxRate   string
+		invoiceItemSalesTaxStatus string
+	)
+
+	itemJSONSQL, err := dbDetail.connection.Query(`SELECT
+                                                         service_product_name,
+                                                         service_product_type,
+                                                         invoice_item_tag,
+                                                         invoice_item_sell_price,
+                                                         invoice_item_sales_tax_rate,
+                                                         invoice_item_sales_tax_status
+                                                       FROM
+                                                         yap.view___invoice_item;`)
+
+	// Error
+	if err != nil {
+		panic(err)
+
+	}
+
+	var item strings.Builder
+
+	for itemJSONSQL.Next() {
+
+		err = itemJSONSQL.Scan(
+			&serviceProductName,
+			&serviceProductType,
+			&invoiceItemTag,
+			&invoiceItemSellPrice,
+			&invoiceItemSalesTaxRate,
+			&invoiceItemSalesTaxStatus,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		serviceProductName = serviceProductName + " (" + invoiceItemTag + ")"
+
+		item.WriteString(`,{"description":"` + serviceProductName + `",
+                                            "item_type":"` + serviceProductType + `", 
+                                            "price":"` + invoiceItemSellPrice + `",
+                                            "quantity":"1",
+                                            "sales_tax_rate":"` + invoiceItemSalesTaxRate + `",
+                                            "sales_tax_status":"` + invoiceItemSalesTaxStatus + `"
+                                           }`)
+	}
+	return item.String()
+}
+
+// Function to post invoice via the accounting software API (this function is only accessed by the sendCustomerInvoice function)
+func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) int {
+	item := invoiceItemJSON(dbDetail)
+
+	dbDetail.table = "view___customer_detail"
+	dbDetail.column = "customer_uk_based"
+	dbDetail.columnWhere = "customer_id"
+	dbDetail.columnWhereValue = accountingSoftware.customerID
+	customerUKBased := selectWhere(dbDetail)
+
+	// Determine the ecStatus from the SQL select statment
+	var ecStatus string
+
+	if customerUKBased == "yes" {
+		ecStatus = "UK"
+	} else if customerUKBased == "no" {
+		ecStatus = "Reverse Charge"
+	} else {
+		ecStatus = ""
+	}
+
+	// Set invoiceDate to current date
+	invoiceDate := currentDate()
+
+	var dataJSON = []byte(`{
+                                "invoice":
+                                  {
+                                  "contact":"` + accountingSoftware.customerID + `",
+                                  "dated_on":"` + invoiceDate + `",
+                                  "status":"Scheduled To Email",
+                                  "currency":"` + accountingSoftware.currencyCode + `",
+                                  "ec_status":"` + ecStatus + `",
+                                  "send_thank_you_emails":true,
+                                  "send_reminder_emails":true,
+                                  "send_new_invoice_emails":true,
+                                  "payment_terms_in_days":0,     
+                                       "payment_methods": {
+                                            "paypal": true,
+                                            "stripe": true
+                                        },
+                                       "invoice_items":[
+                                       {
+                                       "description":"To see in depth details please use the portal",
+                                       "item_type":"Comment", 
+                                       "quantity":"0"
+                                       }
+                                       ` + item + `
+                                ]
+                        }
+                        }
+                        `)
+
+	request, error := http.NewRequest("POST", accountingSoftware.url+`/invoices`, bytes.NewBuffer(dataJSON))
+	request.Header.Add("Authorization", "Bearer "+accountingSoftware.accessToken)
+	request.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	request.Header.Add("Accept", "application/json")
+
+	client := &http.Client{}
+	response, error := client.Do(request)
+	if error != nil {
+		panic(error)
+	}
+
+	defer response.Body.Close()
+
+	// Return the HTTP status code
+	httpStatusCode := response.StatusCode
+	return httpStatusCode
+}
+
+// function to send invoice delete all invoice items that are set to bill once and update all invoice items that are on hold to being off hold
+func sendCustomerInvoice(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) {
+
+	// Get an access token from accounting software API
+	accountingSoftware.accessToken = accessToken(accountingSoftware)
+
+	var invoiceItemCustomerID string
+
+	customerIDSQL, err := dbDetail.connection.Query(`SELECT DISTINCT
+                     	                                   customer_id
+                                                         FROM
+                                                           view___invoice_item;`)
+
+	// Error
+	if err != nil {
+		panic(err)
+
+	}
+
+	for customerIDSQL.Next() {
+
+		err = customerIDSQL.Scan(
+			&invoiceItemCustomerID,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		accountingSoftware.customerID = invoiceItemCustomerID
+		accountingSoftware.httpStatusCode = postInvoice(dbDetail, accountingSoftware)
+	}
+
+	// The HTTP status code response code determines if the invoices were sent succesfully
+	if accountingSoftware.httpStatusCode == 201 {
+		// Delete all invoice items that are set to bill once
+		dbDetail.connection.Query("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
+
+		// Update all invoice items that are on hold to being off hold
+		dbDetail.connection.Query("UPDATE `invoice_item` SET `item_on_hold` = 'no' WHERE `item_on_hold` = 'yes';")
+	} else if accountingSoftware.httpStatusCode == 400 {
+
+	} else if accountingSoftware.httpStatusCode == 404 {
+
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -8546,6 +8801,13 @@ func main() {
 	yapAdminUKVATRegistered := os.Getenv("yapAdminUKVATRegistered")
 	extraButtonName := os.Getenv("extraButtonName")
 	extraButtonURL := os.Getenv("extraButtonURL")
+	/*
+		accountingSoftwareURL :=
+		accountingSoftwareClientID :=
+		accountingSoftwareClientSecret :=
+		accountingSoftwareRefreshToken :=
+		accountingSoftwareCurrencyCode :=
+	*/
 
 	// Values allowed for dbTransport Variable
 	var transportList = []string{"tcp", "udp"}
@@ -8568,7 +8830,7 @@ func main() {
 	validDefaultExtLimit := slices.Contains(defaultExtLimitList, defaultExtLimit)
 
 	// Values allowed for currencySymbol Variable
-	var currencySymbolList = []string{"", "£", "€", "$"}
+	var currencySymbolList = []string{"", "£", "€", "$", "¥"}
 	validCurrencySymbol := slices.Contains(currencySymbolList, currencySymbol)
 
 	// Values allowed for ukVATRegistered Variable
@@ -8602,7 +8864,7 @@ func main() {
 	} else if validDefaultExtLimit == false {
 		panic(" DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN /etc/yap/yap.env\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
 	} else if validCurrencySymbol == false {
-		panic(" CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $ OR EMPTY IN /etc/yap/yap.env")
+		panic(" CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $, ¥ OR EMPTY IN /etc/yap/yap.env")
 	} else if yapAdminUKVATRegistered == "" {
 		panic("UK YAP ADMIN VAT REGISTERED OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
 	} else if validYAPAdminUKVATRegistered == false {
@@ -8670,19 +8932,25 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonThree := mainMenuParameter{writeHTTP: w, buttonName: "All<br>PBXs<br>&#128222", hyperlink: "/pbx", headerCSS: "header-pbx", buttonCSS: "button-pbx"}
 				mainMenuButton(mainMenuButtonThree)
-				fmt.Fprintf(w, "</div>")
-				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
 				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All Customer<br>Invoicing<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
-				mainMenuButton(mainMenuButtonFive)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Services &<br>Products<br>&#128230", hyperlink: "/service-product", headerCSS: "header-service-product", buttonCSS: "button-service-product"}
+				mainMenuButtonFive := mainMenuParameter{writeHTTP: w, buttonName: "All Customer<br>Invoicing<br>&#129534", hyperlink: "/invoice", headerCSS: "header-invoice", buttonCSS: "button-invoice"}
+				mainMenuButton(mainMenuButtonFive)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Accounting<br>Software<br>&#128183 &#128182 &#128181 &#128180", hyperlink: "/accounting-software", headerCSS: "header-accounting-software", buttonCSS: "button-accounting-software"}
 				mainMenuButton(mainMenuButtonSix)
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				fmt.Fprintf(w, "&nbsp")
+				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "All Services &<br>Products<br>&#128230", hyperlink: "/service-product", headerCSS: "header-service-product", buttonCSS: "button-service-product"}
+				mainMenuButton(mainMenuButtonSeven)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else if userTypeID == "200" {
@@ -9180,6 +9448,72 @@ func main() {
 				footer(w, "header-invoice", "button-invoice")
 			} else {
 				errorBox(w, "account_type_error", "header-invoice", "button-invoice")
+			}
+		}
+		fmt.Fprintf(w, endHTML)
+	})
+
+	go http.HandleFunc("/accounting-software", func(w http.ResponseWriter, r *http.Request) {
+
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
+
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Fprintf(w, startHTML)
+
+		// Wallpaper
+		wallpaper(w, "wallpaper-accounting-software")
+
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountData(dbDetail, "type_id")
+
+		var genDetail generalFunctionParameter
+		genDetail.userTypeID = userTypeID
+
+		var accountingSoftware accountingSoftwareParameter
+		accountingSoftware.url = ""
+		accountingSoftware.clientID = ""
+		accountingSoftware.clientSecret = ""
+		accountingSoftware.refreshToken = ""
+		accountingSoftware.currencyCode = ""
+
+		if userTypeID == "" {
+			errorBox(w, "email_error", "header-accounting-software", "button-accounting-software")
+		} else {
+			if userTypeID == "100" {
+				if accountingSoftware.url == "" {
+					errorBox(w, "url_error", "header-accounting-software", "button-accounting-software")
+				} else if accountingSoftware.clientID == "" {
+					errorBox(w, "client_id_error", "header-accounting-software", "button-accounting-software")
+				} else if accountingSoftware.clientSecret == "" {
+					errorBox(w, "client_secret_error", "header-accounting-software", "button-accounting-software")
+				} else if accountingSoftware.refreshToken == "" {
+					errorBox(w, "refresh_token_error", "header-accounting-software", "button-accounting-software")
+				} else if accountingSoftware.currencyCode == "" {
+					errorBox(w, "currency_code_error", "header-accounting-software", "button-accounting-software")
+				} else {
+					header(w, "YAP Admin Account<br>Send Invoices/Customer Details", "header-accounting-software", extraButtonName, extraButtonURL)
+					sendCustomerInvoice(dbDetail, accountingSoftware)
+					footer(w, "header-accounting-software", "button-accounting-software")
+				}
+			} else {
+				errorBox(w, "account_type_error", "header-accounting-software", "button-accounting-software")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
