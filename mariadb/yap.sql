@@ -174,6 +174,15 @@ CREATE TABLE `contract_length_lookup` (
 )
 ENGINE = InnoDB;
 
+CREATE TABLE `billing_run_log` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
+  `user_account_id` BIGINT UNSIGNED NOT NULL,
+  `user_account_email` VARCHAR(255) NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
+  PRIMARY KEY(`id`)
+)
+ENGINE = InnoDB;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Add pbx_id and and endpoint_type column to Asterisk tables
