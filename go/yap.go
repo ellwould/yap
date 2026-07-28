@@ -987,7 +987,7 @@ func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accounti
 	dbDetail.columnWhereValue = accountingSoftware.customerID
 	customerUKBased := selectWhere(dbDetail)
 
-	// Determine the ecStatus from the SQL select statment
+	// Determine the ecStatus from the SQL select statement
 	var ecStatus string
 
 	if customerUKBased == "yes" {
@@ -1047,7 +1047,7 @@ func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accounti
 	return httpStatusCode
 }
 
-// function to send invoice delete all invoice items that are set to bill once and update all invoice items that are on hold to being off hold
+// function to send invoice, delete all invoice items that are set to bill once and update all invoice items that are on hold to being off hold
 func sendCustomerInvoice(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) {
 
 	// Get an access token from accounting software API
