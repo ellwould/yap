@@ -603,6 +603,7 @@ mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_aors TO 'yap'@'localhos
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_auths TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.ps_endpoints TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, DELETE ON yap.invoice_item TO 'yap'@'localhost';";
+mysql -u root -e "GRANT INSERT ON yap.billing_run_log TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.service_product TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.supplier TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.sales_tax_rate_lookup TO 'yap'@'localhost';";
