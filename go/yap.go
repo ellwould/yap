@@ -122,19 +122,19 @@ func errorBox(w http.ResponseWriter, errorType string, headerCSS string, buttonC
 		fmt.Fprintf(w, "    Account Type Forbidden<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "url_error" {
-		fmt.Fprintf(w, "    The URL is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    The URL is Empty in /etc/yap/yap.env<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "client_id_error" {
-		fmt.Fprintf(w, "    The Client ID is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    The Client ID is Empty in /etc/yap/yap.env<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "client_secret_error" {
-		fmt.Fprintf(w, "    The Client Secret is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    The Client Secret is Empty in /etc/yap/yap.env<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "refresh_token_error" {
-		fmt.Fprintf(w, "    The Refresh Token is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    The Refresh Token is Empty in /etc/yap/yap.env<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "currency_code_error" {
-		fmt.Fprintf(w, "    The Currency Code is Empty in /etc/yap.env<br>")
+		fmt.Fprintf(w, "    The Currency Code is Empty in /etc/yap/yap.env<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else {
 		fmt.Fprintf(w, "    Unknown Error<br>")
@@ -196,7 +196,7 @@ func formatDateTime(dateTime string) string {
 
 // Get current date
 func currentDate() string {
-	date := time.Now().UTC()
+	date := time.Now()
 	result := date.Format("2006-01-02")
 	return string(result)
 }
@@ -412,6 +412,7 @@ type databaseFunctionParameter struct {
 type generalFunctionParameter struct {
 	userID                  string
 	userTypeID              string
+	userEmail               string
 	userCustomerID          string
 	userPBXID               string
 	defaultExtLimit         string
@@ -842,6 +843,8 @@ func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
 	return singleColumnList
 }
 
+//----------------------------------------------------------------------------------------------------
+
 // Function to add ext and PBX setup/rental/cease charges
 func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoicePBXExtFunctionParameter) {
 	// Convert string values to a float64 to use the math package to round to the nearest two decimal places
@@ -879,8 +882,6 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
 
 //----------------------------------------------------------------------------------------------------
 
-// Functions to send invoices to accounting software via API
-
 // Function to get access token via the accounting software API
 func accessToken(accountingSoftware accountingSoftwareParameter) string {
 
@@ -917,6 +918,10 @@ func accessToken(accountingSoftware accountingSoftwareParameter) string {
 	// Return the access token
 	return string(tokenTrimmed)
 }
+
+//----------------------------------------------------------------------------------------------------
+
+// Functions to send invoices to accounting software via API
 
 // Function for invoice item JSON (this function is only accessed by the postInvoice)
 func invoiceItemJSON(dbDetail databaseFunctionParameter) string {
@@ -973,6 +978,7 @@ func invoiceItemJSON(dbDetail databaseFunctionParameter) string {
                                             "sales_tax_rate":"` + invoiceItemSalesTaxRate + `",
                                             "sales_tax_status":"` + invoiceItemSalesTaxStatus + `"
                                            }`)
+
 	}
 	return item.String()
 }
@@ -1045,54 +1051,6 @@ func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accounti
 	// Return the HTTP status code
 	httpStatusCode := response.StatusCode
 	return httpStatusCode
-}
-
-// function to send invoice, delete all invoice items that are set to bill once and update all invoice items that are on hold to being off hold
-func sendCustomerInvoice(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) {
-
-	// Get an access token from accounting software API
-	accountingSoftware.accessToken = accessToken(accountingSoftware)
-
-	var invoiceItemCustomerID string
-
-	customerIDSQL, err := dbDetail.connection.Query(`SELECT DISTINCT
-                     	                                   customer_id
-                                                         FROM
-                                                           view___invoice_item;`)
-
-	// Error
-	if err != nil {
-		panic(err)
-
-	}
-
-	for customerIDSQL.Next() {
-
-		err = customerIDSQL.Scan(
-			&invoiceItemCustomerID,
-		)
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		accountingSoftware.customerID = invoiceItemCustomerID
-		accountingSoftware.httpStatusCode = postInvoice(dbDetail, accountingSoftware)
-	}
-
-	// The HTTP status code response code determines if the invoices were sent succesfully
-	if accountingSoftware.httpStatusCode == 201 {
-		// Delete all invoice items that are set to bill once
-		dbDetail.connection.Query("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
-
-		// Update all invoice items that are on hold to being off hold
-		dbDetail.connection.Query("UPDATE `invoice_item` SET `item_on_hold` = 'no' WHERE `item_on_hold` = 'yes';")
-	} else if accountingSoftware.httpStatusCode == 400 {
-
-	} else if accountingSoftware.httpStatusCode == 404 {
-
-	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1388,10 +1346,15 @@ const validationMessageInvoiceDeleted string = "Invoice" + validationMessageDele
 const validationMessageInvoiceNotDeleted string = "Invoice" + validationMessageNotDeleted
 const validationMessageInvoiceID string = "Invoice ID" + validationMessageNumber
 
+// accounting-software page HTML messages
+const http201MessageSendInvoices string = "HTTP response code 201 - Invocies successfully sent to accounting software"
+const http400MessageSendInvoices string = "HTTP response code 400 - Credentials incorrect for accounting software API in /etc/yap/yap.env"
+const http404MessageSendInvoices string = "HTTP response code 404 - URL malformed for accounting software API in /etc/yap/yap.env"
+const http422MessageSendInvoices string = "HTTP response code 422 - Unprocessable content, possibly time is UTC?"
+
 // service-product page specific HTML messages
 const validationMessageServiceProductName string = "Service/product name" + validationMessageAlphaNum
 const validationMessageServiceProductType string = validationMessageInvalidOption + "service/product type"
-const validationMessageServiceProductYAP string = "Service/product supplier name cannot be ⊛ YAP (Yet Another PBX) ⊛"
 const validationMessageServiceProductSupplierName string = validationMessageInvalidOption + "service/product supplier name"
 const validationMessageServiceProductCreated string = "Service/product" + validationMessageCreated
 const validationMessageServiceProductNotCreated string = "Service/product" + validationMessageNotCreated
@@ -1411,6 +1374,7 @@ const validationMessageSalesTaxRate string = "Sales tax rate" + validationMessag
 const validationMessageServiceProductDoesNotExist string = "Service/product" + validationMessageDoesNotExist
 const validationMessageServiceProductDeleted string = "Service/product" + validationMessageDeleted
 const validationMessageServiceProductNotDeleted string = "Service/product" + validationMessageNotDeleted
+const validationMessageServiceProductYAP string = "Service/product name cannot be YAP PBX Setup ⊛, ⊛ YAP PBX Rental ⊛, ⊛ YAP PBX Cease ⊛, ⊛ YAP Extension Setup ⊛, ⊛ YAP Extension Rental ⊛ or ⊛ YAP Extension Cease ⊛"
 
 const validationMessageSupplierDoesNotExist string = "Supplier" + validationMessageDoesNotExist
 const validationMessageSupplierDeleted string = "Supplier" + validationMessageDeleted
@@ -7742,6 +7706,265 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 
 //----------------------------------------------------------------------------------------------------
 
+// Accounting software page functions
+
+// Accounting software list function
+func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetail generalFunctionParameter) {
+
+	// Only account type ID 100 should be able to use this function
+	if genDetail.userTypeID == "100" {
+
+		var (
+			billingRunLogID  string
+			userAccountID    string
+			userAccountEmail string
+			dateTimeAdded    string
+		)
+
+		var dbTableCountBillingRunLog databaseFunctionParameter
+		dbTableCountBillingRunLog.connection = dbDetail.connection
+		dbTableCountBillingRunLog.database = dbDetail.database
+		dbTableCountBillingRunLog.table = "billing_run_log"
+
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-accounting-software\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"table\" class=\"table-accounting-software\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Total Successful Billing Run's</th>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "        <tr>")
+		dbTableCountBillingRunLog.countMinusOne = false
+		fmt.Fprintf(w, "          <td>"+totalTableCount(dbTableCountBillingRunLog)+"</td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><button onclick=\"toggleAccountingSoftware() \"class=\"button-general button-accounting-software\">&nbsp Show/Hide Billing Run Log &nbsp</button></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
+		fmt.Fprintf(w, "<div id=\"accounting-software-div\" style=\"display:none\">")
+		fmt.Fprintf(w, "<br>")
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-accounting-software\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Previous Successful Billing Run's Completed:</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "    <br>")
+		var inputTableHTMLArgument jsFunctionParameter
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "accounting-software-input-user-id"
+		inputTableHTMLArgument.funcNameJS = "accountingSoftwareSearchUserID"
+		inputTableHTMLArgument.placeholder = "User Account ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "accounting-software-input-user-email"
+		inputTableHTMLArgument.funcNameJS = "accountingSoftwareSearchUserEmail"
+		inputTableHTMLArgument.placeholder = "User Account Email"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "accounting-software-input-date-added"
+		inputTableHTMLArgument.funcNameJS = "accountingSoftwareSearchDateAdded"
+		inputTableHTMLArgument.placeholder = "Date Added"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    <br>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		var exportCSVButtonHTMLArgument jsFunctionParameter
+		exportCSVButtonHTMLArgument.funcNameJS = "AccountingSoftware"
+		exportCSVButtonHTMLArgument.buttonCSS = "button-accounting-software"
+		exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"accounting-software-table\" class=\"table-accounting-software\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <th>Billing Run ID</th>")
+		fmt.Fprintf(w, "          <th>User Account ID</th>")
+		fmt.Fprintf(w, "          <th>User Account Email</th>")
+		fmt.Fprintf(w, "          <th>Date Added</th>")
+		fmt.Fprintf(w, "        </tr>")
+
+		billingRunLogSQL, err := dbDetail.connection.Query(`SELECT
+								      id,
+			                     			      user_account_id,
+			                     			      user_account_email,
+			                     			      date_time_added
+					                            FROM
+					  	                      yap.billing_run_log`)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for billingRunLogSQL.Next() {
+
+			err = billingRunLogSQL.Scan(
+				&billingRunLogID,
+				&userAccountID,
+				&userAccountEmail,
+				&dateTimeAdded,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Fprintf(w, "        <tr>")
+			fmt.Fprintf(w, "          <td>"+billingRunLogID+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountID+"</td>")
+			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+			fmt.Fprintf(w, "          <td>"+dateTimeAdded+"</td>")
+			fmt.Fprintf(w, "        </tr>")
+		}
+
+		fmt.Fprintf(w, "      </table>")
+		var filterTableJSArgument jsFunctionParameter
+		filterTableJSArgument.tableID = "accounting-software-table"
+
+		filterTableJSArgument.inputID = "accounting-software-input-user-id"
+		filterTableJSArgument.funcNameJS = "accountingSoftwareSearchUserID"
+		filterTableJSArgument.columnNumber = 1
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.inputID = "accounting-software-input-user-email"
+		filterTableJSArgument.funcNameJS = "accountingSoftwareSearchUserEmail"
+		filterTableJSArgument.columnNumber = 2
+		filterTableJS(w, filterTableJSArgument)
+
+		filterTableJSArgument.inputID = "accounting-software-input-date-added"
+		filterTableJSArgument.funcNameJS = "accountingSoftwareSearchDateAdded"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
+
+		var exportCSVJSArgument jsFunctionParameter
+		exportCSVJSArgument.funcNameJS = "AccountingSoftware"
+		exportCSVJSArgument.tableID = "accounting-software-table"
+		exportCSVJSArgument.fileName = "YAP_billing_run_log"
+		exportCSVJSArgument.pathURL = "accounting-software"
+		exportCSVJS(w, exportCSVJSArgument)
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "</div>")
+		var toggleDivJSArgument jsFunctionParameter
+		toggleDivJSArgument.funcNameJS = "toggleAccountingSoftware"
+		toggleDivJSArgument.divID = "accounting-software-div"
+		toggleDivJS(w, toggleDivJSArgument)
+
+	} else {
+		panic("accountingSoftwareList function should only be called with account type ID 100")
+	}
+}
+
+// Accounting software send invoice
+func accountingSoftwareSendInvoice(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionParameter, genDetail generalFunctionParameter, accountingSoftware accountingSoftwareParameter) {
+
+	// Only account type ID 100 should be able to use this function
+	if genDetail.userTypeID == "100" {
+
+		fmt.Fprintf(w, "<form method=\"POST\" action=\"/accounting-software\">")
+		fmt.Fprintf(w, "<table class=\"table-accounting-software\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Send Invoices to Accounting Software</th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table style=\"border-style:hidden\">")
+		fmt.Fprintf(w, "        <tr>")
+		fmt.Fprintf(w, "          <td>")
+		confirmList := yesSlice()
+		selectSingleHTML(w, "accounting_software_send_invoice_select_confirm", "yes to Confirm (Cannot Be Empty)", confirmList)
+		fmt.Fprintf(w, "          </td>")
+		fmt.Fprintf(w, "        </tr>")
+		fmt.Fprintf(w, "      </table>")
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><input type=\"submit\" value=\"Send Invoices\"></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "</form>")
+
+		accountingSoftwareSendInvoiceSelectConfirm := r.FormValue("accounting_software_send_invoice_select_confirm")
+
+		if accountingSoftwareSendInvoiceSelectConfirm == "" {
+			// Do Nothing
+		} else if accountingSoftwareSendInvoiceSelectConfirm == "yes" {
+
+			// Get an access token from accounting software API
+			accountingSoftware.accessToken = accessToken(accountingSoftware)
+
+			var invoiceItemCustomerID string
+
+			customerIDSQL, err := dbDetail.connection.Query(`SELECT DISTINCT
+                                                           customer_id
+                                                         FROM
+                                                           view___invoice_item;`)
+
+			// Error
+			if err != nil {
+				panic(err)
+
+			}
+
+			for customerIDSQL.Next() {
+
+				err = customerIDSQL.Scan(
+					&invoiceItemCustomerID,
+				)
+
+				// Error
+				if err != nil {
+					panic(err)
+				}
+
+				accountingSoftware.customerID = invoiceItemCustomerID
+				accountingSoftware.httpStatusCode = postInvoice(dbDetail, accountingSoftware)
+			}
+
+			// The HTTP status code response code determines if the invoices were sent succesfully
+			if accountingSoftware.httpStatusCode == 201 {
+				// Delete all invoice items that are set to bill once
+				dbDetail.connection.Query("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
+
+				// Update all invoice items that are on hold to being off hold
+				dbDetail.connection.Query("UPDATE `invoice_item` SET `item_on_hold` = 'no' WHERE `item_on_hold` = 'yes';")
+
+				// Insert new log into the billing_run_log table
+				dbDetail.connection.Query("INSERT INTO `billing_run_log` (`user_account_id`, `user_account_email`) VALUES (?, ?);", genDetail.userID, genDetail.userEmail)
+
+				// Display success message
+				messageHTML(w, http201MessageSendInvoices, "success")
+			} else if accountingSoftware.httpStatusCode == 400 {
+				messageHTML(w, http400MessageSendInvoices, "warning")
+			} else if accountingSoftware.httpStatusCode == 404 {
+				messageHTML(w, http404MessageSendInvoices, "warning")
+			} else if accountingSoftware.httpStatusCode == 422 {
+				messageHTML(w, http422MessageSendInvoices, "warning")
+			}
+
+		} else {
+			messageHTML(w, validationMessageInvalid, "warning")
+		}
+	} else {
+		panic("accountingSoftwareSendInvoice function should only be called with account type ID 100")
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
 // Service/Products page functions
 
 // Service/products list function
@@ -8121,7 +8344,7 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 		} else if validateServiceProductType == false || addServiceProductSelectType == "" {
 			messageHTML(w, validationMessageServiceProductType, "warning")
 		} else if addServiceProductSelectSupplierName == "⊛ YAP (Yet Another PBX) ⊛" {
-			messageHTML(w, validationMessageServiceProductYAP, "warning")
+			messageHTML(w, validationMessageSupplierYAP, "warning")
 		} else if validateServiceProductSupplierName == false || addServiceProductSelectSupplierName == "" {
 			messageHTML(w, validationMessageServiceProductSupplierName, "warning")
 		} else if validateServiceProductContractLength == false {
@@ -8599,13 +8822,13 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 		if deleteServiceProductInputName == "" && deleteServiceProductSelectConfirm == "" {
 			// Do Nothing
 		} else if deleteServiceProductInputName == "" {
-			messageHTML(w, "", "warning")
+			messageHTML(w, validationMessageServiceProductName, "warning")
 		} else if validateServiceProductName == false && deleteServiceProductSelectConfirm == "yes" {
-			messageHTML(w, "", "warning")
+			messageHTML(w, validationMessageServiceProductName, "warning")
 		} else if validateServiceProductName == true && deleteServiceProductSelectConfirm != "yes" {
-			messageHTML(w, "", "warning")
+			messageHTML(w, validationMessageConfirmation, "warning")
 		} else if deleteServiceProductInputName == "⊛ YAP PBX Setup ⊛" || deleteServiceProductInputName == "⊛ YAP PBX Rental ⊛" || deleteServiceProductInputName == "⊛ YAP PBX Cease ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Setup ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Rental ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Cease ⊛" {
-			messageHTML(w, "", "warning")
+			messageHTML(w, validationMessageServiceProductYAP, "warning")
 		} else if validateServiceProductName == true && deleteServiceProductSelectConfirm == "yes" {
 
 			dbDetail.table = "view___service_product"
@@ -8801,13 +9024,11 @@ func main() {
 	yapAdminUKVATRegistered := os.Getenv("yapAdminUKVATRegistered")
 	extraButtonName := os.Getenv("extraButtonName")
 	extraButtonURL := os.Getenv("extraButtonURL")
-	/*
-		accountingSoftwareURL :=
-		accountingSoftwareClientID :=
-		accountingSoftwareClientSecret :=
-		accountingSoftwareRefreshToken :=
-		accountingSoftwareCurrencyCode :=
-	*/
+	accountingSoftwareURL := os.Getenv("accountingSoftwareURL")
+	accountingSoftwareClientID := os.Getenv("accountingSoftwareClientID")
+	accountingSoftwareClientSecret := os.Getenv("accountingSoftwareClientSecret")
+	accountingSoftwareRefreshToken := os.Getenv("accountingSoftwareRefreshToken")
+	accountingSoftwareCurrencyCode := os.Getenv("accountingSoftwareCurrencyCode")
 
 	// Values allowed for dbTransport Variable
 	var transportList = []string{"tcp", "udp"}
@@ -8821,24 +9042,33 @@ func main() {
 		panic("DATABASE PORT MUST BE A NUMBER IN /etc/yap/yap.env")
 	}
 
-	// Values allowed for dbTls Variable
+	// Values allowed for dbTls variable
 	var dbTLSList = []string{"false", "true"}
 	validDbTLS := slices.Contains(dbTLSList, dbTLS)
 
-	// Values allowed for defaultExtLimit Variable
+	// Values allowed for defaultExtLimit variable
 	var defaultExtLimitList = []string{"1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
 	validDefaultExtLimit := slices.Contains(defaultExtLimitList, defaultExtLimit)
 
-	// Values allowed for currencySymbol Variable
+	// Values allowed for currencySymbol variable
 	var currencySymbolList = []string{"", "£", "€", "$", "¥"}
 	validCurrencySymbol := slices.Contains(currencySymbolList, currencySymbol)
 
-	// Values allowed for ukVATRegistered Variable
+	// Values allowed for ukVATRegistered variable
 	var yapAdminUKVATRegisteredList = []string{"no", "yes"}
 	validYAPAdminUKVATRegistered := slices.Contains(yapAdminUKVATRegisteredList, yapAdminUKVATRegistered)
 
+	// Validate the variable value for extraButtonURL is a URL
 	validateExtraButtonURL := validator.New()
 	validateExtraButtonURLErr := validateExtraButtonURL.Var(extraButtonURL, "required,http_url")
+
+	// Validate the variable value for accountingSoftwareURL is a URL or empty
+	validateAccountingSoftwareURL := validator.New()
+	validateAccountingSoftwareURLErr := validateAccountingSoftwareURL.Var(accountingSoftwareURL, "omitempty,http_url")
+
+	// Values allowed for the accountingSoftwareCurrencyCode variable
+	var accountingSoftwareCurrencyCodeList = []string{"", "GBP", "EUR", "USD", "JPY"}
+	validAccountingSoftwareCurrencyCode := slices.Contains(accountingSoftwareCurrencyCodeList, accountingSoftwareCurrencyCode)
 
 	// Catch if any errors were made in yap.env and feed back where to correct the error
 	if dbUsername == "" {
@@ -8862,9 +9092,9 @@ func main() {
 	} else if defaultExtLimit == "" {
 		panic("DEFAULT SIP EXT OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
 	} else if validDefaultExtLimit == false {
-		panic(" DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN /etc/yap/yap.env\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
+		panic("DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN /etc/yap/yap.env\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
 	} else if validCurrencySymbol == false {
-		panic(" CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $, ¥ OR EMPTY IN /etc/yap/yap.env")
+		panic("CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $, ¥ OR EMPTY IN /etc/yap/yap.env")
 	} else if yapAdminUKVATRegistered == "" {
 		panic("UK YAP ADMIN VAT REGISTERED OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
 	} else if validYAPAdminUKVATRegistered == false {
@@ -8873,6 +9103,10 @@ func main() {
 		if validateExtraButtonURLErr != nil {
 			panic("THE EXTRA BUTTON URL VALUE MUST BE A VALID URL IN /etc/yap/yap.env")
 		}
+	} else if validateAccountingSoftwareURLErr != nil {
+		panic("VALIDATE ACCOUNTING SOFTWARE URL MUST BE A VALID URL OR EMPTY IN /etc/yap/yap.env")
+	} else if validAccountingSoftwareCurrencyCode == false {
+		panic("CURRENCY CODE OPTION MUST BE SET TO GBP, EUR, USD, JPY OR EMPTY IN /etc/yap/yap.env")
 	}
 
 	startHTML := csvcell.FileData(dirHTML, fileStartHTML)
@@ -9482,16 +9716,19 @@ func main() {
 		dbDetail.columnWhereValue = email
 
 		userTypeID := userAccountData(dbDetail, "type_id")
+		userID := userAccountData(dbDetail, "id")
 
 		var genDetail generalFunctionParameter
 		genDetail.userTypeID = userTypeID
+		genDetail.userID = userID
+		genDetail.userEmail = email
 
 		var accountingSoftware accountingSoftwareParameter
-		accountingSoftware.url = ""
-		accountingSoftware.clientID = ""
-		accountingSoftware.clientSecret = ""
-		accountingSoftware.refreshToken = ""
-		accountingSoftware.currencyCode = ""
+		accountingSoftware.url = accountingSoftwareURL
+		accountingSoftware.clientID = accountingSoftwareClientID
+		accountingSoftware.clientSecret = accountingSoftwareClientSecret
+		accountingSoftware.refreshToken = accountingSoftwareRefreshToken
+		accountingSoftware.currencyCode = accountingSoftwareCurrencyCode
 
 		if userTypeID == "" {
 			errorBox(w, "email_error", "header-accounting-software", "button-accounting-software")
@@ -9509,7 +9746,9 @@ func main() {
 					errorBox(w, "currency_code_error", "header-accounting-software", "button-accounting-software")
 				} else {
 					header(w, "YAP Admin Account<br>Send Invoices/Customer Details", "header-accounting-software", extraButtonName, extraButtonURL)
-					sendCustomerInvoice(dbDetail, accountingSoftware)
+					accountingSoftwareList(w, dbDetail, genDetail)
+					fmt.Fprintf(w, "<br>")
+					accountingSoftwareSendInvoice(w, r, dbDetail, genDetail, accountingSoftware)
 					footer(w, "header-accounting-software", "button-accounting-software")
 				}
 			} else {
