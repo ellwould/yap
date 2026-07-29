@@ -843,6 +843,38 @@ func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
 	return singleColumnList
 }
 
+// Function to retrive unique values from a single column from inside a database table with SQL keyword DISTINCT, the data is appended to a slice
+func singleColumnDistinctSlice(dbDetail databaseFunctionParameter) []string {
+	// Get values from the database and append to a slice
+	var singleColumnList []string
+	var singleColumn string
+
+	singleColumnSQL, err := dbDetail.connection.Query(`SELECT DISTINCT
+                                                                ` + dbDetail.column + `
+                                                              FROM
+                                                                yap.` + dbDetail.table + `;`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for singleColumnSQL.Next() {
+
+		err = singleColumnSQL.Scan(
+			&singleColumn,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		singleColumnList = append(singleColumnList, singleColumn)
+	}
+	return singleColumnList
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // Function to add ext and PBX setup/rental/cease charges
@@ -924,7 +956,7 @@ func accessToken(accountingSoftware accountingSoftwareParameter) string {
 // Functions to send invoices to accounting software via API
 
 // Function for invoice item JSON (this function is only accessed by the postInvoice)
-func invoiceItemJSON(dbDetail databaseFunctionParameter) string {
+func invoiceItemJSON(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) string {
 
 	var (
 		serviceProductName        string
@@ -943,7 +975,7 @@ func invoiceItemJSON(dbDetail databaseFunctionParameter) string {
                                                          invoice_item_sales_tax_rate,
                                                          invoice_item_sales_tax_status
                                                        FROM
-                                                         yap.view___invoice_item;`)
+                                                         yap.view___invoice_item WHERE customer_id = ?;`, accountingSoftware.customerID)
 
 	// Error
 	if err != nil {
@@ -985,7 +1017,7 @@ func invoiceItemJSON(dbDetail databaseFunctionParameter) string {
 
 // Function to post invoice via the accounting software API (this function is only accessed by the sendCustomerInvoice function)
 func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) int {
-	item := invoiceItemJSON(dbDetail)
+	item := invoiceItemJSON(dbDetail, accountingSoftware)
 
 	dbDetail.table = "view___customer_detail"
 	dbDetail.column = "customer_uk_based"
@@ -7768,7 +7800,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "accounting-software-input-date-added"
 		inputTableHTMLArgument.funcNameJS = "accountingSoftwareSearchDateAdded"
-		inputTableHTMLArgument.placeholder = "Date Added"
+		inputTableHTMLArgument.placeholder = "Date & Time of Billing Run"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		fmt.Fprintf(w, "    <br>")
@@ -7790,7 +7822,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 		fmt.Fprintf(w, "          <th>Billing Run ID</th>")
 		fmt.Fprintf(w, "          <th>User Account ID</th>")
 		fmt.Fprintf(w, "          <th>User Account Email</th>")
-		fmt.Fprintf(w, "          <th>Date Added</th>")
+		fmt.Fprintf(w, "          <th>Date & Time of Billing Run</th>")
 		fmt.Fprintf(w, "        </tr>")
 
 		billingRunLogSQL, err := dbDetail.connection.Query(`SELECT
@@ -7825,7 +7857,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 			fmt.Fprintf(w, "          <td>"+billingRunLogID+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountID+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
-			fmt.Fprintf(w, "          <td>"+dateTimeAdded+"</td>")
+			fmt.Fprintf(w, "          <td>"+formatDateTime(dateTimeAdded)+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
 
@@ -7906,30 +7938,13 @@ func accountingSoftwareSendInvoice(w http.ResponseWriter, r *http.Request, dbDet
 			// Get an access token from accounting software API
 			accountingSoftware.accessToken = accessToken(accountingSoftware)
 
-			var invoiceItemCustomerID string
+			// Get all customer ID's that have at least one invoice item
+			var invoiceItemCustomerIDList []string
+			dbDetail.column = "customer_id"
+			dbDetail.table = "view___invoice_item"
+			invoiceItemCustomerIDList = singleColumnDistinctSlice(dbDetail)
 
-			customerIDSQL, err := dbDetail.connection.Query(`SELECT DISTINCT
-                                                           customer_id
-                                                         FROM
-                                                           view___invoice_item;`)
-
-			// Error
-			if err != nil {
-				panic(err)
-
-			}
-
-			for customerIDSQL.Next() {
-
-				err = customerIDSQL.Scan(
-					&invoiceItemCustomerID,
-				)
-
-				// Error
-				if err != nil {
-					panic(err)
-				}
-
+			for _, invoiceItemCustomerID := range invoiceItemCustomerIDList {
 				accountingSoftware.customerID = invoiceItemCustomerID
 				accountingSoftware.httpStatusCode = postInvoice(dbDetail, accountingSoftware)
 			}
