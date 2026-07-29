@@ -7934,7 +7934,7 @@ func accountingSoftwareSendInvoice(w http.ResponseWriter, r *http.Request, dbDet
 				accountingSoftware.httpStatusCode = postInvoice(dbDetail, accountingSoftware)
 			}
 
-			// The HTTP status code response code determines if the invoices were sent succesfully
+			// The HTTP status code determines if the invoices were sent succesfully
 			if accountingSoftware.httpStatusCode == 201 {
 				// Delete all invoice items that are set to bill once
 				dbDetail.connection.Query("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
@@ -9092,7 +9092,7 @@ func main() {
 	} else if defaultExtLimit == "" {
 		panic("DEFAULT SIP EXT OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
 	} else if validDefaultExtLimit == false {
-		panic("DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN /etc/yap/yap.env\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
+		panic(" DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN /etc/yap/yap.env\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
 	} else if validCurrencySymbol == false {
 		panic("CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $, ¥ OR EMPTY IN /etc/yap/yap.env")
 	} else if yapAdminUKVATRegistered == "" {
@@ -9104,7 +9104,7 @@ func main() {
 			panic("THE EXTRA BUTTON URL VALUE MUST BE A VALID URL IN /etc/yap/yap.env")
 		}
 	} else if validateAccountingSoftwareURLErr != nil {
-		panic("VALIDATE ACCOUNTING SOFTWARE URL MUST BE A VALID URL OR EMPTY IN /etc/yap/yap.env")
+		panic("ACCOUNTING SOFTWARE URL MUST BE A VALID URL OR EMPTY IN /etc/yap/yap.env")
 	} else if validAccountingSoftwareCurrencyCode == false {
 		panic("CURRENCY CODE OPTION MUST BE SET TO GBP, EUR, USD, JPY OR EMPTY IN /etc/yap/yap.env")
 	}
