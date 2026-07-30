@@ -183,6 +183,13 @@ CREATE TABLE `billing_run_log` (
 )
 ENGINE = InnoDB;
 
+CREATE TABLE `accounting_software` (
+  `refresh_token` VARCHAR(255) NOT NULL,
+  `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
+  PRIMARY KEY(`refresh_token`)
+)
+ENGINE = InnoDB;
+
 ----------------------------------------------------------------------------------------------------
 
 -- Add pbx_id and and endpoint_type column to Asterisk tables
