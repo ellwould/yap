@@ -52,6 +52,89 @@ const fileStartHTML string = "yap-start.html"
 // Constant for fileEndHTML file
 const fileEndHTML string = "yap-end.html"
 
+// Constant for YAP Env file
+const fileYAPEnv string = "/etc/yap/yap.env"
+
+//----------------------------------------------------------------------------------------------------
+
+// Various structs
+
+// Database struct
+type databaseFunctionParameter struct {
+	connection          *sql.DB
+	database            string
+	table               string
+	column              string
+	columnWhere         string
+	columnWhereValue    string
+	columnWhereAnd      string
+	columnWhereValueAnd string
+	countMinusOne       bool
+}
+
+// General struct for list/add/edit/delete functions
+type generalFunctionParameter struct {
+	userID                  string
+	userTypeID              string
+	userEmail               string
+	userCustomerID          string
+	userPBXID               string
+	defaultExtLimit         string
+	currencySymbol          string
+	yapAdminUKVATRegistered string
+}
+
+// JavaScript (JS) struct for JS embedded functions
+type jsFunctionParameter struct {
+	funcNameJS   string
+	inputID      string
+	tableID      string
+	divID        string
+	placeholder  string
+	columnNumber int
+	data         string
+	buttonCSS    string
+	fileName     string
+	pathURL      string
+}
+
+// InvoicePBXExt struct
+type invoicePBXExtFunctionParameter struct {
+	customerID        string
+	pbxID             string
+	serviceProduct    string
+	tag               string
+	sellPrice         string
+	salesTaxRate      string
+	salesTaxStatus    string
+	billItemOnce      string
+	itemOnHold        string
+	contractLength    string
+	contractStartDate string
+}
+
+// Struct for accounting software API
+type accountingSoftwareParameter struct {
+	url              string
+	accessToken      string
+	customerID       string
+	clientID         string
+	clientSecret     string
+	refreshToken     string
+	currencyCode     string
+	httpStatusCode   int
+	organisationName string
+	contactEmail     string
+	billingEmail     string
+	phoneNumber      string
+	address1         string
+	address2         string
+	town             string
+	region           string
+	postcode         string
+	country          string
+}
+
 //----------------------------------------------------------------------------------------------------
 
 // Function for webpage wallpaper
@@ -122,19 +205,19 @@ func errorBox(w http.ResponseWriter, errorType string, headerCSS string, buttonC
 		fmt.Fprintf(w, "    Account Type Forbidden<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "url_error" {
-		fmt.Fprintf(w, "    The URL is Empty in /etc/yap/yap.env<br>")
+		fmt.Fprintf(w, "    The URL is Empty in "+fileYAPEnv+"<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "client_id_error" {
-		fmt.Fprintf(w, "    The Client ID is Empty in /etc/yap/yap.env<br>")
+		fmt.Fprintf(w, "    The Client ID is Empty in "+fileYAPEnv+"<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "client_secret_error" {
-		fmt.Fprintf(w, "    The Client Secret is Empty in /etc/yap/yap.env<br>")
+		fmt.Fprintf(w, "    The Client Secret is Empty in "+fileYAPEnv+"<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "refresh_token_error" {
-		fmt.Fprintf(w, "    The Refresh Token is Empty in /etc/yap/yap.env<br>")
+		fmt.Fprintf(w, "    The Refresh Token is Empty in "+fileYAPEnv+"<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else if errorType == "currency_code_error" {
-		fmt.Fprintf(w, "    The Currency Code is Empty in /etc/yap/yap.env<br>")
+		fmt.Fprintf(w, "    The Currency Code is Empty in "+fileYAPEnv+"<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
 	} else {
 		fmt.Fprintf(w, "    Unknown Error<br>")
@@ -284,21 +367,11 @@ func messageHTML(w http.ResponseWriter, message string, messageType string) {
 	}
 }
 
-// Embedded JavaScript and associated HTML functions
-type jsFunctionParameter struct {
-	funcNameJS   string
-	inputID      string
-	tableID      string
-	divID        string
-	placeholder  string
-	columnNumber int
-	data         string
-	buttonCSS    string
-	fileName     string
-	pathURL      string
-}
+//----------------------------------------------------------------------------------------------------
 
-// JavaScript toggle function
+// Embedded JavaScript and associated HTML functions
+
+// JavaScript toggle function; used to show/hide div
 func toggleDivJS(w http.ResponseWriter, parameter jsFunctionParameter) {
 	fmt.Fprintf(w, "<script>")
 	fmt.Fprintf(w, "  function "+parameter.funcNameJS+"() {")
@@ -394,68 +467,6 @@ func exportCSVJS(w http.ResponseWriter, parameter jsFunctionParameter) {
 //----------------------------------------------------------------------------------------------------
 
 // Database functions
-
-// Database struct
-type databaseFunctionParameter struct {
-	connection          *sql.DB
-	database            string
-	table               string
-	column              string
-	columnWhere         string
-	columnWhereValue    string
-	columnWhereAnd      string
-	columnWhereValueAnd string
-	countMinusOne       bool
-}
-
-// General struct for list/add/edit/delete functions
-type generalFunctionParameter struct {
-	userID                  string
-	userTypeID              string
-	userEmail               string
-	userCustomerID          string
-	userPBXID               string
-	defaultExtLimit         string
-	currencySymbol          string
-	yapAdminUKVATRegistered string
-}
-
-// InvoicePBXExt struct
-type invoicePBXExtFunctionParameter struct {
-	customerID        string
-	pbxID             string
-	serviceProduct    string
-	tag               string
-	sellPrice         string
-	salesTaxRate      string
-	salesTaxStatus    string
-	billItemOnce      string
-	itemOnHold        string
-	contractLength    string
-	contractStartDate string
-}
-
-// Struct for accounting software API
-type accountingSoftwareParameter struct {
-	url              string
-	accessToken      string
-	customerID       string
-	clientID         string
-	clientSecret     string
-	refreshToken     string
-	currencyCode     string
-	httpStatusCode   int
-	organisationName string
-	contactEmail     string
-	billingEmail     string
-	phoneNumber      string
-	address1         string
-	address2         string
-	town             string
-	region           string
-	postcode         string
-	country          string
-}
 
 // Function to insert NULL value into database column
 func nullSQL(value string) sql.NullString {
@@ -623,6 +634,7 @@ func totalTableCountWhereAnd(dbTotalTableCountWhereAnd databaseFunctionParameter
 	return count
 }
 
+// Function to retrive user account information
 func userAccountData(dbUserAccountData databaseFunctionParameter, data string) string {
 
 	var dbSelectWhere databaseFunctionParameter
@@ -856,10 +868,10 @@ func singleColumnSlice(dbDetail databaseFunctionParameter) []string {
 // Function to retrive unique values from a single column from inside a database table with SQL keyword DISTINCT, the data is appended to a slice
 func singleColumnDistinctSlice(dbDetail databaseFunctionParameter) []string {
 	// Get values from the database and append to a slice
-	var singleColumnList []string
-	var singleColumn string
+	var singleColumnDistinctList []string
+	var singleColumnDistinct string
 
-	singleColumnSQL, err := dbDetail.connection.Query(`SELECT DISTINCT
+	singleColumnDistinctSQL, err := dbDetail.connection.Query(`SELECT DISTINCT
                                                                 ` + dbDetail.column + `
                                                               FROM
                                                                 yap.` + dbDetail.table + `;`)
@@ -869,10 +881,10 @@ func singleColumnDistinctSlice(dbDetail databaseFunctionParameter) []string {
 		panic(err)
 	}
 
-	for singleColumnSQL.Next() {
+	for singleColumnDistinctSQL.Next() {
 
-		err = singleColumnSQL.Scan(
-			&singleColumn,
+		err = singleColumnDistinctSQL.Scan(
+			&singleColumnDistinct,
 		)
 
 		// Error
@@ -880,9 +892,9 @@ func singleColumnDistinctSlice(dbDetail databaseFunctionParameter) []string {
 			panic(err)
 		}
 
-		singleColumnList = append(singleColumnList, singleColumn)
+		singleColumnDistinctList = append(singleColumnDistinctList, singleColumnDistinct)
 	}
-	return singleColumnList
+	return singleColumnDistinctList
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1097,6 +1109,7 @@ func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accounti
 
 //----------------------------------------------------------------------------------------------------
 
+// Function to send an update of customer details to the accounting software via the accounting softwares API
 func putCustomerDetail(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) int {
 
 	var (
@@ -1112,28 +1125,28 @@ func putCustomerDetail(dbDetail databaseFunctionParameter, accountingSoftware ac
 		country          string
 	)
 
-	updateSingleCustomerSQL, err := dbDetail.connection.Query(`SELECT
-                                                                     customer_name,
-                                                                     customer_site_contact_email,
-                                                                     customer_invoice_contact_email,
-                                                                     customer_invoice_contact_number,
-                                                                     customer_invoice_address_line_1,
-                                                                     customer_invoice_address_line_2,
-                                                                     customer_invoice_city_town_village,
-                                                                     customer_invoice_county_state_region,
-                                                                     customer_invoice_postcode_zip_code,
-                                                                     customer_invoice_country
-                                                                   FROM
-                                                                     yap.view___customer_detail WHERE customer_id = ?`, accountingSoftware.customerID)
+	customerDetailSQL, err := dbDetail.connection.Query(`SELECT
+                                                               customer_name,
+                                                               customer_site_contact_email,
+                                                               customer_invoice_contact_email,
+                                                               customer_invoice_contact_number,
+                                                               customer_invoice_address_line_1,
+                                                               customer_invoice_address_line_2,
+                                                               customer_invoice_city_town_village,
+                                                               customer_invoice_county_state_region,
+                                                               customer_invoice_postcode_zip_code,
+                                                               customer_invoice_country
+                                                             FROM
+                                                               yap.view___customer_detail WHERE customer_id = ?`, accountingSoftware.customerID)
 
 	// Error
 	if err != nil {
 		panic(err)
 	}
 
-	for updateSingleCustomerSQL.Next() {
+	for customerDetailSQL.Next() {
 
-		err = updateSingleCustomerSQL.Scan(
+		err = customerDetailSQL.Scan(
 			&organisationName,
 			&contactEmail,
 			&billingEmail,
@@ -1151,7 +1164,6 @@ func putCustomerDetail(dbDetail databaseFunctionParameter, accountingSoftware ac
 			panic(err)
 		}
 
-		//accountingSoftware.customerID = updateSingleCustomerSelectCustomerID
 		accountingSoftware.organisationName = organisationName
 		accountingSoftware.contactEmail = contactEmail
 		accountingSoftware.billingEmail = billingEmail
@@ -1179,8 +1191,7 @@ func putCustomerDetail(dbDetail databaseFunctionParameter, accountingSoftware ac
                                   "postcode":"` + accountingSoftware.postcode + `",
                                   "country":"` + accountingSoftware.country + `"
                                   }
-                        }
-                        `)
+                               }`)
 
 	request, error := http.NewRequest("PUT", accountingSoftware.url+`/contacts/`+accountingSoftware.customerID, bytes.NewBuffer(dataJSON))
 	request.Header.Add("Authorization", "Bearer "+accountingSoftware.accessToken)
@@ -1496,21 +1507,16 @@ const validationMessageInvoiceID string = "Invoice ID" + validationMessageNumber
 // accounting-software page HTML messages
 const http0MessageSendInvoice string = "No invoice items to send to accounting software"
 const http201MessageSendInvoice string = "HTTP response code 201 - Invocies successfully sent to accounting software"
-const http400MessageSendInvoice string = "HTTP response code 400 - Credentials incorrect for accounting software API in /etc/yap/yap.env"
-const http404MessageSendInvoice string = "HTTP response code 404 - URL malformed for accounting software API in /etc/yap/yap.env"
-const http422MessageSendInvoice string = "HTTP response code 422 - Unprocessable content, possibly time is UTC?"
+const http400MessageSendInvoice string = "HTTP response code 400 - Credentials incorrect for accounting software API in " + fileYAPEnv
+const http404MessageSendInvoice string = "HTTP response code 404 - URL malformed for accounting software API in " + fileYAPEnv
+const http422MessageSendInvoice string = "HTTP response code 422 - Possibly an error in the source code because the time is set to UTC"
 
 const http200MessageUpdateSingleCustomer string = "HTTP response code 200 - Update successfully sent to accounting software for the customers details"
-const http400MessageUpdateSingleCustomer string = ""
-const http404MessageUpdateSingleCustomer string = ""
-const http422MessageUpdateSingleCustomer string = ""
-const http0MessageUpdateSingleCustomer string = ""
+const http404MessageUpdateSingleCustomer string = "HTTP response code 404 - Customer ID does not exist"
+const http422MessageUpdateSingleCustomer string = "HTTP response code 422 - Possibly because the country name cannot be updated while invoices are due to be sent on the accounting software"
 
-const http200MessageUpdateAllCustomer string = "HTTP response code 200 - Update successfully sent to accounting software for all customer details"
-const http400MessageUpdateAllCustomer string = ""
-const http404MessageUpdateAllCustomer string = ""
-const http422MessageUpdateAllCustomer string = ""
-const http0MessageUpdateAllCustomer string = ""
+const http429Message string = "HTTP response code 429 - Too many requests"
+const httpUnknownMessage string = "Unknown HTTP response code"
 
 // service-product page specific HTML messages
 const validationMessageServiceProductName string = "Service/product name" + validationMessageAlphaNum
@@ -2316,7 +2322,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 			fmt.Fprintf(w, "<table id=\"table\" class=\"table-user-account\">")
 			fmt.Fprintf(w, "  <tr>")
 			if genDetail.userTypeID == "100" {
-				fmt.Fprintf(w, "    <th class=\"table-title\";>All User Account Details on the YAP Server:</th>")
+				fmt.Fprintf(w, "    <th class=\"table-title\";>All User Account Details on the YAP Server</th>")
 			} else if genDetail.userTypeID == "200" {
 				fmt.Fprintf(w, "    <th class=\"table-title\";>User Account Details for the Customer<br>"+userCustomerName+"<br>(Customer ID: "+userCustomerID+")</th>")
 			} else if genDetail.userTypeID == "201" {
@@ -3223,7 +3229,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, gen
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Contact Details on the YAP Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Contact Details on the YAP Server<br><br>(NOTE: Customer Name, Site Email Address, Invoice Address, Invoice Email Address & Invoice Phone Number<br>Values Are Used to Update the Accounting Software)</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Contact Details</th>")
 		}
@@ -3441,7 +3447,7 @@ func customerList(w http.ResponseWriter, dbDetail databaseFunctionParameter, gen
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-customer\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Miscellaneous Information:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Miscellaneous Information</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>Miscellaneous Information for Customer</th>")
 		}
@@ -3631,7 +3637,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Customer<br>(Typing GEN in the Customer ID Box Will Automatically Generate a Random Customer ID)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Customer<br><br>(NOTE: Typing GEN in the Customer ID Box Will Automatically Generate a Random Customer ID)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -4487,7 +4493,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/customer\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a Customer<br>(This Will Delete All User Accounts, PBXs and Exts Part of the Customer)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a Customer<br><br>(NOTE: This Will Delete All User Accounts, PBXs and Exts Part of the Customer)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -4628,7 +4634,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Contact Details on the YAP Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Contact Details on the YAP Server</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX Contact Details</th>")
 		}
@@ -4842,7 +4848,7 @@ func pbxList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-pbx\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Resource Limits on the YAP Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All PBX Resource Limits on the YAP Server</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>PBX Resource Limits</th>")
 		}
@@ -5545,7 +5551,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/pbx\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a PBX<br>(This Will Delete All User Accounts and Exts Part of the Customer)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete a PBX<br><br>(NOTE: This Will Delete All User Accounts and Exts Part of the Customer)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -5919,11 +5925,11 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-ext\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details on the YAP Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details on the YAP Server</th>")
 		} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details for the Customer:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details for the Customer</th>")
 		} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" || genDetail.userTypeID == "302" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details Within the PBX:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extension Details Within the PBX</th>")
 		}
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
@@ -6166,11 +6172,11 @@ func extList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genDetai
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-ext\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered on the Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered on the Server</th>")
 		} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered for the Customer:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered for the Customer</th>")
 		} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" || genDetail.userTypeID == "302" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered Within the PBX:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Extensions Registered Within the PBX</th>")
 		}
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
@@ -7340,6 +7346,10 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 			serviceProductSupplierContractLength string
 		)
 
+		var (
+			invoiceItemTotalSellPrice string
+		)
+
 		var dbTableCountInvoice databaseFunctionParameter
 		dbTableCountInvoice.connection = dbDetail.connection
 		dbTableCountInvoice.database = dbDetail.database
@@ -7375,7 +7385,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-invoice\">")
 		fmt.Fprintf(w, "  <tr>")
 		if genDetail.userTypeID == "100" {
-			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Service/Product Invoice Items on the YAP Server:</th>")
+			fmt.Fprintf(w, "    <th class=\"table-title\";>All Customer Service/Product Invoice Items on the YAP Server</th>")
 		} else {
 			fmt.Fprintf(w, "    <th class=\"table-title\";>Customer Invoice Services/Products</th>")
 		}
@@ -7630,6 +7640,130 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 		fmt.Fprintf(w, "    </th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "</table>")
+		fmt.Fprintf(w, "<br>")
+
+		// Total price for each customer in exVAT only
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-invoice\">")
+		fmt.Fprintf(w, "  <tr>")
+		if genDetail.userTypeID == "100" {
+			fmt.Fprintf(w, "    <th class=\"table-title\";>Total Invoice Amount For Service/Product Items<br><br>(NOTE: Excludes Invoice Items on Hold)</th>")
+		} else {
+			fmt.Fprintf(w, "    <th class=\"table-title\";>Total Invoice Amount For Service/Product Items</th>")
+		}
+		fmt.Fprintf(w, "  </tr>")
+
+		if genDetail.userTypeID == "100" {
+			fmt.Fprintf(w, "  <tr>")
+			fmt.Fprintf(w, "    <th>")
+			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTMLArgument.inputID = "invoice-total-input-customer-id"
+			inputTableHTMLArgument.funcNameJS = "invoiceTotalSearchCustomerID"
+			inputTableHTMLArgument.placeholder = "Customer ID"
+			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTMLArgument.inputID = "invoice-total-input-customer-name"
+			inputTableHTMLArgument.funcNameJS = "invoiceTotalSearchCustomerName"
+			inputTableHTMLArgument.placeholder = "Customer Name"
+			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			inputTableHTMLArgument.inputID = "invoice-total-input-price"
+			inputTableHTMLArgument.funcNameJS = "invoiceTotalSearchPrice"
+			inputTableHTMLArgument.placeholder = "Total Price"
+			inputTableHTML(w, inputTableHTMLArgument)
+			fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    <br>")
+			fmt.Fprintf(w, "    </th>")
+			fmt.Fprintf(w, "  </tr>")
+
+		}
+
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		exportCSVButtonHTMLArgument.funcNameJS = "InvoiceTotal"
+		exportCSVButtonHTMLArgument.buttonCSS = "button-invoice"
+		exportCSVButtonHTML(w, exportCSVButtonHTMLArgument)
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th>")
+		fmt.Fprintf(w, "      <table id=\"invoice-total-table\" class=\"table-invoice\">")
+		fmt.Fprintf(w, "        <tr>")
+		if genDetail.userTypeID == "100" {
+			fmt.Fprintf(w, "          <th>Customer ID</th>")
+			fmt.Fprintf(w, "          <th>Customer Name</th>")
+		}
+		if genDetail.yapAdminUKVATRegistered == "yes" {
+			fmt.Fprintf(w, "        <th>Total Invoice Amount (exVAT)</th>")
+		} else {
+			fmt.Fprintf(w, "        <th>Total Invoice Amount</th>")
+		}
+		fmt.Fprintf(w, "        </tr>")
+
+		invoiceTotalSQL, err := dbDetail.connection.Query(`SELECT
+                                                        customer_id,
+                                                        customer_name,
+                                                        invoice_item_total_sell_price
+                                                      FROM
+                                                        yap.view___invoice_item_total_sell_price
+                                                      `+whereClause, genDetail.userCustomerID)
+
+		// Error
+		if err != nil {
+			panic(err)
+
+		}
+
+		for invoiceTotalSQL.Next() {
+
+			err = invoiceTotalSQL.Scan(
+				&customerID,
+				&customerName,
+				&invoiceItemTotalSellPrice,
+			)
+
+			// Error
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Fprintf(w, "        <tr>")
+			if genDetail.userTypeID == "100" {
+				fmt.Fprintf(w, "          <td>"+customerID+"</td>")
+				fmt.Fprintf(w, "          <td>"+customerName+"</td>")
+			}
+			fmt.Fprintf(w, "	  <td>"+genDetail.currencySymbol+invoiceItemTotalSellPrice+"</td>")
+			fmt.Fprintf(w, "          </tr>")
+		}
+		fmt.Fprintf(w, "      </table>")
+		if genDetail.userTypeID == "100" {
+			filterTableJSArgument.tableID = "invoice-total-table"
+			// Call JS filter function
+			filterTableJSArgument.inputID = "invoice-total-input-customer-id"
+			filterTableJSArgument.funcNameJS = "invoiceTotalSearchCustomerID"
+			filterTableJSArgument.columnNumber = 0
+			filterTableJS(w, filterTableJSArgument)
+			// Call JS filter function
+			filterTableJSArgument.inputID = "invoice-total-input-customer-name"
+			filterTableJSArgument.funcNameJS = "invoiceTotalSearchCustomerName"
+			filterTableJSArgument.columnNumber = 1
+			filterTableJS(w, filterTableJSArgument)
+			// Call JS filter function
+			filterTableJSArgument.inputID = "invoice-total-input-price"
+			filterTableJSArgument.funcNameJS = "invoiceTotalSearchprice"
+			filterTableJSArgument.columnNumber = 2
+			filterTableJS(w, filterTableJSArgument)
+		}
+		exportCSVJSArgument.tableID = "invoice-total-table"
+		exportCSVJSArgument.funcNameJS = "InvoiceTotal"
+		exportCSVJSArgument.fileName = "YAP_total_invoice_item_amount"
+		exportCSVJSArgument.pathURL = "invoice"
+		exportCSVJS(w, exportCSVJSArgument)
+		fmt.Fprintf(w, "    </th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
 		fmt.Fprintf(w, "</div>")
 		var toggleDivJSArgument jsFunctionParameter
 		toggleDivJSArgument.divID = "invoice-div"
@@ -7650,7 +7784,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/invoice\">")
 		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Invoice Item<br>(YAP PBX & Ext Invoices Cannot Be Created Manually)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Invoice Item<br><br>(NOTE: YAP PBX & Ext Invoices Cannot Be Created Manually)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -7838,7 +7972,7 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/invoice\">")
 		fmt.Fprintf(w, "<table class=\"table-delete\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete an Invoice<br>(YAP PBX and Ext Invoices Cannot Be Deleted Manually)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Delete an Invoice<br><br>(NOTE: YAP PBX and Ext Invoices Cannot Be Deleted Manually)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -7949,7 +8083,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-accounting-software\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All Previous Successful Billing Run's Completed:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Previous Successful Billing Run's Completed</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -8139,6 +8273,10 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 				messageHTML(w, http422MessageSendInvoice, "warning")
 			} else if accountingSoftware.httpStatusCode == 0 {
 				messageHTML(w, http0MessageSendInvoice, "warning")
+			} else if accountingSoftware.httpStatusCode == 429 {
+				messageHTML(w, http429Message, "warning")
+			} else {
+				messageHTML(w, httpUnknownMessage, "warning")
 			}
 
 		} else {
@@ -8150,7 +8288,7 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/accounting-software\">")
 		fmt.Fprintf(w, "<table class=\"table-accounting-software\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Update a Customers Details on the Accounting Software</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Update a Customers Details on the Accounting Software<br><br>(NOTE: A Customers Details Cannot Be Updated on the Accounting Software<br>If Invoices Are Due to Be Sent & the Invoice Country Name Is Different<br>on the YAP Server Compared to the Accounting Software)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -8198,17 +8336,17 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 			// Call putCustomerDetail function and also get the HTTP status code
 			accountingSoftware.httpStatusCode = putCustomerDetail(dbDetail, accountingSoftware)
 
-			// The HTTP status code determines if the invoices were sent succesfully
+			// The HTTP status code determines if the update was sent succesfully
 			if accountingSoftware.httpStatusCode == 200 {
 				messageHTML(w, http200MessageUpdateSingleCustomer, "success")
-			} else if accountingSoftware.httpStatusCode == 400 {
-				messageHTML(w, http400MessageUpdateSingleCustomer, "warning")
 			} else if accountingSoftware.httpStatusCode == 404 {
 				messageHTML(w, http404MessageUpdateSingleCustomer, "warning")
 			} else if accountingSoftware.httpStatusCode == 422 {
 				messageHTML(w, http422MessageUpdateSingleCustomer, "warning")
-			} else if accountingSoftware.httpStatusCode == 0 {
-				messageHTML(w, http0MessageUpdateSingleCustomer, "warning")
+			} else if accountingSoftware.httpStatusCode == 429 {
+				messageHTML(w, http429Message, "warning")
+			} else {
+				messageHTML(w, httpUnknownMessage, "warning")
 			}
 		}
 
@@ -8217,7 +8355,7 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/accounting-software\">")
 		fmt.Fprintf(w, "<table class=\"table-accounting-software\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Update All Customer Details on the Accounting Software</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Update All Customer Details on the Accounting Software<br><br>(NOTE: Customer Details Cannot Be Updated on the Accounting Software<br>If Invoices Are Due to Be Sent & the Invoice Country Name Is Different<br>on the YAP Server Compared to the Accounting Software)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -8250,20 +8388,7 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 
 			for _, updateAllCustomerID := range updateAllCustomerIDList {
 				accountingSoftware.customerID = updateAllCustomerID
-				accountingSoftware.httpStatusCode = putCustomerDetail(dbDetail, accountingSoftware)
-			}
-
-			// The HTTP status code determines if the invoices were sent succesfully
-			if accountingSoftware.httpStatusCode == 200 {
-				messageHTML(w, http200MessageUpdateAllCustomer, "success")
-			} else if accountingSoftware.httpStatusCode == 400 {
-				messageHTML(w, http400MessageUpdateAllCustomer, "warning")
-			} else if accountingSoftware.httpStatusCode == 404 {
-				messageHTML(w, http404MessageUpdateAllCustomer, "warning")
-			} else if accountingSoftware.httpStatusCode == 422 {
-				messageHTML(w, http422MessageUpdateAllCustomer, "warning")
-			} else if accountingSoftware.httpStatusCode == 0 {
-				messageHTML(w, http0MessageUpdateAllCustomer, "warning")
+				putCustomerDetail(dbDetail, accountingSoftware)
 			}
 		}
 
@@ -8330,7 +8455,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-service-product\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Service/Product Information:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Service/Product Information</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -8483,7 +8608,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-service-product\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Service/Product Suppliers Available:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Service/Product Suppliers Available</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td>")
@@ -8531,7 +8656,7 @@ func serviceProductList(w http.ResponseWriter, dbDetail databaseFunctionParamete
 		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-service-product\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>All Sales Tax Rates Used:</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>All Sales Tax Rates Used</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <td>")
@@ -8591,7 +8716,7 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 		fmt.Fprintf(w, "<form method=\"POST\" action=\"/service-product\">")
 		fmt.Fprintf(w, "<table class=\"table-add\">")
 		fmt.Fprintf(w, "  <tr>")
-		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Service/Product<br>(If the Supplier Does Not Exist, Add a New One Below First)</th>")
+		fmt.Fprintf(w, "    <th class=\"table-title\";>Add a New Service/Product<br><br>(NOTE: If the Supplier Does Not Exist, Add a New One Below First)</th>")
 		fmt.Fprintf(w, "  </tr>")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -9315,9 +9440,9 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 func main() {
 
 	// Get the values from inside the YAP configuration file
-	err := godotenv.Load("/etc/yap/yap.env")
+	err := godotenv.Load(fileYAPEnv)
 	if err != nil {
-		panic("Error loading yap.env file for database details")
+		panic("Error loading " + fileYAPEnv + " file for database details")
 	}
 
 	// Get the database connection details
@@ -9348,7 +9473,7 @@ func main() {
 
 	dbPortInt, err := strconv.Atoi(dbPort)
 	if err != nil {
-		panic("DATABASE PORT MUST BE A NUMBER IN /etc/yap/yap.env")
+		panic("DATABASE PORT MUST BE A NUMBER IN " + fileYAPEnv)
 	}
 
 	// Values allowed for dbTls variable
@@ -9381,41 +9506,41 @@ func main() {
 
 	// Catch if any errors were made in yap.env and feed back where to correct the error
 	if dbUsername == "" {
-		panic("DATABASE USERNAME CANNOT BE EMPTY IN /etc/yap/yap.env")
+		panic("DATABASE USERNAME CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if dbPassword == "" {
-		panic("DATABASE PASSOWRD CANNOT BE EMPTY IN /etc/yap/yap.env")
+		panic("DATABASE PASSOWRD CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if dbName == "" {
-		panic("DATABASE NAME CANNOT BE EMPTY IN /etc/yap/yap.env")
+		panic("DATABASE NAME CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if dbTransport == "" {
-		panic("DATABASE TRANSPORT OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
+		panic("DATABASE TRANSPORT OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if validDbTransport == false {
-		panic("DATABASE TRANSPORT OPTION MUST BE udp OR tcp IN /etc/yap/yap.env")
+		panic("DATABASE TRANSPORT OPTION MUST BE udp OR tcp IN " + fileYAPEnv)
 	} else if validateDbAddressErr != nil && dbAddress != "localhost" {
-		panic("DATABASE ADDRESS MUST BE A VALID INTERENT PROTOCOL (IP) ADDRESS OR localhost IN /etc/yap/yap.env")
+		panic("DATABASE ADDRESS MUST BE A VALID INTERENT PROTOCOL (IP) ADDRESS OR localhost IN " + fileYAPEnv)
 	} else if dbPortInt <= 0 || dbPortInt >= 65536 {
-		panic("DATABASE PORT MUST BE IN THE NUMBER RANGE 1-65535 IN /etc/yap/yap.env")
+		panic("DATABASE PORT MUST BE IN THE NUMBER RANGE 1-65535 IN " + fileYAPEnv)
 	} else if dbTLS == "" {
-		panic("DATABASE TLS OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
+		panic("DATABASE TLS OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if validDbTLS == false {
-		panic("DATABASE TRANSPORT OPTION MUST BE false OR true IN /etc/yap/yap.env")
+		panic("DATABASE TRANSPORT OPTION MUST BE false OR true IN " + fileYAPEnv)
 	} else if defaultExtLimit == "" {
-		panic("DEFAULT SIP EXT OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
+		panic("DEFAULT SIP EXT OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if validDefaultExtLimit == false {
-		panic(" DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN /etc/yap/yap.env\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
+		panic(" DEFAULT SIP EXT OPTION MUST BE SET TO A VALID OPTION IN " + fileYAPEnv + "\nVALID OPTIONS: 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000")
 	} else if validCurrencySymbol == false {
-		panic("CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $, ¥ OR EMPTY IN /etc/yap/yap.env")
+		panic("CURRENCY SYMBOL OPTION MUST BE SET TO £, €, $, ¥ OR EMPTY IN " + fileYAPEnv)
 	} else if yapAdminUKVATRegistered == "" {
-		panic("UK YAP ADMIN VAT REGISTERED OPTION CANNOT BE EMPTY IN /etc/yap/yap.env")
+		panic("UK YAP ADMIN VAT REGISTERED OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if validYAPAdminUKVATRegistered == false {
-		panic("UK YAP ADMIN VAT REGISTERED OPTION MUST BE no OR yes IN /etc/yap/yap.env")
+		panic("UK YAP ADMIN VAT REGISTERED OPTION MUST BE no OR yes IN " + fileYAPEnv)
 	} else if extraButtonName != "" {
 		if validateExtraButtonURLErr != nil {
-			panic("THE EXTRA BUTTON URL VALUE MUST BE A VALID URL IN /etc/yap/yap.env")
+			panic("THE EXTRA BUTTON URL VALUE MUST BE A VALID URL IN " + fileYAPEnv)
 		}
 	} else if validateAccountingSoftwareURLErr != nil {
-		panic("ACCOUNTING SOFTWARE URL MUST BE A VALID URL OR EMPTY IN /etc/yap/yap.env")
+		panic("ACCOUNTING SOFTWARE URL MUST BE A VALID URL OR EMPTY IN " + fileYAPEnv)
 	} else if validAccountingSoftwareCurrencyCode == false {
-		panic("CURRENCY CODE OPTION MUST BE SET TO GBP, EUR, USD, JPY OR EMPTY IN /etc/yap/yap.env")
+		panic("CURRENCY CODE OPTION MUST BE SET TO GBP, EUR, USD, JPY OR EMPTY IN " + fileYAPEnv)
 	}
 
 	startHTML := csvcell.FileData(dirHTML, fileStartHTML)
@@ -10127,7 +10252,7 @@ func main() {
 	yapPortInt, err := strconv.Atoi(yapPort)
 
 	if err != nil {
-		panic("YAP PORT MUST BE A NUMBER IN /etc/yap/yap.env")
+		panic("YAP PORT MUST BE A NUMBER IN " + fileYAPEnv)
 	}
 
 	yapAddress := os.Getenv("yapAddress")
@@ -10135,11 +10260,11 @@ func main() {
 	validateYapAddressErr := validateYapAddress.Var(yapAddress, "required,ip_addr")
 
 	if yapPortInt <= 1023 || yapPortInt >= 49152 {
-		panic("YAP LISTENING PORT MUST BE IN THE NUMBER RANGE 1024-49151 IN /etc/yap/yap.env")
+		panic("YAP LISTENING PORT MUST BE IN THE NUMBER RANGE 1024-49151 IN " + fileYAPEnv)
 	} else if validateYapAddressErr != nil && yapAddress != "localhost" {
-		panic("YAP ADDRESS MUST BE A VALID INTERENT PROTOCOL (IP) ADDRESS OR localhost IN /etc/yap/yap.env")
+		panic("YAP ADDRESS MUST BE A VALID INTERENT PROTOCOL (IP) ADDRESS OR localhost IN " + fileYAPEnv)
 	} else if dbAddress == yapAddress && dbPort == yapPort {
-		panic("YAP ADDRESS & PORT NUMBER CANNOT BE THE SAME AS DATABASE ADDRESS & PORT NUMBER IN /etc/yap/yap.env")
+		panic("YAP ADDRESS & PORT NUMBER CANNOT BE THE SAME AS DATABASE ADDRESS & PORT NUMBER IN " + fileYAPEnv)
 	} else {
 		socket := yapAddress + ":" + yapPort
 		fmt.Println("YAP is running on: " + socket)
