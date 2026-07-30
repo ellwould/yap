@@ -654,6 +654,17 @@ ON `invoice_item`.`customer_id` = `customer`.`id`
 INNER JOIN `service_product`
 ON `service_product`.`name` = `invoice_item`.`service_product_name`;
 
+CREATE VIEW `view___invoice_item_total_sell_price` AS
+SELECT 
+  `customer`.`id` AS 'customer_id',
+  `customer`.`name` AS 'customer_name',
+  SUM(`invoice_item`.`sell_price`) AS 'invoice_item_total_sell_price'
+FROM `customer`
+INNER JOIN `invoice_item`
+ON `invoice_item`.`customer_id` = `customer`.`id`
+WHERE `invoice_item`.`item_on_hold` = 'no'
+GROUP BY `invoice_item`.`customer_id`;
+
 CREATE VIEW `view___service_product` AS
 SELECT DISTINCT
   `service_product`.`id` AS 'service_product_id',
