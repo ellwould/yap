@@ -178,6 +178,7 @@ CREATE TABLE `billing_run_log` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
   `user_account_id` BIGINT UNSIGNED NOT NULL,
   `user_account_email` VARCHAR(255) NOT NULL,
+  `api_client_id` VARCHAR(255) NOT NULL,
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
