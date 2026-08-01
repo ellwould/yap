@@ -20,14 +20,18 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"github.com/ellwould/aestext"
 	"github.com/ellwould/csvcell"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/sony/sonyflake"
 	"github.com/tidwall/gjson"
+	"golang.org/x/oauth2"
 	"io"
 	"log"
 	"math"
@@ -82,6 +86,7 @@ type generalFunctionParameter struct {
 	defaultExtLimit         string
 	currencySymbol          string
 	yapAdminUKVATRegistered string
+	yapPublicURL            string
 }
 
 // JavaScript (JS) struct for JS embedded functions
@@ -115,12 +120,13 @@ type invoicePBXExtFunctionParameter struct {
 
 // Struct for accounting software API
 type accountingSoftwareParameter struct {
-	url              string
-	accessToken      string
+	apiURL           string
+	yapPublicURL     string
+	apiAccessToken   string
 	customerID       string
-	clientID         string
-	clientSecret     string
-	refreshToken     string
+	apiClientID      string
+	apiClientSecret  string
+	apiRefreshToken  string
 	currencyCode     string
 	httpStatusCode   int
 	organisationName string
@@ -186,7 +192,7 @@ func genID() (uniqueID string) {
 // Function to generate random passowrds
 func genPassword(passwordLength int) string {
 	rand.Seed(time.Now().UnixNano())
-	character := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_$"
+	character := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 	randomPassword := make([]byte, passwordLength)
 	for i := 0; i < passwordLength; i++ {
 		randomPassword[i] = character[rand.Intn(len(character))]
@@ -194,8 +200,15 @@ func genPassword(passwordLength int) string {
 	return string(randomPassword)
 }
 
+// Function to pad out password with 0's for length between 16 and 32 characters
+func zeroPad(password string) string {
+	zeroQuantity := 32 - len(password)
+	newPassword := password + strings.Repeat("0", zeroQuantity)
+	return newPassword
+}
+
 // Function for error message
-func errorBox(w http.ResponseWriter, errorType string, headerCSS string, buttonCSS string) {
+func messageBox(w http.ResponseWriter, errorType string, headerCSS string, buttonCSS string) {
 	fmt.Fprintf(w, "<div class=\"div-error-box\">")
 	fmt.Fprintf(w, "  <h1 class=\""+headerCSS+"\">")
 	if errorType == "email_error" {
@@ -219,6 +232,12 @@ func errorBox(w http.ResponseWriter, errorType string, headerCSS string, buttonC
 	} else if errorType == "currency_code_error" {
 		fmt.Fprintf(w, "    The Currency Code is Empty in "+fileYAPEnv+"<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+	} else if errorType == "accounting_software_connect_error" {
+		fmt.Fprintf(w, "    Error connecting to the accounting software<br>Check the API client secret is correct in "+fileYAPEnv+"<br>")
+		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
+	} else if errorType == "accounting_software_token" {
+		fmt.Fprintf(w, "    Software refresh token succesfully generated<br>")
+		fmt.Fprintf(w, "    <a href=\"/accounting-software\" class=\"button-general button-header "+buttonCSS+"\">Accounting Software</a>")
 	} else {
 		fmt.Fprintf(w, "    Unknown Error<br>")
 		fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header "+buttonCSS+"\">Main Menu</a>")
@@ -936,18 +955,103 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
 
 //----------------------------------------------------------------------------------------------------
 
+// Accounting software OAuth2 functions
+
+// Struct for accounting software OAuth2
+type authService struct {
+	config *oauth2.Config
+}
+
+// Accounting software OAuth2 credentials and URLs
+func newAuthService(accountingSoftware accountingSoftwareParameter) *authService {
+	return &authService{
+		config: &oauth2.Config{
+			ClientID:     accountingSoftware.apiClientID,
+			ClientSecret: accountingSoftware.apiClientSecret,
+			RedirectURL:  accountingSoftware.yapPublicURL + "/callback",
+			Scopes:       []string{"read:data"},
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  accountingSoftware.apiURL + "/approve_app",
+				TokenURL: accountingSoftware.apiURL + "/token_endpoint",
+			},
+		},
+	}
+}
+
+// oauth2.AccessTypeOffline - Request continuous access when not logged into the accounting software via a refresh token
+// oauth2.ApprovalForce - Display the approval screen
+func (s *authService) GetAuthURL(state string) string {
+	return s.config.AuthCodeURL(state,
+		oauth2.AccessTypeOffline,
+		oauth2.ApprovalForce,
+	)
+}
+
+// Exchange authorisation code for access and refresh tokens; though only the refresh token will be stored in the database
+func (s *authService) ExchangeCode(ctx context.Context, code string) (*oauth2.Token, error) {
+	return s.config.Exchange(ctx, code)
+}
+
+//----------------------------------------------------------------------------------------------------
+
+// Function to retrieve the encrypted refresh token and return the refresh token decrypted
+func refreshToken(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) string {
+
+	var encryptedRefreshToken string
+
+	// Get encrypted refresh token from the accounting_software table
+	refreshTokenSQL, err := dbDetail.connection.Query(`SELECT
+                                                              refresh_token
+                                                            FROM
+                                                              yap.accounting_software;`)
+
+	// Error
+	if err != nil {
+		panic(err)
+	}
+
+	for refreshTokenSQL.Next() {
+
+		err = refreshTokenSQL.Scan(
+			&encryptedRefreshToken,
+		)
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		encryptedRefreshToken = encryptedRefreshToken
+	}
+
+	var refreshToken string
+
+	if encryptedRefreshToken == "" {
+		return refreshToken
+	} else {
+		// Pad out the client secret with 0's till 32 charecters long and use it for the password to encrypt the refresh token
+		refreshTokenPassword := zeroPad(accountingSoftware.apiClientSecret)
+
+		// Decrypt the refresh token
+		refreshToken = aestext.DecText(encryptedRefreshToken, refreshTokenPassword)
+		return refreshToken
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
 // Function to get access token via the accounting software API
 func accessToken(accountingSoftware accountingSoftwareParameter) string {
 
 	// Set data to POST
 	data := url.Values{}
-	data.Set("client_id", accountingSoftware.clientID)
-	data.Set("client_secret", accountingSoftware.clientSecret)
+	data.Set("client_id", accountingSoftware.apiClientID)
+	data.Set("client_secret", accountingSoftware.apiClientSecret)
 	data.Set("grant_type", "refresh_token")
-	data.Set("refresh_token", accountingSoftware.refreshToken)
+	data.Set("refresh_token", accountingSoftware.apiRefreshToken)
 
 	// Send POST request
-	request, error := http.NewRequest("POST", accountingSoftware.url+`/token_endpoint`, strings.NewReader(data.Encode()))
+	request, error := http.NewRequest("POST", accountingSoftware.apiURL+`/token_endpoint`, strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Add("Accept", "application/json")
 
@@ -1089,8 +1193,8 @@ func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accounti
                         }
                         `)
 
-	request, error := http.NewRequest("POST", accountingSoftware.url+`/invoices`, bytes.NewBuffer(dataJSON))
-	request.Header.Add("Authorization", "Bearer "+accountingSoftware.accessToken)
+	request, error := http.NewRequest("POST", accountingSoftware.apiURL+`/invoices`, bytes.NewBuffer(dataJSON))
+	request.Header.Add("Authorization", "Bearer "+accountingSoftware.apiAccessToken)
 	request.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	request.Header.Add("Accept", "application/json")
 
@@ -1193,8 +1297,8 @@ func putCustomerDetail(dbDetail databaseFunctionParameter, accountingSoftware ac
                                   }
                                }`)
 
-	request, error := http.NewRequest("PUT", accountingSoftware.url+`/contacts/`+accountingSoftware.customerID, bytes.NewBuffer(dataJSON))
-	request.Header.Add("Authorization", "Bearer "+accountingSoftware.accessToken)
+	request, error := http.NewRequest("PUT", accountingSoftware.apiURL+`/contacts/`+accountingSoftware.customerID, bytes.NewBuffer(dataJSON))
+	request.Header.Add("Authorization", "Bearer "+accountingSoftware.apiAccessToken)
 	request.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	request.Header.Add("Accept", "application/json")
 
@@ -1507,7 +1611,6 @@ const validationMessageInvoiceID string = "Invoice ID" + validationMessageNumber
 // accounting-software page HTML messages
 const http0MessageSendInvoice string = "No invoice items to send to accounting software"
 const http201MessageSendInvoice string = "HTTP response code 201 - Invocies successfully sent to accounting software"
-const http400MessageSendInvoice string = "HTTP response code 400 - Credentials incorrect for accounting software API in " + fileYAPEnv
 const http404MessageSendInvoice string = "HTTP response code 404 - URL malformed for accounting software API in " + fileYAPEnv
 const http422MessageSendInvoice string = "HTTP response code 422 - Possibly an error in the source code because the time is set to UTC"
 
@@ -1515,6 +1618,7 @@ const http200MessageUpdateSingleCustomer string = "HTTP response code 200 - Upda
 const http404MessageUpdateSingleCustomer string = "HTTP response code 404 - Customer ID does not exist"
 const http422MessageUpdateSingleCustomer string = "HTTP response code 422 - Possibly because the country name cannot be updated while invoices are due to be sent on the accounting software"
 
+const http400Message string = "HTTP response code 400 - Credentials incorrect for accounting software API in " + fileYAPEnv
 const http429Message string = "HTTP response code 429 - Too many requests"
 const httpUnknownMessage string = "Unknown HTTP response code"
 
@@ -1584,6 +1688,9 @@ const validationMessageCustomerSiteEmail string = "A customer site email" + vali
 const validationMessageCustomerSitePhoneNumber string = "A customer site phone number" + validationMessagePhoneNumber
 const validationMessageInvoiceEmail string = "A customer invoice email" + validationMessageEmail
 const validationMessageInvoicePhoneNumber string = "A customer invoice phone number" + validationMessagePhoneNumber
+
+const refreshTokenEmptyMessage string = "Refresh token empty, press Accounting Software Connect button"
+const refreshTokenDecryptionError string = "Refresh token not decrypted, check the accounting software API client secret is correct in " + fileYAPEnv
 
 // Function to validate user input utlising the Go validator version 10 package
 func validateInput(value string, valueType string) (validation bool) {
@@ -2987,7 +3094,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 			dbDetail.columnWhere = "user_account_id"
 			dbDetail.columnWhereValue = deleteIndividualUserAccountInputAccountID
 
-			dbDetail.connection.Query(`DELETE FROM user_account WHERE id = ? AND user_account_type_id = ?;`, deleteIndividualUserAccountInputAccountID, deleteIndividualUserAccountSelectAccountType)
+			dbDetail.connection.Query("DELETE FROM user_account WHERE id = ? AND user_account_type_id = ?;", deleteIndividualUserAccountInputAccountID, deleteIndividualUserAccountSelectAccountType)
 
 			checkIndividualUserAccountDeleted := selectWhere(dbDetail)
 
@@ -3057,7 +3164,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 				messageHTML(w, validationMessageAccountPBXDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM user_account WHERE pbx_id = ?;`, deletePBXUserAccountSelectPBXID)
+				dbDetail.connection.Query("DELETE FROM user_account WHERE pbx_id = ?;", deletePBXUserAccountSelectPBXID)
 
 				checkPBXUserAccountDeleted := selectWhere(dbDetail)
 
@@ -3127,7 +3234,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 				messageHTML(w, validationMessageAccountCustomerDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM user_account WHERE customer_id = ?;`, deleteCustomerUserAccountSelectCustomerID)
+				dbDetail.connection.Query("DELETE FROM user_account WHERE customer_id = ?;", deleteCustomerUserAccountSelectCustomerID)
 
 				checkCustomerUserAccountDeleted := selectWhere(dbDetail)
 
@@ -4545,7 +4652,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 				messageHTML(w, validationMessageCustomerDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM customer WHERE id = ?;`, deleteCustomerSelectCustomerID)
+				dbDetail.connection.Query("DELETE FROM customer WHERE id = ?;", deleteCustomerSelectCustomerID)
 
 				checkCustomerDeleted := selectWhere(dbDetail)
 
@@ -5635,7 +5742,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				dbDetail.columnWhereValue = deletePBXSelectPBXID
 				extTotal := totalTableCountWhere(dbDetail)
 
-				dbDetail.connection.Query(`DELETE FROM pbx WHERE id = ?;`, deletePBXSelectPBXID)
+				dbDetail.connection.Query("DELETE FROM pbx WHERE id = ?;", deletePBXSelectPBXID)
 
 				// Check PBX deleted
 				dbDetail.column = "pbx_id"
@@ -5682,7 +5789,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete PBX rental record from invoice_item table
-						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
+						dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
 
 					}
 
@@ -5712,7 +5819,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete PBX rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
+					dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
@@ -5734,7 +5841,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				dbDetail.columnWhereValue = deletePBXSelectPBXID
 				extTotal := totalTableCountWhere(dbDetail)
 
-				dbDetail.connection.Query(`DELETE FROM pbx WHERE id = ?;`, deletePBXSelectPBXID)
+				dbDetail.connection.Query("DELETE FROM pbx WHERE id = ?;", deletePBXSelectPBXID)
 
 				// Check PBX deleted
 				dbDetail.column = "pbx_id"
@@ -5781,7 +5888,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete PBX rental record from invoice_item table
-						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
+						dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
 
 					}
 
@@ -5811,7 +5918,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete PBX rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;`, deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
+					dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
@@ -7170,7 +7277,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				dbDetail.column = "pbx_id"
 				pbxID = selectWhere(dbDetail)
 
-				dbDetail.connection.Query(`DELETE FROM ps_endpoints WHERE id = ?;`, deleteExtInputExt)
+				dbDetail.connection.Query("DELETE FROM ps_endpoints WHERE id = ?;", deleteExtInputExt)
 				dbDetail.table = "view___sip_extension_detail"
 				dbDetail.column = "sip_username"
 				dbDetail.columnWhere = "sip_username"
@@ -7206,7 +7313,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete Ext rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;`, deleteExtInputExt, customerID, "⊛ YAP Extension Rental ⊛")
+					dbDetail.connection.Query("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, customerID, "⊛ YAP Extension Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
@@ -7260,7 +7367,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete Ext rental record from invoice_item table
-						dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
+						dbDetail.connection.Query("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
 
 					} else {
 						messageHTML(w, validationMessageExtNotDeleted, "warning")
@@ -7305,7 +7412,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete Ext rental record from invoice_item table
-					dbDetail.connection.Query(`DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;`, deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
+					dbDetail.connection.Query("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
 				}
@@ -8020,7 +8127,7 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 				messageHTML(w, validationMessageInvoiceDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;`, deleteInvoiceInputInvoiceID, "1")
+				dbDetail.connection.Query("DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;", deleteInvoiceInputInvoiceID, "1")
 
 				checkInvoiceDeleted := selectWhere(dbDetail)
 
@@ -8052,6 +8159,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 			billingRunLogID  string
 			userAccountID    string
 			userAccountEmail string
+			apiClientID      string
 			dateTimeAdded    string
 		)
 
@@ -8060,6 +8168,13 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 		dbTableCountBillingRunLog.database = dbDetail.database
 		dbTableCountBillingRunLog.table = "billing_run_log"
 
+		fmt.Fprintf(w, "<table id=\"table\" class=\"table-accounting-software\">")
+		fmt.Fprintf(w, "  <tr>")
+		fmt.Fprintf(w, "    <th><a href=\"/accounting-software-connect\" target=\"_blank\" class=\"button-general button-accounting-software\">Accounting Software<br>Connect<br>&#128279</a></th>")
+		fmt.Fprintf(w, "  </tr>")
+		fmt.Fprintf(w, "</table>")
+
+		fmt.Fprintf(w, "<br>")
 		fmt.Fprintf(w, "<table id=\"table\" class=\"table-accounting-software\">")
 		fmt.Fprintf(w, "  <tr>")
 		fmt.Fprintf(w, "    <th>")
@@ -8100,6 +8215,11 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 		inputTableHTMLArgument.placeholder = "User Account Email"
 		inputTableHTML(w, inputTableHTMLArgument)
 		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
+		inputTableHTMLArgument.inputID = "accounting-software-input-api-client-id"
+		inputTableHTMLArgument.funcNameJS = "accountingSoftwareSearchAPIClientID"
+		inputTableHTMLArgument.placeholder = "API Client ID"
+		inputTableHTML(w, inputTableHTMLArgument)
+		fmt.Fprintf(w, "    &nbsp &nbsp &nbsp")
 		inputTableHTMLArgument.inputID = "accounting-software-input-date-added"
 		inputTableHTMLArgument.funcNameJS = "accountingSoftwareSearchDateAdded"
 		inputTableHTMLArgument.placeholder = "Date & Time of Billing Run"
@@ -8124,6 +8244,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 		fmt.Fprintf(w, "          <th>Billing Run ID</th>")
 		fmt.Fprintf(w, "          <th>User Account ID</th>")
 		fmt.Fprintf(w, "          <th>User Account Email</th>")
+		fmt.Fprintf(w, "          <th>Accounting Software API Client ID Used</th>")
 		fmt.Fprintf(w, "          <th>Date & Time of Billing Run</th>")
 		fmt.Fprintf(w, "        </tr>")
 
@@ -8131,6 +8252,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 								      id,
 			                     			      user_account_id,
 			                     			      user_account_email,
+			                     			      api_client_id,
 			                     			      date_time_added
 					                            FROM
 					  	                      yap.billing_run_log`)
@@ -8147,6 +8269,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 				&billingRunLogID,
 				&userAccountID,
 				&userAccountEmail,
+				&apiClientID,
 				&dateTimeAdded,
 			)
 
@@ -8159,6 +8282,7 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 			fmt.Fprintf(w, "          <td>"+billingRunLogID+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountID+"</td>")
 			fmt.Fprintf(w, "          <td>"+userAccountEmail+"</td>")
+			fmt.Fprintf(w, "          <td>"+apiClientID+"</td>")
 			fmt.Fprintf(w, "          <td>"+formatDateTime(dateTimeAdded)+"</td>")
 			fmt.Fprintf(w, "        </tr>")
 		}
@@ -8177,9 +8301,14 @@ func accountingSoftwareList(w http.ResponseWriter, dbDetail databaseFunctionPara
 		filterTableJSArgument.columnNumber = 2
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function
+		filterTableJSArgument.inputID = "accounting-software-input-api-client-id"
+		filterTableJSArgument.funcNameJS = "accountingSoftwareSearchAPIClientID"
+		filterTableJSArgument.columnNumber = 3
+		filterTableJS(w, filterTableJSArgument)
+		// Call JS filter function
 		filterTableJSArgument.inputID = "accounting-software-input-date-added"
 		filterTableJSArgument.funcNameJS = "accountingSoftwareSearchDateAdded"
-		filterTableJSArgument.columnNumber = 3
+		filterTableJSArgument.columnNumber = 4
 		filterTableJS(w, filterTableJSArgument)
 		// Call JS filter function
 		var exportCSVJSArgument jsFunctionParameter
@@ -8238,45 +8367,54 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 			// Do Nothing
 		} else if sendInvoiceSelectConfirm == "yes" {
 
-			// Get an access token from accounting software API
-			accountingSoftware.accessToken = accessToken(accountingSoftware)
+			// Get the refresh token by calling the refreshToken function
+			accountingSoftware.apiRefreshToken = refreshToken(dbDetail, accountingSoftware)
 
-			// Get all customer ID's that have at least one invoice item
-			var invoiceItemCustomerIDList []string
-			dbDetail.column = "customer_id"
-			dbDetail.table = "view___invoice_item"
-			invoiceItemCustomerIDList = singleColumnDistinctSlice(dbDetail)
-
-			for _, invoiceItemCustomerID := range invoiceItemCustomerIDList {
-				accountingSoftware.customerID = invoiceItemCustomerID
-				accountingSoftware.httpStatusCode = postInvoice(dbDetail, accountingSoftware)
-			}
-
-			// The HTTP status code determines if the invoices were sent succesfully
-			if accountingSoftware.httpStatusCode == 201 {
-				// Delete all invoice items that are set to bill once
-				dbDetail.connection.Query("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
-
-				// Update all invoice items that are on hold to being off hold
-				dbDetail.connection.Query("UPDATE `invoice_item` SET `item_on_hold` = 'no' WHERE `item_on_hold` = 'yes';")
-
-				// Insert new log into the billing_run_log table
-				dbDetail.connection.Query("INSERT INTO `billing_run_log` (`user_account_id`, `user_account_email`) VALUES (?, ?);", genDetail.userID, genDetail.userEmail)
-
-				// Display success message
-				messageHTML(w, http201MessageSendInvoice, "success")
-			} else if accountingSoftware.httpStatusCode == 400 {
-				messageHTML(w, http400MessageSendInvoice, "warning")
-			} else if accountingSoftware.httpStatusCode == 404 {
-				messageHTML(w, http404MessageSendInvoice, "warning")
-			} else if accountingSoftware.httpStatusCode == 422 {
-				messageHTML(w, http422MessageSendInvoice, "warning")
-			} else if accountingSoftware.httpStatusCode == 0 {
-				messageHTML(w, http0MessageSendInvoice, "warning")
-			} else if accountingSoftware.httpStatusCode == 429 {
-				messageHTML(w, http429Message, "warning")
+			if accountingSoftware.apiRefreshToken == "" {
+				messageHTML(w, refreshTokenEmptyMessage, "warning")
+			} else if accountingSoftware.apiRefreshToken == "decryption_error" {
+				messageHTML(w, refreshTokenDecryptionError, "warning")
 			} else {
-				messageHTML(w, httpUnknownMessage, "warning")
+				// Get an access token from accounting software API
+				accountingSoftware.apiAccessToken = accessToken(accountingSoftware)
+
+				// Get all customer ID's that have at least one invoice item
+				var invoiceItemCustomerIDList []string
+				dbDetail.column = "customer_id"
+				dbDetail.table = "view___invoice_item"
+				invoiceItemCustomerIDList = singleColumnDistinctSlice(dbDetail)
+
+				for _, invoiceItemCustomerID := range invoiceItemCustomerIDList {
+					accountingSoftware.customerID = invoiceItemCustomerID
+					accountingSoftware.httpStatusCode = postInvoice(dbDetail, accountingSoftware)
+				}
+
+				// The HTTP status code determines if the invoices were sent succesfully
+				if accountingSoftware.httpStatusCode == 201 {
+					// Delete all invoice items that are set to bill once
+					dbDetail.connection.Query("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
+
+					// Update all invoice items that are on hold to being off hold
+					dbDetail.connection.Query("UPDATE `invoice_item` SET `item_on_hold` = 'no' WHERE `item_on_hold` = 'yes';")
+
+					// Insert new log into the billing_run_log table
+					dbDetail.connection.Query("INSERT INTO `billing_run_log` (`user_account_id`, `user_account_email`, `api_client_id`) VALUES (?, ?, ?);", genDetail.userID, genDetail.userEmail, accountingSoftware.apiClientID)
+
+					// Display success message
+					messageHTML(w, http201MessageSendInvoice, "success")
+				} else if accountingSoftware.httpStatusCode == 400 {
+					messageHTML(w, http400Message, "warning")
+				} else if accountingSoftware.httpStatusCode == 404 {
+					messageHTML(w, http404MessageSendInvoice, "warning")
+				} else if accountingSoftware.httpStatusCode == 422 {
+					messageHTML(w, http422MessageSendInvoice, "warning")
+				} else if accountingSoftware.httpStatusCode == 0 {
+					messageHTML(w, http0MessageSendInvoice, "warning")
+				} else if accountingSoftware.httpStatusCode == 429 {
+					messageHTML(w, http429Message, "warning")
+				} else {
+					messageHTML(w, httpUnknownMessage, "warning")
+				}
 			}
 
 		} else {
@@ -8328,26 +8466,40 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 			messageHTML(w, validationMessageCustomer, "warning")
 		} else if validateUpdateSingleCustomerSelectCustomerID == true && updateSingleCustomerSelectConfirm == "yes" {
 
-			// Get an access token from accounting software API
-			accountingSoftware.accessToken = accessToken(accountingSoftware)
+			// Get the refresh token by calling the refreshToken function
+			accountingSoftware.apiRefreshToken = refreshToken(dbDetail, accountingSoftware)
 
-			accountingSoftware.customerID = updateSingleCustomerSelectCustomerID
-
-			// Call putCustomerDetail function and also get the HTTP status code
-			accountingSoftware.httpStatusCode = putCustomerDetail(dbDetail, accountingSoftware)
-
-			// The HTTP status code determines if the update was sent succesfully
-			if accountingSoftware.httpStatusCode == 200 {
-				messageHTML(w, http200MessageUpdateSingleCustomer, "success")
-			} else if accountingSoftware.httpStatusCode == 404 {
-				messageHTML(w, http404MessageUpdateSingleCustomer, "warning")
-			} else if accountingSoftware.httpStatusCode == 422 {
-				messageHTML(w, http422MessageUpdateSingleCustomer, "warning")
-			} else if accountingSoftware.httpStatusCode == 429 {
-				messageHTML(w, http429Message, "warning")
+			if accountingSoftware.apiRefreshToken == "" {
+				messageHTML(w, refreshTokenEmptyMessage, "warning")
+			} else if accountingSoftware.apiRefreshToken == "decryption_error" {
+				messageHTML(w, refreshTokenDecryptionError, "warning")
 			} else {
-				messageHTML(w, httpUnknownMessage, "warning")
+				// Get an access token from accounting software API
+				accountingSoftware.apiAccessToken = accessToken(accountingSoftware)
+
+				accountingSoftware.customerID = updateSingleCustomerSelectCustomerID
+
+				// Call putCustomerDetail function and also get the HTTP status code
+				accountingSoftware.httpStatusCode = putCustomerDetail(dbDetail, accountingSoftware)
+
+				// The HTTP status code determines if the update was sent succesfully
+				if accountingSoftware.httpStatusCode == 200 {
+					messageHTML(w, http200MessageUpdateSingleCustomer, "success")
+				} else if accountingSoftware.httpStatusCode == 400 {
+					messageHTML(w, http400Message, "warning")
+				} else if accountingSoftware.httpStatusCode == 404 {
+					messageHTML(w, http404MessageUpdateSingleCustomer, "warning")
+				} else if accountingSoftware.httpStatusCode == 422 {
+					messageHTML(w, http422MessageUpdateSingleCustomer, "warning")
+				} else if accountingSoftware.httpStatusCode == 429 {
+					messageHTML(w, http429Message, "warning")
+				} else {
+					messageHTML(w, httpUnknownMessage, "warning")
+				}
 			}
+
+		} else {
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
 
 		// Update all customer details code
@@ -8380,18 +8532,28 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 			// Do Nothing
 		} else if updateAllCustomerSelectConfirm == "yes" {
 
-			// Get an access token from accounting software API
-			accountingSoftware.accessToken = accessToken(accountingSoftware)
+			// Get the refresh token by calling the refreshToken function
+			accountingSoftware.apiRefreshToken = refreshToken(dbDetail, accountingSoftware)
 
-			// Get all customer ID's
-			_, updateAllCustomerIDList := customerSlice(dbDetail)
+			if accountingSoftware.apiRefreshToken == "" {
+				messageHTML(w, refreshTokenEmptyMessage, "warning")
+			} else if accountingSoftware.apiRefreshToken == "decryption_error" {
+				messageHTML(w, refreshTokenDecryptionError, "warning")
+			} else {
+				// Get an access token from accounting software API
+				accountingSoftware.apiAccessToken = accessToken(accountingSoftware)
 
-			for _, updateAllCustomerID := range updateAllCustomerIDList {
-				accountingSoftware.customerID = updateAllCustomerID
-				putCustomerDetail(dbDetail, accountingSoftware)
+				// Get all customer ID's
+				_, updateAllCustomerIDList := customerSlice(dbDetail)
+
+				for _, updateAllCustomerID := range updateAllCustomerIDList {
+					accountingSoftware.customerID = updateAllCustomerID
+					putCustomerDetail(dbDetail, accountingSoftware)
+				}
 			}
+		} else {
+			messageHTML(w, validationMessageInvalid, "warning")
 		}
-
 	} else {
 		panic("accountingSoftwareSendInvoice function should only be called with account type ID 100")
 	}
@@ -9276,7 +9438,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 				messageHTML(w, validationMessageServiceProductDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM service_product WHERE name = ?;`, deleteServiceProductInputName)
+				dbDetail.connection.Query("DELETE FROM service_product WHERE name = ?;", deleteServiceProductInputName)
 
 				checkServiceProductDeleted := selectWhere(dbDetail)
 
@@ -9347,7 +9509,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 				messageHTML(w, validationMessageSupplierDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM supplier WHERE name = ?;`, deleteSupplierInputName)
+				dbDetail.connection.Query("DELETE FROM supplier WHERE name = ?;", deleteSupplierInputName)
 
 				checkSupplierDeleted := selectWhere(dbDetail)
 
@@ -9416,7 +9578,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 				messageHTML(w, validationMessageSalesTaxRateDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`DELETE FROM sales_tax_rate_lookup WHERE sales_tax_rate = ?;`, deleteSalesTaxRateInputRate)
+				dbDetail.connection.Query("DELETE FROM sales_tax_rate_lookup WHERE sales_tax_rate = ?;", deleteSalesTaxRateInputRate)
 
 				checkSalesTaxRateDeleted := selectWhere(dbDetail)
 
@@ -9446,39 +9608,27 @@ func main() {
 	}
 
 	// Get the database connection details
-	dbUsername := os.Getenv("dbUsername")
-	dbPassword := os.Getenv("dbPassword")
-	dbName := os.Getenv("dbName")
-	dbTransport := os.Getenv("dbTransport")
-	dbAddress := os.Getenv("dbAddress")
-	dbPort := os.Getenv("dbPort")
-	dbTLS := os.Getenv("dbTLS")
+	yapPublicURL := os.Getenv("yapPublicURL")
 	defaultExtLimit := os.Getenv("defaultExtLimit")
 	currencySymbol := os.Getenv("currencySymbol")
 	yapAdminUKVATRegistered := os.Getenv("yapAdminUKVATRegistered")
 	extraButtonName := os.Getenv("extraButtonName")
 	extraButtonURL := os.Getenv("extraButtonURL")
-	accountingSoftwareURL := os.Getenv("accountingSoftwareURL")
-	accountingSoftwareClientID := os.Getenv("accountingSoftwareClientID")
-	accountingSoftwareClientSecret := os.Getenv("accountingSoftwareClientSecret")
-	accountingSoftwareRefreshToken := os.Getenv("accountingSoftwareRefreshToken")
+	dbUsername := os.Getenv("dbUsername")
+	dbPassword := os.Getenv("dbPassword")
+	dbName := os.Getenv("dbName")
+	dbAddress := os.Getenv("dbAddress")
+	dbPort := os.Getenv("dbPort")
+	dbTransport := os.Getenv("dbTransport")
+	dbTLS := os.Getenv("dbTLS")
+	accountingSoftwareAPIURL := os.Getenv("accountingSoftwareAPIURL")
+	accountingSoftwareAPIClientID := os.Getenv("accountingSoftwareAPIClientID")
+	accountingSoftwareAPIClientSecret := os.Getenv("accountingSoftwareAPIClientSecret")
 	accountingSoftwareCurrencyCode := os.Getenv("accountingSoftwareCurrencyCode")
 
-	// Values allowed for dbTransport Variable
-	var transportList = []string{"tcp", "udp"}
-	validDbTransport := slices.Contains(transportList, dbTransport)
-
-	validateDbAddress := validator.New()
-	validateDbAddressErr := validateDbAddress.Var(dbAddress, "required,ip_addr")
-
-	dbPortInt, err := strconv.Atoi(dbPort)
-	if err != nil {
-		panic("DATABASE PORT MUST BE A NUMBER IN " + fileYAPEnv)
-	}
-
-	// Values allowed for dbTls variable
-	var dbTLSList = []string{"false", "true"}
-	validDbTLS := slices.Contains(dbTLSList, dbTLS)
+	// Validate the variable value for yapPublicURL is a URL or empty
+	validateYAPPublicURL := validator.New()
+	validateYAPPublicURLErr := validateYAPPublicURL.Var(validateYAPPublicURL, "omitempty,http_url")
 
 	// Values allowed for defaultExtLimit variable
 	var defaultExtLimitList = []string{"1", "2", "3", "4", "5", "10", "25", "50", "75", "100", "150", "200", "250", "500", "750", "1000", "1500", "2000", "2500", "5000"}
@@ -9496,33 +9646,35 @@ func main() {
 	validateExtraButtonURL := validator.New()
 	validateExtraButtonURLErr := validateExtraButtonURL.Var(extraButtonURL, "required,http_url")
 
+	// Validate the dbAddress is an IP address
+	validateDbAddress := validator.New()
+	validateDbAddressErr := validateDbAddress.Var(dbAddress, "required,ip_addr")
+
+	// Validate the dbPortInt is a number
+	dbPortInt, err := strconv.Atoi(dbPort)
+	if err != nil {
+		panic("DATABASE PORT MUST BE A NUMBER IN " + fileYAPEnv)
+	}
+
+	// Values allowed for dbTransport Variable
+	var transportList = []string{"tcp", "udp"}
+	validDbTransport := slices.Contains(transportList, dbTransport)
+
+	// Values allowed for dbTls variable
+	var dbTLSList = []string{"false", "true"}
+	validDbTLS := slices.Contains(dbTLSList, dbTLS)
+
 	// Validate the variable value for accountingSoftwareURL is a URL or empty
 	validateAccountingSoftwareURL := validator.New()
-	validateAccountingSoftwareURLErr := validateAccountingSoftwareURL.Var(accountingSoftwareURL, "omitempty,http_url")
+	validateAccountingSoftwareURLErr := validateAccountingSoftwareURL.Var(accountingSoftwareAPIURL, "omitempty,http_url")
 
 	// Values allowed for the accountingSoftwareCurrencyCode variable
 	var accountingSoftwareCurrencyCodeList = []string{"", "GBP", "EUR", "USD", "JPY"}
 	validAccountingSoftwareCurrencyCode := slices.Contains(accountingSoftwareCurrencyCodeList, accountingSoftwareCurrencyCode)
 
 	// Catch if any errors were made in yap.env and feed back where to correct the error
-	if dbUsername == "" {
-		panic("DATABASE USERNAME CANNOT BE EMPTY IN " + fileYAPEnv)
-	} else if dbPassword == "" {
-		panic("DATABASE PASSOWRD CANNOT BE EMPTY IN " + fileYAPEnv)
-	} else if dbName == "" {
-		panic("DATABASE NAME CANNOT BE EMPTY IN " + fileYAPEnv)
-	} else if dbTransport == "" {
-		panic("DATABASE TRANSPORT OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
-	} else if validDbTransport == false {
-		panic("DATABASE TRANSPORT OPTION MUST BE udp OR tcp IN " + fileYAPEnv)
-	} else if validateDbAddressErr != nil && dbAddress != "localhost" {
-		panic("DATABASE ADDRESS MUST BE A VALID INTERENT PROTOCOL (IP) ADDRESS OR localhost IN " + fileYAPEnv)
-	} else if dbPortInt <= 0 || dbPortInt >= 65536 {
-		panic("DATABASE PORT MUST BE IN THE NUMBER RANGE 1-65535 IN " + fileYAPEnv)
-	} else if dbTLS == "" {
-		panic("DATABASE TLS OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
-	} else if validDbTLS == false {
-		panic("DATABASE TRANSPORT OPTION MUST BE false OR true IN " + fileYAPEnv)
+	if validateYAPPublicURLErr != nil {
+		panic("YAP PUPLIC URL MUST BE A VALID URL OR EMPTY IN " + fileYAPEnv)
 	} else if defaultExtLimit == "" {
 		panic("DEFAULT SIP EXT OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
 	} else if validDefaultExtLimit == false {
@@ -9537,6 +9689,24 @@ func main() {
 		if validateExtraButtonURLErr != nil {
 			panic("THE EXTRA BUTTON URL VALUE MUST BE A VALID URL IN " + fileYAPEnv)
 		}
+	} else if dbUsername == "" {
+		panic("DATABASE USERNAME CANNOT BE EMPTY IN " + fileYAPEnv)
+	} else if dbPassword == "" {
+		panic("DATABASE PASSOWRD CANNOT BE EMPTY IN " + fileYAPEnv)
+	} else if dbName == "" {
+		panic("DATABASE NAME CANNOT BE EMPTY IN " + fileYAPEnv)
+	} else if validateDbAddressErr != nil && dbAddress != "localhost" {
+		panic("DATABASE ADDRESS MUST BE A VALID INTERENT PROTOCOL (IP) ADDRESS OR localhost IN " + fileYAPEnv)
+	} else if dbPortInt <= 0 || dbPortInt >= 65536 {
+		panic("DATABASE PORT MUST BE IN THE NUMBER RANGE 1-65535 IN " + fileYAPEnv)
+	} else if dbTransport == "" {
+		panic("DATABASE TRANSPORT OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
+	} else if validDbTransport == false {
+		panic("DATABASE TRANSPORT OPTION MUST BE udp OR tcp IN " + fileYAPEnv)
+	} else if dbTLS == "" {
+		panic("DATABASE TLS OPTION CANNOT BE EMPTY IN " + fileYAPEnv)
+	} else if validDbTLS == false {
+		panic("DATABASE TRANSPORT OPTION MUST BE false OR true IN " + fileYAPEnv)
 	} else if validateAccountingSoftwareURLErr != nil {
 		panic("ACCOUNTING SOFTWARE URL MUST BE A VALID URL OR EMPTY IN " + fileYAPEnv)
 	} else if validAccountingSoftwareCurrencyCode == false {
@@ -9581,7 +9751,7 @@ func main() {
 		genDetail.userTypeID = userTypeID
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-main-menu", "")
+			messageBox(w, "email_error", "header-main-menu", "")
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>Main Menu", "", extraButtonName, extraButtonURL)
@@ -9603,7 +9773,7 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&#128241", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
+				mainMenuButtonFour := mainMenuParameter{writeHTTP: w, buttonName: "All PBX SIP<br>Extensions<br>&nbsp &#128241 &nbsp", hyperlink: "/extension", headerCSS: "header-ext", buttonCSS: "button-ext"}
 				mainMenuButton(mainMenuButtonFour)
 				fmt.Fprintf(w, "</div>")
 				fmt.Fprintf(w, "<div class=\"div-main-menu\">")
@@ -9612,12 +9782,12 @@ func main() {
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "Accounting<br>Software<br>&#128183 &#128182 &#128181 &#128180", hyperlink: "/accounting-software", headerCSS: "header-accounting-software", buttonCSS: "button-accounting-software"}
+				mainMenuButtonSix := mainMenuParameter{writeHTTP: w, buttonName: "All Services &<br>Products<br>&#128230", hyperlink: "/service-product", headerCSS: "header-service-product", buttonCSS: "button-service-product"}
 				mainMenuButton(mainMenuButtonSix)
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
 				fmt.Fprintf(w, "&nbsp")
-				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "All Services &<br>Products<br>&#128230", hyperlink: "/service-product", headerCSS: "header-service-product", buttonCSS: "button-service-product"}
+				mainMenuButtonSeven := mainMenuParameter{writeHTTP: w, buttonName: "Accounting<br>Software<br>&#128183 &#128182 &#128181 &#128180", hyperlink: "/accounting-software", headerCSS: "header-accounting-software", buttonCSS: "button-accounting-software"}
 				mainMenuButton(mainMenuButtonSeven)
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
@@ -9731,7 +9901,7 @@ func main() {
 				fmt.Fprintf(w, "</div>")
 				footer(w, "", "")
 			} else {
-				errorBox(w, "account_type_error", "header-main-menu", "")
+				messageBox(w, "account_type_error", "header-main-menu", "")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -9779,7 +9949,7 @@ func main() {
 		genDetail.userTypeID = userTypeID
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-user-account", "button-user-account")
+			messageBox(w, "email_error", "header-user-account", "button-user-account")
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All User Accounts on YAP", "header-user-account", extraButtonName, extraButtonURL)
@@ -9816,7 +9986,7 @@ func main() {
 				userAccountList(w, dbDetail, genDetail)
 				footer(w, "header-user-account", "button-user-account")
 			} else {
-				errorBox(w, "account_type_error", "header-user-account", "button-user-account")
+				messageBox(w, "account_type_error", "header-user-account", "button-user-account")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -9862,7 +10032,7 @@ func main() {
 		genDetail.currencySymbol = currencySymbol
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-customer", "button-customer")
+			messageBox(w, "email_error", "header-customer", "button-customer")
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All Customers on YAP", "header-customer", extraButtonName, extraButtonURL)
@@ -9879,7 +10049,7 @@ func main() {
 				customerList(w, dbDetail, genDetail)
 				footer(w, "header-customer", "button-customer")
 			} else {
-				errorBox(w, "account_type_error", "header-customer", "button-customer")
+				messageBox(w, "account_type_error", "header-customer", "button-customer")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -9927,7 +10097,7 @@ func main() {
 		genDetail.defaultExtLimit = defaultExtLimit
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-pbx", "button-pbx")
+			messageBox(w, "email_error", "header-pbx", "button-pbx")
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All BPXs on YAP", "header-pbx", extraButtonName, extraButtonURL)
@@ -9962,7 +10132,7 @@ func main() {
 				pbxList(w, dbDetail, genDetail)
 				footer(w, "header-pbx", "button-pbx")
 			} else {
-				errorBox(w, "account_type_error", "header-pbx", "button-pbx")
+				messageBox(w, "account_type_error", "header-pbx", "button-pbx")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -10009,7 +10179,7 @@ func main() {
 		genDetail.userPBXID = userPBXID
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-ext", "button-ext")
+			messageBox(w, "email_error", "header-ext", "button-ext")
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All Extensions on the Server", "header-ext", extraButtonName, extraButtonURL)
@@ -10054,7 +10224,7 @@ func main() {
 				extList(w, dbDetail, genDetail)
 				footer(w, "header-ext", "button-ext")
 			} else {
-				errorBox(w, "account_type_error", "header-ext", "button-ext")
+				messageBox(w, "account_type_error", "header-ext", "button-ext")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -10100,7 +10270,7 @@ func main() {
 		genDetail.yapAdminUKVATRegistered = yapAdminUKVATRegistered
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-invoice", "button-invoice")
+			messageBox(w, "email_error", "header-invoice", "button-invoice")
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>All Customer Invoices", "header-invoice", extraButtonName, extraButtonURL)
@@ -10115,78 +10285,7 @@ func main() {
 				invoiceList(w, dbDetail, genDetail)
 				footer(w, "header-invoice", "button-invoice")
 			} else {
-				errorBox(w, "account_type_error", "header-invoice", "button-invoice")
-			}
-		}
-		fmt.Fprintf(w, endHTML)
-	})
-
-	go http.HandleFunc("/accounting-software", func(w http.ResponseWriter, r *http.Request) {
-
-		if err := r.ParseForm(); err != nil {
-			fmt.Fprintf(w, "ParseForm() err: %v", err)
-		}
-
-		// Open database connection
-		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
-		defer dbConnection.Close()
-
-		// Error
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Fprintf(w, startHTML)
-
-		// Wallpaper
-		wallpaper(w, "wallpaper-accounting-software")
-
-		// Code to call the emailHeaderHTTP function
-		email := emailHeaderHTTP(r)
-
-		var dbDetail databaseFunctionParameter
-		dbDetail.connection = dbConnection
-		dbDetail.database = dbName
-		dbDetail.columnWhereValue = email
-
-		userTypeID := userAccountData(dbDetail, "type_id")
-		userID := userAccountData(dbDetail, "id")
-
-		var genDetail generalFunctionParameter
-		genDetail.userTypeID = userTypeID
-		genDetail.userID = userID
-		genDetail.userEmail = email
-
-		var accountingSoftware accountingSoftwareParameter
-		accountingSoftware.url = accountingSoftwareURL
-		accountingSoftware.clientID = accountingSoftwareClientID
-		accountingSoftware.clientSecret = accountingSoftwareClientSecret
-		accountingSoftware.refreshToken = accountingSoftwareRefreshToken
-		accountingSoftware.currencyCode = accountingSoftwareCurrencyCode
-
-		if userTypeID == "" {
-			errorBox(w, "email_error", "header-accounting-software", "button-accounting-software")
-		} else {
-			if userTypeID == "100" {
-				if accountingSoftware.url == "" {
-					errorBox(w, "url_error", "header-accounting-software", "button-accounting-software")
-				} else if accountingSoftware.clientID == "" {
-					errorBox(w, "client_id_error", "header-accounting-software", "button-accounting-software")
-				} else if accountingSoftware.clientSecret == "" {
-					errorBox(w, "client_secret_error", "header-accounting-software", "button-accounting-software")
-				} else if accountingSoftware.refreshToken == "" {
-					errorBox(w, "refresh_token_error", "header-accounting-software", "button-accounting-software")
-				} else if accountingSoftware.currencyCode == "" {
-					errorBox(w, "currency_code_error", "header-accounting-software", "button-accounting-software")
-				} else {
-					header(w, "YAP Admin Account<br>Send Invoices/Customer Details", "header-accounting-software", extraButtonName, extraButtonURL)
-					accountingSoftwareList(w, dbDetail, genDetail)
-					fmt.Fprintf(w, "<br>")
-					accountingSoftwareSendUpdate(w, r, dbDetail, genDetail, accountingSoftware)
-					footer(w, "header-accounting-software", "button-accounting-software")
-				}
-			} else {
-				errorBox(w, "account_type_error", "header-accounting-software", "button-accounting-software")
+				messageBox(w, "account_type_error", "header-invoice", "button-invoice")
 			}
 		}
 		fmt.Fprintf(w, endHTML)
@@ -10230,7 +10329,7 @@ func main() {
 		genDetail.defaultExtLimit = defaultExtLimit
 
 		if userTypeID == "" {
-			errorBox(w, "email_error", "header-service-product", "button-service-product")
+			messageBox(w, "email_error", "header-service-product", "button-service-product")
 		} else {
 			if userTypeID == "100" {
 				header(w, "YAP Admin Account<br>Service/Product Information", "header-service-product", extraButtonName, extraButtonURL)
@@ -10243,7 +10342,209 @@ func main() {
 				serviceProductDelete(w, r, dbDetail, genDetail)
 				footer(w, "header-service-product", "button-service-product")
 			} else {
-				errorBox(w, "account_type_error", "header-service-product", "button-service-product")
+				messageBox(w, "account_type_error", "header-service-product", "button-service-product")
+			}
+		}
+	})
+
+	go http.HandleFunc("/accounting-software", func(w http.ResponseWriter, r *http.Request) {
+
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+		}
+
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Fprintf(w, startHTML)
+
+		// Wallpaper
+		wallpaper(w, "wallpaper-accounting-software")
+
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountData(dbDetail, "type_id")
+		userID := userAccountData(dbDetail, "id")
+
+		var genDetail generalFunctionParameter
+		genDetail.userTypeID = userTypeID
+		genDetail.userID = userID
+		genDetail.userEmail = email
+
+		if userTypeID == "" {
+			messageBox(w, "email_error", "header-accounting-software", "button-accounting-software")
+		} else {
+			if userTypeID == "100" {
+
+				var accountingSoftware accountingSoftwareParameter
+				accountingSoftware.apiURL = accountingSoftwareAPIURL
+				accountingSoftware.apiClientID = accountingSoftwareAPIClientID
+				accountingSoftware.apiClientSecret = accountingSoftwareAPIClientSecret
+				accountingSoftware.currencyCode = accountingSoftwareCurrencyCode
+
+				if accountingSoftware.apiURL == "" {
+					messageBox(w, "url_error", "header-accounting-software", "button-accounting-software")
+				} else if accountingSoftware.apiClientID == "" {
+					messageBox(w, "client_id_error", "header-accounting-software", "button-accounting-software")
+				} else if accountingSoftware.apiClientSecret == "" {
+					messageBox(w, "client_secret_error", "header-accounting-software", "button-accounting-software")
+				} else if accountingSoftware.currencyCode == "" {
+					messageBox(w, "currency_code_error", "header-accounting-software", "button-accounting-software")
+				} else {
+					header(w, "YAP Admin Account<br>Send Invoices/Customer Details", "header-accounting-software", extraButtonName, extraButtonURL)
+					accountingSoftwareList(w, dbDetail, genDetail)
+					fmt.Fprintf(w, "<br>")
+					accountingSoftwareSendUpdate(w, r, dbDetail, genDetail, accountingSoftware)
+					footer(w, "header-accounting-software", "button-accounting-software")
+				}
+			} else {
+				messageBox(w, "account_type_error", "header-accounting-software", "button-accounting-software")
+			}
+		}
+		fmt.Fprintf(w, endHTML)
+	})
+
+	go http.HandleFunc("/accounting-software-connect", func(w http.ResponseWriter, r *http.Request) {
+
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountData(dbDetail, "type_id")
+		userID := userAccountData(dbDetail, "id")
+
+		var genDetail generalFunctionParameter
+		genDetail.userTypeID = userTypeID
+		genDetail.userID = userID
+
+		if userTypeID == "" {
+			http.Redirect(w, r, yapPublicURL+"/yap", http.StatusTemporaryRedirect)
+		} else {
+			if userTypeID == "100" && userID == "1" {
+				var accountingSoftware accountingSoftwareParameter
+				accountingSoftware.apiURL = accountingSoftwareAPIURL
+				accountingSoftware.yapPublicURL = yapPublicURL
+				accountingSoftware.apiClientID = accountingSoftwareAPIClientID
+				accountingSoftware.apiClientSecret = accountingSoftwareAPIClientSecret
+
+				authService := newAuthService(accountingSoftware)
+				// Generate a long state
+				state := genPassword(100)
+				url := authService.GetAuthURL(state)
+
+				// Redirect to accounting software URL
+				http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+			} else {
+				http.Redirect(w, r, yapPublicURL+"/yap", http.StatusTemporaryRedirect)
+			}
+		}
+	})
+
+	// Callback page for accounting software OAuth2
+	go http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+
+		// Open database connection
+		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
+		defer dbConnection.Close()
+
+		// Error
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Fprintf(w, startHTML)
+
+		// Wallpaper
+		wallpaper(w, "wallpaper-accounting-software")
+
+		// Code to call the emailHeaderHTTP function
+		email := emailHeaderHTTP(r)
+
+		var dbDetail databaseFunctionParameter
+		dbDetail.connection = dbConnection
+		dbDetail.database = dbName
+		dbDetail.columnWhereValue = email
+
+		userTypeID := userAccountData(dbDetail, "type_id")
+		userID := userAccountData(dbDetail, "id")
+
+		var genDetail generalFunctionParameter
+		genDetail.userTypeID = userTypeID
+		genDetail.userID = userID
+
+		if userTypeID == "" {
+			messageBox(w, "email_error", "header-accounting-software", "button-accounting-software")
+		} else {
+			if userTypeID == "100" && userID == "1" {
+				code := r.URL.Query().Get("code")
+
+				var accountingSoftware accountingSoftwareParameter
+				accountingSoftware.apiURL = accountingSoftwareAPIURL
+				accountingSoftware.yapPublicURL = yapPublicURL
+				accountingSoftware.apiClientID = accountingSoftwareAPIClientID
+				accountingSoftware.apiClientSecret = accountingSoftwareAPIClientSecret
+
+				authService := newAuthService(accountingSoftware)
+
+				token, err := authService.ExchangeCode(context.Background(), code)
+
+				if err != nil {
+					messageBox(w, "accounting_software_connect_error", "header-accounting-software", "button-accounting-software")
+					return
+				}
+
+				// Marshel Token
+				jsonToken, _ := json.Marshal(token)
+
+				// Parse JSON
+				refreshToken := gjson.Get(string(jsonToken), "refresh_token")
+
+				// Trim " out of string
+				refreshTokenTrimmed := trimString(refreshToken.Raw, "\"")
+
+				if refreshTokenTrimmed != "" {
+					// Display the success message
+					messageBox(w, "accounting_software_token", "header-accounting-software", "button-accounting-software")
+
+					// Pad out the client secret with 0's till 32 charecters long and use it for the password to encrypt the refresh token
+					refreshTokenPassword := zeroPad(accountingSoftware.apiClientSecret)
+
+					// Using the aestext package encrypt the refresh token
+					refreshTokenEncrypted := aestext.EncText(refreshTokenTrimmed, refreshTokenPassword)
+
+					// Delete all from the accounting_software table
+					dbDetail.connection.Query("DELETE FROM accounting_software;")
+
+					// Add new encrypted refresh token to the accounting_software table
+					dbDetail.connection.Query("INSERT INTO `accounting_software` (`refresh_token`) VALUES (?);", refreshTokenEncrypted)
+				}
+			} else {
+				messageBox(w, "email_error", "header-accounting-software", "button-accounting-software")
 			}
 		}
 	})
