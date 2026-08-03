@@ -32,7 +32,7 @@ asterisk_key="F2FC93DB7587BD1FB49E045A5D984BE337191CE7";
 
 # Function to search and replace text in files
 function string_update {
-  sed -i "s/$search_string/$replace_string/" $string_update_file;
+  sed -i "s,$search_string,$replace_string," $string_update_file;
 };
 
 # Nginx fingerprint
