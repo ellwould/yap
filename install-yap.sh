@@ -289,7 +289,7 @@ then
 fi;
 
 # Enter the GitHub oAuth app client ID
-read -p "  Enter the GitHub oAuth app client ID: " oauth_client_id;
+read -p "  Enter the GitHub OAuth app client ID: " oauth_client_id;
 printf "\n";
 if [[ $oauth_client_id = "exit" ]] || [[ $oauth_client_id = "Exit" ]] || [[ $oauth_client_id = "EXIT" ]]
 then
@@ -309,7 +309,7 @@ then
 fi;
 
 # Enter the GitHub oAuth app client secret
-read -p "  Enter the GitHub oAuth app client secret: " oauth_client_secret;
+read -p "  Enter the GitHub OAuth app client secret: " oauth_client_secret;
 printf "\n";
 if [[ $oauth_client_secret = "exit" ]] || [[ $oauth_client_secret = "Exit" ]] || [[ $oauth_client_secret = "EXIT" ]]
 then
@@ -795,7 +795,7 @@ fi;
 
 # Copy Nginx Configuration files
 cp /root/yap/nginx/nginx.conf /etc/nginx/nginx.conf;
-rm /root/yap/nginx/conf.d/*;
+rm /etc/nginx/conf.d/*;
 cp /root/yap/nginx/conf.d/* /etc/nginx/conf.d/;
 
 # Add the FQDN to the Nginx configuration file
@@ -859,7 +859,7 @@ mv /root/go/bin/oauth2-proxy /usr/bin/oauth2-proxy;
 mkdir /etc/oauth2-proxy;
 
 # Copy oauth2-proxy configuration file
-cp /root/yap/oauth2-proxy/oauth2-proxy.cfg /etc/oauth2-proxy/;
+cp /root/yap/oauth2-proxy/oauth2-proxy.cfg /etc/oauth2-proxy/oauth2-proxy.cfg;
 
 # Create a oauth2-proxy authenticated emails file and add the YAP admin email
 touch /etc/oauth2-proxy/email.txt;
@@ -872,7 +872,7 @@ cp /root/yap/image/yap_logo.jpeg /etc/oauth2-proxy/;
 cookie_secret=`openssl rand -base64 32 | tr -- '+/' '-_'`;
 
 # Add the public FQDN to the oauth2-proxy configuration file
-string_update_file="/etc/oauth2-proxy/oauth2-proxy.conf";
+string_update_file="/etc/oauth2-proxy/oauth2-proxy.cnf";
 search_string="<FQDN>";
 replace_string="$FQDN";
 string_update;
