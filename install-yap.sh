@@ -877,6 +877,16 @@ search_string="<REPLACE_FQDN>";
 replace_string="$FQDN";
 string_update;
 
+# Add the public IPv4 address to the oauth2-proxy configuration file
+search_string="<REPLACE_PUBLIC_IPV4>";
+replace_string="$public_IPv4";
+string_update;
+
+# Add the public IPv6 address to the oauth2-proxy configuration file
+search_string="<REPLACE_PUBLIC_IPV6>";
+replace_string="$public_IPv6";
+string_update;
+
 # Add the oauth client ID to the oauth2-proxy configuration file
 search_string="<REPLACE_OAUTH_CLIENT_ID>";
 replace_string="$oauth_client_id";
