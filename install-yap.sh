@@ -152,12 +152,12 @@ then
 fi;
 
 # UK VAT registered status 
-read -p "  Enter UK VAT registered status, option can be yes/no: " uk_vat_reg;
+read -p "  Enter UK VAT registered status, option can be yes/no: " $uk_vat_reg_status;
 printf "\n";
-if [[ $uk_vat_reg = "exit" ]] || [[ $uk_vat_reg = "Exit" ]] || [[ $email = "EXIT" ]]
+if [[ $uk_vat_reg_status = "exit" ]] || [[ $uk_vat_reg_status = "Exit" ]] || [[ $uk_vat_reg_status = "EXIT" ]]
 then
   exit;
-elif [[ $uk_vat_reg = "" ]]
+elif [[ $uk_vat_reg_status = "" ]]
 then
   printf $clear_screen;
   printf $bg_yellow;
@@ -169,12 +169,12 @@ then
   printf $reset_colour;
   read -p "";
   source ./install-yap.sh;
-elif [[ $uk_vat_reg = "yes" ]] || [[ $uk_vat_reg = "Yes" ]] || [[ $uk_vat_reg = "YES" ]] || [[ $uk_vat_reg = "y" ]] || [[ $uk_vat_reg = "Y" ]]
+elif [[ $uk_vat_reg_status = "yes" ]] || [[ $uk_vat_reg_status = "Yes" ]] || [[ $uk_vat_reg_status = "YES" ]] || [[ $uk_vat_reg_status = "y" ]] || [[ $uk_vat_reg_status = "Y" ]]
 then  
-  uk_vat_reg="yes";
-elif [[ $uk_vat_reg = "no" ]] || [[ $uk_vat_reg = "No" ]] || [[ $uk_vat_reg = "NO" ]] || [[ $uk_vat_reg = "n" ]] || [[ $uk_vat_reg = "N" ]]
+  uk_vat_reg_status="yes";
+elif [[ $uk_vat_reg_status = "no" ]] || [[ $uk_vat_reg_status = "No" ]] || [[ $uk_vat_reg_status = "NO" ]] || [[ $uk_vat_reg_status = "n" ]] || [[ $uk_vat_reg_status = "N" ]]
 then
-  uk_vat_reg="no";
+  uk_vat_reg_status="no";
 else
   printf $clear_screen;
   printf $bg_yellow;
@@ -189,7 +189,7 @@ else
 fi;
 
 # Enter FQDN
-read -p "  Enter the FQDN: " FQDN;
+read -p "  Enter the FQDN (Format: example.com): " FQDN;
 printf "\n";
 if [[ $FQDN = "exit" ]] || [[ $FQDN = "Exit" ]] || [[ $FQDN = "EXIT" ]]
 then
@@ -311,10 +311,10 @@ fi;
 # Enter the GitHub oAuth app client secret
 read -p "  Enter the GitHub oAuth app client secret: " oauth_client_secret;
 printf "\n";
-if [[ $tls_key_path = "exit" ]] || [[ $tls_key_path = "Exit" ]] || [[ $tls_key_path = "EXIT" ]]
+if [[ $oauth_client_secret = "exit" ]] || [[ $oauth_client_secret = "Exit" ]] || [[ $oauth_client_secret = "EXIT" ]]
 then
   exit;
-elif [[ $tls_key_path = "" ]]
+elif [[ $oauth_client_secret = "" ]]
 then
   printf $clear_screen;
   printf $bg_yellow;
@@ -485,6 +485,21 @@ systemctl daemon-reload;
 
 #----------------------------------------------------------------------
 
+# Add values to yap.env configuration file
+
+# Add the FQDN to the YAP configuration file
+string_update_file="/etc/yap/yap.env";
+search_string="<REPLACE_FQDN>";
+replace_string="$FQDN";
+string_update;
+
+# Add the UK VAT registered status to the YAP configuration file
+search_string="<REPLACE_VAT_REGISTERED_STATUS>";
+replace_string="$uk_vat_reg_status";
+string_update;
+
+#----------------------------------------------------------------------
+
 # Download, verify and untar the Asterisk source code
 
 # Change to root directory
@@ -569,7 +584,7 @@ cp /root/yap/alembic/config.ini /root/$asterisk_version/contrib/ast-db-manage/;
 
 # Add the temp MariaDB user password to the Alembic configuration file
 string_update_file="/root/$asterisk_version/contrib/ast-db-manage/config.ini";
-search_string="<REPLACE_TEMP_PASSWORD>";
+search_string="<REPLACE_DB_TEMP_PASSWORD>";
 replace_string="$mariadb_temp_password";
 string_update;
 
@@ -612,14 +627,8 @@ mysql -u root -e "FLUSH PRIVILEGES;";
 
 # Add the YAP MariaDB user password to the YAP configuration file
 string_update_file="/etc/yap/yap.env";
-search_string="<REPLACE_YAP_PASSWORD>";
+search_string="<REPLACE_DB_YAP_PASSWORD>";
 replace_string="$mariadb_yap_password";
-string_update;
-
-# Add the UK VAT registered status to the YAP configuration file
-string_update_file="/etc/yap/yap.env";
-search_string="<REPLACE_VAT_REGISTERED_STATUS>";
-replace_string="$uk_vat_reg";
 string_update;
 
 # Drop any previous PBX MaraiDB user and create a PBX MaraiDB user for Asterisk
@@ -769,10 +778,52 @@ else
   apt install nginx;
 fi;
 
-# Copy Nginx Configuration files and #change file attributes
+# Copy Nginx Configuration files
 cp /root/yap/nginx/nginx.conf /etc/nginx/nginx.conf;
 rm /root/yap/nginx/conf.d/*;
 cp /root/yap/nginx/conf.d/* /etc/nginx/conf.d/;
+
+# Add the FQDN to the Nginx configuration file
+string_update_file="/etc/nginx/nginx.conf";
+search_string="<FQDN>";
+replace_string="$FQDN";
+string_update;
+
+# Add the public IPv4 address to the Nginx configuration file
+search_string="<PUBLIC_IPV4>";
+replace_string="$public_IPv4";
+string_update;
+
+# Add the public IPv6 address to the Nginx configuration file
+search_string="<PUBLIC_IPV6>";
+replace_string="$public_IPv6";
+string_update;
+
+# Add the TLS certificate path to the nginx_tls.conf configuration file
+string_update_file="/etc/nginx/conf.d/nginx_tls.conf";
+search_string="<REPLACE_TLS_CERT_PATH>";
+replace_string="$tls_cert_path";
+string_update;
+
+# Add the TLS key path to the nginx_tls.conf configuration file
+search_string="<REPLACE_TLS_KEY_PATH>";
+replace_string="$tls_key_path";
+string_update;
+
+# Add the public FQDN to the nginx_yap_ipv4.conf and nginx_yap_ipv6.conf configuration file
+string_update_file="/etc/nginx/conf.d/nginx_yap_ipv4.conf";
+search_string="<FQDN>";
+replace_string="$FQDN";
+string_update;
+string_update_file="/etc/nginx/conf.d/nginx_yap_ipv6.conf";
+string_update;
+
+# Set Nginx to automatically start at boot
+systemctl enable nginx;
+
+#----------------------------------------------------------------------
+
+# Compile, install and setup oath2-proxy
 
 #----------------------------------------------------------------------
 
