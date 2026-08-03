@@ -89,7 +89,7 @@ printf "  $bg_purple $text_bold_white║ - A domain with an A record and/or an A
 printf "  $bg_purple $text_bold_white║   and/or IPv6 address must be known to input in to this install script                                                                    ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║ - A TLS certificate obtained; also the absolute paths for the certficate and key file must be known to input in to this install script    ║ $reset_colour\n";
-printf "  $bg_purple $text_bold_white║   (To retrieve a Let\'s Encrypt certifcate run the lets-encrypt-cert.sh script in /root/yap/bash)                                         ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║   (To retrieve a Let\'s Encrypt certifcate run the lets-encrypt-cert.sh script in /root/yap/bash)                                          ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║ - YAP uses oauth2-proxy to handle authentication via GitHub; also the Github oAuth app client ID, client secret and GitHub org name must  ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║   be known to input in to this install script                                                                                             ║ $reset_colour\n";
