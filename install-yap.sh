@@ -91,8 +91,8 @@ printf "  $bg_purple $text_bold_white║                                        
 printf "  $bg_purple $text_bold_white║ - A TLS certificate obtained; also the absolute paths for the certficate and key file must be known to input in to this install script    ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║   (To retrieve a Let\'s Encrypt certifcate run the lets-encrypt-cert.sh script in /root/yap/bash)                                         ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
-printf "  $bg_purple $text_bold_white║ - YAP uses oauth2-proxy to handle authentication via GitHub; also the Github oAuth app client ID and client secret must be known to input ║ $reset_colour\n";
-printf "  $bg_purple $text_bold_white║   in to this install script                                                                                                               ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║ - YAP uses oauth2-proxy to handle authentication via GitHub; also the Github oAuth app client ID, client secret and GitHub org name must  ║ $reset_colour\n";
+printf "  $bg_purple $text_bold_white║   be known to input in to this install script                                                                                             ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║   (To create a GitHub oAuth app see this guide - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)    ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║                                                                                                                                           ║ $reset_colour\n";
 printf "  $bg_purple $text_bold_white║                                               - TYPE EXIT TO STOP THE YAP INSTALL SCRIPT -                                                ║ $reset_colour\n";
@@ -328,6 +328,26 @@ then
   source ./install-yap.sh;
 fi;
 
+# Enter the GitHub organisation name
+read -p "  Enter the GitHub organisation name: " github_org_name;
+printf "\n";
+if [[ $github_org_name = "exit" ]] || [[ $github_org_name = "Exit" ]] || [[ $github_org_name = "EXIT" ]]
+then
+  exit;
+elif [[ $github_org_name = "" ]]
+then
+  printf $clear_screen;
+  printf $bg_yellow;
+  printf $text_bold_white;
+  printf " ╔══════════════════════════════════════════════╗ \n";
+  printf " ║ The GitHub organisation name cannot be empty ║ \n";
+  printf " ║ Press return to continue                     ║ \n";
+  printf " ╚══════════════════════════════════════════════╝ \n";
+  printf $reset_colour;
+  read -p "";
+  source ./install-yap.sh;
+fi;
+
 #----------------------------------------------------------------------
 
 # Generate strong passwords using the OpenSSL cryptographic libary
@@ -461,15 +481,31 @@ mkdir -p /etc/yap/html-css;
 # Copy YAP configuration file
 cp /root/yap/env/yap.env /etc/yap/yap.env;
 
+# Add the FQDN to the YAP configuration file
+string_update_file="/etc/yap/yap.env";
+search_string="<REPLACE_FQDN>";
+replace_string="$FQDN";
+string_update;
+
+# Add the UK VAT registered status to the YAP configuration file
+search_string="<REPLACE_VAT_REGISTERED_STATUS>";
+replace_string="$uk_vat_reg_status";
+string_update;
+
+# Add the MariaDB password to the YAP configuration file
+search_string="<REPLACE_DB_YAP_PASSWORD>";
+replace_string="$mariadb_yap_password";
+string_update;
+
 # Copy HTML/CSS start and end files
 cp /root/yap/html-css/* /etc/yap/html-css/;
 
-# Change executables file permissions, owner, group and move executables
+# Change executables owner, group, file permissions and move executables
 chown root:yap /root/go/src/yap/yap;
 chmod 050 /root/go/src/yap/yap;
 mv /root/go/src/yap/yap /usr/bin/yap;
 
-# Change YAP file permissions, owner and group
+# Change YAP owner, group and file permissions
 chown -R root:yap /etc/yap;
 chmod 050 /etc/yap;
 chmod 050 /etc/yap/html-css;
@@ -482,21 +518,6 @@ cd /root;
 # Copy Systemd service file and reload the systemd deamon
 cp /root/yap/systemd/yap.service /usr/lib/systemd/system/;
 systemctl daemon-reload;
-
-#----------------------------------------------------------------------
-
-# Add values to yap.env configuration file
-
-# Add the FQDN to the YAP configuration file
-string_update_file="/etc/yap/yap.env";
-search_string="<REPLACE_FQDN>";
-replace_string="$FQDN";
-string_update;
-
-# Add the UK VAT registered status to the YAP configuration file
-search_string="<REPLACE_VAT_REGISTERED_STATUS>";
-replace_string="$uk_vat_reg_status";
-string_update;
 
 #----------------------------------------------------------------------
 
@@ -624,12 +645,6 @@ mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.service_product TO 'yap'@'
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.supplier TO 'yap'@'localhost';";
 mysql -u root -e "GRANT INSERT, UPDATE, DELETE ON yap.sales_tax_rate_lookup TO 'yap'@'localhost';";
 mysql -u root -e "FLUSH PRIVILEGES;";
-
-# Add the YAP MariaDB user password to the YAP configuration file
-string_update_file="/etc/yap/yap.env";
-search_string="<REPLACE_DB_YAP_PASSWORD>";
-replace_string="$mariadb_yap_password";
-string_update;
 
 # Drop any previous PBX MaraiDB user and create a PBX MaraiDB user for Asterisk
 mysql -u root -e "DROP USER IF EXISTS 'pbx'@'localhost';";
@@ -823,7 +838,84 @@ systemctl enable nginx;
 
 #----------------------------------------------------------------------
 
-# Compile, install and setup oath2-proxy
+# Install and setup oauth2-proxy
+
+# Export Go
+export PATH=$PATH:/usr/local/go/bin;
+
+# Get oauth2-proxy from GitHub
+go install github.com/oauth2-proxy/oauth2-proxy/v7@latest;
+
+# Create a system user named oauth2-proxy with no shell, no home directory and lock the account
+useradd -r -s /bin/false oauth2-proxy;
+usermod -L oauth2-proxy;
+
+# Chnage oauth2-proxy owner, group, file permissions and move executable
+chown root:oauth2-proxy /root/go/bin/oauth2-proxy;
+chmod 050 /root/go/bin/oauth2-proxy;
+mv /root/go/bin/oauth2-proxy /usr/bin/oauth2-proxy;
+
+# Make oauth2-proxy configuration directory
+mkdir /etc/oauth2-proxy;
+
+# Copy oauth2-proxy configuration file
+cp /root/yap/oauth2-proxy/oauth2-proxy.cfg /etc/oauth2-proxy/;
+
+# Create a oauth2-proxy authenticated emails file and add the YAP admin email
+touch /etc/oauth2-proxy/email.txt;
+echo $email >> /etc/oauth2-proxy/email.txt;
+
+# Copy YAP logo
+cp /root/yap/image/yap_logo.jpeg /etc/oauth2-proxy/;
+
+# Generate a secure cookie secret
+cookie_secret=`openssl rand -base64 32 | tr -- '+/' '-_'`;
+
+# Add the public FQDN to the oauth2-proxy configuration file
+string_update_file="/etc/oauth2-proxy/oauth2-proxy.conf";
+search_string="<FQDN>";
+replace_string="$FQDN";
+string_update;
+
+# Add the oauth client ID to the oauth2-proxy configuration file
+search_string="<REPLACE_OAUTH_CLIENT_ID>";
+replace_string="$oauth_client_id";
+string_update;
+
+# Add the client secret to the oauth2-proxy configuration file
+search_string="<REPLACE_OAUTH_CLIENT_SECRET>";
+replace_string="$oauth_client_secret";
+string_update;
+
+# Add the GitHub organisation name to the oauth2-proxy configuration file
+search_string="<REPLACE_GITHUB_ORG_NAME>";
+replace_string="$github_org_name";
+string_update;
+
+# Add the generated cookie secret to the oauth2-proxy configuration file
+search_string="<REPLACE_COOKIE_SECRET>";
+replace_string="$cookie_secret";
+string_update;
+
+# Change oauth2-proxy owner, group and file permissions
+chown -R root:oauth2-proxy /etc/oauth2-proxy;
+chmod 050 /etc/oauth2-proxy;
+chmod 040 /etc/oauth2-proxy/*;
+
+# Copy oauth2-proxy systemd service file
+cp /root/yap/systemd/oauth2-proxy.service /usr/lib/systemd/system/;
+
+# Reload the systemd manager configuration:
+systemctl daemon-reload;
+
+# Enable oauth2-proxy on boot
+systemctl enable oauth2-proxy;
+
+# Start Nginx
+systemctl start nginx;
+
+# Start oauth2-proxy
+systemctl start oauth2-proxy;
 
 #----------------------------------------------------------------------
 
