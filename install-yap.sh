@@ -152,7 +152,7 @@ then
 fi;
 
 # UK VAT registered status 
-read -p "  Enter UK VAT registered status, option can be yes/no: " $uk_vat_reg_status;
+read -p "  Enter UK VAT registered status, option can be yes/no: " uk_vat_reg_status;
 printf "\n";
 if [[ $uk_vat_reg_status = "exit" ]] || [[ $uk_vat_reg_status = "Exit" ]] || [[ $uk_vat_reg_status = "EXIT" ]]
 then
