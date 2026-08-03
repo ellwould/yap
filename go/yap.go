@@ -973,7 +973,7 @@ func newAuthService(accountingSoftware accountingSoftwareParameter) *authService
 		config: &oauth2.Config{
 			ClientID:     accountingSoftware.apiClientID,
 			ClientSecret: accountingSoftware.apiClientSecret,
-			RedirectURL:  accountingSoftware.yapPublicURL + "/callback",
+			RedirectURL:  accountingSoftware.yapPublicURL + "/accounting-software-callback",
 			Scopes:       []string{"read:data"},
 			Endpoint: oauth2.Endpoint{
 				AuthURL:  accountingSoftware.apiURL + "/approve_app",
@@ -10756,7 +10756,7 @@ func main() {
 	})
 
 	// Callback page for accounting software OAuth2
-	go http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+	go http.HandleFunc("/accounting-software-callback", func(w http.ResponseWriter, r *http.Request) {
 
 		// Open database connection
 		dbConnection, err := sql.Open("mysql", dbUsername+":"+dbPassword+"@"+dbTransport+"("+dbAddress+":"+dbPort+")/"+dbName+"?tls="+dbTLS)
