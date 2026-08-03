@@ -872,7 +872,7 @@ cp /root/yap/image/yap_logo.jpeg /etc/oauth2-proxy/;
 cookie_secret=`openssl rand -base64 32 | tr -- '+/' '-_'`;
 
 # Add the public FQDN to the oauth2-proxy configuration file
-string_update_file="/etc/oauth2-proxy/oauth2-proxy.cnf";
+string_update_file="/etc/oauth2-proxy/oauth2-proxy.cfg";
 search_string="<FQDN>";
 replace_string="$FQDN";
 string_update;
