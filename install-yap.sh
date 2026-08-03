@@ -749,7 +749,7 @@ cp /root/yap/odbc/* /etc/;
 
 # Add the PBX MariaDB user password to the ODBC configuration file
 string_update_file="/etc/odbc.ini";
-search_string="<REPLACE_PBX_PASSWORD>";
+search_string="<REPLACE_DB_PBX_PASSWORD>";
 replace_string="$mariadb_pbx_password";
 string_update;
 
