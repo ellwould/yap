@@ -800,17 +800,17 @@ cp /root/yap/nginx/conf.d/* /etc/nginx/conf.d/;
 
 # Add the FQDN to the Nginx configuration file
 string_update_file="/etc/nginx/nginx.conf";
-search_string="<FQDN>";
+search_string="<REPLACE_FQDN>";
 replace_string="$FQDN";
 string_update;
 
 # Add the public IPv4 address to the Nginx configuration file
-search_string="<PUBLIC_IPV4>";
+search_string="<REPLACE_PUBLIC_IPV4>";
 replace_string="$public_IPv4";
 string_update;
 
 # Add the public IPv6 address to the Nginx configuration file
-search_string="<PUBLIC_IPV6>";
+search_string="<REPLACE_PUBLIC_IPV6>";
 replace_string="$public_IPv6";
 string_update;
 
@@ -827,7 +827,7 @@ string_update;
 
 # Add the public FQDN to the nginx_yap_ipv4.conf and nginx_yap_ipv6.conf configuration file
 string_update_file="/etc/nginx/conf.d/nginx_yap_ipv4.conf";
-search_string="<FQDN>";
+search_string="<REPLACE_FQDN>";
 replace_string="$FQDN";
 string_update;
 string_update_file="/etc/nginx/conf.d/nginx_yap_ipv6.conf";
@@ -873,7 +873,7 @@ cookie_secret=`openssl rand -base64 32 | tr -- '+/' '-_'`;
 
 # Add the public FQDN to the oauth2-proxy configuration file
 string_update_file="/etc/oauth2-proxy/oauth2-proxy.cfg";
-search_string="<FQDN>";
+search_string="<REPLACE_FQDN>";
 replace_string="$FQDN";
 string_update;
 
