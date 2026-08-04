@@ -158,7 +158,7 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 <br>
 \*The YAP Admin (100) account with account ID 1 cannot be deleted or edited
 <br>
-\*Only the YAP Admin (100) account with account ID 1 cannot 
+\*Only the YAP Admin (100) account with account ID 1 can connect to the accounting software via OAuth
 
 <br>
 
