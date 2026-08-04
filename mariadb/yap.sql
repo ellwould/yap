@@ -1510,7 +1510,7 @@ VALUES
   </tr>
 </table>'
 ),
-(400, 'Group Invoice (400)',
+(400, 'Customer Invoice (400)',
 '<table>
   <tr>
     <td style="text-align: left; vertical-align: top;">
