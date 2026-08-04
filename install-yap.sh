@@ -4,6 +4,9 @@
 
 #----------------------------------------------------------------------
 
+# Make sure UTF-8 is used for install
+export LANG=C.UTF-8;
+
 # Clear Screen
 clear_screen="\033[H\033[2J";
 
