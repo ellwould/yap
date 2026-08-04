@@ -25,6 +25,8 @@ CREATE TABLE `customer`
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `consumer_type_lookup` (
@@ -46,6 +48,8 @@ CREATE TABLE `customer_invoice_address`
   `contact_number` VARCHAR(20),
 PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `customer_site_address`
@@ -61,6 +65,8 @@ CREATE TABLE `customer_site_address`
   `contact_number` VARCHAR(20),
 PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `pbx`
@@ -72,6 +78,8 @@ CREATE TABLE `pbx`
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
 PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `pbx_site_address`
@@ -87,6 +95,8 @@ CREATE TABLE `pbx_site_address`
   `contact_number` VARCHAR(20),
 PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `user_account`
@@ -102,6 +112,8 @@ CREATE TABLE `user_account`
 UNIQUE (`email`),
 PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `user_account_type`
@@ -111,6 +123,8 @@ CREATE TABLE `user_account_type`
   `permission` VARCHAR(5100) NOT NULL,
 PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `invoice_item` (
@@ -129,18 +143,24 @@ CREATE TABLE `invoice_item` (
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
   
 CREATE TABLE `sales_tax_rate_lookup` (
   `sales_tax_rate` DECIMAL(5,2),
   PRIMARY KEY(`sales_tax_rate`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
   
 CREATE TABLE `sales_tax_status_lookup` (
   `sales_tax_status` VARCHAR(255),
   PRIMARY KEY(`sales_tax_status`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `service_product` (
@@ -153,12 +173,16 @@ CREATE TABLE `service_product` (
   UNIQUE (`name`),
   PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `service_product_type_lookup` (
   `service_product_type` VARCHAR(255),
   PRIMARY KEY(`service_product_type`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `supplier` (
@@ -166,12 +190,16 @@ CREATE TABLE `supplier` (
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`name`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `contract_length_lookup` (
   `contract_length` VARCHAR(255),
   PRIMARY KEY(`contract_length`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `billing_run_log` (
@@ -182,6 +210,8 @@ CREATE TABLE `billing_run_log` (
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`id`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 CREATE TABLE `accounting_software` (
@@ -189,6 +219,8 @@ CREATE TABLE `accounting_software` (
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
   PRIMARY KEY(`refresh_token`)
 )
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 ----------------------------------------------------------------------------------------------------
