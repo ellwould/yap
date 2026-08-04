@@ -771,7 +771,7 @@ VALUES
     <td style="text-align: left; vertical-align: top;">
       &#9989 View Own User Account<br>
       &#9989* Update Own User Account<br>
-      &#9989* Delete Own User Account<br>
+      &#9989** Delete Own User Account<br>
     </td>
   </tr>
   <tr>
@@ -824,10 +824,10 @@ VALUES
       &#9989 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      *Only the YAP Admin (100) account with account ID 1<br>
-       can create and delete other YAP Admin (100) accounts<br>
-      **The YAP Admin (100) account with account ID 1<br>
-       cannot be deleted or edited<br>
+      *Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Create and Delete Other YAP Admin (100) Accounts<br>
+      **The YAP Admin (100) Account With Account ID 1<br>
+      Cannot Be Deleted or Edited<br>
     </td>
   </tr>
   <tr>
@@ -892,9 +892,9 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#9989*** Connect to the Accounting Software<br>
-      &#9989 Use the Accounting software API<br>
-      ***Only the YAP Admin (100) account with account ID 1<br>
-      can connect to the Accounting Software<br>
+      &#9989 Use the Accounting Software API<br>
+      ***Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Connect to the Accounting Software<br>
     </td>
   </tr>
 </table>'
@@ -964,10 +964,10 @@ VALUES
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      *Only the YAP Admin (100) account with account ID 1<br>
-      can create and delete other YAP Admin (100) accounts<br>
-      **The YAP Admin (100) account with account ID 1<br>
-      cannot be deleted or edited<br>
+      *Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Create and Delete Other YAP Admin (100) Accounts<br>
+      **The YAP Admin (100) Account With Account ID 1<br>
+      Cannot Be Deleted or Edited<br>
     </td>
   </tr>
   <tr>
@@ -1032,9 +1032,9 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060*** Connect to the Accounting Software<br>
-      &#10060 Use the Accounting software API<br>
-      ***Only the YAP Admin (100) account with account ID 1<br>
-      can connect to the Accounting Software<br>
+      &#10060 Use the Accounting Software API<br>
+      ***Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Connect to the Accounting Software<br>
     </td>
   </tr>
 </table>'
@@ -1104,10 +1104,10 @@ VALUES
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      *Only the YAP Admin (100) account with account ID 1<br>
-       can create and delete other YAP Admin (100) accounts<br>
-      **The YAP Admin (100) account with account ID 1<br>
-       cannot be deleted or edited<br>
+      *Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Create and Delete Other YAP Admin (100) Accounts<br>
+      **The YAP Admin (100) Account With Account ID 1<br>
+      Cannot Be Deleted or Edited<br>
     </td>
   </tr>
   <tr>
@@ -1172,9 +1172,9 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060*** Connect to the Accounting Software<br>
-      &#10060 Use the Accounting software API<br>
-      ***Only the YAP Admin (100) account with account ID 1<br>
-      can connect to the Accounting Software<br>
+      &#10060 Use the Accounting Software API<br>
+      ***Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Connect to the Accounting Software<br>
     </td>
   </tr>
 </table>'
@@ -1244,10 +1244,10 @@ VALUES
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      *Only the YAP Admin (100) account with account ID 1<br>
-       can create and delete other YAP Admin (100) accounts<br>
-      **The YAP Admin (100) account with account ID 1<br>
-       cannot be deleted or edited<br>
+      *Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Create and Delete Other YAP Admin (100) Accounts<br>
+      **The YAP Admin (100) Account With Account ID 1<br>
+      Cannot Be Deleted or Edited<br>
     </td>
   </tr>
   <tr>
@@ -1312,9 +1312,9 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060*** Connect to the Accounting Software<br>
-      &#10060 Use the Accounting software API<br>
-      ***Only the YAP Admin (100) account with account ID 1<br>
-      can connect to the Accounting Software<br>
+      &#10060 Use the Accounting Software API<br>
+      ***Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Connect to the Accounting Software<br>
     </td>
   </tr>
 </table>'
@@ -1384,10 +1384,10 @@ VALUES
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      *Only the YAP Admin (100) account with account ID 1<br>
-       can create and delete other YAP Admin (100) accounts<br>
-      **The YAP Admin (100) account with account ID 1<br>
-       cannot be deleted or edited<br>
+      *Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Create and Delete Other YAP Admin (100) Accounts<br>
+      **The YAP Admin (100) Account With Account ID 1<br>
+      Cannot Be Deleted or Edited<br>
     </td>
   </tr>
   <tr>
@@ -1452,9 +1452,9 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060*** Connect to the Accounting Software<br>
-      &#10060 Use the Accounting software API<br>
-      ***Only the YAP Admin (100) account with account ID 1<br>
-      can connect to the Accounting Software<br>
+      &#10060 Use the Accounting Software API<br>
+      ***Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Connect to the Accounting Software<br>
     </td>
   </tr>
 </table>'
@@ -1524,10 +1524,10 @@ VALUES
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      *Only the YAP Admin (100) account with account ID 1<br>
-       can create and delete other YAP Admin (100) accounts<br>
-      **The YAP Admin (100) account with account ID 1<br>
-       cannot be deleted or edited<br>
+      *Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Create and Delete Other YAP Admin (100) Accounts<br>
+      **The YAP Admin (100) Account With Account ID 1<br>
+      Cannot Be Deleted or Edited<br>
     </td>
   </tr>
   <tr>
@@ -1592,9 +1592,9 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060*** Connect to the Accounting Software<br>
-      &#10060 Use the Accounting software API<br>
-      ***Only the YAP Admin (100) account with account ID 1<br>
-      can connect to the Accounting Software<br>
+      &#10060 Use the Accounting Software API<br>
+      ***Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Connect to the Accounting Software<br>
     </td>
   </tr>
 </table>'
@@ -1664,10 +1664,10 @@ VALUES
       &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      *Only the YAP Admin (100) account with account ID 1<br>
-       can create and delete other YAP Admin (100) accounts<br>
-      **The YAP Admin (100) account with account ID 1<br>
-       cannot be deleted or edited<br>
+      *Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Create and Delete Other YAP Admin (100) Accounts<br>
+      **The YAP Admin (100) Account With Account ID 1<br>
+      Cannot Be Deleted or Edited<br>
     </td>
   </tr>
   <tr>
@@ -1732,9 +1732,9 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060*** Connect to the Accounting Software<br>
-      &#10060 Use the Accounting software API<br>
-      ***Only the YAP Admin (100) account with account ID 1<br>
-      can connect to the Accounting Software<br>
+      &#10060 Use the Accounting Software API<br>
+      ***Only the YAP Admin (100) Account With Account ID 1<br>
+      Can Connect to the Accounting Software<br>
     </td>
   </tr>
 </table>'
