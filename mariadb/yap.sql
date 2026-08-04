@@ -972,7 +972,7 @@ VALUES
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9940 View Own Customer<br>
+      &#9989 View Own Customer<br>
       &#10060 Update Own Customer<br>
       &#10060 Delete Own Customer<br>
     </td>
@@ -1004,7 +1004,7 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060 Create a Customer Invoice<br>
-      &#10060 View a Customer Invoice<br>
+      &#9989 View a Customer Invoice<br>
       &#10060 Update a Customer Invoice<br>
       &#10060 Delete a Customer Invoice<br>
     </td>
@@ -1077,7 +1077,7 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060 Create a PBX Admin (300) User Account<br>
-      &#10060 View a PBX Admin (300) User Account<br>
+      &#9989 View a PBX Admin (300) User Account<br>
       &#10060 Update a PBX Admin (300) User Account<br>
       &#10060 Delete a PBX Admin (300) User Account<br>
     </td>
@@ -1085,13 +1085,13 @@ VALUES
   <tr>
     <td style="text-align: left; vertical-align: top;">
       &#10060 Create a PBX Regular (301) User Account<br>
-      &#10060 View a PBX Regular (301) User Account<br>
+      &#9989 View a PBX Regular (301) User Account<br>
       &#10060 Update a PBX Regular (301) User Account<br>
       &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060 Create a PBX Read Only (302) User Account<br>
-      &#10060 View a PBX Read Only (302) User Account<br>
+      &#9989 View a PBX Read Only (302) User Account<br>
       &#10060 Update a PBX Read Only (302) User Account<br>
       &#10060 Delete a PBX Read Only (302) User Account<br>
     </td>
@@ -1112,7 +1112,7 @@ VALUES
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9940 View Own Customer<br>
+      &#9989 View Own Customer<br>
       &#10060 Update Own Customer<br>
       &#10060 Delete Own Customer<br>
     </td>
@@ -1549,10 +1549,10 @@ VALUES
       &#10060 Delete Own PBX<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX<br>
+      &#10060 Create a PBX<br>
       &#9989 View a PBX<br>
-      &#9989 Update a PBX<br>
-      &#9989 Delete a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
     </td>
   </tr>
   <tr>
@@ -1672,7 +1672,7 @@ VALUES
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9940 View Own Customer<br>
+      &#9989 View Own Customer<br>
       &#10060 Update Own Customer<br>
       &#10060 Delete Own Customer<br>
     </td>
