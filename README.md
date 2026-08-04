@@ -25,9 +25,20 @@
 # YAP (Yet Another PBX) :telephone_receiver:
 YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, automatically creates invoices and connects to 3rd party accountancy software to send invoices. YAP is written in Go and uses the Asterisk framework.
 
+(Tested with Ubuntu version 24.04.3 and Asterisk certified version 20.7-cert8)
+
 <br>
 
-(Tested with Ubuntu version 24.04.3 and Asterisk certified version 20.7-cert8)
+# Demo Sites:
+- Demo logged in as a YAP Admin (100) account - https://yap.ell.today/yap
+
+<br>
+
+- Demo logged in as a YAP Customer Admin (200) account - https://yap200.ell.today/yap
+
+<br>
+
+- Demo logged in as a YAP PBX Admin (300) account - https://yap300.ell.today/yap
 
 <br>
 <!--
@@ -49,7 +60,8 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 
 <br>
 -->
-## User Account Permissions :heavy_check_mark: ( ✅ = Allowed | ❌ = Prohibited | ⛔ = Not Applicable )
+
+## YAP User Account Permissions :heavy_check_mark: ( ✅ = Allowed | ❌ = Prohibited | ⛔ = Not Applicable )
 
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |  Customer Invoice (400) |
 |-------------------------------------------------|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
