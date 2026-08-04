@@ -23,32 +23,32 @@
 <br>
 
 # YAP (Yet Another PBX) :telephone_receiver:
-A GUI to administrate a multi-tenanted SIP Server, YAP is written in Go and uses the Asterisk framework.
+YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, automatically creates invoices and connects to 3rd party accountancy software to send invoices. YAP is written in Go and uses the Asterisk framework.
 
 <br>
 
 (Tested with Ubuntu version 24.04.3 and Asterisk certified version 20.7-cert8)
 
 <br>
-
+<!--
 ## Main Menu (logged in as a YAP Admin):
 
 <br>
 
-![YAP (Yet Another PBX) Main Menu 1](https://github.com/ellwould/yap/blob/main/image/main_menu_1.jpeg)
+![YAP (Yet Another PBX) Main Menu 1]()
 
-![YAP (Yet Another PBX) Main Menu 2](https://github.com/ellwould/yap/blob/main/image/main_menu_2.jpeg)
+![YAP (Yet Another PBX) Main Menu 2]()
 
 <br>
 
 **Show/hide more account details button pressed:**
 
-![YAP (Yet Another PBX) Main Menu Permissions_1](https://github.com/ellwould/yap/blob/main/image/permissions_1.jpeg)
+![YAP (Yet Another PBX) Main Menu Permissions_1]()
 
-![YAP (Yet Another PBX) Main Menu Permissions_2](https://github.com/ellwould/yap/blob/main/image/permissions_2.jpeg)
+![YAP (Yet Another PBX) Main Menu Permissions_2]()
 
 <br>
-
+-->
 ## User Account Permissions :heavy_check_mark: ( ✅ = Allowed | ❌ = Prohibited | ⛔ = Not Applicable )
 
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) |  Customer Invoice (400) |
