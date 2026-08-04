@@ -5424,7 +5424,10 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			dbDetail.columnWhereValue = addPBXSelectCustomerID
 			pbxCount = totalTableCountWhere(dbDetail)
 
-			if pbxCount >= pbxMaxLimit {
+			pbxMaxLimitInt := stringToInt(pbxMaxLimit)
+            pbxCountInt := stringToInt(pbxCount)
+
+            if pbxCountInt >= pbxMaxLimitInt {
 				messageHTML(w, validationMessagePBXMaxPBX, "warning")
 			} else {
 
