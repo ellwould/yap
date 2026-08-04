@@ -1550,7 +1550,7 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#10060 Create a PBX<br>
-      &#9989 View a PBX<br>
+      &#10060 View a PBX<br>
       &#10060 Update a PBX<br>
       &#10060 Delete a PBX<br>
     </td>
