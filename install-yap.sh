@@ -463,6 +463,7 @@ mkdir -p /root/go/{bin,pkg,src/yap};
 cp /root/yap/go/yap.go /root/go/src/yap/yap.go;
 
 # Export Go
+export GOPATH=/root/go;
 export PATH=$PATH:/usr/local/go/bin;
 
 # Remove old go.mod and create a Go mod file for YAP
@@ -841,6 +842,7 @@ systemctl enable nginx;
 # Install and setup oauth2-proxy
 
 # Export Go
+export GOPATH=/root/go;
 export PATH=$PATH:/usr/local/go/bin;
 
 # Get oauth2-proxy from GitHub
