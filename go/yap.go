@@ -2551,7 +2551,7 @@ func userAccountList(w http.ResponseWriter, dbDetail databaseFunctionParameter, 
 				whereClause = "WHERE customer_id = ? AND pbx_id != ?;"
 				userPBXID = "0"
 			} else if genDetail.userTypeID == "201" {
-				whereClause = "WHERE customer_id = ? AND pbx_id != ? AND user_account_type_id != 200;"
+				whereClause = "WHERE customer_id = ? AND pbx_id != ? AND user_account_type_id != 200 AND user_account_type_id != 400;"
 				userPBXID = "0"
 			} else if genDetail.userTypeID == "300" {
 				whereClause = "WHERE customer_id = ? AND pbx_id = ?;"
