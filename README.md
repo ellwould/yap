@@ -67,12 +67,12 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 |-------------------------------------------------|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | View Own User Account                           | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Update Own User Account                         | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Delete Own User Account                         | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Delete Own User Account                         | ✅\** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a YAP Admin<br>(100) User Account        | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View a YAP Admin<br>(100) User Account          | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Update a YAP Admin (100)                        | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Delete a YAP Admin (100)                        | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Delete a YAP Admin (100)                        | ✅\** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
 | Create a Customer Admin (200)                   | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | View a Customer Admin (200)                     | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -147,7 +147,7 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 | Update a Sales Tax Rate                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Delete a Sales Tax Rate                         | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |  | YAP Admin (100) | Customer Admin (200) | Customer Regular (201) | PBX Admin (300) | PBX Regular (301) | PBX Read Only (302) | Customer Invoice (400) |
-| Connect to the Accounting Software              | ✅\* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Connect to the Accounting Software              | ✅\*** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Send Invoices                                   | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Update a Single Customer Details                | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Update All Customer Details                     | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -156,9 +156,9 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 
 \*Only the YAP Admin (100) account with account ID 1 can create and delete other YAP Admin (100) accounts
 <br>
-\*The YAP Admin (100) account with account ID 1 cannot be deleted or edited
+\**The YAP Admin (100) account with account ID 1 cannot be deleted
 <br>
-\*Only the YAP Admin (100) account with account ID 1 can connect to the accounting software via OAuth
+\***Only the YAP Admin (100) account with account ID 1 can connect to the accounting software
 
 <br>
 
