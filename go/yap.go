@@ -165,6 +165,15 @@ func stringToFloat64(valueString string) float64 {
 	return valueFloat64
 }
 
+// Function to convert a string to an Integer
+func stringToInt(valueString string) int {
+        valueInt, err := strconv.Atoi(valueString)
+        if err != nil {
+                log.Fatal(err)
+        }
+        return valueInt
+}
+
 // Function to generate a unique ID using Sonyflake
 func genID() (uniqueID string) {
 	// Sonyflake custom setting
@@ -6875,7 +6884,10 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			dbDetail.columnWhereValue = addExtSelectPBXID
 			extCount = totalTableCountWhere(dbDetail)
 
-			if extCount >= extMaxLimit {
+			extMaxLimitInt := stringToInt(extMaxLimit)
+            extCountInt := stringToInt(extCount)
+
+            if extCountInt >= extMaxLimitInt {
 				messageHTML(w, validationMessageExtMaxExt, "warning")
 			} else {
 
