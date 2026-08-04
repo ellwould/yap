@@ -1190,58 +1190,58 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#9989 View Own User Account<br>
-      &#9989* Update Own User Account<br>
-      &#9989* Delete Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989* Create a YAP Admin (100) User Account<br>
-      &#9989* View a YAP Admin (100) User Account<br>
-      &#9989* Update a YAP Admin (100) User Account<br>
-      &#9989** Delete a YAP Admin (100) User Account<br>
+      &#10060* Create a YAP Admin (100) User Account<br>
+      &#10060* View a YAP Admin (100) User Account<br>
+      &#10060* Update a YAP Admin (100) User Account<br>
+      &#10060** Delete a YAP Admin (100) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Admin (200) User Account<br>
-      &#9989 View a Customer Admin (200) User Account<br>
-      &#9989 Update a Customer Admin (200) User Account<br>
-      &#9989 Delete a Customer Admin (200) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Regular (201) User Account<br>
-      &#9989 View a Customer Regular (201) User Account<br>
-      &#9989 Update a Customer Regular (201) User Account<br>
-      &#9989 Delete a Customer Regular (201) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Admin (300) User Account<br>
+      &#10060 Create a PBX Admin (300) User Account<br>
       &#9989 View a PBX Admin (300) User Account<br>
-      &#9989 Update a PBX Admin (300) User Account<br>
-      &#9989 Delete a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Regular (301) User Account<br>
+      &#10060 Create a PBX Regular (301) User Account<br>
       &#9989 View a PBX Regular (301) User Account<br>
-      &#9989 Update a PBX Regular (301) User Account<br>
-      &#9989 Delete a PBX Regular (301) User Account<br>
+      &#10060 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Read Only (302) User Account<br>
+      &#10060 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
-      &#9989 Update a PBX Read Only (302) User Account<br>
-      &#9989 Delete a PBX Read Only (302) User Account<br>
+      &#10060 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice (400) User Account<br>
-      &#9989 View a Customer Invoice (400) User Account<br>
-      &#9989 Update a Customer Invoice (400) User Account<br>
-      &#9989 Delete a Customer Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
       *Only the YAP Admin (100) account with account ID 1<br>
@@ -1257,22 +1257,22 @@ VALUES
       &#9940 Delete Own Customer<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer<br>
-      &#9989 View a Customer<br>
-      &#9989 Update a Customer<br>
-      &#9989 Delete a Customer<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9940 View Own PBX<br>
-      &#9940 Update Own PBX<br>
-      &#9940 Delete Own PBX<br>
+      &#9989 View Own PBX<br>
+      &#10060 Update Own PBX<br>
+      &#10060 Delete Own PBX<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX<br>
-      &#9989 View a PBX<br>
-      &#9989 Update a PBX<br>
-      &#9989 Delete a PBX<br>
+      &#10060 Create a PBX<br>
+      &#10060 View a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
     </td>
   </tr>
   <tr>
@@ -1283,36 +1283,36 @@ VALUES
       &#9989 Delete a SIP Extension<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice<br>
-      &#9989 View a Customer Invoice<br>
-      &#9989 Update a Customer Invoice<br>
-      &#9989 Delete a Customer Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#10060 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Service/Product<br>
-      &#9989 View a Service/Product<br>
-      &#9989 Update a Service/Product<br>
-      &#9989 Delete a Service/Product<br>
+      &#10060 Create a Service/Product<br>
+      &#10060 View a Service/Product<br>
+      &#10060 Update a Service/Product<br>
+      &#10060 Delete a Service/Product<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Supplier<br>
-      &#9989 View a Supplier<br>
-      &#9989 Update a Supplier<br>
-      &#9989 Delete a Supplier<br>
+      &#10060 Create a Supplier<br>
+      &#10060 View a Supplier<br>
+      &#10060 Update a Supplier<br>
+      &#10060 Delete a Supplier<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Sales Tax Rate<br>
-      &#9989 View a Sales Tax Rate<br>
-      &#9989 Update a Sales Tax Rate<br>
-      &#9989 Delete a Sales Tax Rate<br>
+      &#10060 Create a Sales Tax Rate<br>
+      &#10060 View a Sales Tax Rate<br>
+      &#10060 Update a Sales Tax Rate<br>
+      &#10060 Delete a Sales Tax Rate<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989*** Connect to the Accounting Software<br>
-      &#9989 Use the Accounting software API<br>
+      &#10060*** Connect to the Accounting Software<br>
+      &#10060 Use the Accounting software API<br>
       ***Only the YAP Admin (100) account with account ID 1<br>
       can connect to the Accounting Software<br>
     </td>
@@ -1330,58 +1330,58 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#9989 View Own User Account<br>
-      &#9989* Update Own User Account<br>
-      &#9989* Delete Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989* Create a YAP Admin (100) User Account<br>
-      &#9989* View a YAP Admin (100) User Account<br>
-      &#9989* Update a YAP Admin (100) User Account<br>
-      &#9989** Delete a YAP Admin (100) User Account<br>
+      &#10060* Create a YAP Admin (100) User Account<br>
+      &#10060* View a YAP Admin (100) User Account<br>
+      &#10060* Update a YAP Admin (100) User Account<br>
+      &#10060** Delete a YAP Admin (100) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Admin (200) User Account<br>
-      &#9989 View a Customer Admin (200) User Account<br>
-      &#9989 Update a Customer Admin (200) User Account<br>
-      &#9989 Delete a Customer Admin (200) User Account<br>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Regular (201) User Account<br>
-      &#9989 View a Customer Regular (201) User Account<br>
-      &#9989 Update a Customer Regular (201) User Account<br>
-      &#9989 Delete a Customer Regular (201) User Account<br>
-    </td>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Admin (300) User Account<br>
-      &#9989 View a PBX Admin (300) User Account<br>
-      &#9989 Update a PBX Admin (300) User Account<br>
-      &#9989 Delete a PBX Admin (300) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Regular (301) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
+    </td>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#10060 View a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060 Create a PBX Regular (301) User Account<br>
       &#9989 View a PBX Regular (301) User Account<br>
-      &#9989 Update a PBX Regular (301) User Account<br>
-      &#9989 Delete a PBX Regular (301) User Account<br>
+      &#10060 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Read Only (302) User Account<br>
+      &#10060 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
-      &#9989 Update a PBX Read Only (302) User Account<br>
-      &#9989 Delete a PBX Read Only (302) User Account<br>
+      &#10060 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice (400) User Account<br>
-      &#9989 View a Customer Invoice (400) User Account<br>
-      &#9989 Update a Customer Invoice (400) User Account<br>
-      &#9989 Delete a Customer Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
       *Only the YAP Admin (100) account with account ID 1<br>
@@ -1397,22 +1397,22 @@ VALUES
       &#9940 Delete Own Customer<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer<br>
-      &#9989 View a Customer<br>
-      &#9989 Update a Customer<br>
-      &#9989 Delete a Customer<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9940 View Own PBX<br>
-      &#9940 Update Own PBX<br>
-      &#9940 Delete Own PBX<br>
+      &#9989 View Own PBX<br>
+      &#10060 Update Own PBX<br>
+      &#10060 Delete Own PBX<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX<br>
-      &#9989 View a PBX<br>
-      &#9989 Update a PBX<br>
-      &#9989 Delete a PBX<br>
+      &#10060 Create a PBX<br>
+      &#10060 View a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
     </td>
   </tr>
   <tr>
@@ -1423,36 +1423,36 @@ VALUES
       &#9989 Delete a SIP Extension<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice<br>
-      &#9989 View a Customer Invoice<br>
-      &#9989 Update a Customer Invoice<br>
-      &#9989 Delete a Customer Invoice<br>
+      &#10060 Create a Customer Invoice<br>
+      &#10060 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Service/Product<br>
-      &#9989 View a Service/Product<br>
-      &#9989 Update a Service/Product<br>
-      &#9989 Delete a Service/Product<br>
+      &#10060 Create a Service/Product<br>
+      &#10060 View a Service/Product<br>
+      &#10060 Update a Service/Product<br>
+      &#10060 Delete a Service/Product<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Supplier<br>
-      &#9989 View a Supplier<br>
-      &#9989 Update a Supplier<br>
-      &#9989 Delete a Supplier<br>
+      &#10060 Create a Supplier<br>
+      &#10060 View a Supplier<br>
+      &#10060 Update a Supplier<br>
+      &#10060 Delete a Supplier<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Sales Tax Rate<br>
-      &#9989 View a Sales Tax Rate<br>
-      &#9989 Update a Sales Tax Rate<br>
-      &#9989 Delete a Sales Tax Rate<br>
+      &#10060 Create a Sales Tax Rate<br>
+      &#10060 View a Sales Tax Rate<br>
+      &#10060 Update a Sales Tax Rate<br>
+      &#10060 Delete a Sales Tax Rate<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989*** Connect to the Accounting Software<br>
-      &#9989 Use the Accounting software API<br>
+      &#10060*** Connect to the Accounting Software<br>
+      &#10060 Use the Accounting software API<br>
       ***Only the YAP Admin (100) account with account ID 1<br>
       can connect to the Accounting Software<br>
     </td>
@@ -1470,58 +1470,58 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#9989 View Own User Account<br>
-      &#9989* Update Own User Account<br>
-      &#9989* Delete Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989* Create a YAP Admin (100) User Account<br>
-      &#9989* View a YAP Admin (100) User Account<br>
-      &#9989* Update a YAP Admin (100) User Account<br>
-      &#9989** Delete a YAP Admin (100) User Account<br>
+      &#10060* Create a YAP Admin (100) User Account<br>
+      &#10060* View a YAP Admin (100) User Account<br>
+      &#10060* Update a YAP Admin (100) User Account<br>
+      &#10060** Delete a YAP Admin (100) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Admin (200) User Account<br>
-      &#9989 View a Customer Admin (200) User Account<br>
-      &#9989 Update a Customer Admin (200) User Account<br>
-      &#9989 Delete a Customer Admin (200) User Account<br>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Regular (201) User Account<br>
-      &#9989 View a Customer Regular (201) User Account<br>
-      &#9989 Update a Customer Regular (201) User Account<br>
-      &#9989 Delete a Customer Regular (201) User Account<br>
-    </td>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Admin (300) User Account<br>
-      &#9989 View a PBX Admin (300) User Account<br>
-      &#9989 Update a PBX Admin (300) User Account<br>
-      &#9989 Delete a PBX Admin (300) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Regular (301) User Account<br>
-      &#9989 View a PBX Regular (301) User Account<br>
-      &#9989 Update a PBX Regular (301) User Account<br>
-      &#9989 Delete a PBX Regular (301) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Read Only (302) User Account<br>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#10060 View a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#10060 View a PBX Regular (301) User Account<br>
+      &#10060 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060 Create a PBX Read Only (302) User Account<br>
       &#9989 View a PBX Read Only (302) User Account<br>
-      &#9989 Update a PBX Read Only (302) User Account<br>
-      &#9989 Delete a PBX Read Only (302) User Account<br>
+      &#10060 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice (400) User Account<br>
-      &#9989 View a Customer Invoice (400) User Account<br>
-      &#9989 Update a Customer Invoice (400) User Account<br>
-      &#9989 Delete a Customer Invoice (400) User Account<br>
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
       *Only the YAP Admin (100) account with account ID 1<br>
@@ -1537,16 +1537,16 @@ VALUES
       &#9940 Delete Own Customer<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer<br>
-      &#9989 View a Customer<br>
-      &#9989 Update a Customer<br>
-      &#9989 Delete a Customer<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9940 View Own PBX<br>
-      &#9940 Update Own PBX<br>
-      &#9940 Delete Own PBX<br>
+      &#9989 View Own PBX<br>
+      &#10060 Update Own PBX<br>
+      &#10060 Delete Own PBX<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#9989 Create a PBX<br>
@@ -1557,42 +1557,42 @@ VALUES
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a SIP Extension<br>
+      &#10060 Create a SIP Extension<br>
       &#9989 View a SIP Extension<br>
-      &#9989 Update a SIP Extension<br>
-      &#9989 Delete a SIP Extension<br>
+      &#10060 Update a SIP Extension<br>
+      &#10060 Delete a SIP Extension<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice<br>
-      &#9989 View a Customer Invoice<br>
-      &#9989 Update a Customer Invoice<br>
-      &#9989 Delete a Customer Invoice<br>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Service/Product<br>
-      &#9989 View a Service/Product<br>
-      &#9989 Update a Service/Product<br>
-      &#9989 Delete a Service/Product<br>
-    </td>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Supplier<br>
-      &#9989 View a Supplier<br>
-      &#9989 Update a Supplier<br>
-      &#9989 Delete a Supplier<br>
+      &#10060 Create a Customer Invoice<br>
+      &#10060 View a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Sales Tax Rate<br>
-      &#9989 View a Sales Tax Rate<br>
-      &#9989 Update a Sales Tax Rate<br>
-      &#9989 Delete a Sales Tax Rate<br>
+      &#10060 Create a Service/Product<br>
+      &#10060 View a Service/Product<br>
+      &#10060 Update a Service/Product<br>
+      &#10060 Delete a Service/Product<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989*** Connect to the Accounting Software<br>
-      &#9989 Use the Accounting software API<br>
+      &#10060 Create a Supplier<br>
+      &#10060 View a Supplier<br>
+      &#10060 Update a Supplier<br>
+      &#10060 Delete a Supplier<br>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060 Create a Sales Tax Rate<br>
+      &#10060 View a Sales Tax Rate<br>
+      &#10060 Update a Sales Tax Rate<br>
+      &#10060 Delete a Sales Tax Rate<br>
+    </td>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060*** Connect to the Accounting Software<br>
+      &#10060 Use the Accounting software API<br>
       ***Only the YAP Admin (100) account with account ID 1<br>
       can connect to the Accounting Software<br>
     </td>
@@ -1610,58 +1610,58 @@ VALUES
     </td>
     <td style="text-align: left; vertical-align: top;">
       &#9989 View Own User Account<br>
-      &#9989* Update Own User Account<br>
-      &#9989* Delete Own User Account<br>
+      &#10060 Update Own User Account<br>
+      &#10060 Delete Own User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989* Create a YAP Admin (100) User Account<br>
-      &#9989* View a YAP Admin (100) User Account<br>
-      &#9989* Update a YAP Admin (100) User Account<br>
-      &#9989** Delete a YAP Admin (100) User Account<br>
+      &#10060* Create a YAP Admin (100) User Account<br>
+      &#10060* View a YAP Admin (100) User Account<br>
+      &#10060* Update a YAP Admin (100) User Account<br>
+      &#10060** Delete a YAP Admin (100) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Admin (200) User Account<br>
-      &#9989 View a Customer Admin (200) User Account<br>
-      &#9989 Update a Customer Admin (200) User Account<br>
-      &#9989 Delete a Customer Admin (200) User Account<br>
-    </td>
-  </tr>
-  <tr>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Regular (201) User Account<br>
-      &#9989 View a Customer Regular (201) User Account<br>
-      &#9989 Update a Customer Regular (201) User Account<br>
-      &#9989 Delete a Customer Regular (201) User Account<br>
-    </td>
-    <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Admin (300) User Account<br>
-      &#9989 View a PBX Admin (300) User Account<br>
-      &#9989 Update a PBX Admin (300) User Account<br>
-      &#9989 Delete a PBX Admin (300) User Account<br>
+      &#10060 Create a Customer Admin (200) User Account<br>
+      &#10060 View a Customer Admin (200) User Account<br>
+      &#10060 Update a Customer Admin (200) User Account<br>
+      &#10060 Delete a Customer Admin (200) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Regular (301) User Account<br>
-      &#9989 View a PBX Regular (301) User Account<br>
-      &#9989 Update a PBX Regular (301) User Account<br>
-      &#9989 Delete a PBX Regular (301) User Account<br>
+      &#10060 Create a Customer Regular (201) User Account<br>
+      &#10060 View a Customer Regular (201) User Account<br>
+      &#10060 Update a Customer Regular (201) User Account<br>
+      &#10060 Delete a Customer Regular (201) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX Read Only (302) User Account<br>
-      &#9989 View a PBX Read Only (302) User Account<br>
-      &#9989 Update a PBX Read Only (302) User Account<br>
-      &#9989 Delete a PBX Read Only (302) User Account<br>
+      &#10060 Create a PBX Admin (300) User Account<br>
+      &#10060 View a PBX Admin (300) User Account<br>
+      &#10060 Update a PBX Admin (300) User Account<br>
+      &#10060 Delete a PBX Admin (300) User Account<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice (400) User Account<br>
-      &#9989 View a Customer Invoice (400) User Account<br>
-      &#9989 Update a Customer Invoice (400) User Account<br>
-      &#9989 Delete a Customer Invoice (400) User Account<br>
+      &#10060 Create a PBX Regular (301) User Account<br>
+      &#10060 View a PBX Regular (301) User Account<br>
+      &#10060 Update a PBX Regular (301) User Account<br>
+      &#10060 Delete a PBX Regular (301) User Account<br>
+    </td>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060 Create a PBX Read Only (302) User Account<br>
+      &#10060 View a PBX Read Only (302) User Account<br>
+      &#10060 Update a PBX Read Only (302) User Account<br>
+      &#10060 Delete a PBX Read Only (302) User Account<br>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: left; vertical-align: top;">
+      &#10060 Create a Customer Invoice (400) User Account<br>
+      &#10060 View a Customer Invoice (400) User Account<br>
+      &#10060 Update a Customer Invoice (400) User Account<br>
+      &#10060 Delete a Customer Invoice (400) User Account<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
       *Only the YAP Admin (100) account with account ID 1<br>
@@ -1673,14 +1673,14 @@ VALUES
   <tr>
     <td style="text-align: left; vertical-align: top;">
       &#9940 View Own Customer<br>
-      &#9940 Update Own Customer<br>
-      &#9940 Delete Own Customer<br>
+      &#10060 Update Own Customer<br>
+      &#10060 Delete Own Customer<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer<br>
-      &#9989 View a Customer<br>
-      &#9989 Update a Customer<br>
-      &#9989 Delete a Customer<br>
+      &#10060 Create a Customer<br>
+      &#10060 View a Customer<br>
+      &#10060 Update a Customer<br>
+      &#10060 Delete a Customer<br>
     </td>
   <tr>
     <td style="text-align: left; vertical-align: top;">
@@ -1689,50 +1689,50 @@ VALUES
       &#9940 Delete Own PBX<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a PBX<br>
-      &#9989 View a PBX<br>
-      &#9989 Update a PBX<br>
-      &#9989 Delete a PBX<br>
+      &#10060 Create a PBX<br>
+      &#10060 View a PBX<br>
+      &#10060 Update a PBX<br>
+      &#10060 Delete a PBX<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a SIP Extension<br>
-      &#9989 View a SIP Extension<br>
-      &#9989 Update a SIP Extension<br>
-      &#9989 Delete a SIP Extension<br>
+      &#10060 Create a SIP Extension<br>
+      &#10060 View a SIP Extension<br>
+      &#10060 Update a SIP Extension<br>
+      &#10060 Delete a SIP Extension<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Customer Invoice<br>
+      &#10060 Create a Customer Invoice<br>
       &#9989 View a Customer Invoice<br>
-      &#9989 Update a Customer Invoice<br>
-      &#9989 Delete a Customer Invoice<br>
+      &#10060 Update a Customer Invoice<br>
+      &#10060 Delete a Customer Invoice<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Service/Product<br>
-      &#9989 View a Service/Product<br>
-      &#9989 Update a Service/Product<br>
-      &#9989 Delete a Service/Product<br>
+      &#10060 Create a Service/Product<br>
+      &#10060 View a Service/Product<br>
+      &#10060 Update a Service/Product<br>
+      &#10060 Delete a Service/Product<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Supplier<br>
-      &#9989 View a Supplier<br>
-      &#9989 Update a Supplier<br>
-      &#9989 Delete a Supplier<br>
+      &#10060 Create a Supplier<br>
+      &#10060 View a Supplier<br>
+      &#10060 Update a Supplier<br>
+      &#10060 Delete a Supplier<br>
     </td>
   </tr>
   <tr>
     <td style="text-align: left; vertical-align: top;">
-      &#9989 Create a Sales Tax Rate<br>
-      &#9989 View a Sales Tax Rate<br>
-      &#9989 Update a Sales Tax Rate<br>
-      &#9989 Delete a Sales Tax Rate<br>
+      &#10060 Create a Sales Tax Rate<br>
+      &#10060 View a Sales Tax Rate<br>
+      &#10060 Update a Sales Tax Rate<br>
+      &#10060 Delete a Sales Tax Rate<br>
     </td>
     <td style="text-align: left; vertical-align: top;">
-      &#9989*** Connect to the Accounting Software<br>
-      &#9989 Use the Accounting software API<br>
+      &#10060*** Connect to the Accounting Software<br>
+      &#10060 Use the Accounting software API<br>
       ***Only the YAP Admin (100) account with account ID 1<br>
       can connect to the Accounting Software<br>
     </td>
