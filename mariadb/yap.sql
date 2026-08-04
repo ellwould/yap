@@ -108,7 +108,7 @@ CREATE TABLE `user_account_type`
 (
   `id` SMALLINT UNSIGNED NOT NULL,
   `type` VARCHAR(255) NOT NULL,
-  `permission` VARCHAR(4600) NOT NULL,
+  `permission` VARCHAR(5100) NOT NULL,
 PRIMARY KEY(`id`)
 )
 ENGINE = InnoDB;
