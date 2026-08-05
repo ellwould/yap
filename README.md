@@ -41,25 +41,60 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 - Demo logged in as a YAP PBX Admin (300) account - https://yap300.ell.today/yap
 
 <br>
-<!--
-## Main Menu (logged in as a YAP Admin):
+
+## Main Menu Page (Logged in as a YAP Admin):
+
+![YAP (Yet Another PBX) Main Menu Page](https://github.com/ellwould/yap/blob/main/image/yap_main_menu.jpeg)
 
 <br>
 
-![YAP (Yet Another PBX) Main Menu 1]()
+## Customer Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) Main Menu 2]()
+![YAP (Yet Another PBX) Customer Page 1](https://github.com/ellwould/yap/blob/main/image/customer_page_1.jpeg)
+
+
+![YAP (Yet Another PBX) Customer Page 3](https://github.com/ellwould/yap/blob/main/image/customer_page_3.jpeg)
+
+
+![YAP (Yet Another PBX) Customer Page 4](https://github.com/ellwould/yap/blob/main/image/customer_page_4.jpeg)
+
+<br>
+
+## PBX Page (Logged in as a YAP Admin):
+
+![YAP (Yet Another PBX) PBX Page 1](https://github.com/ellwould/yap/blob/main/image/pbx_page_1.jpeg)
+
+![YAP (Yet Another PBX) PBX Page 2](https://github.com/ellwould/yap/blob/main/image/pbx_page_2.jpeg)
 
 <br>
 
-**Show/hide more account details button pressed:**
+## Extension Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) Main Menu Permissions_1]()
+![YAP (Yet Another PBX) Ext Page 1](https://github.com/ellwould/yap/blob/main/image/ext_page_1.jpeg)
 
-![YAP (Yet Another PBX) Main Menu Permissions_2]()
+![YAP (Yet Another PBX) Ext Page 2](https://github.com/ellwould/yap/blob/main/image/ext_page_2.jpeg)
 
 <br>
--->
+
+## Invoice Page (Logged in as a YAP Admin): 
+
+![YAP (Yet Another PBX) Invoice Page 1](https://github.com/ellwould/yap/blob/main/image/invoice_page_1.jpeg)
+
+![YAP (Yet Another PBX) Invoice Page 2](https://github.com/ellwould/yap/blob/main/image/invoice_page_2.jpeg)
+
+<br>
+
+## Service/Product Page (Logged in as a YAP Admin):
+
+![YAP (Yet Another PBX) Service Product Page](https://github.com/ellwould/yap/blob/main/image/service_product_page.jpeg)
+
+<br>
+
+## Accounting Software Page (Logged in as a YAP Admin):
+
+![YAP (Yet Another PBX) Accounting Software Page](https://github.com/ellwould/yap/blob/main/image/accounting_software_page.jpeg)
+
+<br>
 
 ## YAP User Account Permissions :heavy_check_mark: ( ✅ = Allowed | ❌ = Prohibited | ⛔ = Not Applicable )
 
