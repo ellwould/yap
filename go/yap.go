@@ -7086,7 +7086,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					} else {
-						messageHTML(w, validationMessageExtNotCreated, "success")
+						messageHTML(w, validationMessageExtNotCreated, "warning")
 					}
 				}
 			}
