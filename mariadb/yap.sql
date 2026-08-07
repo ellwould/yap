@@ -141,6 +141,7 @@ CREATE TABLE `invoice_item` (
   `contract_length` VARCHAR(255),
   `contract_start_date` DATE,
   `date_time_added` DATETIME DEFAULT NOW() NOT NULL,
+  UNIQUE(tag),
   PRIMARY KEY(`id`)
 )
 CHARACTER SET utf8mb4
