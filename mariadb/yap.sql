@@ -482,7 +482,7 @@ REFERENCES `contract_length_lookup` (`contract_length`);
 
 ----------------------------------------------------------------------------------------------------
 
--- Create View(s)
+-- Create View
 
 CREATE VIEW `view___account_detail` AS
 SELECT
