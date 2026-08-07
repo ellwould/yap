@@ -8336,7 +8336,7 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 				messageHTML(w, validationMessageInvoiceDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?", deleteInvoiceInputInvoiceID, "1")
+				dbDetail.connection.Query("DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;", deleteInvoiceInputInvoiceID, "1")
 
 				checkInvoiceDeleted := selectWhere(dbDetail)
 
