@@ -64,11 +64,11 @@ then
   printf $clear_screen;
   printf $bg_red;
   printf $text_bold_white;
-  printf " ╔══════════════════════════════════════════════════════════════════════════════╗ \n";
-  printf " ║ Directory yap does not exist in /root.                                       ║ \n";
-  printf " ║ Please run commands: \"cd /root && git clone https://github.com/ellwould/yap\" ║ \n";
-  printf " ║ and run the install script again.                                            ║ \n";
-  printf " ╚══════════════════════════════════════════════════════════════════════════════╝ \n";
+  printf " ╔═════════════════════════════════════════════════════════════════════════════════════╗ \n";
+  printf " ║ Directory yap does not exist in /root.                                              ║ \n";
+  printf " ║ Please run commands: \"cd /root && git clone https://github.com/yet-another-pbx/yap\" ║ \n";
+  printf " ║ and run the install script again.                                                   ║ \n";
+  printf " ╚═════════════════════════════════════════════════════════════════════════════════════╝ \n";
   printf $reset_colour;
   exit;
 fi;
