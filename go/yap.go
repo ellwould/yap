@@ -167,11 +167,11 @@ func stringToFloat64(valueString string) float64 {
 
 // Function to convert a string to an Integer
 func stringToInt(valueString string) int {
-        valueInt, err := strconv.Atoi(valueString)
-        if err != nil {
-                log.Fatal(err)
-        }
-        return valueInt
+	valueInt, err := strconv.Atoi(valueString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return valueInt
 }
 
 // Function to generate a unique ID using Sonyflake
@@ -1107,6 +1107,8 @@ func invoiceItemJSON(dbDetail databaseFunctionParameter, accountingSoftware acco
 		invoiceItemSalesTaxStatus string
 	)
 
+	// Inbound Minutes Tag ✎ and Outbound Minutes Tag ✎ are not to be
+	// added to an invoice as they are used only for the CDR Importer program
 	itemJSONSQL, err := dbDetail.connection.Query(`SELECT
                                                          service_product_name,
                                                          service_product_type,
@@ -1115,7 +1117,7 @@ func invoiceItemJSON(dbDetail databaseFunctionParameter, accountingSoftware acco
                                                          invoice_item_sales_tax_rate,
                                                          invoice_item_sales_tax_status
                                                        FROM
-                                                         yap.view___invoice_item WHERE customer_id = ?;`, accountingSoftware.customerID)
+                                                         yap.view___invoice_item WHERE customer_id = ? AND service_product_name != 'Inbound Minutes Tag ✎' AND service_product_name != 'Outbound Minutes Tag ✎';`, accountingSoftware.customerID)
 
 	// Error
 	if err != nil {
@@ -1159,27 +1161,32 @@ func invoiceItemJSON(dbDetail databaseFunctionParameter, accountingSoftware acco
 func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accountingSoftwareParameter) int {
 	item := invoiceItemJSON(dbDetail, accountingSoftware)
 
-	dbDetail.table = "view___customer_detail"
-	dbDetail.column = "customer_uk_based"
-	dbDetail.columnWhere = "customer_id"
-	dbDetail.columnWhereValue = accountingSoftware.customerID
-	customerUKBased := selectWhere(dbDetail)
-
-	// Determine the ecStatus from the SQL select statement
-	var ecStatus string
-
-	if customerUKBased == "yes" {
-		ecStatus = "UK"
-	} else if customerUKBased == "no" {
-		ecStatus = "Reverse Charge"
+	if item == "" {
+		// Return a 0 for no invoice items if item is empty
+		return 0
 	} else {
-		ecStatus = ""
-	}
 
-	// Set invoiceDate to current date
-	invoiceDate := currentDate()
+		dbDetail.table = "view___customer_detail"
+		dbDetail.column = "customer_uk_based"
+		dbDetail.columnWhere = "customer_id"
+		dbDetail.columnWhereValue = accountingSoftware.customerID
+		customerUKBased := selectWhere(dbDetail)
 
-	var dataJSON = []byte(`{
+		// Determine the ecStatus from the SQL select statement
+		var ecStatus string
+
+		if customerUKBased == "yes" {
+			ecStatus = "UK"
+		} else if customerUKBased == "no" {
+			ecStatus = "Reverse Charge"
+		} else {
+			ecStatus = ""
+		}
+
+		// Set invoiceDate to current date
+		invoiceDate := currentDate()
+
+		var dataJSON = []byte(`{
                                 "invoice":
                                   {
                                   "contact":"` + accountingSoftware.customerID + `",
@@ -1207,22 +1214,23 @@ func postInvoice(dbDetail databaseFunctionParameter, accountingSoftware accounti
                         }
                         `)
 
-	request, error := http.NewRequest("POST", accountingSoftware.apiURL+`/invoices`, bytes.NewBuffer(dataJSON))
-	request.Header.Add("Authorization", "Bearer "+accountingSoftware.apiAccessToken)
-	request.Header.Add("Content-Type", "application/json; charset=UTF-8")
-	request.Header.Add("Accept", "application/json")
+		request, error := http.NewRequest("POST", accountingSoftware.apiURL+`/invoices`, bytes.NewBuffer(dataJSON))
+		request.Header.Add("Authorization", "Bearer "+accountingSoftware.apiAccessToken)
+		request.Header.Add("Content-Type", "application/json; charset=UTF-8")
+		request.Header.Add("Accept", "application/json")
 
-	client := &http.Client{}
-	response, error := client.Do(request)
-	if error != nil {
-		panic(error)
+		client := &http.Client{}
+		response, error := client.Do(request)
+		if error != nil {
+			panic(error)
+		}
+
+		defer response.Body.Close()
+
+		// Return the HTTP status code
+		httpStatusCode := response.StatusCode
+		return httpStatusCode
 	}
-
-	defer response.Body.Close()
-
-	// Return the HTTP status code
-	httpStatusCode := response.StatusCode
-	return httpStatusCode
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1617,16 +1625,16 @@ const validationMessageInvoiceContractStartDate string = "Contract start date" +
 const validationMessageInvoiceContractStartDateEmpty string = "If contract length is not empty then contract start date must have a value"
 
 const validationMessageInvoice string = validationMessageInvalidOption + "invoice"
-const validationMessageInvoiceDoesNotExist string = "Invoice" + validationMessageDoesNotExist
-const validationMessageInvoiceDeleted string = "Invoice" + validationMessageDeleted
-const validationMessageInvoiceNotDeleted string = "Invoice" + validationMessageNotDeleted
+const validationMessageInvoiceDoesNotExist string = "Invoice item" + validationMessageDoesNotExist
+const validationMessageInvoiceDeleted string = "Invoice item" + validationMessageDeleted
+const validationMessageInvoiceNotDeleted string = "Invoice item" + validationMessageNotDeleted
 const validationMessageInvoiceID string = "Invoice ID" + validationMessageNumber
 
 // accounting-software page HTML messages
 const http0MessageSendInvoice string = "No invoice items to send to accounting software"
 const http201MessageSendInvoice string = "HTTP response code 201 - Invocies successfully sent to accounting software"
 const http404MessageSendInvoice string = "HTTP response code 404 - URL malformed for accounting software API in " + fileYAPEnv
-const http422MessageSendInvoice string = "HTTP response code 422 - Possibly an error in the source code because the time is set to UTC"
+const http422MessageSendInvoice string = "HTTP response code 422 - Possibly an error in the source code because the time is set to UTC or one or more customers do not exist on the accounting software"
 
 const http200MessageUpdateSingleCustomer string = "HTTP response code 200 - Update successfully sent to accounting software for the customers details"
 const http404MessageUpdateSingleCustomer string = "HTTP response code 404 - Customer ID does not exist"
@@ -5425,9 +5433,9 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			pbxCount = totalTableCountWhere(dbDetail)
 
 			pbxMaxLimitInt := stringToInt(pbxMaxLimit)
-            pbxCountInt := stringToInt(pbxCount)
+			pbxCountInt := stringToInt(pbxCount)
 
-            if pbxCountInt >= pbxMaxLimitInt {
+			if pbxCountInt >= pbxMaxLimitInt {
 				messageHTML(w, validationMessagePBXMaxPBX, "warning")
 			} else {
 
@@ -5505,7 +5513,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 					invoicePBXExt.customerID = addPBXSelectCustomerID
 					invoicePBXExt.serviceProduct = "⊛ YAP PBX Setup ⊛"
-					invoicePBXExt.tag = pbxID
+					invoicePBXExt.tag = "PBX Setup X1: " + pbxID
 					invoicePBXExt.pbxID = pbxID
 					invoicePBXExt.sellPrice = setupPrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
@@ -5524,7 +5532,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 					invoicePBXExt.customerID = addPBXSelectCustomerID
 					invoicePBXExt.serviceProduct = "⊛ YAP PBX Rental ⊛"
-					invoicePBXExt.tag = pbxID
+					invoicePBXExt.tag = "PBX Rental X1: " + pbxID
 					invoicePBXExt.pbxID = pbxID
 					invoicePBXExt.sellPrice = rentalPrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
@@ -5952,7 +5960,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExt.serviceProduct = "⊛ YAP PBX Cease ⊛"
 					invoicePBXExt.customerID = userCustomerID
 					invoicePBXExt.pbxID = deletePBXSelectPBXID
-					invoicePBXExt.tag = deletePBXSelectPBXID
+					invoicePBXExt.tag = "PBX Cease X1: " + deletePBXSelectPBXID
 					invoicePBXExt.contractStartDate = currentDate()
 					invoicePBXExt.sellPrice = pbxCeasePrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
@@ -6051,7 +6059,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExt.serviceProduct = "⊛ YAP PBX Cease ⊛"
 					invoicePBXExt.customerID = genDetail.userCustomerID
 					invoicePBXExt.pbxID = deletePBXSelectPBXID
-					invoicePBXExt.tag = deletePBXSelectPBXID
+					invoicePBXExt.tag = "PBX Cease X1: " + deletePBXSelectPBXID
 					invoicePBXExt.contractStartDate = currentDate()
 					invoicePBXExt.sellPrice = pbxCeasePrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
@@ -6888,9 +6896,9 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 			extCount = totalTableCountWhere(dbDetail)
 
 			extMaxLimitInt := stringToInt(extMaxLimit)
-            extCountInt := stringToInt(extCount)
+			extCountInt := stringToInt(extCount)
 
-            if extCountInt >= extMaxLimitInt {
+			if extCountInt >= extMaxLimitInt {
 				messageHTML(w, validationMessageExtMaxExt, "warning")
 			} else {
 
@@ -7054,7 +7062,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						invoicePBXExt.customerID = genDetail.userCustomerID
 						invoicePBXExt.pbxID = addExtSelectPBXID
 						invoicePBXExt.serviceProduct = "⊛ YAP Extension Setup ⊛"
-						invoicePBXExt.tag = extPBXID
+						invoicePBXExt.tag = "Ext Setup X1: " + extPBXID
 						invoicePBXExt.sellPrice = setupPrice
 						invoicePBXExt.salesTaxRate = salesTaxRate
 						invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -7073,7 +7081,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						invoicePBXExt.customerID = genDetail.userCustomerID
 						invoicePBXExt.pbxID = addExtSelectPBXID
 						invoicePBXExt.serviceProduct = "⊛ YAP Extension Rental ⊛"
-						invoicePBXExt.tag = extPBXID
+						invoicePBXExt.tag = "Ext Rental X1: " + extPBXID
 						invoicePBXExt.sellPrice = rentalPrice
 						invoicePBXExt.salesTaxRate = salesTaxRate
 						invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -7477,7 +7485,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 
 					invoicePBXExt.customerID = customerID
 					invoicePBXExt.pbxID = pbxID
-					invoicePBXExt.tag = deleteExtInputExt
+					invoicePBXExt.tag = "Ext Cease X1: " + deleteExtInputExt
 					invoicePBXExt.sellPrice = extCeasePrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
 					invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -7531,7 +7539,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 
 						invoicePBXExt.customerID = genDetail.userCustomerID
 						invoicePBXExt.pbxID = pbxID
-						invoicePBXExt.tag = deleteExtInputExt
+						invoicePBXExt.tag = "Ext Cease X1: " + deleteExtInputExt
 						invoicePBXExt.sellPrice = extCeasePrice
 						invoicePBXExt.salesTaxRate = salesTaxRate
 						invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -7576,7 +7584,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 
 					invoicePBXExt.customerID = genDetail.userCustomerID
 					invoicePBXExt.pbxID = pbxID
-					invoicePBXExt.tag = deleteExtInputExt
+					invoicePBXExt.tag = "Ext Cease X1: " + deleteExtInputExt
 					invoicePBXExt.sellPrice = extCeasePrice
 					invoicePBXExt.salesTaxRate = salesTaxRate
 					invoicePBXExt.salesTaxStatus = salesTaxStatus
@@ -7743,7 +7751,7 @@ func invoiceList(w http.ResponseWriter, dbDetail databaseFunctionParameter, genD
 			whereClause = "WHERE customer_id != ?;"
 			genDetail.userCustomerID = "1"
 		} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "400" {
-			whereClause = "WHERE customer_id = ?;"
+			whereClause = "WHERE customer_id = ? AND service_product_name != 'Inbound Minutes Tag ✎' AND service_product_name != 'Outbound Minutes Tag ✎';"
 		}
 
 		invoiceSQL, err := dbDetail.connection.Query(`SELECT
@@ -8216,6 +8224,16 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 			// Convert string values to a float64 to use the math package to round to the nearest two decimal places
 			addInvoiceInputSellPriceFloat64 := stringToFloat64(addInvoiceInputSellPrice)
 
+			// The Inbound Minutes Tag ✎ and Outbound Minutes Tag ✎ have preset values regardless of what is input by the admin
+			// These are special invoice items that are used to bill minutes
+			if addInvoiceSelectServiceProduct == "Inbound Minutes Tag ✎" || addInvoiceSelectServiceProduct == "Outbound Minutes Tag ✎" {
+				addInvoiceInputSellPriceFloat64 = 0.0
+				addInvoiceSelectBillItemOnce = "no"
+				addInvoiceSelectItemOnHold = "no"
+				addInvoiceSelectContractLength = ""
+				addInvoiceInputContractStartDate = ""
+			}
+
 			dbDetail.connection.Query(`INSERT 
         	              		     INTO
         	              		   invoice_item (
@@ -8318,7 +8336,7 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 				messageHTML(w, validationMessageInvoiceDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;", deleteInvoiceInputInvoiceID, "1")
+				dbDetail.connection.Query("DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?", deleteInvoiceInputInvoiceID, "1")
 
 				checkInvoiceDeleted := selectWhere(dbDetail)
 
@@ -9472,13 +9490,13 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			messageHTML(w, validationMessageServiceProductID, "warning")
 		} else if editServiceProductSelectColumn == "" {
 			messageHTML(w, validationMessageServiceProductColumn, "warning")
-		} else if editServiceProductInputNewValue == "⊛ YAP (Yet Another PBX) ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Setup ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Rental ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Cease ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Setup ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Rental ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Cease ⊛" {
+		} else if editServiceProductInputNewValue == "⊛ YAP (Yet Another PBX) ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Setup ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Rental ⊛" || editServiceProductInputNewValue == "⊛ YAP PBX Cease ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Setup ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Rental ⊛" || editServiceProductInputNewValue == "⊛ YAP Extension Cease ⊛" || editServiceProductInputNewValue == "Total Inbound Minutes ✆" || editServiceProductInputNewValue == "Total Outbound Minutes ✆" || editServiceProductInputNewValue == "Inbound Minutes Tag ✎" || editServiceProductInputNewValue == "Outbound Minutes Tag ✎" {
 			messageHTML(w, validationMessageServiceProductYAP, "warning")
 		} else if editServiceProductSelectColumn == "name" || editServiceProductSelectColumn == "service_product_type" || editServiceProductSelectColumn == "supplier_name" {
 			// Validate editServiceProductInputNewValue is a string and not empty
 			validateNewValue := validateInput(editServiceProductInputNewValue, "alphaNum")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ?;", editServiceProductInputNewValue, editServiceProductInputID)
+				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ? AND supplier_name != '⊛ YAP (Yet Another PBX) ⊛';", editServiceProductInputNewValue, editServiceProductInputID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 			}
@@ -9486,7 +9504,7 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			// Validate editServiceProductInputNewValue is a string
 			validateNewValue := validateInput(editServiceProductInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ?;", editServiceProductInputNewValue, editServiceProductInputID)
+				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ? AND supplier_name != '⊛ YAP (Yet Another PBX) ⊛';", editServiceProductInputNewValue, editServiceProductInputID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNum, "warning")
 			}
@@ -9556,6 +9574,8 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			// Do Nothing
 		} else if validateSupplierExistingValue == false || editSupplierInputExistingValue == "" {
 			messageHTML(w, validationMessageSupplierExistingValue, "warning")
+		} else if editSupplierInputExistingValue == "⊛ YAP (Yet Another PBX) ⊛" {
+			messageHTML(w, validationMessageSupplierYAP, "warning")
 		} else if editSupplierSelectColumn == "" {
 			messageHTML(w, validationMessageSupplierColumn, "warning")
 		} else if editSupplierInputNewValue == "⊛ YAP (Yet Another PBX) ⊛" {
@@ -9710,7 +9730,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 			messageHTML(w, validationMessageServiceProductName, "warning")
 		} else if validateServiceProductName == true && deleteServiceProductSelectConfirm != "yes" {
 			messageHTML(w, validationMessageConfirmation, "warning")
-		} else if deleteServiceProductInputName == "⊛ YAP PBX Setup ⊛" || deleteServiceProductInputName == "⊛ YAP PBX Rental ⊛" || deleteServiceProductInputName == "⊛ YAP PBX Cease ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Setup ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Rental ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Cease ⊛" {
+		} else if deleteServiceProductInputName == "⊛ YAP PBX Setup ⊛" || deleteServiceProductInputName == "⊛ YAP PBX Rental ⊛" || deleteServiceProductInputName == "⊛ YAP PBX Cease ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Setup ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Rental ⊛" || deleteServiceProductInputName == "⊛ YAP Extension Cease ⊛" || deleteServiceProductInputName == "Total Inbound Minutes ✆" || deleteServiceProductInputName == "Total Outbound Minutes ✆" || deleteServiceProductInputName == "Inbound Minutes Tag ✎" || deleteServiceProductInputName == "Outbound Minutes Tag ✎" {
 			messageHTML(w, validationMessageServiceProductYAP, "warning")
 		} else if validateServiceProductName == true && deleteServiceProductSelectConfirm == "yes" {
 
