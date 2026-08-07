@@ -1,9 +1,9 @@
 <p align="center">
-<img src="https://github.com/ellwould/yap/blob/main/image/yap_logo.jpeg" alt="YAP (Yet Another PBX) Logo">
+<img src="https://github.com/yet-another-pbx/yap/blob/main/image/yap_logo.jpeg" alt="YAP (Yet Another PBX) Logo">
 </p>
 
 <p align="center">
-<img src="https://github.com/ellwould/yap/blob/main/image/yap_software.jpeg" alt="YAP (Yet Another PBX) Software">
+<img src="https://github.com/yet-another-pbx/yap/blob/main/image/yap_software.jpeg" alt="YAP (Yet Another PBX) Software">
 </p>
 
 <br>
@@ -13,11 +13,11 @@
 <br>
 
 <p align="center">
-<a href="https://no-ai-icon.com/statement/?url=github.com/ellwould/yap">
-<img src="https://github.com/ellwould/yap/blob/main/image/human_created_content.jpeg" alt="No AI used to create YAP (Yet Another PBX)" width="150" height="150"></a>
+<a href="https://no-ai-icon.com/statement/?url=github.com/yet-another-pbx/yap">
+<img src="https://github.com/yet-another-pbx/yap/blob/main/image/human_created_content.jpeg" alt="No AI used to create YAP (Yet Another PBX)" width="150" height="150"></a>
 &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp;
-<a href="https://no-ai-icon.com/statement/?url=github.com/ellwould/yap">
-<img src="https://github.com/ellwould/yap/blob/main/image/no_ai.jpeg" alt="YAP (Yet Another PBX) is 100% created by a human" width="150" height="150"></a>
+<a href="https://no-ai-icon.com/statement/?url=github.com/yet-another-pbx/yap">
+<img src="https://github.com/yet-another-pbx/yap/blob/main/image/no_ai.jpeg" alt="YAP (Yet Another PBX) is 100% created by a human" width="150" height="150"></a>
 </p>
 
 <br>
@@ -44,55 +44,55 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 
 ## Main Menu Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) Main Menu Page](https://github.com/ellwould/yap/blob/main/image/yap_main_menu.jpeg)
+![YAP (Yet Another PBX) Main Menu Page](https://github.com/yet-another-pbx/yap/blob/main/image/yap_main_menu.jpeg)
 
 <br>
 
 ## Customer Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) Customer Page 1](https://github.com/ellwould/yap/blob/main/image/customer_page_1.jpeg)
+![YAP (Yet Another PBX) Customer Page 1](https://github.com/yet-another-pbx/yap/blob/main/image/customer_page_1.jpeg)
 
 
-![YAP (Yet Another PBX) Customer Page 3](https://github.com/ellwould/yap/blob/main/image/customer_page_3.jpeg)
+![YAP (Yet Another PBX) Customer Page 3](https://github.com/yet-another-pbx/yap/blob/main/image/customer_page_3.jpeg)
 
 
-![YAP (Yet Another PBX) Customer Page 4](https://github.com/ellwould/yap/blob/main/image/customer_page_4.jpeg)
+![YAP (Yet Another PBX) Customer Page 4](https://github.com/yet-another-pbx/yap/blob/main/image/customer_page_4.jpeg)
 
 <br>
 
 ## PBX Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) PBX Page 1](https://github.com/ellwould/yap/blob/main/image/pbx_page_1.jpeg)
+![YAP (Yet Another PBX) PBX Page 1](https://github.com/yet-another-pbx/yap/blob/main/image/pbx_page_1.jpeg)
 
-![YAP (Yet Another PBX) PBX Page 2](https://github.com/ellwould/yap/blob/main/image/pbx_page_2.jpeg)
+![YAP (Yet Another PBX) PBX Page 2](https://github.com/yet-another-pbx/yap/blob/main/image/pbx_page_2.jpeg)
 
 <br>
 
 ## Extension Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) Ext Page 1](https://github.com/ellwould/yap/blob/main/image/ext_page_1.jpeg)
+![YAP (Yet Another PBX) Ext Page 1](https://github.com/yet-another-pbx/yap/blob/main/image/ext_page_1.jpeg)
 
-![YAP (Yet Another PBX) Ext Page 2](https://github.com/ellwould/yap/blob/main/image/ext_page_2.jpeg)
+![YAP (Yet Another PBX) Ext Page 2](https://github.com/yet-another-pbx/yap/blob/main/image/ext_page_2.jpeg)
 
 <br>
 
 ## Invoice Page (Logged in as a YAP Admin): 
 
-![YAP (Yet Another PBX) Invoice Page 1](https://github.com/ellwould/yap/blob/main/image/invoice_page_1.jpeg)
+![YAP (Yet Another PBX) Invoice Page 1](https://github.com/yet-another-pbx/yap/blob/main/image/invoice_page_1.jpeg)
 
-![YAP (Yet Another PBX) Invoice Page 2](https://github.com/ellwould/yap/blob/main/image/invoice_page_2.jpeg)
+![YAP (Yet Another PBX) Invoice Page 2](https://github.com/yet-another-pbx/yap/blob/main/image/invoice_page_2.jpeg)
 
 <br>
 
 ## Service/Product Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) Service Product Page](https://github.com/ellwould/yap/blob/main/image/service_product_page.jpeg)
+![YAP (Yet Another PBX) Service Product Page](https://github.com/yet-another-pbx/yap/blob/main/image/service_product_page.jpeg)
 
 <br>
 
 ## Accounting Software Page (Logged in as a YAP Admin):
 
-![YAP (Yet Another PBX) Accounting Software Page](https://github.com/ellwould/yap/blob/main/image/accounting_software_page.jpeg)
+![YAP (Yet Another PBX) Accounting Software Page](https://github.com/yet-another-pbx/yap/blob/main/image/accounting_software_page.jpeg)
 
 <br>
 
@@ -688,4 +688,4 @@ update-ca-certificates
 <br>
 
 >[!IMPORTANT]
->All third-party product and/or company names and logos are trademarks™ or registered® trademarks and remain the property of their respective holders/owners. Unless specifically identified as such, use of third party trademarks does not imply any affiliation with or endorsement between Elliot Michael Keavney and the owners of those trademarks.
+>All third-party product and/or company names and logos are trademarks™ or registered® trademarks and remain the property of their respective holders/owners. Unless specifically identified as such, use of third party trademarks does not imply any affiliation with or endorsement between Yet Another PBX (YAP) and the owners of those trademarks.
