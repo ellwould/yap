@@ -937,7 +937,7 @@ func invoicePBXExtAdd(dbDetail databaseFunctionParameter, invoicePBXExt invoiceP
 	// Convert string values to a float64 to use the math package to round to the nearest two decimal places
 	sellPriceFloat64 := stringToFloat64(invoicePBXExt.sellPrice)
 
-	dbDetail.connection.Query(`INSERT 
+	dbDetail.connection.Exec(`INSERT 
                                              INTO
                                            invoice_item (
                                              customer_id,
@@ -2907,7 +2907,7 @@ func userAccountAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 					addAccountSelectCustomerID = selectWhere(dbDetail)
 				}
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
         	                   INTO
 	       		       user_account (
 			           email,
@@ -3222,7 +3222,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 				messageHTML(w, validationMessageAccountPBXDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM user_account WHERE pbx_id = ?;", deletePBXUserAccountSelectPBXID)
+				dbDetail.connection.Exec("DELETE FROM user_account WHERE pbx_id = ?;", deletePBXUserAccountSelectPBXID)
 
 				checkPBXUserAccountDeleted := selectWhere(dbDetail)
 
@@ -3301,7 +3301,7 @@ func userAccountDelete(w http.ResponseWriter, r *http.Request, dbDetail database
 				messageHTML(w, validationMessageAccountCustomerDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM user_account WHERE customer_id = ?;", deleteCustomerUserAccountSelectCustomerID)
+				dbDetail.connection.Exec("DELETE FROM user_account WHERE customer_id = ?;", deleteCustomerUserAccountSelectCustomerID)
 
 				checkCustomerUserAccountDeleted := selectWhere(dbDetail)
 
@@ -4211,7 +4211,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 				addCustomerInputExtRentalPriceFloat64 := stringToFloat64(addCustomerInputExtRentalPrice)
 				addCustomerInputExtCeasePriceFloat64 := stringToFloat64(addCustomerInputExtCeasePrice)
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  customer (
                                    id,
@@ -4257,7 +4257,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 					math.Round(addCustomerInputExtCeasePriceFloat64*100)/100,
 					nullSQL(addCustomerSelectExtContractLength))
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  customer_site_address (
                                    id,
@@ -4281,7 +4281,7 @@ func customerAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFuncti
 					nullSQL(addCustomerInputSiteContactEmail),
 					nullSQL(addCustomerInputSiteContactNumber))
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  customer_invoice_address (
                                    id,
@@ -4446,7 +4446,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerInputNewValue is a string and not empty
 			validateNewValue := validateInput(editCustomerInputNewValue, "alphaNum")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNum, "warning")
 			}
@@ -4454,7 +4454,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerInputNewValue is a string
 			validateNewValue := validateInput(editCustomerInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 			}
@@ -4464,7 +4464,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			if validateNewValue == true {
 				// Convert string values to a float64 to use the math package to round to the nearest two decimal places
 				editCustomerInputNewValueFloat64 := stringToFloat64(editCustomerInputNewValue)
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", math.Round(editCustomerInputNewValueFloat64*100)/100, editCustomerSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", math.Round(editCustomerInputNewValueFloat64*100)/100, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericPrice, "warning")
 			}
@@ -4473,7 +4473,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerInputNewValue is in the pbxLimitList slice
 			validateNewValue := slices.Contains(pbxLimitList, editCustomerInputNewValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessagePBX, "warning")
 			}
@@ -4482,7 +4482,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerSelectColumn is in the salesTaxRateList Slice
 			validateNewValue := slices.Contains(salesTaxRateList, editCustomerInputNewValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericInvalidOption, "warning")
 			}
@@ -4491,7 +4491,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerSelectColumn is in the salesTaxStatusList Slice
 			validateNewValue := slices.Contains(salesTaxStatusList, editCustomerInputNewValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer SET "+editCustomerSelectColumn+" = ? WHERE id = ?;", editCustomerInputNewValue, editCustomerSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericInvalidOption, "warning")
 			}
@@ -4570,7 +4570,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerSiteInputNewValue is a string
 			validateNewValue := validateInput(editCustomerSiteInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?;", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?;", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 			}
@@ -4578,7 +4578,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerSiteInputNewValue is a email
 			validateNewValue := validateInput(editCustomerSiteInputNewValue, "email")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?;", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?;", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageCustomerEmail, "warning")
 			}
@@ -4586,7 +4586,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerSiteInputNewValue is a phone number
 			validateNewValue := validateInput(editCustomerSiteInputNewValue, "phoneNumber")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?;", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer_site_address SET "+editCustomerSiteSelectColumn+" = ? WHERE id = ?;", editCustomerSiteInputNewValue, editCustomerSiteSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageCustomerPhoneNumber, "warning")
 			}
@@ -4665,7 +4665,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerInvoiceInputNewValue is a string
 			validateNewValue := validateInput(editCustomerInvoiceInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?;", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?;", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 			}
@@ -4673,7 +4673,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerInvoiceInputNewValue is a email
 			validateNewValue := validateInput(editCustomerInvoiceInputNewValue, "email")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?;", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?;", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageInvoiceEmail, "warning")
 			}
@@ -4681,7 +4681,7 @@ func customerEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunct
 			// Validate editCustomerInvoiceInputNewValue is a phone number
 			validateNewValue := validateInput(editCustomerInvoiceInputNewValue, "phoneNumber")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?;", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
+				dbDetail.connection.Exec("UPDATE customer_invoice_address SET "+editCustomerInvoiceSelectColumn+" = ? WHERE id = ?;", editCustomerInvoiceInputNewValue, editCustomerInvoiceSelectCustomerID)
 			} else {
 				messageHTML(w, validationMessageInvoicePhoneNumber, "warning")
 			}
@@ -4764,7 +4764,7 @@ func customerDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFun
 				messageHTML(w, validationMessageCustomerDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM customer WHERE id = ?;", deleteCustomerSelectCustomerID)
+				dbDetail.connection.Exec("DELETE FROM customer WHERE id = ?;", deleteCustomerSelectCustomerID)
 
 				checkCustomerDeleted := selectWhere(dbDetail)
 
@@ -5441,7 +5441,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 				pbxID := genID()
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
 					     INTO
 					   pbx (
 					     id,
@@ -5455,7 +5455,7 @@ func pbxAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 					addPBXSelectCustomerID,
 					addPBXSelectExtLimit)
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
                          	             INTO
                                            pbx_site_address (
                                            id,
@@ -5656,13 +5656,13 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			validateNewValue := validateInput(editPBXInputNewValue, "alphaNum")
 			if genDetail.userTypeID == "100" {
 				if validateNewValue == true {
-					dbDetail.connection.Query("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ?;", editPBXInputNewValue, editPBXSelectPBXID)
+					dbDetail.connection.Exec("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ?;", editPBXInputNewValue, editPBXSelectPBXID)
 				} else {
 					messageHTML(w, validationMessageGenericAlphaNum, "warning")
 				}
 			} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 				if validateNewValue == true {
-					dbDetail.connection.Query("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ? AND customer_id = ?;", editPBXInputNewValue, editPBXSelectPBXID, genDetail.userCustomerID)
+					dbDetail.connection.Exec("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ? AND customer_id = ?;", editPBXInputNewValue, editPBXSelectPBXID, genDetail.userCustomerID)
 				} else {
 					messageHTML(w, validationMessageGenericAlphaNum, "warning")
 				}
@@ -5674,7 +5674,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			// Validate editCustomerSelectColumn is in the extLimitList Slice
 			validateNewValue := slices.Contains(extLimitList, editPBXInputNewValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ?;", editPBXInputNewValue, editPBXSelectPBXID)
+				dbDetail.connection.Exec("UPDATE pbx SET "+editPBXSelectColumn+" = ? WHERE id = ?;", editPBXInputNewValue, editPBXSelectPBXID)
 			} else {
 				messageHTML(w, validationMessagePBXExtLimit, "warning")
 			}
@@ -5762,7 +5762,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			// Validate editPBXSiteInputNewValue is a string
 			validateNewValue := validateInput(editPBXSiteInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
+				dbDetail.connection.Exec("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
 			} else {
 				messageHTML(w, validationMessageCustomerColumn, "warning")
 			}
@@ -5770,7 +5770,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			// Validate editPBXSiteInputNewValue is a email
 			validateNewValue := validateInput(editPBXSiteInputNewValue, "email")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
+				dbDetail.connection.Exec("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
 			} else {
 				messageHTML(w, validationMessagePBXSiteEmail, "warning")
 			}
@@ -5778,7 +5778,7 @@ func pbxEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			// Validate editPBXSiteInputNewValue is a phone number
 			validateNewValue := validateInput(editPBXSiteInputNewValue, "phoneNumber")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
+				dbDetail.connection.Exec("UPDATE pbx_site_address SET "+editPBXSiteSelectColumn+" = ? WHERE id = ?;", editPBXSiteInputNewValue, editPBXSiteSelectPBXID)
 			} else {
 				messageHTML(w, validationMessagePBXSitePhoneNumber, "warning")
 			}
@@ -5893,7 +5893,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				dbDetail.columnWhereValue = deletePBXSelectPBXID
 				extTotal := totalTableCountWhere(dbDetail)
 
-				dbDetail.connection.Query("DELETE FROM pbx WHERE id = ?;", deletePBXSelectPBXID)
+				dbDetail.connection.Exec("DELETE FROM pbx WHERE id = ?;", deletePBXSelectPBXID)
 
 				// Check PBX deleted
 				dbDetail.column = "pbx_id"
@@ -5940,7 +5940,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete PBX rental record from invoice_item table
-						dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
+						dbDetail.connection.Exec("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
 
 					}
 
@@ -5970,7 +5970,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete PBX rental record from invoice_item table
-					dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
+					dbDetail.connection.Exec("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
@@ -5992,7 +5992,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				dbDetail.columnWhereValue = deletePBXSelectPBXID
 				extTotal := totalTableCountWhere(dbDetail)
 
-				dbDetail.connection.Query("DELETE FROM pbx WHERE id = ?;", deletePBXSelectPBXID)
+				dbDetail.connection.Exec("DELETE FROM pbx WHERE id = ?;", deletePBXSelectPBXID)
 
 				// Check PBX deleted
 				dbDetail.column = "pbx_id"
@@ -6039,7 +6039,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete PBX rental record from invoice_item table
-						dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
+						dbDetail.connection.Exec("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP Extension Rental ⊛")
 
 					}
 
@@ -6069,7 +6069,7 @@ func pbxDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete PBX rental record from invoice_item table
-					dbDetail.connection.Query("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
+					dbDetail.connection.Exec("DELETE FROM invoice_item WHERE pbx_id = ? AND service_product_name = ?;", deletePBXSelectPBXID, "⊛ YAP PBX Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessagePBXNotDeleted, "warning")
@@ -6936,7 +6936,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						addExtInputStirShakenProfile = ""
 					}
 
-					dbDetail.connection.Query(`INSERT 
+					dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  ps_endpoints (
                                    id,
@@ -6992,7 +6992,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 						nullSQL(addExtInputStirShakenProfile),
 						addExtSelectPBXID)
 
-					dbDetail.connection.Query(`INSERT 
+					dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  ps_aors (
                                    id,
@@ -7006,7 +7006,7 @@ func extAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPar
 
 					password := genPassword(20)
 
-					dbDetail.connection.Query(`INSERT 
+					dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  ps_auths (
                                    id,
@@ -7238,7 +7238,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			if editExtInputNewValue == "y" || editExtInputNewValue == "Y" || editExtInputNewValue == "yes" || editExtInputNewValue == "Yes" || editExtInputNewValue == "YES" {
 				newExtPassword := genPassword(20)
 				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ?;", newExtPassword, editExtInputExt)
+					dbDetail.connection.Exec("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ?;", newExtPassword, editExtInputExt)
 				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 					dbDetail.columnWhereValue = editExtInputExt
 					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
@@ -7246,10 +7246,10 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 					if pbxID == "" {
 						// Do Nothing
 					} else {
-						dbDetail.connection.Query("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", newExtPassword, editExtInputExt, pbxID)
+						dbDetail.connection.Exec("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", newExtPassword, editExtInputExt, pbxID)
 					}
 				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", newExtPassword, editExtInputExt, pbxID)
+					dbDetail.connection.Exec("UPDATE ps_auths SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", newExtPassword, editExtInputExt, pbxID)
 				}
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
@@ -7259,7 +7259,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			validateNewValue := validateInput(editExtInputNewValue, "alphaNum")
 			if validateNewValue == true {
 				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
 				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 					dbDetail.columnWhereValue = editExtInputExt
 					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
@@ -7267,10 +7267,10 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 					if pbxID == "" {
 						// Do Nothing
 					} else {
-						dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+						dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 					}
 				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 				}
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
@@ -7280,7 +7280,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			validateNewValue := validateInput(editExtInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
 				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
 				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 					dbDetail.columnWhereValue = editExtInputExt
 					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
@@ -7288,10 +7288,10 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 					if pbxID == "" {
 						// Do Nothing
 					} else {
-						dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+						dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 					}
 				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 				}
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
@@ -7308,7 +7308,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 						pbxID = selectWhere(dbDetail)
 						editExtInputNewValue = editExtInputNewValue + "-" + pbxID
 					}
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
 				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 					dbDetail.columnWhereValue = editExtInputExt
 					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
@@ -7319,13 +7319,13 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 						if editExtInputNewValue != "" {
 							editExtInputNewValue = editExtInputNewValue + "-" + pbxID
 						}
-						dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+						dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 					}
 				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
 					if editExtInputNewValue != "" {
 						editExtInputNewValue = editExtInputNewValue + "-" + pbxID
 					}
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 				}
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
@@ -7335,7 +7335,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			validateNewValue := validateInput(editExtInputNewValue, "ipAddress")
 			if validateNewValue == true {
 				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
 				} else if genDetail.userTypeID == "200" || genDetail.userTypeID == "201" {
 					dbDetail.columnWhereValue = editExtInputExt
 					dbDetail.columnWhereValueAnd = genDetail.userCustomerID
@@ -7343,10 +7343,10 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 					if pbxID == "" {
 						// Do Nothing
 					} else {
-						dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+						dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 					}
 				} else if genDetail.userTypeID == "300" || genDetail.userTypeID == "301" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ? AND pbx_id = ?;", editExtInputNewValue, editExtInputExt, pbxID)
 				}
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
@@ -7356,7 +7356,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			validateNewValue := validateInput(editExtInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
 				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
 				}
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
@@ -7366,7 +7366,7 @@ func extEdit(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctionPa
 			validateNewValue := validateInput(editExtInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
 				if genDetail.userTypeID == "100" {
-					dbDetail.connection.Query("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
+					dbDetail.connection.Exec("UPDATE ps_endpoints SET "+editExtSelectColumn+" = ? WHERE id = ?;", editExtInputNewValue, editExtInputExt)
 				}
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
@@ -7458,7 +7458,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				dbDetail.column = "pbx_id"
 				pbxID = selectWhere(dbDetail)
 
-				dbDetail.connection.Query("DELETE FROM ps_endpoints WHERE id = ?;", deleteExtInputExt)
+				dbDetail.connection.Exec("DELETE FROM ps_endpoints WHERE id = ?;", deleteExtInputExt)
 				dbDetail.table = "view___sip_extension_detail"
 				dbDetail.column = "sip_username"
 				dbDetail.columnWhere = "sip_username"
@@ -7494,7 +7494,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete Ext rental record from invoice_item table
-					dbDetail.connection.Query("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, customerID, "⊛ YAP Extension Rental ⊛")
+					dbDetail.connection.Exec("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, customerID, "⊛ YAP Extension Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
@@ -7511,7 +7511,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				if pbxID == "" {
 					messageHTML(w, validationMessageExtDoesNotExist, "warning")
 				} else {
-					dbDetail.connection.Query("DELETE FROM ps_endpoints WHERE id = ? AND pbx_id = ?;", deleteExtInputExt, pbxID)
+					dbDetail.connection.Exec("DELETE FROM ps_endpoints WHERE id = ? AND pbx_id = ?;", deleteExtInputExt, pbxID)
 					dbDetail.table = "view___sip_extension_detail"
 					dbDetail.column = "sip_username"
 					dbDetail.columnWhere = "sip_username"
@@ -7548,7 +7548,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 						invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 						// Delete Ext rental record from invoice_item table
-						dbDetail.connection.Query("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
+						dbDetail.connection.Exec("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
 
 					} else {
 						messageHTML(w, validationMessageExtNotDeleted, "warning")
@@ -7556,7 +7556,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 				}
 			} else if genDetail.userTypeID == "300" {
 				pbxID = genDetail.userPBXID
-				dbDetail.connection.Query("DELETE FROM ps_endpoints WHERE id = ? AND pbx_id = ?;", deleteExtInputExt, pbxID)
+				dbDetail.connection.Exec("DELETE FROM ps_endpoints WHERE id = ? AND pbx_id = ?;", deleteExtInputExt, pbxID)
 				dbDetail.table = "view___sip_extension_detail"
 				dbDetail.column = "sip_username"
 				dbDetail.columnWhere = "sip_username"
@@ -7593,7 +7593,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete Ext rental record from invoice_item table
-					dbDetail.connection.Query("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
+					dbDetail.connection.Exec("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, genDetail.userCustomerID, "⊛ YAP Extension Rental ⊛")
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
 				}
@@ -8234,7 +8234,7 @@ func invoiceAdd(w http.ResponseWriter, r *http.Request, dbDetail databaseFunctio
 				addInvoiceInputContractStartDate = ""
 			}
 
-			dbDetail.connection.Query(`INSERT 
+			dbDetail.connection.Exec(`INSERT 
         	              		     INTO
         	              		   invoice_item (
 					     customer_id,
@@ -8336,7 +8336,7 @@ func invoiceDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunc
 				messageHTML(w, validationMessageInvoiceDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;", deleteInvoiceInputInvoiceID, "1")
+				dbDetail.connection.Exec("DELETE FROM invoice_item WHERE id = ? AND pbx_id = ?;", deleteInvoiceInputInvoiceID, "1")
 
 				checkInvoiceDeleted := selectWhere(dbDetail)
 
@@ -8610,13 +8610,13 @@ func accountingSoftwareSendUpdate(w http.ResponseWriter, r *http.Request, dbDeta
 				// The HTTP status code determines if the invoices were sent succesfully
 				if accountingSoftware.httpStatusCode == 201 {
 					// Delete all invoice items that are set to bill once
-					dbDetail.connection.Query("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
+					dbDetail.connection.Exec("DELETE FROM `invoice_item` WHERE `bill_item_once` = 'yes';")
 
 					// Update all invoice items that are on hold to being off hold
-					dbDetail.connection.Query("UPDATE `invoice_item` SET `item_on_hold` = 'no' WHERE `item_on_hold` = 'yes';")
+					dbDetail.connection.Exec("UPDATE `invoice_item` SET `item_on_hold` = 'no' WHERE `item_on_hold` = 'yes';")
 
 					// Insert new log into the billing_run_log table
-					dbDetail.connection.Query("INSERT INTO `billing_run_log` (`user_account_id`, `user_account_email`, `api_client_id`) VALUES (?, ?, ?);", genDetail.userID, genDetail.userEmail, accountingSoftware.apiClientID)
+					dbDetail.connection.Exec("INSERT INTO `billing_run_log` (`user_account_id`, `user_account_email`, `api_client_id`) VALUES (?, ?, ?);", genDetail.userID, genDetail.userEmail, accountingSoftware.apiClientID)
 
 					// Display success message
 					messageHTML(w, http201MessageSendInvoice, "success")
@@ -9209,7 +9209,7 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 				messageHTML(w, validationMessageServiceProductAlreadyExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  service_product (
                                    name,
@@ -9301,7 +9301,7 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 				messageHTML(w, validationMessageSupplierAlreadyExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  supplier (
                                    name
@@ -9388,7 +9388,7 @@ func serviceProductAdd(w http.ResponseWriter, r *http.Request, dbDetail database
 				messageHTML(w, validationMessageSalesTaxRateAlreadyExist, "warning")
 			} else {
 
-				dbDetail.connection.Query(`INSERT 
+				dbDetail.connection.Exec(`INSERT 
                                    INTO
                                  sales_tax_rate_lookup (
                                    sales_tax_rate
@@ -9496,7 +9496,7 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			// Validate editServiceProductInputNewValue is a string and not empty
 			validateNewValue := validateInput(editServiceProductInputNewValue, "alphaNum")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ? AND supplier_name != '⊛ YAP (Yet Another PBX) ⊛';", editServiceProductInputNewValue, editServiceProductInputID)
+				dbDetail.connection.Exec("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ? AND supplier_name != '⊛ YAP (Yet Another PBX) ⊛';", editServiceProductInputNewValue, editServiceProductInputID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNumEmpty, "warning")
 			}
@@ -9504,7 +9504,7 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			// Validate editServiceProductInputNewValue is a string
 			validateNewValue := validateInput(editServiceProductInputNewValue, "alphaNumEmpty")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ? AND supplier_name != '⊛ YAP (Yet Another PBX) ⊛';", editServiceProductInputNewValue, editServiceProductInputID)
+				dbDetail.connection.Exec("UPDATE service_product SET "+editServiceProductSelectColumn+" = ? WHERE id = ? AND supplier_name != '⊛ YAP (Yet Another PBX) ⊛';", editServiceProductInputNewValue, editServiceProductInputID)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNum, "warning")
 			}
@@ -9584,7 +9584,7 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			// Validate editSupplierInputNewValue is a string and not empty
 			validateNewValue := validateInput(editSupplierInputNewValue, "alphaNum")
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE supplier SET "+editSupplierSelectColumn+" = ? WHERE name = ?;", editSupplierInputNewValue, editSupplierInputExistingValue)
+				dbDetail.connection.Exec("UPDATE supplier SET "+editSupplierSelectColumn+" = ? WHERE name = ?;", editSupplierInputNewValue, editSupplierInputExistingValue)
 			} else {
 				messageHTML(w, validationMessageGenericAlphaNum, "warning")
 			}
@@ -9662,7 +9662,7 @@ func serviceProductEdit(w http.ResponseWriter, r *http.Request, dbDetail databas
 			editSalesTaxRateInputNewValueFloat64 := stringToFloat64(editSalesTaxRateInputNewValue)
 			editSalesTaxRateInputExistingValueFloat64 := stringToFloat64(editSalesTaxRateInputExistingValue)
 			if validateNewValue == true {
-				dbDetail.connection.Query("UPDATE sales_tax_rate_lookup SET "+editSalesTaxRateSelectColumn+" = ? WHERE sales_tax_rate = ?;", math.Round(editSalesTaxRateInputNewValueFloat64*100)/100, math.Round(editSalesTaxRateInputExistingValueFloat64*100)/100)
+				dbDetail.connection.Exec("UPDATE sales_tax_rate_lookup SET "+editSalesTaxRateSelectColumn+" = ? WHERE sales_tax_rate = ?;", math.Round(editSalesTaxRateInputNewValueFloat64*100)/100, math.Round(editSalesTaxRateInputExistingValueFloat64*100)/100)
 			} else {
 				messageHTML(w, validationMessageSalesTaxRateTax, "warning")
 			}
@@ -9745,7 +9745,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 				messageHTML(w, validationMessageServiceProductDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM service_product WHERE name = ?;", deleteServiceProductInputName)
+				dbDetail.connection.Exec("DELETE FROM service_product WHERE name = ?;", deleteServiceProductInputName)
 
 				checkServiceProductDeleted := selectWhere(dbDetail)
 
@@ -9825,7 +9825,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 				messageHTML(w, validationMessageSupplierDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM supplier WHERE name = ?;", deleteSupplierInputName)
+				dbDetail.connection.Exec("DELETE FROM supplier WHERE name = ?;", deleteSupplierInputName)
 
 				checkSupplierDeleted := selectWhere(dbDetail)
 
@@ -9903,7 +9903,7 @@ func serviceProductDelete(w http.ResponseWriter, r *http.Request, dbDetail datab
 				messageHTML(w, validationMessageSalesTaxRateDoesNotExist, "warning")
 			} else {
 
-				dbDetail.connection.Query("DELETE FROM sales_tax_rate_lookup WHERE sales_tax_rate = ?;", deleteSalesTaxRateInputRate)
+				dbDetail.connection.Exec("DELETE FROM sales_tax_rate_lookup WHERE sales_tax_rate = ?;", deleteSalesTaxRateInputRate)
 
 				checkSalesTaxRateDeleted := selectWhere(dbDetail)
 
