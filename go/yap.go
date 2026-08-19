@@ -264,7 +264,7 @@ func messageBox(w http.ResponseWriter, errorType string, headerCSS string, butto
 func header(w http.ResponseWriter, pageTitle string, headerCSS string, extraButtonName string, extraButtonURL string) {
 	fmt.Fprintf(w, "<div class=\"div-header\">")
 	fmt.Fprintf(w, "  <h1 class=\""+headerCSS+"\">")
-	fmt.Fprintf(w, "    ⊛ YAP [Yet Another PBX] ⊛")
+	fmt.Fprintf(w, "    ⊛ YAP [Yet Another PBX] v1.1.0 ⊛")
 	fmt.Fprintf(w, "<br>")
 	fmt.Fprintf(w, "    <a href=\"/oauth2/sign_out?rd=https://github.com/logout\" class=\"button-general button-header button-logout\">Logout</a>")
 	fmt.Fprintf(w, "    <a href=\"/yap\" class=\"button-general button-header button-home\">Home</a>")
