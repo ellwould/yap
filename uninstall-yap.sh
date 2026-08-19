@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Uninstall Script for YAP
+# Uninstall Script for YAP (Yet Another PBX)
 
 #----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ bg_purple="\033[45m";
 
 #----------------------------------------------------------------------
 
-# Check user is root otherwise exit script
+# Check the user is root otherwise exit the script
 
 if [ "$EUID" -ne 0 ]
 then
