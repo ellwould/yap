@@ -688,4 +688,4 @@ update-ca-certificates
 <br>
 
 >[!IMPORTANT]
->All third-party product and/or company names and logos are trademarks™ or registered® trademarks and remain the property of their respective holders/owners. Unless specifically identified as such, use of third party trademarks does not imply any affiliation with or endorsement between Yet Another PBX (YAP) and the owners of those trademarks.
+>All third-party product and/or company names and logos are trademarks™ or registered® trademarks and remain the property of their respective holders/owners. Unless specifically identified as such, use of third party trademarks does not imply any affiliation with or endorsement between YAP (Yet Another PBX) or its contributor(s) by the owners of those trademarks.
