@@ -30,7 +30,7 @@ YAP (Yet Another PBX) - A GUI to administrate a multi-tenanted SIP Server, autom
 <br>
 
 # Demo Sites:
-- Demo logged in as a YAP Admin (100) account - https://yap.ell.today/yap
+- Demo logged in as a YAP Admin (100) account - https://yap100.ell.today/yap
 
 <br>
 
