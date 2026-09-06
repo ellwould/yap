@@ -741,6 +741,9 @@ mkdir /var/lib/asterisk/database;
 chmod 570 /var/lib/asterisk/database;
 chgrp pbx /var/lib/asterisk/database;
 
+# Allowed Asterisk modules
+source /root/yap/bash/asterisk-allowed-modules.sh;
+
 # Set Asterisk to automatically start at boot
 systemctl enable asterisk;
 
