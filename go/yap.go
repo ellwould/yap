@@ -7494,7 +7494,7 @@ func extDelete(w http.ResponseWriter, r *http.Request, dbDetail databaseFunction
 					invoicePBXExtAdd(dbDetail, invoicePBXExt)
 
 					// Delete Ext rental record from invoice_item table
-					dbDetail.connection.Exec("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", deleteExtInputExt, customerID, "⊛ YAP Extension Rental ⊛")
+					dbDetail.connection.Exec("DELETE FROM invoice_item WHERE tag = ? AND customer_id = ? AND service_product_name = ?;", "Ext Rental X1: " + deleteExtInputExt, customerID, "⊛ YAP Extension Rental ⊛")
 
 				} else {
 					messageHTML(w, validationMessageExtNotDeleted, "warning")
