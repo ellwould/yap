@@ -8,7 +8,7 @@
 
 <br>
 
-<h3 align="center">All YAP (Yet Another PBX) Go, BASH, SQL, HTML and CSS code, configuration files, guides and instructions are 100% designed, written and devolped by a human programmer - IN THE INTEREST OF SECURITY AND QUALITY AI WILL NEVER BE USED</h3>
+<h3 align="center">All YAP (Yet Another PBX) Go, BASH, SQL, HTML and CSS code, configuration files, guides and instructions are 100% designed, written and developed by a human programmer - IN THE INTEREST OF SECURITY AND QUALITY AI WILL NEVER BE USED</h3>
 
 <br>
 
